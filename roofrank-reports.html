@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — My Reports</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;--forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);--amber:#a06a00;--rose:#a03030;--border:#e0d9cf;--border-2:#cbc3b6;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--sw:240px;--r:10px}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.sb-nav{padding:.4rem 0;flex:1}
+.sb-sect{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:.5rem 1.3rem .2rem}
+.sb-link{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.3rem;font-size:.8rem;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;transition:all .15s;font-family:var(--sans)}
+.sb-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6;stroke-linecap:round;stroke-linejoin:round}
+.sb-link:hover{color:var(--ink);background:var(--cream)}
+.sb-link.active{color:var(--forest);background:var(--sage-dim);border-left-color:var(--forest);font-weight:500}
+.sb-link.active svg{opacity:1;stroke:var(--forest)}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-left{display:flex;align-items:baseline;gap:.55rem}
+.tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.tb-sub{font-size:.68rem;color:var(--muted)}
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.35rem .9rem;border-radius:var(--r);font-size:.76rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.btn-primary:hover{background:var(--forest-2)}
+.content{padding:1.3rem 1.4rem 4rem;flex:1;max-width:880px}
+.filter-row{display:flex;align-items:center;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap}
+.pill{padding:.26rem .7rem;border-radius:20px;font-size:.7rem;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--sans);transition:all .14s}
+.pill:hover{border-color:var(--sage-border);color:var(--ink)}
+.pill.on{background:var(--sage-dim);border-color:var(--sage-border);color:var(--forest);font-weight:500}
+.search{flex:1;max-width:260px;padding:.35rem .7rem;border:1px solid var(--border-2);border-radius:var(--r);font-size:.78rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;transition:border-color .14s}
+.search:focus{border-color:var(--forest)}
+.report-row{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.85rem 1rem;display:flex;align-items:center;gap:.85rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden}
+.report-row:hover{border-color:var(--sage-border);box-shadow:0 3px 12px rgba(28,31,28,.06);transform:translateY(-1px)}
+.report-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.report-row.sb::before{background:var(--forest)}
+.report-row.buy::before{background:var(--forest-3)}
+.report-row.wat::before{background:var(--amber)}
+.score-badge{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.82rem;font-weight:500;flex-shrink:0;border:2.5px solid}
+.score-badge.sb{color:var(--forest);border-color:var(--forest);background:rgba(28,74,53,.06)}
+.score-badge.buy{color:var(--forest-3);border-color:var(--forest-3);background:rgba(62,129,96,.05)}
+.score-badge.wat{color:var(--amber);border-color:var(--amber);background:rgba(160,106,0,.05)}
+.rr-body{flex:1;min-width:0}
+.rr-addr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);margin-bottom:1px}
+.rr-meta{font-size:.68rem;color:var(--muted);margin-bottom:4px}
+.rr-kpis{display:flex;gap:.28rem;flex-wrap:wrap}
+.kp{font-size:.62rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
+.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.rr-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:90px}
+.sig-badge{font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.sig-badge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+.sig-badge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sig-badge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.rr-date{font-size:.62rem;color:var(--faint)}
+.rr-del{background:none;border:none;cursor:pointer;color:var(--faint);padding:3px;transition:color .14s;line-height:0;position:absolute;right:.7rem;top:.7rem}
+.rr-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.rr-del:hover{color:var(--rose)}
+.empty{text-align:center;padding:4rem 1.5rem}
+.empty-ic{width:48px;height:48px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
+.empty-ic svg{width:20px;height:20px;stroke:var(--forest);fill:none;stroke-width:1.8}
+.empty-t{font-family:var(--serif);font-size:1rem;color:var(--ink);margin-bottom:.35rem}
+.empty-s{font-size:.78rem;color:var(--muted);max-width:260px;margin:0 auto .9rem;line-height:1.65}
+.empty-btn{background:var(--forest);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:var(--r);font-size:.76rem;cursor:pointer;font-family:var(--sans)}
+.usage-banner{background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:var(--r);padding:.65rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem}
+.ub-left{font-size:.76rem;color:var(--muted)}
+.ub-left strong{color:var(--forest)}
+.ub-right{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.35rem}
+.ub-bar{width:80px;height:4px;background:var(--cream-3);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle}
+.ub-fill{height:100%;background:var(--forest-3);border-radius:2px}
+@media(max-width:860px){.sidebar{display:none}.main{margin-left:0}.content{max-width:100%}}
+</style>
+<script src="api.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a href="roofrank-landing.html" class="sb-top">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span class="sb-name">RoofRank</span>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Deals</div>
+    <a href="roofrank-dashboard.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Deal Feed</a>
+    <a href="roofrank-watchlist.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Watchlist</a>
+    <div class="sb-sect">Tools</div>
+    <a href="roofrank-analyzer.html" class="sb-link"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analyze a Deal</a>
+    <a href="roofrank-reports.html" class="sb-link active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Reports</a>
+    <div class="sb-sect">Account</div>
+    <a href="roofrank-pricing.html" class="sb-link"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title">My Reports</span>
+      <span class="tb-sub" id="tbSub">Loading…</span>
+    </div>
+    <button class="btn-primary" onclick="location.href='roofrank-analyzer.html'">+ New Analysis</button>
+  </header>
+  <div class="content">
+    <div class="usage-banner">
+      <div class="ub-left">Pro plan · <strong id="usedCount">0</strong> of <strong>25</strong> reports used this month</div>
+      <div class="ub-right"><div class="ub-bar"><div class="ub-fill" id="usageFill" style="width:0%"></div></div><span id="usagePct">0%</span></div>
+    </div>
+    <div class="filter-row">
+      <input class="search" type="text" id="searchInput" placeholder="Search by address…" oninput="render()">
+      <button class="pill on" data-min="0" onclick="setFilter(this)">All</button>
+      <button class="pill" data-min="75" onclick="setFilter(this)">Strong Buy</button>
+      <button class="pill" data-min="60" onclick="setFilter(this)">Buy</button>
+      <button class="pill" data-min="45" onclick="setFilter(this)">Watch</button>
+    </div>
+    <div id="reportList"></div>
+  </div>
+</div>
+
+<script>
+requireAuth();
+let deleted=new Set(), minScore=0, allReports=[];
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=now-d;
+  if(diff<60000) return 'Just now';
+  if(diff<3600000) return Math.floor(diff/60000)+'m ago';
+  if(diff<86400000) return 'Today, '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if(diff<172800000) return 'Yesterday';
+  return d.toLocaleDateString([],{month:'short',day:'numeric'});
+}
+
+async function boot(){
+  document.getElementById('reportList').innerHTML=skels(4);
+  try{
+    const {reports=[]}=await ReportsAPI.list();
+    allReports=reports;
+    const used=reports.length;
+    document.getElementById('usedCount').textContent=used;
+    document.getElementById('usageFill').style.width=Math.min(100,Math.round(used/25*100))+'%';
+    document.getElementById('usagePct').textContent=Math.min(100,Math.round(used/25*100))+'%';
+    render();
+  }catch(e){
+    document.getElementById('reportList').innerHTML=`<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="empty-t">Could not load reports</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="boot()">Retry</button></div>`;
+  }
+}
+
+function render(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const rows=allReports.filter(r=>!deleted.has(r.id)&&(r.rankScore||0)>=minScore&&(!q||r.address.toLowerCase().includes(q)));
+  document.getElementById('tbSub').textContent=`${rows.length} saved report${rows.length!==1?'s':''}`;
+  const list=document.getElementById('reportList');
+  if(!rows.length){list.innerHTML=`<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="empty-t">No reports yet</div><div class="empty-s">Run your first analysis to see your reports here.</div><button class="empty-btn" onclick="location.href='roofrank-analyzer.html'">Analyze a Deal →</button></div>`;return;}
+  list.innerHTML=rows.map(r=>{
+    const score=r.rankScore||0, cl=scoreClass(score), c=scoreColor(score);
+    const fin=(r.reportData||{}).financials||{};
+    return`<div class="report-row ${cl}" onclick="location.href='roofrank-deal-detail.html?rid=${r.id}'">
+      <button class="rr-del" onclick="del('${r.id}',event)" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      <div class="score-badge ${cl}" style="color:${c};border-color:${c}">${score||'—'}</div>
+      <div class="rr-body">
+        <div class="rr-addr">${r.address}</div>
+        <div class="rr-meta">${scoreSignal(score)} · ${r.status==='processing'?'<em>Analyzing…</em>':r.status==='failed'?'<span style="color:var(--rose)">Failed</span>':''}</div>
+        <div class="rr-kpis">
+          ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
+          ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
+          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
+          ${fin.totalCashToClose?`<span class="kp">${fmtPrice(r.propertyData?.askingPrice)}</span>`:''}
+        </div>
+      </div>
+      <div class="rr-right">
+        <span class="sig-badge ${cl}">${scoreSignal(score)}</span>
+        <div class="rr-date">${fmtDate(r.createdAt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function del(id,e){
+  e.stopPropagation();
+  if(!confirm('Delete this report?')) return;
+  deleted.add(id);
+  render();
+  try{ await ReportsAPI.delete(id); }
+  catch{ deleted.delete(id); render(); showToast('Could not delete report.','error'); }
+}
+function setFilter(el,min){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');minScore=min;render();}
+function skels(n){return Array.from({length:n}).map((_,i)=>`<div class="skel-card" style="opacity:${1-i*.12}"><div class="sk" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="sk" style="height:13px;width:55%"></div><div class="sk" style="height:10px;width:32%"></div><div style="display:flex;gap:5px"><div class="sk" style="height:18px;width:56px;border-radius:3px"></div><div class="sk" style="height:18px;width:52px;border-radius:3px"></div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><div class="sk" style="height:16px;width:60px;border-radius:3px"></div><div class="sk" style="height:11px;width:46px"></div></div></div>`).join('');}
+
+// Add skel class
+document.head.insertAdjacentHTML('beforeend','<style>.skel-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}.sk{background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;border-radius:5px}@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}</style>');
+
+boot();
+</script>
+</body>
+</html>

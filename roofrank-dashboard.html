@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Deal Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;
+  --ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);
+  --amber:#a06a00;--rose:#a03030;
+  --border:#e0d9cf;--border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --sw:240px;--r:10px
+}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.sb-user{padding:.75rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.sb-av{width:26px;height:26px;border-radius:50%;background:var(--forest-2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0}
+.sb-uname{font-size:.78rem;font-weight:500;color:var(--ink)}
+.sb-plan{font-size:.55rem;font-weight:600;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:1px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;display:inline-block;margin-top:2px}
+.sb-nav{padding:.4rem 0;flex:1;overflow-y:auto}
+.sb-sect{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:.5rem 1.3rem .2rem}
+.sb-link{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.3rem;font-size:.8rem;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;transition:all .15s;font-family:var(--sans)}
+.sb-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6;stroke-linecap:round;stroke-linejoin:round}
+.sb-link:hover{color:var(--ink);background:var(--cream)}
+.sb-link.active{color:var(--forest);background:var(--sage-dim);border-left-color:var(--forest);font-weight:500}
+.sb-link.active svg{opacity:1;stroke:var(--forest)}
+.sb-count{margin-left:auto;background:var(--forest);color:#fff;font-size:.55rem;font-weight:600;font-family:var(--mono);padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+.sb-foot{padding:.75rem 1.3rem;border-top:1px solid var(--border);flex-shrink:0}
+.sb-upgrade{display:block;width:100%;text-align:center;background:var(--forest);color:#fff;border:none;padding:.5rem;border-radius:var(--r);font-family:var(--sans);font-size:.76rem;font-weight:500;cursor:pointer;text-decoration:none}
+.sb-upgrade:hover{background:var(--forest-2)}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-left{display:flex;align-items:baseline;gap:.55rem}
+.tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.tb-sub{font-size:.68rem;color:var(--muted)}
+.tb-right{display:flex;gap:.45rem}
+.btn-ghost{background:none;border:1px solid var(--border-2);color:var(--muted);padding:.32rem .75rem;border-radius:var(--r);font-size:.74rem;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.btn-ghost:hover{border-color:var(--forest);color:var(--forest)}
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.35rem .9rem;border-radius:var(--r);font-size:.76rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.btn-primary:hover{background:var(--forest-2)}
+.content{padding:1.3rem 1.4rem 4rem;flex:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:1.3rem}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem}
+.stat-val{font-family:var(--mono);font-size:1.45rem;color:var(--ink);line-height:1;margin-bottom:3px}
+.stat-val.g{color:var(--forest)}
+.stat-lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.mkt-strip{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:1.1rem;padding-bottom:.1rem;scrollbar-width:none}
+.mkt-strip::-webkit-scrollbar{display:none}
+.mkt-chip{flex-shrink:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.4rem .8rem;cursor:pointer;transition:all .15s}
+.mkt-chip.on{border-color:var(--forest);background:var(--sage-dim)}
+.mkt-chip-n{font-size:.75rem;font-weight:500;color:var(--ink)}
+.mkt-chip.on .mkt-chip-n{color:var(--forest)}
+.mkt-chip-m{font-size:.6rem;color:var(--muted);font-family:var(--mono)}
+.controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;flex-wrap:wrap;gap:.5rem}
+.ctrl-left{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+.ctrl-title{font-family:var(--serif);font-size:.88rem;font-weight:500;color:var(--ink);margin-right:.1rem}
+.pill{padding:.25rem .7rem;border-radius:20px;font-size:.7rem;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--sans);transition:all .14s}
+.pill:hover{border-color:var(--sage-border);color:var(--ink)}
+.pill.on{background:var(--sage-dim);border-color:var(--sage-border);color:var(--forest);font-weight:500}
+.sort-sel{padding:.26rem .55rem;border-radius:var(--r);border:1px solid var(--border);background:var(--white);font-size:.7rem;color:var(--muted);font-family:var(--sans);cursor:pointer;outline:none}
+.deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden;opacity:0;animation:fu .28s ease forwards}
+@keyframes fu{to{opacity:1;transform:none}from{opacity:0;transform:translateY(5px)}}
+.dotd{background:linear-gradient(135deg,#1c4a35 0%,#2d6448 100%);border-radius:var(--r);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.dotd:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(28,74,53,.28)}
+.dotd::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+.dotd-badge{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);background:rgba(255,255,255,.1);padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.dotd-ring{width:52px;height:52px;position:relative;flex-shrink:0}
+.dotd-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dotd-rt{fill:none;stroke:rgba(255,255,255,.15);stroke-width:4}
+.dotd-rf{fill:none;stroke:#7aaa8f;stroke-width:4;stroke-linecap:round}
+.dotd-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.95rem;font-weight:500;color:#fff}
+.dotd-body{flex:1;min-width:0}
+.dotd-addr{font-family:var(--serif);font-size:1rem;font-weight:500;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dotd-meta{font-size:.7rem;color:rgba(255,255,255,.55);margin-bottom:.5rem}
+.dotd-kpis{display:flex;gap:.35rem;flex-wrap:wrap}
+.dotd-kpi{font-size:.63rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+.dotd-kpi.hot{background:rgba(122,170,143,.25);color:#7aaa8f}
+.dotd-right{text-align:right;flex-shrink:0}
+.dotd-price{font-family:var(--mono);font-size:.9rem;color:#fff;margin-bottom:3px}
+.dotd-sig{font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7aaa8f;background:rgba(122,170,143,.15);padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:3px}
+.dotd-dom{font-size:.62rem;color:rgba(255,255,255,.4)}
+.new-divider{display:flex;align-items:center;gap:.75rem;margin:.6rem 0 .5rem;opacity:0;animation:fu .3s ease .2s forwards}
+.new-divider-line{flex:1;height:1px;background:linear-gradient(90deg,var(--forest-3),transparent)}
+.new-divider-label{font-size:.64rem;font-weight:600;color:var(--forest);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;background:var(--sage-dim);border:1px solid var(--sage-border);padding:2px 8px;border-radius:4px;flex-shrink:0}
+.new-divider-line.right{background:linear-gradient(270deg,var(--forest-3),transparent)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.fresh-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--forest-3);animation:pulse 1.8s ease-in-out infinite;margin-right:4px;vertical-align:middle;flex-shrink:0}
+.fresh-dot.hot{background:var(--amber)}
+.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
+.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.deal.sb{
+  padding:.95rem 1rem;
+  border-color:rgba(28,74,53,.22);
+  box-shadow:0 2px 0 0 var(--forest), 0 4px 20px rgba(28,74,53,.1);
+}
+.deal.sb::before{background:var(--forest);width:4px}
+.deal.sb .ring{width:56px;height:56px}
+.deal.sb .daddr{font-size:.94rem}
+.deal.buy::before{background:var(--forest-3)}
+.deal.wat::before{background:var(--amber)}
+.deal.pas::before{background:var(--rose)}
+.ring{width:48px;height:48px;flex-shrink:0;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rt{fill:none;stroke:var(--cream-3);stroke-width:4}
+.rf{fill:none;stroke-width:4;stroke-linecap:round}
+.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:500}
+.dbody{flex:1;min-width:0}
+.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.dmeta{font-size:.68rem;color:var(--muted);margin-bottom:4px}
+.dkpis{display:flex;gap:.28rem;flex-wrap:wrap}
+.kp{font-size:.62rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
+.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.dright{text-align:right;flex-shrink:0;min-width:80px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.sbadge{font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.07);color:var(--rose);border-color:rgba(160,48,48,.2)}
+.dprice{font-family:var(--mono);font-size:.8rem;color:var(--ink)}
+.ddom{font-size:.62rem;color:var(--muted)}
+.wbtn{background:none;border:none;cursor:pointer;color:var(--faint);line-height:0;padding:4px;transition:color .14s;flex-shrink:0}
+.wbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.wbtn:hover,.wbtn.on{color:var(--forest)}
+.wbtn.on svg{fill:var(--forest);stroke:var(--forest)}
+.empty{text-align:center;padding:3.5rem 1.5rem}
+.empty-ic{width:44px;height:44px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
+.empty-ic svg{width:18px;height:18px;stroke:var(--forest);fill:none;stroke-width:1.8}
+.empty-t{font-family:var(--serif);font-size:.95rem;color:var(--ink);margin-bottom:.3rem}
+.empty-s{font-size:.78rem;color:var(--muted);max-width:260px;margin:0 auto .9rem;line-height:1.6}
+.empty-btn{background:var(--forest);color:#fff;border:none;padding:.48rem 1.1rem;border-radius:var(--r);font-size:.76rem;cursor:pointer;font-family:var(--sans)}
+.skel-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
+.sk{background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;border-radius:5px}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+@media(max-width:860px){.sidebar{display:none}.main{margin-left:0}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){
+  .content{padding:1rem .9rem 4rem}
+  .topbar{padding:0 .9rem}
+  .stats{grid-template-columns:repeat(2,1fr);gap:.4rem}
+  .stat{padding:.65rem .75rem}
+  .stat-val{font-size:1.2rem}
+  .deal{padding:.7rem .8rem;gap:.6rem}
+  .ring{width:40px;height:40px}
+  .deal.sb .ring{width:44px;height:44px}
+  .rn{font-size:.75rem}
+  .daddr{font-size:.82rem}
+  .dmeta{font-size:.63rem}
+  .kp{font-size:.58rem;padding:1px 4px}
+  .dprice{font-size:.75rem}
+  .sbadge{font-size:.55rem;padding:2px 5px}
+  .controls{flex-direction:column;align-items:flex-start}
+  .tb-left{flex-direction:column;align-items:flex-start;gap:.1rem}
+  .tb-sub{font-size:.62rem}
+  .btn-primary{font-size:.72rem;padding:.3rem .7rem}
+  .btn-ghost{font-size:.72rem;padding:.3rem .65rem}
+}
+</style>
+<script src="api.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a href="roofrank-landing.html" class="sb-top">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span class="sb-name">RoofRank</span>
+  </a>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">?</div>
+    <div><div class="sb-uname" id="sbName">Loading…</div><span class="sb-plan" id="sbPlan">Starter</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sect">Deals</div>
+    <a href="roofrank-dashboard.html" class="sb-link active">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Deal Feed<span class="sb-count" id="sbBadge">—</span>
+    </a>
+    <a href="roofrank-watchlist.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Watchlist<span class="sb-count" id="wc" style="display:none">0</span>
+    </a>
+    <div class="sb-sect">Tools</div>
+    <a href="roofrank-analyzer.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analyze a Deal
+    </a>
+    <a href="roofrank-reports.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Reports
+    </a>
+    <div class="sb-sect">Account</div>
+    <a href="roofrank-pricing.html" class="sb-link"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+    <button class="sb-link"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+  </nav>
+  <div class="sb-foot">
+    <div style="display:flex;justify-content:space-between;font-size:.63rem;color:var(--muted);margin-bottom:4px"><span>Reports used</span><span class="sb-usage-val" id="sbUsage">—</span></div><div style="height:3px;background:var(--cream-3);border-radius:2px;overflow:hidden;margin-bottom:.65rem"><div id="sbFill" style="height:100%;background:var(--forest-3);border-radius:2px;width:0%;transition:width .5s"></div></div><a href="roofrank-pricing.html" class="sb-upgrade">↑ Upgrade Plan</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title">Deal Feed</span>
+      <span class="tb-sub" id="topSub">Loading deals…</span>
+    </div>
+    <div class="tb-right">
+      <button class="btn-ghost" onclick="handleRefresh(this)">↻ Refresh</button>
+      <button class="btn-primary" onclick="location.href='roofrank-analyzer.html'">+ Analyze Deal</button>
+    </div>
+  </header>
+  <div class="content">
+    <div class="stats">
+      <div class="stat"><div class="stat-val g" id="s1">—</div><div class="stat-lbl">Active Listings</div></div>
+      <div class="stat"><div class="stat-val g">3</div><div class="stat-lbl">Strong Buys</div></div>
+      <div class="stat"><div class="stat-val" id="s3">—</div><div class="stat-lbl">Avg Score</div></div>
+      <div class="stat"><div class="stat-val" id="s4">—</div><div class="stat-lbl">Markets</div></div>
+    </div>
+
+    <div class="mkt-strip" id="mktStrip"></div>
+
+    <div class="controls">
+      <div class="ctrl-left">
+        <span class="ctrl-title">Ranked Deals</span>
+        <button class="pill on" onclick="setFilter(this,0)">All</button>
+        <button class="pill" onclick="setFilter(this,75)">Strong Buy</button>
+        <button class="pill" onclick="setFilter(this,60)">Buy</button>
+        <button class="pill" onclick="setFilter(this,45)">Watch</button>
+      </div>
+      <select class="sort-sel" onchange="render()">
+        <option value="score">Top Score</option>
+        <option value="price_asc">Price ↑</option>
+        <option value="price_desc">Price ↓</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div id="dotdWrapper"></div>
+    <div id="dealList"></div>
+  <div id="loadMoreWrap" style="display:none;justify-content:center;padding:1rem"><button style="background:none;border:1px solid var(--border-2);color:var(--muted);padding:.5rem 1.25rem;border-radius:var(--r);font-size:.78rem;cursor:pointer;font-family:var(--sans)" onclick="loadMore()">Load more deals</button></div>
+  </div>
+</div>
+
+<script>
+let page=1, minScore=0, filterCity='', filterState='', allDeals=[];
+const circ=2*Math.PI*19;
+
+async function boot(){
+  // Load feed immediately — don't wait for sidebar calls
+  loadMktStats();
+  loadFeed();
+  syncWC();
+
+  // Load sidebar info in background (non-blocking)
+  AuthAPI.me().then(({user}={})=>{
+    if(!user) return;
+    document.getElementById('sbAv').textContent=(user.name||user.email||'?')[0].toUpperCase();
+    document.getElementById('sbName').textContent=user.name||user.email;
+  }).catch(()=>{});
+
+  BillingAPI.getSubscription().then(sub=>{
+    if(!sub) return;
+    document.getElementById('sbPlan').textContent=(sub.plan||'starter').replace(/^./,c=>c.toUpperCase());
+    const used=sub.reportsUsed||0, lim=sub.reportLimit||10;
+    document.getElementById('sbUsage').textContent=`${used}/${lim}`;
+    document.getElementById('sbFill').style.width=Math.min(100,used/lim*100)+'%';
+  }).catch(()=>{});
+
+  WatchlistAPI.loadIds().then(()=>syncWC()).catch(()=>{});
+}
+
+async function loadFeed(reset=true){
+  if(reset){page=1;allDeals=[];}
+  const list=document.getElementById('dealList');
+  if(reset) list.innerHTML=skels(6);
+  const sort=(document.getElementById('sortSel')||{}).value||'score';
+  try{
+    const data = await FeedAPI.list({page,limit:20,minScore,...(filterCity&&{city:filterCity,state:filterState}),sort});
+    const deals = data.deals || [];
+    allDeals = reset ? deals : [...allDeals, ...deals];
+    renderDeals(allDeals, reset);
+    const sbs = allDeals.filter(d=>(d.rankScore||0)>=75).length;
+    const avg = allDeals.length ? (allDeals.reduce((s,d)=>s+(d.rankScore||0),0)/allDeals.length).toFixed(0) : '—';
+    const _s1=document.getElementById('s1'); if(_s1) _s1.textContent=allDeals.length;
+    const _s2=document.getElementById('s2'); if(_s2) _s2.textContent=sbs;
+    const _s3=document.getElementById('s3'); if(_s3) _s3.textContent=avg;
+    const _sb=document.getElementById('sbBadge'); if(_sb) _sb.textContent=allDeals.length;
+    const _ts=document.getElementById('topSub'); if(_ts) _ts.textContent=allDeals.length+' ranked deal'+(allDeals.length!==1?'s':'')+' · Updated nightly';
+    const lmw=document.getElementById('loadMoreWrap'); if(lmw) lmw.style.display=deals.length===20?'flex':'none';
+  } catch(e) {
+    console.error('loadFeed error:', e);
+    if(reset) list.innerHTML = '<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">Could not load deals</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="loadFeed()">Try Again</button></div>';
+  }
+}
+function renderDeals(deals, reset=true){
+  const list=document.getElementById('dealList');
+  if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">No deals match</div><div class="empty-s">Try removing filters or check back tomorrow after the nightly refresh.</div><button class="empty-btn" onclick="resetFilters()">Clear Filters</button></div>`;return;}
+  // Deal of the Day — top scoring deal gets pinned spotlight (only render once)
+  if(reset !== false && deals.length > 0 && !document.querySelector('.dotd')){
+    const best = [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
+    const bf = (best.reportData||{}).financials||{};
+    const bcirc = 2*Math.PI*22;
+    const bdash = ((best.rankScore||0)/100)*bcirc;
+    const dotdHtml = `<div class="dotd" onclick="location.href='roofrank-deal-detail.html?fid=${best.id}'">
+      <div class="dotd-badge">★ Deal of the Day</div>
+      <div class="dotd-ring">
+        <svg viewBox="0 0 50 50" style="transform:rotate(-90deg)">
+          <circle class="dotd-rt" cx="25" cy="25" r="22"/>
+          <circle class="dotd-rf" cx="25" cy="25" r="22" stroke-dasharray="${bdash.toFixed(1)} ${bcirc.toFixed(1)}"/>
+        </svg>
+        <div class="dotd-num">${best.rankScore||'—'}</div>
+      </div>
+      <div class="dotd-body">
+        <div class="dotd-addr">${best.address||'Unknown'}</div>
+        <div class="dotd-meta">${[best.city,best.state].filter(Boolean).join(', ')} · ${best.units||'?'} units · ${best.propertyType||''}</div>
+        <div class="dotd-kpis">
+          ${bf.cashOnCashReturn!=null?`<span class="dotd-kpi hot">CoC ${bf.cashOnCashReturn.toFixed(1)}%</span>`:''}
+          ${bf.capRate!=null?`<span class="dotd-kpi hot">Cap ${bf.capRate.toFixed(1)}%</span>`:''}
+          ${bf.dscr!=null?`<span class="dotd-kpi">DSCR ${bf.dscr.toFixed(2)}</span>`:''}
+        </div>
+      </div>
+      <div class="dotd-right">
+        <div class="dotd-sig">${scoreSignal(best.rankScore||0)}</div>
+        <div class="dotd-price">${fmtPrice(best.askingPrice)}</div>
+        <div class="dotd-dom">${best.daysOnMarket||0}d listed</div>
+      </div>
+    </div>`;
+    sessionStorage.setItem('rr_deal_'+best.id, JSON.stringify(best));
+    const dotdWrapper = document.getElementById('dotdWrapper');
+    if(dotdWrapper) dotdWrapper.innerHTML = dotdHtml;
+  }
+
+  // Track last visit for "new since" divider
+  const lastVisit = localStorage.getItem('rr_last_visit');
+  const lastVisitDate = lastVisit ? new Date(lastVisit) : null;
+  const newCount = lastVisitDate
+    ? deals.filter(d => new Date(d.createdAt) > lastVisitDate).length
+    : 0;
+  localStorage.setItem('rr_last_visit', new Date().toISOString());
+
+  let dividerInjected = false;
+  list.innerHTML=deals.map((d,i)=>{
+    const isNew = lastVisitDate && new Date(d.createdAt) > lastVisitDate;
+    const isFirstOld = !dividerInjected && !isNew && newCount > 0 && i > 0;
+    if(isFirstOld) dividerInjected = true;
+    const dividerHtml = isFirstOld
+      ? `<div class="new-divider"><div class="new-divider-line"></div><div class="new-divider-label">↑ ${newCount} new since your last visit</div><div class="new-divider-line right"></div></div>`
+      : '';
+    return dividerHtml + dealCardHtml(d, i);
+  }).join('');
+}
+
+function getPercentile(score, allDeals){
+  if(!allDeals || !allDeals.length) return null;
+  const below = allDeals.filter(d => (d.rankScore||0) < score).length;
+  const pct = Math.round((below / allDeals.length) * 100);
+  if(pct >= 90) return 'Top 10%';
+  if(pct >= 80) return 'Top 20%';
+  if(pct >= 70) return 'Top 30%';
+  return null; // only show for top 30%
+}
+
+function dealCardHtml(d,i){
+    const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
+    const sig=scoreSignal(score), cl=scoreClass(score), c=scoreColor(score);
+    const dash=(score/100)*circ;
+    const on=WatchlistAPI.has(d.id);
+    const pct=getPercentile(score,allDeals);
+    return`<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
+      <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
+      <div class="dbody">
+        <div class="daddr">${d.address||'Unknown'}</div>
+        <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
+        <div class="dkpis">
+          ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
+          ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
+          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
+          ${d.yearBuilt?`<span class="kp">${d.yearBuilt}</span>`:''}
+        </div>
+      </div>
+      <div class="dright">
+        <span class="sbadge ${cl}">${sig}</span>
+        <div class="dprice">${fmtPrice(d.askingPrice)}</div>
+        ${pct?`<div class="ddom" style="color:var(--forest);font-weight:500">${pct}</div>`:''} 
+        ${d.daysOnMarket!=null?`<div class="ddom">${d.daysOnMarket<=2?'<span class="fresh-dot"></span>':d.daysOnMarket<=5?'<span class="fresh-dot hot"></span>':''}${d.daysOnMarket}d listed</div>`:''}
+        <button class="wbtn ${on?'on':''}" onclick="toggleW('${d.id}',event)"><svg viewBox="0 0 24 24" fill="${on?c:'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      </div>
+    </div>`;
+}
+
+function openDeal(id,e){
+  if(e.target.closest('.wbtn')) return;
+  const deal = allDeals.find(d=>d.id===id);
+  if(deal) sessionStorage.setItem('rr_deal_'+id, JSON.stringify(deal));
+  location.href=`roofrank-deal-detail.html?fid=${id}`;
+}
+async function toggleW(id,e){
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  const on = await WatchlistAPI.toggle(id);
+  if(btn) {
+    btn.className = 'wbtn' + (on ? ' on' : '');
+    const svg = btn.querySelector('svg');
+    if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+  }
+  syncWC();
+}
+function syncWC(){const n=WatchlistAPI.count(),b=document.getElementById('wc');if(b){b.textContent=n;b.style.display=n?'':'none';}}
+function setFilter(el,min){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');minScore=min;loadFeed();}
+function resetFilters(){minScore=0;filterCity=filterState='';document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('on',i===0));document.querySelectorAll('.mkt-chip').forEach((c,i)=>c.classList.toggle('on',i===0));loadFeed();}
+function filterMkt(el,city,state){document.querySelectorAll('.mkt-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');filterCity=city;filterState=state;loadFeed();}
+async function loadMktStats(){
+  try{
+    const data=await FeedAPI.marketStats();
+    const mkts=Array.isArray(data)?data:(data.rows||[]);
+    document.getElementById('s4').textContent=mkts.length;
+    const strip=document.getElementById('mktStrip');
+    if(strip && mkts.length){
+      strip.innerHTML=`<div class="mkt-chip on" onclick="filterMkt(this,'','')"><div class="mkt-chip-n">All Markets</div><div class="mkt-chip-m">${allDeals.length||'—'} deals</div></div>`
+        +mkts.slice(0,8).map(m=>`<div class="mkt-chip" onclick="filterMkt(this,'${m.city}','${m.state}')"><div class="mkt-chip-n">${m.city}</div><div class="mkt-chip-m">${m.state} · avg ${Math.round(m.avg_score||0)} · ${m.total_listings||0}</div></div>`).join('');
+    }
+  }catch{document.getElementById('s4').textContent='—';}
+}
+async function loadMore(){page++;await loadFeed(false);}
+async function handleRefresh(btn){
+  btn.disabled=true;
+  btn.innerHTML='<span style="display:inline-block;width:12px;height:12px;border:2px solid var(--border-2);border-top-color:var(--forest);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px"></span>Refreshing…';
+  try{
+    await FeedAPI.triggerRefresh();
+    btn.disabled=false;btn.textContent='↻ Refresh';
+    document.querySelector('.tb-sub').textContent='38 ranked deals · Updated just now';
+    showToast('✓ Feed refresh queued — new deals appear within minutes');
+  }catch{
+    btn.disabled=false;btn.textContent='↻ Refresh';
+    showToast('Could not trigger refresh.','error');
+  }
+}
+function skels(n){return Array.from({length:n}).map((_,i)=>`<div class="skel-card" style="opacity:${1-i*.1}"><div class="sk" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="sk" style="height:13px;width:52%"></div><div class="sk" style="height:10px;width:35%"></div><div style="display:flex;gap:5px"><div class="sk" style="height:18px;width:58px;border-radius:3px"></div><div class="sk" style="height:18px;width:52px;border-radius:3px"></div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><div class="sk" style="height:16px;width:62px;border-radius:3px"></div><div class="sk" style="height:12px;width:48px"></div></div></div>`).join('');}
+
+document.addEventListener("DOMContentLoaded", boot);
+</script>
+</body>
+</html>

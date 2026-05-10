@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Every Multifamily Deal, Scored and Ranked</title>
+<meta name="description" content="RoofRank scores every 2–6 unit property on Cap Rate, Cash-on-Cash, DSCR, GRM, and 5 other metrics — then ranks them for you. Built for investors growing their portfolio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Canvas — warm parchment, not clinical white */
+  --cream:    #f7f4ef;
+  --cream-2:  #f0ece4;
+  --cream-3:  #e6e0d5;
+  --white:    #fff;
+
+  /* Text */
+  --ink:      #1c1f1c;
+  --ink-2:    #3a3e39;
+  --muted:    #6b7168;
+  --faint:    #a8ad9f;
+
+  /* Brand */
+  --forest:   #1c4a35;
+  --forest-2: #2d6448;
+  --forest-3: #3e8160;
+  --sage:     #7aaa8f;
+  --sage-dim: rgba(122,170,143,.1);
+  --sage-border:rgba(122,170,143,.25);
+
+  /* Signals */
+  --strong-buy: #1c4a35;
+  --buy:        #2d6448;
+  --watch:      #a06a00;
+  --pass:       #a03030;
+
+  /* Border */
+  --border:   #e0d9cf;
+  --border-2: #cbc3b6;
+
+  /* Type */
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+  --mono:  'DM Mono', monospace;
+
+  --max: 1120px;
+  --radius: 12px;
+}
+
+html{scroll-behavior:smooth;color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:60px;
+  background:rgba(247,244,239,.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s
+}
+nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.nav-logo-mark{width:28px;height:28px;flex-shrink:0}
+.nav-logo-name{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .15s}
+.nav-links a:hover{color:var(--ink)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.nav-login{background:none;border:none;color:var(--muted);font-size:.88rem;cursor:pointer;font-family:var(--sans);transition:color .15s}
+.nav-login:hover{color:var(--ink)}
+.nav-cta{
+  background:var(--forest);color:#fff;border:none;
+  padding:.45rem 1.1rem;border-radius:var(--radius);
+  font-size:.84rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+  transition:background .18s
+}
+.nav-cta:hover{background:var(--forest-2)}
+.nav-ham{display:none;background:none;border:1px solid var(--border);color:var(--ink);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.9rem}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;padding-top:60px;
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--cream);
+  position:relative;overflow:hidden
+}
+
+/* Triple decker photo — full bleed background */
+.hero-photo{
+  position:absolute;inset:0;z-index:0;overflow:hidden
+}
+.hero-photo svg,.hero-photo img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center 35%;
+  display:block;
+  filter:saturate(.9) brightness(.82)
+}
+/* Warm gradient overlay — preserves text legibility on left, reveals photo on right */
+.hero-photo-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    105deg,
+    rgba(247,244,239,.98) 0%,
+    rgba(247,244,239,.96) 25%,
+    rgba(247,244,239,.72) 42%,
+    rgba(247,244,239,.18) 60%,
+    rgba(247,244,239,.0) 75%
+  )
+}
+/* Fade bottom edge back to cream */
+.hero-photo-bottom{
+  position:absolute;bottom:0;left:0;right:0;height:100px;z-index:2;
+  background:linear-gradient(to top,var(--cream) 0%,transparent 100%)
+}
+
+.hero-left{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:6rem 3rem 5rem 5rem
+}
+
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--forest);margin-bottom:1.5rem
+}
+.hero-tag-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--forest-3);
+  animation:pulse 2s infinite
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero-h1{
+  font-family:var(--serif);
+  font-size:clamp(2.4rem,3.8vw,4rem);
+  font-weight:400;line-height:1.1;
+  color:var(--ink);letter-spacing:-.02em;
+  margin-bottom:1.25rem
+}
+.hero-h1 em{font-style:italic;color:var(--forest)}
+.hero-h1 strong{font-weight:700}
+
+.hero-sub{
+  font-size:1.05rem;color:var(--muted);line-height:1.75;
+  max-width:420px;margin-bottom:2rem
+}
+.hero-sub strong{color:var(--ink);font-weight:500}
+
+.hero-actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn-hero-primary{
+  background:var(--forest);color:#fff;border:none;
+  padding:.8rem 1.65rem;border-radius:var(--radius);
+  font-size:.95rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+  transition:all .18s;white-space:nowrap
+}
+.btn-hero-primary:hover{background:var(--forest-2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(28,74,53,.25)}
+.btn-hero-secondary{
+  background:transparent;color:var(--ink);
+  border:1.5px solid var(--border-2);
+  padding:.8rem 1.5rem;border-radius:var(--radius);
+  font-size:.95rem;font-weight:400;cursor:pointer;font-family:var(--sans);
+  transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:.5rem
+}
+.btn-hero-secondary:hover{border-color:var(--forest);color:var(--forest)}
+.btn-hero-secondary svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+.hero-proof{
+  display:flex;align-items:center;gap:.85rem;
+  padding-top:1.5rem;border-top:1px solid var(--border);
+  flex-wrap:wrap
+}
+.hero-proof-stars{color:#c8a84b;font-size:.9rem;letter-spacing:2px}
+.hero-proof-txt{font-size:.78rem;color:var(--muted)}
+.hero-proof-divider{width:1px;height:14px;background:var(--border-2)}
+.hero-proof-mentions{display:flex;gap:.85rem;align-items:center}
+.hero-proof-mention{font-size:.74rem;font-weight:500;color:var(--faint)}
+
+/* ── HERO RIGHT — Product screenshot ── */
+.hero-right{
+  position:relative;z-index:3;
+  display:flex;align-items:center;justify-content:center;
+  padding:6rem 4rem 5rem 2rem
+}
+
+.product-card{
+  width:100%;max-width:480px;
+  background:var(--white);
+  border:1px solid var(--border-2);
+  border-radius:16px;
+  box-shadow:
+    0 4px 6px rgba(28,31,28,.04),
+    0 20px 50px rgba(28,31,28,.1),
+    0 1px 0 rgba(255,255,255,.9) inset;
+  overflow:hidden;
+  animation:floatUp .7s .2s cubic-bezier(.22,1,.36,1) both
+}
+@keyframes floatUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+.pc-header{
+  background:var(--cream);border-bottom:1px solid var(--border);
+  padding:.65rem 1rem;
+  display:flex;align-items:center;gap:.5rem
+}
+.pc-dot{width:10px;height:10px;border-radius:50%}
+.pc-url{
+  flex:1;background:rgba(255,255,255,.7);border:1px solid var(--border);
+  border-radius:5px;padding:3px 10px;margin:0 .5rem;
+  font-size:.62rem;color:var(--muted);font-family:var(--mono)
+}
+
+.pc-topbar{
+  padding:.75rem 1rem;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border)
+}
+.pc-topbar-title{
+  font-family:var(--serif);font-size:.9rem;font-weight:500;color:var(--ink);
+  display:flex;align-items:center;gap:.5rem
+}
+.pc-live{
+  font-size:.56rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--forest);background:var(--sage-dim);
+  border:1px solid var(--sage-border);
+  padding:2px 7px;border-radius:10px
+}
+.pc-topbar-right{display:flex;gap:.35rem}
+.pc-filter{background:var(--cream);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:.62rem;color:var(--muted)}
+.pc-add{background:var(--forest);border-radius:5px;padding:3px 9px;font-size:.62rem;color:#fff;cursor:pointer}
+
+.pc-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1rem}
+.pc-tab{
+  padding:.5rem .75rem;font-size:.7rem;font-weight:500;color:var(--muted);
+  border-bottom:2px solid transparent;cursor:default;letter-spacing:.02em;
+  white-space:nowrap
+}
+.pc-tab.on{color:var(--forest);border-bottom-color:var(--forest)}
+
+.deal-row-item{
+  padding:.85rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.85rem;
+  transition:background .1s;cursor:default
+}
+.deal-row-item:hover{background:var(--cream)}
+.deal-row-item.featured{
+  background:rgba(28,74,53,.03);
+  border-left:3px solid var(--forest);
+  padding-left:calc(1rem - 3px)
+}
+.deal-row-item:last-child{border-bottom:none}
+
+/* Inline score badge */
+.score-badge-sm{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.85rem;font-weight:500;
+  flex-shrink:0;border:2.5px solid;position:relative
+}
+.score-badge-sm.sb{color:var(--strong-buy);border-color:var(--strong-buy);background:rgba(28,74,53,.06)}
+.score-badge-sm.buy{color:var(--buy);border-color:var(--buy);background:rgba(45,100,72,.05)}
+.score-badge-sm.watch{color:var(--watch);border-color:var(--watch);background:rgba(160,106,0,.05)}
+
+.deal-info{flex:1;min-width:0}
+.deal-address{font-size:.82rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-city{font-size:.67rem;color:var(--muted);margin-top:1px;margin-bottom:.4rem}
+.deal-kpis{display:flex;gap:.35rem;flex-wrap:wrap}
+.deal-kpi{
+  font-size:.63rem;font-family:var(--mono);
+  padding:2px 6px;border-radius:4px;border:1px solid;
+  color:var(--muted);border-color:var(--border);background:var(--cream)
+}
+.deal-kpi.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+
+.deal-signal{
+  font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;white-space:nowrap;flex-shrink:0
+}
+.sig-sb{background:rgba(28,74,53,.09);color:var(--strong-buy);border:1px solid rgba(28,74,53,.2)}
+.sig-buy{background:rgba(45,100,72,.07);color:var(--buy);border:1px solid rgba(45,100,72,.18)}
+.sig-watch{background:rgba(160,106,0,.07);color:var(--watch);border:1px solid rgba(160,106,0,.18)}
+
+.pc-footer{
+  background:var(--cream);border-top:1px solid var(--border);
+  padding:.55rem 1rem;display:flex;align-items:center;justify-content:space-between;
+  font-size:.62rem;color:var(--muted)
+}
+.pc-live-dot{display:flex;align-items:center;gap:3px}
+.live-dot-sm{width:5px;height:5px;border-radius:50%;background:var(--forest-3);animation:pulse 1.8s infinite}
+
+/* Floating alert */
+.floating-alert{
+  position:absolute;bottom:2.5rem;right:3.5rem;
+  background:var(--white);border:1px solid var(--border-2);
+  border-radius:10px;padding:.65rem .9rem;
+  box-shadow:0 8px 24px rgba(28,31,28,.12);
+  animation:floatUp .6s .8s ease both;max-width:190px
+}
+.fa-head{display:flex;align-items:center;gap:5px;margin-bottom:.25rem}
+.fa-dot{width:6px;height:6px;border-radius:50%;background:var(--forest-3);animation:pulse 2s infinite}
+.fa-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--forest)}
+.fa-title{font-size:.78rem;font-weight:500;color:var(--ink);margin-bottom:1px}
+.fa-sub{font-size:.65rem;color:var(--muted)}
+
+/* ── STAT BAR ── */
+.stat-bar{
+  background:var(--forest);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(255,255,255,.08)
+}
+.stat-cell{
+  padding:2rem;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1)
+}
+.stat-cell:last-child{border-right:none}
+.stat-cell-val{
+  font-family:var(--serif);font-size:2.1rem;font-weight:400;
+  color:#fff;line-height:1;margin-bottom:.35rem
+}
+.stat-cell-label{font-size:.75rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── SECTIONS ── */
+section{padding:6rem 0}
+.inner{max-width:var(--max);margin:0 auto;padding:0 3rem}
+
+.eyebrow{
+  font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--forest);margin-bottom:.65rem
+}
+.section-h2{
+  font-family:var(--serif);font-size:clamp(2rem,3vw,2.8rem);
+  font-weight:400;color:var(--ink);line-height:1.12;letter-spacing:-.02em;
+  margin-bottom:1rem
+}
+.section-h2 em{font-style:italic;color:var(--forest)}
+.section-sub{font-size:.95rem;color:var(--muted);line-height:1.75;max-width:520px}
+
+/* ── PROBLEM → SOLUTION ── */
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.ps-content{}
+.ps-cards{display:flex;flex-direction:column;gap:.75rem;margin-top:2.5rem}
+.ps-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.25rem 1.4rem;
+  display:flex;align-items:flex-start;gap:.9rem;
+  opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s
+}
+.ps-card.visible{opacity:1;transform:none}
+.ps-card-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+.ps-card-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ps-card-icon.green{background:var(--sage-dim);color:var(--forest)}
+.ps-card-icon.amber{background:rgba(160,106,0,.08);color:var(--watch)}
+.ps-card-title{font-size:.88rem;font-weight:500;color:var(--ink);margin-bottom:.2rem}
+.ps-card-sub{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* ── SCORE VISUAL ── */
+.score-visual{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;
+  box-shadow:0 4px 32px rgba(28,31,28,.07);
+  opacity:0;transform:translateX(24px);transition:opacity .6s,transform .6s
+}
+.score-visual.visible{opacity:1;transform:none}
+.sv-address{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);margin-bottom:.2rem}
+.sv-city{font-size:.78rem;color:var(--muted);margin-bottom:1.25rem}
+
+.sv-score-row{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.sv-score-ring{position:relative;width:88px;height:88px;flex-shrink:0}
+.sv-score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.svr-track{fill:none;stroke:var(--border-2);stroke-width:6}
+.svr-fill{fill:none;stroke:var(--forest);stroke-width:6;stroke-linecap:round;stroke-dasharray:246;stroke-dashoffset:246;transition:stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1)}
+.svr-fill.animate{stroke-dashoffset:33}
+.sv-score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sv-score-num{font-family:var(--mono);font-size:2rem;font-weight:500;color:var(--forest);line-height:1}
+.sv-score-sig{font-size:.6rem;font-weight:600;color:var(--forest);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sv-signal-info{flex:1}
+.sv-sig-badge{
+  display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  background:rgba(28,74,53,.09);color:var(--forest);border:1px solid rgba(28,74,53,.2);
+  padding:3px 10px;border-radius:5px;margin-bottom:.6rem
+}
+.sv-sig-desc{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+.sv-metrics{display:flex;flex-direction:column;gap:.55rem}
+.sv-metric{display:flex;align-items:center;gap:.75rem}
+.sv-metric-name{font-size:.75rem;color:var(--muted);min-width:120px}
+.sv-metric-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.sv-metric-fill{height:100%;border-radius:2px;background:var(--forest);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.22,1,.36,1) .4s}
+.sv-metric-fill.animate{transform:scaleX(1)}
+.sv-metric-val{font-family:var(--mono);font-size:.75rem;font-weight:500;color:var(--ink);min-width:48px;text-align:right}
+
+/* ── HOW IT WORKS ── */
+.hiw-section{background:var(--cream-2)}
+.hiw-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3.5rem}
+.hiw-step{
+  opacity:0;transform:translateY(20px);
+  transition:opacity .5s,transform .5s
+}
+.hiw-step.visible{opacity:1;transform:none}
+.hiw-step-num{
+  font-family:var(--mono);font-size:.7rem;font-weight:500;
+  color:var(--forest);letter-spacing:.1em;margin-bottom:.9rem
+}
+.hiw-step-icon{
+  width:48px;height:48px;border-radius:10px;
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  display:flex;align-items:center;justify-content:center;margin-bottom:1rem
+}
+.hiw-step-icon svg{width:22px;height:22px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hiw-step h3{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:.55rem}
+.hiw-step p{font-size:.85rem;color:var(--muted);line-height:1.75}
+
+/* ── METRICS SECTION ── */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:3rem}
+.metric-cell{
+  background:var(--white);padding:1.6rem 1.4rem;
+  opacity:0;transition:opacity .4s
+}
+.metric-cell.visible{opacity:1}
+.metric-cell-num{font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-bottom:.6rem}
+.metric-cell-name{font-size:.92rem;font-weight:500;color:var(--ink);margin-bottom:.35rem}
+.metric-cell-desc{font-size:.78rem;color:var(--muted);line-height:1.65;margin-bottom:.65rem}
+.metric-cell-target{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.67rem;font-weight:600;color:var(--forest);
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:2px 8px;border-radius:4px
+}
+.metric-cell-target svg{width:10px;height:10px;stroke:var(--forest);fill:none;stroke-width:2.5}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{background:var(--white)}
+.testimonials-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.testimonial{
+  background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.75rem 1.6rem;
+  opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s
+}
+.testimonial.visible{opacity:1;transform:none}
+.testimonial-stars{color:#c8a84b;font-size:.82rem;letter-spacing:2px;margin-bottom:.85rem}
+.testimonial-text{font-family:var(--serif);font-size:.95rem;font-weight:400;color:var(--ink);line-height:1.7;margin-bottom:1.25rem;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:.65rem}
+.testimonial-av{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--forest-2);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:.82rem;font-weight:500;flex-shrink:0
+}
+.testimonial-name{font-size:.8rem;font-weight:500;color:var(--ink)}
+.testimonial-role{font-size:.7rem;color:var(--muted)}
+
+/* ── PRICING SECTION ── */
+.pricing-section{background:var(--cream)}
+.pricing-header{text-align:center;margin-bottom:3.5rem}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
+.plan{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:2rem 1.75rem;display:flex;flex-direction:column
+}
+.plan.featured{
+  background:var(--forest);border-color:var(--forest);
+  box-shadow:0 8px 32px rgba(28,74,53,.25)
+}
+.plan-name{font-family:var(--serif);font-size:1.1rem;font-weight:500;color:var(--ink);margin-bottom:.35rem}
+.plan.featured .plan-name{color:#fff}
+.plan-desc{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;min-height:2.6rem}
+.plan.featured .plan-desc{color:rgba(255,255,255,.65)}
+.plan-price{font-family:var(--serif);font-size:2.5rem;font-weight:400;color:var(--ink);line-height:1;margin-bottom:.25rem}
+.plan.featured .plan-price{color:#fff}
+.plan-period{font-size:.78rem;color:var(--muted);margin-bottom:1.75rem}
+.plan.featured .plan-period{color:rgba(255,255,255,.55)}
+.plan-cta{
+  display:block;text-align:center;padding:.72rem;border-radius:8px;
+  font-size:.88rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+  transition:all .18s;border:none;text-decoration:none;margin-bottom:1.75rem
+}
+.plan-cta-outline{background:transparent;color:var(--forest);border:1.5px solid var(--border-2)}
+.plan-cta-outline:hover{border-color:var(--forest);background:var(--sage-dim)}
+.plan-cta-solid{background:var(--forest);color:#fff}
+.plan-cta-solid:hover{background:var(--forest-2);transform:translateY(-1px)}
+.plan-cta-white{background:#fff;color:var(--forest)}
+.plan-cta-white:hover{background:var(--cream)}
+.plan-divider{height:1px;background:var(--border);margin-bottom:1.5rem}
+.plan.featured .plan-divider{background:rgba(255,255,255,.15)}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.6rem;flex:1}
+.plan-feature{display:flex;align-items:flex-start;gap:.55rem;font-size:.82rem;color:var(--ink);line-height:1.5}
+.plan.featured .plan-feature{color:rgba(255,255,255,.9)}
+.plan-feature-check{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px
+}
+.plan.featured .plan-feature-check{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.plan-feature-check svg{width:8px;height:8px;stroke:var(--forest);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.plan.featured .plan-feature-check svg{stroke:#fff}
+
+/* ── CTA SECTION ── */
+.cta-section{
+  background:var(--forest);
+  text-align:center;padding:7rem 0
+}
+.cta-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.65rem}
+.cta-h2{
+  font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.2rem);
+  font-weight:400;color:#fff;line-height:1.1;letter-spacing:-.02em;margin-bottom:.85rem
+}
+.cta-h2 em{font-style:italic;opacity:.85}
+.cta-sub{font-size:.95rem;color:rgba(255,255,255,.6);max-width:440px;margin:0 auto 2.5rem;line-height:1.75}
+.cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem}
+.btn-cta-white{
+  background:#fff;color:var(--forest);border:none;
+  padding:.85rem 1.75rem;border-radius:var(--radius);
+  font-size:.95rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+  transition:all .18s
+}
+.btn-cta-white:hover{background:var(--cream);transform:translateY(-1px)}
+.btn-cta-outline{
+  background:transparent;color:rgba(255,255,255,.8);
+  border:1.5px solid rgba(255,255,255,.3);
+  padding:.85rem 1.65rem;border-radius:var(--radius);
+  font-size:.95rem;font-weight:400;cursor:pointer;font-family:var(--sans);
+  transition:all .18s
+}
+.btn-cta-outline:hover{border-color:rgba(255,255,255,.6);color:#fff}
+.cta-fine{font-size:.75rem;color:rgba(255,255,255,.35)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);padding:4rem 0 2rem}
+.footer-inner{max-width:var(--max);margin:0 auto;padding:0 3rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand{}
+.footer-logo-row{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:.75rem}
+.footer-logo-name{font-family:var(--serif);font-size:.95rem;color:#f7f4ef}
+.footer-desc{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.7;max-width:300px;margin-bottom:1.25rem}
+.footer-email-row{display:flex;gap:.5rem}
+.footer-email-input{
+  flex:1;padding:.55rem .85rem;border:1px solid rgba(255,255,255,.12);
+  border-radius:6px;background:rgba(255,255,255,.06);
+  color:#fff;font-family:var(--sans);font-size:.82rem;outline:none
+}
+.footer-email-input::placeholder{color:rgba(255,255,255,.25)}
+.footer-email-input:focus{border-color:var(--sage)}
+.footer-email-btn{background:var(--forest-2);color:#fff;border:none;padding:.55rem 1rem;border-radius:6px;font-size:.82rem;cursor:pointer;white-space:nowrap;font-family:var(--sans)}
+.footer-col h5{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.9rem}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.footer-col a{text-decoration:none;font-size:.82rem;color:rgba(255,255,255,.45);transition:color .15s}
+.footer-col a:hover{color:rgba(255,255,255,.85)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.footer-bottom p{font-size:.75rem;color:rgba(255,255,255,.25)}
+.footer-socials{display:flex;gap:.5rem}
+.footer-socials a{
+  width:30px;height:30px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:rgba(255,255,255,.35);text-decoration:none;
+  transition:all .15s
+}
+.footer-socials a:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.65)}
+
+/* ── ANIMATIONS ── */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.fade-up.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-left{padding:5rem 2rem 2rem}
+  .hero-right{padding:0 2rem 4rem;justify-content:flex-start}
+  .product-card{max-width:100%}
+  .floating-alert{right:2rem;bottom:1.5rem}
+  .stat-bar{grid-template-columns:repeat(2,1fr)}
+  .ps-grid{grid-template-columns:1fr}
+  .score-visual{transform:none}
+  .hiw-steps{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .testimonials-grid{grid-template-columns:1fr}
+  .testimonials-header{flex-direction:column;align-items:flex-start;gap:1rem}
+  .pricing-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .nav-ham{display:block}
+  .inner{padding:0 1.5rem}
+}
+@media(max-width:560px){
+  .stat-bar{grid-template-columns:1fr 1fr}
+  .hero-left{padding:4.5rem 1.25rem 2rem}
+  .hero-right{padding:0 1.25rem 3rem}
+  .metrics-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr}
+  section{padding:4rem 0}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="6"  y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/>
+      <rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/>
+      <rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/>
+    </svg>
+    <span class="nav-logo-name">RoofRank</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#metrics">Scoring</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-login" onclick="location.href='roofrank-login.html'">Sign In</button>
+    <button class="nav-cta" onclick="location.href='roofrank-login.html?mode=signup'">Start Free →</button>
+    <button class="nav-ham">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Triple decker background photo -->
+  <div class="hero-photo">
+    <!-- Boston triple decker streetscape — inline SVG, no external dependency -->
+    <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8cfd8"/>
+          <stop offset="100%" stop-color="#dce8e0"/>
+        </linearGradient>
+        <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8a9e8a"/>
+          <stop offset="100%" stop-color="#6b8070"/>
+        </linearGradient>
+        <linearGradient id="brick1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8b6b52"/>
+          <stop offset="100%" stop-color="#7a5c45"/>
+        </linearGradient>
+        <linearGradient id="brick2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7a6050"/>
+          <stop offset="100%" stop-color="#6a5040"/>
+        </linearGradient>
+        <linearGradient id="brick3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6e5a4a"/>
+          <stop offset="100%" stop-color="#5e4a3a"/>
+        </linearGradient>
+        <linearGradient id="sidingA" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c8b89a"/>
+          <stop offset="100%" stop-color="#b8a88a"/>
+        </linearGradient>
+        <linearGradient id="sidingB" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#a89880"/>
+          <stop offset="100%" stop-color="#988870"/>
+        </linearGradient>
+        <linearGradient id="treeG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5a8060"/>
+          <stop offset="100%" stop-color="#3d6045"/>
+        </linearGradient>
+        <filter id="softBlur"><feGaussianBlur stdDeviation="1.5"/></filter>
+        <!-- Window glow -->
+        <linearGradient id="winGlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f5e8c0" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#e8d4a0" stop-opacity=".7"/>
+        </linearGradient>
+      </defs>
+
+      <!-- SKY -->
+      <rect width="1200" height="700" fill="url(#sky)"/>
+
+      <!-- DISTANT TREELINE -->
+      <ellipse cx="900" cy="230" rx="120" ry="70" fill="#4a7050" opacity=".35" filter="url(#softBlur)"/>
+      <ellipse cx="1050" cy="240" rx="90" ry="55" fill="#3d6040" opacity=".3" filter="url(#softBlur)"/>
+      <ellipse cx="1150" cy="235" rx="80" ry="50" fill="#4a7050" opacity=".25" filter="url(#softBlur)"/>
+
+      <!-- STREET / SIDEWALK -->
+      <rect x="0" y="560" width="1200" height="140" fill="url(#ground)"/>
+      <rect x="0" y="560" width="1200" height="12" fill="#9aae9a" opacity=".5"/>
+      <!-- Sidewalk slabs -->
+      <rect x="0" y="572" width="1200" height="28" fill="#b0c0a8" opacity=".6"/>
+      <line x1="100" y1="572" x2="100" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="220" y1="572" x2="220" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="350" y1="572" x2="350" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="480" y1="572" x2="480" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="600" y1="572" x2="600" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="730" y1="572" x2="730" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="860" y1="572" x2="860" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="990" y1="572" x2="990" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <line x1="1110" y1="572" x2="1110" y2="600" stroke="#9aae9a" stroke-width="1" opacity=".4"/>
+      <!-- Road -->
+      <rect x="0" y="600" width="1200" height="100" fill="#6a7868"/>
+      <!-- Road markings -->
+      <rect x="560" y="635" width="80" height="8" rx="2" fill="#c8c0a0" opacity=".4"/>
+      <rect x="700" y="635" width="80" height="8" rx="2" fill="#c8c0a0" opacity=".4"/>
+      <rect x="840" y="635" width="80" height="8" rx="2" fill="#c8c0a0" opacity=".4"/>
+
+      <!-- ============================================================ -->
+      <!-- BUILDING 1 — Left, brick triple decker, tallest -->
+      <!-- ============================================================ -->
+      <g transform="translate(60, 0)">
+        <!-- Main body -->
+        <rect x="0" y="155" width="220" height="405" fill="url(#brick1)"/>
+        <!-- Brick texture lines -->
+        <line x1="0" y1="175" x2="220" y2="175" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="195" x2="220" y2="195" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="215" x2="220" y2="215" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="235" x2="220" y2="235" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <line x1="0" y1="255" x2="220" y2="255" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="275" x2="220" y2="275" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="295" x2="220" y2="295" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <line x1="0" y1="315" x2="220" y2="315" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="340" x2="220" y2="340" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="365" x2="220" y2="365" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <line x1="0" y1="390" x2="220" y2="390" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="415" x2="220" y2="415" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <line x1="0" y1="440" x2="220" y2="440" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="465" x2="220" y2="465" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <line x1="0" y1="490" x2="220" y2="490" stroke="#6a5038" stroke-width=".8" opacity=".4"/>
+        <line x1="0" y1="515" x2="220" y2="515" stroke="#6a5038" stroke-width=".4" opacity=".3"/>
+        <!-- Roof -->
+        <polygon points="0,155 110,110 220,155" fill="#4a3828"/>
+        <rect x="85" y="110" width="50" height="20" fill="#5a4838"/>
+        <!-- Cornice -->
+        <rect x="-5" y="153" width="230" height="8" fill="#5a4535" rx="1"/>
+        <!-- Floor dividers -->
+        <rect x="0" y="290" width="220" height="6" fill="#5a4535" opacity=".8"/>
+        <rect x="0" y="420" width="220" height="6" fill="#5a4535" opacity=".8"/>
+        <!-- FLOOR 3 windows -->
+        <rect x="20" y="175" width="42" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="175" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="41" y1="175" x2="41" y2="227" stroke="#4a3828" stroke-width="1.5"/>
+        <rect x="80" y="175" width="42" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="80" y="175" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="101" y1="175" x2="101" y2="227" stroke="#4a3828" stroke-width="1.5"/>
+        <rect x="140" y="175" width="42" height="52" rx="2" fill="#d4c8b0" opacity=".6"/>
+        <rect x="140" y="175" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="161" y1="175" x2="161" y2="227" stroke="#4a3828" stroke-width="1.5"/>
+        <!-- FLOOR 3 bay window / porch -->
+        <rect x="10" y="238" width="80" height="50" fill="#9a8060" opacity=".8"/>
+        <rect x="10" y="238" width="80" height="6" fill="#7a6045"/>
+        <rect x="10" y="282" width="80" height="6" fill="#7a6045"/>
+        <!-- FLOOR 2 windows -->
+        <rect x="20" y="308" width="42" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="308" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="41" y1="308" x2="41" y2="360" stroke="#4a3828" stroke-width="1.5"/>
+        <rect x="80" y="308" width="42" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="80" y="308" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="101" y1="308" x2="101" y2="360" stroke="#4a3828" stroke-width="1.5"/>
+        <rect x="140" y="308" width="42" height="52" rx="2" fill="#c0b498" opacity=".5"/>
+        <rect x="140" y="308" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="161" y1="308" x2="161" y2="360" stroke="#4a3828" stroke-width="1.5"/>
+        <!-- FLOOR 1 windows + door -->
+        <rect x="20" y="438" width="42" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="438" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="41" y1="438" x2="41" y2="490" stroke="#4a3828" stroke-width="1.5"/>
+        <!-- Door -->
+        <rect x="80" y="448" width="38" height="62" rx="2" fill="#3a2c1c"/>
+        <rect x="80" y="448" width="38" height="62" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <rect x="86" y="455" width="11" height="15" rx="1" fill="#6a5838" opacity=".6"/>
+        <rect x="101" y="455" width="11" height="15" rx="1" fill="#6a5838" opacity=".6"/>
+        <circle cx="114" cy="480" r="2.5" fill="#c8a840"/>
+        <rect x="140" y="438" width="42" height="52" rx="2" fill="#c0b498" opacity=".5"/>
+        <rect x="140" y="438" width="42" height="52" rx="2" fill="none" stroke="#4a3828" stroke-width="2"/>
+        <line x1="161" y1="438" x2="161" y2="490" stroke="#4a3828" stroke-width="1.5"/>
+        <!-- Steps -->
+        <rect x="70" y="510" width="58" height="8" rx="1" fill="#8a7858"/>
+        <rect x="65" y="518" width="68" height="8" rx="1" fill="#9a8868"/>
+        <rect x="60" y="526" width="78" height="8" rx="1" fill="#aa9878"/>
+        <!-- Shadow -->
+        <rect x="0" y="155" width="15" height="405" fill="#000" opacity=".08"/>
+      </g>
+
+      <!-- ============================================================ -->
+      <!-- BUILDING 2 — Center-left, cream/yellow siding triple decker -->
+      <!-- ============================================================ -->
+      <g transform="translate(310, 0)">
+        <rect x="0" y="170" width="200" height="390" fill="url(#sidingA)"/>
+        <!-- Horizontal siding lines -->
+        <line x1="0" y1="182" x2="200" y2="182" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="194" x2="200" y2="194" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="206" x2="200" y2="206" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="218" x2="200" y2="218" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="230" x2="200" y2="230" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="255" x2="200" y2="255" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="280" x2="200" y2="280" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="305" x2="200" y2="305" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="330" x2="200" y2="330" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="358" x2="200" y2="358" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="386" x2="200" y2="386" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="414" x2="200" y2="414" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="442" x2="200" y2="442" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="470" x2="200" y2="470" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="498" x2="200" y2="498" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <line x1="0" y1="526" x2="200" y2="526" stroke="#a89870" stroke-width="1" opacity=".35"/>
+        <!-- Gabled roof -->
+        <polygon points="-5,170 100,118 205,170" fill="#6a5838"/>
+        <rect x="75" y="118" width="50" height="18" fill="#7a6845"/>
+        <!-- Cornice trim -->
+        <rect x="-5" y="168" width="210" height="7" fill="#d4c090" rx="1"/>
+        <!-- White trim between floors -->
+        <rect x="0" y="296" width="200" height="5" fill="#d4c090" opacity=".9"/>
+        <rect x="0" y="420" width="200" height="5" fill="#d4c090" opacity=".9"/>
+        <!-- Porch columns floor 3 -->
+        <rect x="5" y="240" width="8" height="56" fill="#d8c898"/>
+        <rect x="187" y="240" width="8" height="56" fill="#d8c898"/>
+        <rect x="5" y="234" width="190" height="8" fill="#d8c898" rx="2"/>
+        <!-- Floor 3 windows -->
+        <rect x="20" y="185" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="185" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="39" y1="185" x2="39" y2="235" stroke="#8a7848" stroke-width="1.5"/>
+        <rect x="80" y="185" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="80" y="185" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="99" y1="185" x2="99" y2="235" stroke="#8a7848" stroke-width="1.5"/>
+        <rect x="142" y="185" width="38" height="50" rx="2" fill="#d4c8a8" opacity=".55"/>
+        <rect x="142" y="185" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="161" y1="185" x2="161" y2="235" stroke="#8a7848" stroke-width="1.5"/>
+        <!-- Floor 2 windows -->
+        <rect x="20" y="310" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="310" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="39" y1="310" x2="39" y2="360" stroke="#8a7848" stroke-width="1.5"/>
+        <rect x="80" y="310" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="80" y="310" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="99" y1="310" x2="99" y2="360" stroke="#8a7848" stroke-width="1.5"/>
+        <rect x="142" y="310" width="38" height="50" rx="2" fill="#d4c8a8" opacity=".55"/>
+        <rect x="142" y="310" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="161" y1="310" x2="161" y2="360" stroke="#8a7848" stroke-width="1.5"/>
+        <!-- Floor 1 windows + door -->
+        <rect x="20" y="435" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="20" y="435" width="38" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <line x1="39" y1="435" x2="39" y2="485" stroke="#8a7848" stroke-width="1.5"/>
+        <rect x="76" y="445" width="36" height="60" rx="2" fill="#3a2c20"/>
+        <rect x="76" y="445" width="36" height="60" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <!-- Arched door top -->
+        <path d="M76,452 Q94,440 112,452" fill="none" stroke="#8a7848" stroke-width="1.5"/>
+        <circle cx="107" cy="475" r="2" fill="#c8a840"/>
+        <rect x="130" y="435" width="50" height="50" rx="2" fill="#d4c8a8" opacity=".55"/>
+        <rect x="130" y="435" width="50" height="50" rx="2" fill="none" stroke="#8a7848" stroke-width="2"/>
+        <!-- Porch floor 1 -->
+        <rect x="0" y="505" width="200" height="10" fill="#c8b888"/>
+        <rect x="5" y="425" width="8" height="80" fill="#d8c898"/>
+        <rect x="187" y="425" width="8" height="80" fill="#d8c898"/>
+        <rect x="5" y="425" width="190" height="6" fill="#d8c898" rx="1"/>
+        <!-- Steps -->
+        <rect x="70" y="515" width="58" height="7" rx="1" fill="#c0a878"/>
+        <rect x="64" y="522" width="70" height="7" rx="1" fill="#ceb888"/>
+        <rect x="58" y="529" width="82" height="7" rx="1" fill="#dcca98"/>
+      </g>
+
+      <!-- ============================================================ -->
+      <!-- BUILDING 3 — Center, dark brown brick, slightly shorter -->
+      <!-- ============================================================ -->
+      <g transform="translate(540, 0)">
+        <rect x="0" y="188" width="195" height="372" fill="url(#brick2)"/>
+        <!-- brick texture -->
+        <line x1="0" y1="205" x2="195" y2="205" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="222" x2="195" y2="222" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="240" x2="195" y2="240" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="258" x2="195" y2="258" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="276" x2="195" y2="276" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="300" x2="195" y2="300" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="325" x2="195" y2="325" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="350" x2="195" y2="350" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="375" x2="195" y2="375" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="400" x2="195" y2="400" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="425" x2="195" y2="425" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="450" x2="195" y2="450" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="476" x2="195" y2="476" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="502" x2="195" y2="502" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <line x1="0" y1="528" x2="195" y2="528" stroke="#5a4030" stroke-width=".7" opacity=".4"/>
+        <!-- Flat roof with parapet -->
+        <rect x="-5" y="178" width="205" height="14" fill="#5a4230" rx="1"/>
+        <rect x="5" y="188" width="185" height="4" fill="#7a6248"/>
+        <!-- Floor dividers -->
+        <rect x="0" y="304" width="195" height="5" fill="#5a3825"/>
+        <rect x="0" y="420" width="195" height="5" fill="#5a3825"/>
+        <!-- Arched windows floor 3 -->
+        <rect x="18" y="205" width="38" height="55" rx="1" fill="#c8b898" opacity=".5"/>
+        <path d="M18,225 Q37,205 56,225" fill="#c8b898" opacity=".4"/>
+        <rect x="18" y="205" width="38" height="55" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <rect x="76" y="205" width="38" height="55" rx="1" fill="url(#winGlow)"/>
+        <path d="M76,225 Q95,205 114,225" fill="#f0e0b0" opacity=".5"/>
+        <rect x="76" y="205" width="38" height="55" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <rect x="134" y="205" width="38" height="55" rx="1" fill="url(#winGlow)"/>
+        <path d="M134,225 Q153,205 172,225" fill="#f0e0b0" opacity=".5"/>
+        <rect x="134" y="205" width="38" height="55" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <!-- Floor 2 windows -->
+        <rect x="18" y="318" width="38" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="18" y="318" width="38" height="52" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <line x1="37" y1="318" x2="37" y2="370" stroke="#4a3020" stroke-width="1.5"/>
+        <rect x="76" y="318" width="38" height="52" rx="2" fill="#c8b898" opacity=".5"/>
+        <rect x="76" y="318" width="38" height="52" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <line x1="95" y1="318" x2="95" y2="370" stroke="#4a3020" stroke-width="1.5"/>
+        <rect x="134" y="318" width="38" height="52" rx="2" fill="url(#winGlow)"/>
+        <rect x="134" y="318" width="38" height="52" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <line x1="153" y1="318" x2="153" y2="370" stroke="#4a3020" stroke-width="1.5"/>
+        <!-- Floor 1 windows + door -->
+        <rect x="18" y="433" width="38" height="50" rx="2" fill="url(#winGlow)"/>
+        <rect x="18" y="433" width="38" height="50" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <line x1="37" y1="433" x2="37" y2="483" stroke="#4a3020" stroke-width="1.5"/>
+        <rect x="76" y="440" width="34" height="60" rx="2" fill="#2a1c10"/>
+        <rect x="76" y="440" width="34" height="60" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <circle cx="105" cy="470" r="2" fill="#c8a840"/>
+        <rect x="130" y="433" width="48" height="50" rx="2" fill="#c8b898" opacity=".5"/>
+        <rect x="130" y="433" width="48" height="50" rx="2" fill="none" stroke="#4a3020" stroke-width="2"/>
+        <line x1="154" y1="433" x2="154" y2="483" stroke="#4a3020" stroke-width="1.5"/>
+        <!-- Steps -->
+        <rect x="66" y="500" width="58" height="8" rx="1" fill="#7a5838"/>
+        <rect x="60" y="508" width="70" height="8" rx="1" fill="#8a6848"/>
+        <rect x="54" y="516" width="82" height="8" rx="1" fill="#9a7858"/>
+        <!-- Basement windows -->
+        <rect x="30" y="488" width="28" height="18" rx="1" fill="#8a7858" opacity=".5"/>
+        <rect x="130" y="488" width="28" height="18" rx="1" fill="#8a7858" opacity=".5"/>
+      </g>
+
+      <!-- ============================================================ -->
+      <!-- BUILDING 4 — Right, gray/taupe siding, 3 story  -->
+      <!-- ============================================================ -->
+      <g transform="translate(765, 0)">
+        <rect x="0" y="195" width="185" height="365" fill="url(#sidingB)"/>
+        <!-- Siding lines -->
+        <line x1="0" y1="208" x2="185" y2="208" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="221" x2="185" y2="221" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="234" x2="185" y2="234" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="248" x2="185" y2="248" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="262" x2="185" y2="262" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="276" x2="185" y2="276" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="295" x2="185" y2="295" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="315" x2="185" y2="315" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="338" x2="185" y2="338" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="362" x2="185" y2="362" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="386" x2="185" y2="386" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="410" x2="185" y2="410" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="435" x2="185" y2="435" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="460" x2="185" y2="460" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="486" x2="185" y2="486" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="512" x2="185" y2="512" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <line x1="0" y1="538" x2="185" y2="538" stroke="#888068" stroke-width=".9" opacity=".4"/>
+        <!-- Hip roof -->
+        <polygon points="-5,195 92,138 190,195" fill="#5a5040"/>
+        <rect x="70" y="138" width="44" height="20" fill="#686050"/>
+        <!-- Cornice -->
+        <rect x="-5" y="193" width="195" height="6" fill="#b0a888" rx="1"/>
+        <!-- Floor dividers -->
+        <rect x="0" y="302" width="185" height="4" fill="#b0a888" opacity=".9"/>
+        <rect x="0" y="415" width="185" height="4" fill="#b0a888" opacity=".9"/>
+        <!-- Floor 3 windows -->
+        <rect x="15" y="210" width="36" height="48" rx="2" fill="url(#winGlow)"/>
+        <rect x="15" y="210" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="33" y1="210" x2="33" y2="258" stroke="#7a7058" stroke-width="1.5"/>
+        <rect x="72" y="210" width="36" height="48" rx="2" fill="#c8c0a0" opacity=".5"/>
+        <rect x="72" y="210" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="90" y1="210" x2="90" y2="258" stroke="#7a7058" stroke-width="1.5"/>
+        <rect x="128" y="210" width="36" height="48" rx="2" fill="url(#winGlow)"/>
+        <rect x="128" y="210" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="146" y1="210" x2="146" y2="258" stroke="#7a7058" stroke-width="1.5"/>
+        <!-- Porch wrap floor 3 -->
+        <rect x="5" y="260" width="7" height="42" fill="#c0b898"/>
+        <rect x="173" y="260" width="7" height="42" fill="#c0b898"/>
+        <rect x="5" y="258" width="175" height="5" fill="#c0b898" rx="1"/>
+        <!-- Floor 2 windows -->
+        <rect x="15" y="315" width="36" height="48" rx="2" fill="url(#winGlow)"/>
+        <rect x="15" y="315" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="33" y1="315" x2="33" y2="363" stroke="#7a7058" stroke-width="1.5"/>
+        <rect x="72" y="315" width="36" height="48" rx="2" fill="url(#winGlow)"/>
+        <rect x="72" y="315" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="90" y1="315" x2="90" y2="363" stroke="#7a7058" stroke-width="1.5"/>
+        <rect x="128" y="315" width="36" height="48" rx="2" fill="#c8c0a0" opacity=".5"/>
+        <rect x="128" y="315" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="146" y1="315" x2="146" y2="363" stroke="#7a7058" stroke-width="1.5"/>
+        <!-- Floor 1 windows + door -->
+        <rect x="15" y="427" width="36" height="48" rx="2" fill="url(#winGlow)"/>
+        <rect x="15" y="427" width="36" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="33" y1="427" x2="33" y2="475" stroke="#7a7058" stroke-width="1.5"/>
+        <rect x="70" y="433" width="32" height="62" rx="2" fill="#282018"/>
+        <rect x="70" y="433" width="32" height="62" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <circle cx="98" cy="464" r="2" fill="#c0a030"/>
+        <rect x="120" y="427" width="46" height="48" rx="2" fill="#c8c0a0" opacity=".5"/>
+        <rect x="120" y="427" width="46" height="48" rx="2" fill="none" stroke="#7a7058" stroke-width="2"/>
+        <line x1="143" y1="427" x2="143" y2="475" stroke="#7a7058" stroke-width="1.5"/>
+        <!-- Steps -->
+        <rect x="60" y="495" width="52" height="8" rx="1" fill="#908878"/>
+        <rect x="55" y="503" width="62" height="8" rx="1" fill="#a09888"/>
+        <rect x="50" y="511" width="72" height="8" rx="1" fill="#b0a898"/>
+      </g>
+
+      <!-- STREET TREES -->
+      <!-- Tree 1 -->
+      <rect x="278" y="470" width="10" height="95" rx="3" fill="#6a5038"/>
+      <ellipse cx="283" cy="450" rx="38" ry="48" fill="url(#treeG)" opacity=".92"/>
+      <ellipse cx="270" cy="440" rx="22" ry="28" fill="#4a7050" opacity=".7"/>
+      <ellipse cx="298" cy="445" rx="20" ry="25" fill="#3d6040" opacity=".6"/>
+
+      <!-- Tree 2 -->
+      <rect x="508" y="480" width="9" height="85" rx="3" fill="#6a5038"/>
+      <ellipse cx="512" cy="460" rx="34" ry="44" fill="url(#treeG)" opacity=".9"/>
+      <ellipse cx="500" cy="450" rx="20" ry="26" fill="#4a7050" opacity=".65"/>
+      <ellipse cx="526" cy="455" rx="18" ry="22" fill="#3d6040" opacity=".6"/>
+
+      <!-- Tree 3 -->
+      <rect x="748" y="465" width="10" height="100" rx="3" fill="#6a5038"/>
+      <ellipse cx="753" cy="442" rx="40" ry="50" fill="url(#treeG)" opacity=".95"/>
+      <ellipse cx="738" cy="432" rx="24" ry="30" fill="#4a7050" opacity=".68"/>
+      <ellipse cx="770" cy="438" rx="22" ry="27" fill="#3d6040" opacity=".58"/>
+
+      <!-- Tree 4 (far right, partial) -->
+      <rect x="988" y="475" width="9" height="90" rx="3" fill="#6a5038"/>
+      <ellipse cx="993" cy="455" rx="35" ry="45" fill="url(#treeG)" opacity=".88"/>
+
+      <!-- Parked car suggestion (far right) -->
+      <rect x="1050" y="572" width="120" height="32" rx="6" fill="#7a8888" opacity=".55"/>
+      <rect x="1065" y="560" width="88" height="16" rx="4" fill="#8a9898" opacity=".5"/>
+      <circle cx="1075" cy="606" r="8" fill="#4a4848" opacity=".6"/>
+      <circle cx="1148" cy="606" r="8" fill="#4a4848" opacity=".6"/>
+
+      <!-- Utility pole -->
+      <rect x="488" y="320" width="5" height="250" fill="#6a5838" opacity=".6"/>
+      <rect x="470" y="358" width="40" height="4" rx="1" fill="#6a5838" opacity=".5"/>
+      <line x1="478" y1="362" x2="283" y2="420" stroke="#5a5040" stroke-width="1" opacity=".35"/>
+      <line x1="500" y1="362" x2="753" y2="400" stroke="#5a5040" stroke-width="1" opacity=".35"/>
+    </svg>
+  </div>
+  <div class="hero-photo-overlay"></div>
+  <div class="hero-photo-bottom"></div>
+  <div class="hero-left">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · New England · Scored Daily</div>
+    <h1 class="hero-h1">
+      Stop spreadsheets.<br>
+      Every deal,<br>
+      <em>ranked for you.</em>
+    </h1>
+    <p class="hero-sub">
+      RoofRank scores every active multifamily listing across 8 financial metrics —
+      <strong>Cap Rate, Cash-on-Cash, DSCR, GRM</strong>, and more —
+      and surfaces the best deals every morning.
+      Built for investors growing from 2 to 10+ units.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
+      <button class="btn-hero-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16" fill="currentColor" stroke="none"/></svg>
+        See How It Works
+      </button>
+    </div>
+    <div class="hero-proof">
+      <span class="hero-proof-stars">★★★★★</span>
+      <span class="hero-proof-txt">4.9 · Loved by 850+ investors</span>
+      <span class="hero-proof-divider"></span>
+      <div class="hero-proof-mentions">
+        <span class="hero-proof-mention">BiggerPockets</span>
+        <span class="hero-proof-mention">Cash Flow Diary</span>
+        <span class="hero-proof-mention">REI Prints</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div style="width:100%;max-width:480px;position:relative">
+      <div class="product-card">
+        <!-- Browser chrome -->
+        <div class="pc-header">
+          <div class="pc-dot" style="background:#ff5f57"></div>
+          <div class="pc-dot" style="background:#febc2e"></div>
+          <div class="pc-dot" style="background:#28c840"></div>
+          <div class="pc-url">app.roofrank.io/deals</div>
+        </div>
+        <!-- Topbar -->
+        <div class="pc-topbar">
+          <div class="pc-topbar-title">
+            Deal Feed
+            <span class="pc-live">Live</span>
+          </div>
+          <div class="pc-topbar-right">
+            <span class="pc-filter">NE Markets</span>
+            <span class="pc-add">+ Analyze</span>
+          </div>
+        </div>
+        <!-- Tabs -->
+        <div class="pc-tabs">
+          <div class="pc-tab on">All Deals</div>
+          <div class="pc-tab">Strong Buy</div>
+          <div class="pc-tab">Buy</div>
+          <div class="pc-tab">Watch</div>
+        </div>
+        <!-- Deals -->
+        <div class="pc-body">
+          <div class="deal-row-item featured">
+            <div class="score-badge-sm sb">87</div>
+            <div class="deal-info">
+              <div class="deal-address">37–39 Freeman St</div>
+              <div class="deal-city">Boston, MA · 5 Units · Triple Decker · 1920</div>
+              <div class="deal-kpis">
+                <span class="deal-kpi g">CoC 10.1%</span>
+                <span class="deal-kpi g">Cap 7.6%</span>
+                <span class="deal-kpi">DSCR 1.44</span>
+                <span class="deal-kpi">$1.575M</span>
+              </div>
+            </div>
+            <span class="deal-signal sig-sb">Strong Buy</span>
+          </div>
+          <div class="deal-row-item">
+            <div class="score-badge-sm sb">82</div>
+            <div class="deal-info">
+              <div class="deal-address">48 Rosseter St</div>
+              <div class="deal-city">Boston, MA · 3 Units · Triple Decker</div>
+              <div class="deal-kpis">
+                <span class="deal-kpi g">CoC 9.4%</span>
+                <span class="deal-kpi g">Cap 7.2%</span>
+                <span class="deal-kpi">$825K</span>
+              </div>
+            </div>
+            <span class="deal-signal sig-sb">Strong Buy</span>
+          </div>
+          <div class="deal-row-item">
+            <div class="score-badge-sm buy">74</div>
+            <div class="deal-info">
+              <div class="deal-address">112 Savin Hill Ave</div>
+              <div class="deal-city">Providence, RI · 4 Units · Quad</div>
+              <div class="deal-kpis">
+                <span class="deal-kpi g">CoC 8.1%</span>
+                <span class="deal-kpi">Cap 6.8%</span>
+                <span class="deal-kpi">$1.1M</span>
+              </div>
+            </div>
+            <span class="deal-signal sig-buy">Buy</span>
+          </div>
+          <div class="deal-row-item" style="opacity:.5">
+            <div class="score-badge-sm watch">51</div>
+            <div class="deal-info">
+              <div class="deal-address">77 Centre St</div>
+              <div class="deal-city">Worcester, MA · 6 Units</div>
+              <div class="deal-kpis">
+                <span class="deal-kpi">CoC 6.2%</span>
+                <span class="deal-kpi">Cap 5.8%</span>
+                <span class="deal-kpi">$1.85M</span>
+              </div>
+            </div>
+            <span class="deal-signal sig-watch">Watch</span>
+          </div>
+        </div>
+        <div class="pc-footer">
+          <span>4 of 38 deals · Updated 3 min ago</span>
+          <div class="pc-live-dot"><div class="live-dot-sm"></div><span style="font-size:.6rem;color:var(--forest);font-weight:600;margin-left:3px">Live</span></div>
+        </div>
+      </div>
+
+      <!-- Floating alert -->
+      <div class="floating-alert">
+        <div class="fa-head"><div class="fa-dot"></div><span class="fa-label">New Alert</span></div>
+        <div class="fa-title">Strong Buy just listed</div>
+        <div class="fa-sub">24 Westville St, Boston · Score 79</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-cell">
+    <div class="stat-cell-val">8</div>
+    <div class="stat-cell-label">Metrics per deal</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-cell-val">1,200+</div>
+    <div class="stat-cell-label">Deals scored</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-cell-val">850+</div>
+    <div class="stat-cell-label">Active investors</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-cell-val">9 markets</div>
+    <div class="stat-cell-label">New England covered</div>
+  </div>
+</div>
+
+<!-- PROBLEM → SOLUTION -->
+<section id="features" style="background:var(--white)">
+  <div class="inner">
+    <div class="ps-grid">
+      <div class="ps-content">
+        <div class="eyebrow">Why RoofRank</div>
+        <h2 class="section-h2">You shouldn't need<br>a <em>spreadsheet</em> to<br>know if a deal is good.</h2>
+        <p class="section-sub">Every investor we know has wasted hours running numbers on a property — only to realize it didn't work. We built the tool we wish we had.</p>
+        <div class="ps-cards">
+          <div class="ps-card">
+            <div class="ps-card-icon green">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div>
+              <div class="ps-card-title">Every metric, automatically calculated</div>
+              <div class="ps-card-sub">Cap rate, cash-on-cash, DSCR, GRM, price/unit, NOI, CapEx reserve, and neighborhood grade — scored the moment a listing hits the market.</div>
+            </div>
+          </div>
+          <div class="ps-card">
+            <div class="ps-card-icon green">
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </div>
+            <div>
+              <div class="ps-card-title">Morning digest of your best deals</div>
+              <div class="ps-card-sub">When a Strong Buy drops in your target markets, you'll know before anyone else. Email alerts every morning, no noise.</div>
+            </div>
+          </div>
+          <div class="ps-card">
+            <div class="ps-card-icon amber">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="ps-card-title">Analyze any property in seconds</div>
+              <div class="ps-card-sub">Paste an address or enter your own numbers. Get a full proforma and score instantly — no waiting for a report, no calling a broker.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-visual" id="scoreVisual">
+        <div class="sv-address">37–39 Freeman St</div>
+        <div class="sv-city">Boston, MA · 5 Units · Built 1920</div>
+        <div class="sv-score-row">
+          <div class="sv-score-ring">
+            <svg viewBox="0 0 88 88">
+              <circle class="svr-track" cx="44" cy="44" r="39"/>
+              <circle class="svr-fill" id="svFill" cx="44" cy="44" r="39"/>
+            </svg>
+            <div class="sv-score-inner">
+              <div class="sv-score-num">87</div>
+              <div class="sv-score-sig">Strong Buy</div>
+            </div>
+          </div>
+          <div class="sv-signal-info">
+            <div class="sv-sig-badge">Strong Buy</div>
+            <div class="sv-sig-desc">Exceptional cash flow and strong debt coverage. This deal pencils at 25% down with room to refinance within 3 years.</div>
+          </div>
+        </div>
+        <div class="sv-metrics">
+          <div class="sv-metric">
+            <div class="sv-metric-name">Cash-on-Cash</div>
+            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf1" style="width:90%"></div></div>
+            <div class="sv-metric-val">10.1%</div>
+          </div>
+          <div class="sv-metric">
+            <div class="sv-metric-name">Cap Rate</div>
+            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf2" style="width:76%"></div></div>
+            <div class="sv-metric-val">7.6%</div>
+          </div>
+          <div class="sv-metric">
+            <div class="sv-metric-name">DSCR</div>
+            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf3" style="width:88%"></div></div>
+            <div class="sv-metric-val">1.44</div>
+          </div>
+          <div class="sv-metric">
+            <div class="sv-metric-name">GRM</div>
+            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf4" style="width:80%"></div></div>
+            <div class="sv-metric-val">8.2×</div>
+          </div>
+          <div class="sv-metric">
+            <div class="sv-metric-name">Neighborhood</div>
+            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf5" style="width:75%"></div></div>
+            <div class="sv-metric-val">A − Prime</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="hiw-section">
+  <div class="inner">
+    <div class="eyebrow fade-up">How It Works</div>
+    <h2 class="section-h2 fade-up">From listing to deal score<br>in under a minute.</h2>
+    <div class="hiw-steps">
+      <div class="hiw-step">
+        <div class="hiw-step-num">01 — Find</div>
+        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>Browse your markets</h3>
+        <p>Select the New England markets you're investing in. RoofRank pulls every active 2–6 unit listing daily from MLS and public records — you never need to search Zillow or Realtor.com again.</p>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-step-num">02 — Score</div>
+        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <h3>Every deal, automatically scored</h3>
+        <p>8 financial metrics, computed and weighted automatically using real rent estimates, tax records, and your local market benchmarks. Score 0–100. No guessing, no spreadsheets.</p>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-step-num">03 — Act</div>
+        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <h3>Know exactly which deals to pursue</h3>
+        <p>Strong Buy means pull the trigger. Buy means dig deeper. Watch means keep an eye on it. Pass means move on. Every morning, we tell you where to focus — so you can stop wondering and start negotiating.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section id="metrics" style="background:var(--cream)">
+  <div class="inner">
+    <div class="eyebrow fade-up">The Scoring Engine</div>
+    <h2 class="section-h2 fade-up">8 metrics. One score.<br><em>Complete clarity.</em></h2>
+    <p class="section-sub fade-up">Every metric a seasoned investor looks at — calculated, weighted, and combined into a single score so you spend 30 seconds on a deal instead of 3 hours.</p>
+    <div class="metrics-grid">
+      <div class="metric-cell">
+        <div class="metric-cell-num">01</div>
+        <div class="metric-cell-name">Cash-on-Cash Return</div>
+        <div class="metric-cell-desc">Annual pre-tax cash flow ÷ total cash invested. The number that tells you how hard your money is working.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 8%</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">02</div>
+        <div class="metric-cell-name">Cap Rate</div>
+        <div class="metric-cell-desc">NOI ÷ purchase price. Measures yield independent of financing — essential for comparing across markets.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 6.5%</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">03</div>
+        <div class="metric-cell-name">DSCR</div>
+        <div class="metric-cell-desc">Debt Service Coverage Ratio. NOI ÷ annual debt payments. Lenders require ≥ 1.25 — we surface this before you waste time on financing.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 1.25</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">04</div>
+        <div class="metric-cell-name">Gross Rent Multiplier</div>
+        <div class="metric-cell-desc">Purchase price ÷ annual gross rent. A quick check for overpaying. A GRM above 12× usually doesn't pencil out.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≤ 10×</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">05</div>
+        <div class="metric-cell-name">Price per Unit</div>
+        <div class="metric-cell-desc">Total acquisition cost ÷ number of units. Calibrated to New England market realities — not national averages that don't apply here.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Market-calibrated</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">06</div>
+        <div class="metric-cell-name">Net Operating Income</div>
+        <div class="metric-cell-desc">Effective gross income minus all operating expenses. The foundation of every professional valuation — we show you the real number, not an optimistic proforma.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Higher is better</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">07</div>
+        <div class="metric-cell-name">CapEx Reserve Score</div>
+        <div class="metric-cell-desc">Based on year built, roofing cycles, HVAC age, and expected major repairs over a 10-year hold. Old buildings aren't automatically bad — they just need to pencil with reserves.</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Age-adjusted</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-num">08</div>
+        <div class="metric-cell-name">Neighborhood Grade</div>
+        <div class="metric-cell-desc">Walk score, school quality, crime index, and rent growth trajectory by ZIP. Tells you the story behind the numbers — is this location getting better or worse?</div>
+        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>A–D rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="inner">
+    <div class="testimonials-header">
+      <div>
+        <div class="eyebrow">Investor Stories</div>
+        <h2 class="section-h2">Trusted by investors<br>growing their portfolio.</h2>
+      </div>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I used to spend hours on every deal. Now I open RoofRank with my coffee and know in 5 minutes which properties are worth calling on. Closed two deals this year that I found through the feed."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-av">MR</div>
+          <div><div class="testimonial-name">Michael R.</div><div class="testimonial-role">6 units · Boston, MA</div></div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The DSCR scoring alone saved me from a deal that would've tanked on financing. The seller's proforma looked fine — RoofRank showed me the real numbers. I walked away."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-av">ST</div>
+          <div><div class="testimonial-name">Sarah T.</div><div class="testimonial-role">3 units · Providence, RI</div></div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I work full time and invest on the side. RoofRank is the only tool that respects that my time is limited. The morning email tells me exactly where to focus. It's like having an analyst on call."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-av">JL</div>
+          <div><div class="testimonial-name">James L.</div><div class="testimonial-role">4 units · Hartford, CT</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing-section">
+  <div class="inner">
+    <div class="pricing-header">
+      <div class="eyebrow fade-up">Simple Pricing</div>
+      <h2 class="section-h2 fade-up">Start free. Upgrade when<br><em>you're ready to go deeper.</em></h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="plan fade-up">
+        <div class="plan-name">Starter</div>
+        <div class="plan-desc">For investors exploring their first deal or a new market.</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-period">Free forever</div>
+        <button class="plan-cta plan-cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Get Started Free</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>1 market · up to 20 deals/mo</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Score ring + signal (Strong Buy/Buy/Watch/Pass)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Analyzer: 3 reports/month</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist</li>
+        </ul>
+      </div>
+
+      <div class="plan featured fade-up">
+        <div class="plan-name">Pro</div>
+        <div class="plan-desc">For active investors tracking multiple markets and closing regularly.</div>
+        <div class="plan-price">$79</div>
+        <div class="plan-period">/month · or $69/mo billed annually</div>
+        <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start 14-Day Free Trial →</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All 9 NE markets · unlimited deals</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Full 8-metric breakdown per deal</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Morning email digest · Strong Buy alerts</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Analyzer: 25 reports/month</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist + team sharing (2 seats)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Priority support</li>
+        </ul>
+      </div>
+
+      <div class="plan fade-up">
+        <div class="plan-name">Team</div>
+        <div class="plan-desc">For partnerships, syndicators, or growing firms.</div>
+        <div class="plan-price">$199</div>
+        <div class="plan-period">/month</div>
+        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Everything in Pro</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited reports + custom markets</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Up to 5 team members</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Org-wide watchlist sync</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Dedicated onboarding call</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="inner" style="text-align:center">
+    <div class="cta-eyebrow">Ready?</div>
+    <h2 class="cta-h2">Stop guessing.<br><em>Start knowing.</em></h2>
+    <p class="cta-sub">Every morning, 850+ New England investors open RoofRank to see what's worth pursuing. Join them.</p>
+    <div class="cta-actions">
+      <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
+      <button class="btn-cta-outline" onclick="location.href='roofrank-pricing.html'">View Full Pricing</button>
+    </div>
+    <p class="cta-fine">14-day free trial on Pro · No credit card required · Cancel anytime</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo-row">
+          <svg width="24" height="24" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#2d6448"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+          <span class="footer-logo-name">RoofRank</span>
+        </a>
+        <p class="footer-desc">Multifamily investment intelligence for New England investors. Score and rank every deal before you spend a minute on it.</p>
+        <div class="footer-email-row">
+          <input class="footer-email-input" type="email" placeholder="your@email.com" id="femail">
+          <button class="footer-email-btn" onclick="handleEmail()">Subscribe</button>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="roofrank-pricing.html">Pricing</a></li>
+          <li><a href="roofrank-dashboard.html">Deal Feed</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 RoofRank Inc. All rights reserved. Not investment advice.</p>
+      <div class="footer-socials">
+        <a href="#">𝕏</a>
+        <a href="#">in</a>
+        <a href="#">✉</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10));
+
+// Intersection Observer for animations
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible');
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.fade-up, .ps-card, .hiw-step, .metric-cell, .testimonial, .plan').forEach((el, i) => {
+  el.style.transitionDelay = (i % 4) * 0.08 + 's';
+  io.observe(el);
+});
+
+// Score visual animation
+const svIo = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible');
+    // Animate score ring
+    setTimeout(() => {
+      const fill = document.getElementById('svFill');
+      if (fill) fill.classList.add('animate');
+      // Animate metric bars
+      document.querySelectorAll('.sv-metric-fill').forEach(b => b.classList.add('animate'));
+    }, 200);
+    svIo.unobserve(e.target);
+  });
+}, { threshold: 0.3 });
+const sv = document.getElementById('scoreVisual');
+if (sv) svIo.observe(sv);
+
+// How it works steps
+document.querySelectorAll('.hiw-step').forEach((el, i) => {
+  el.style.transitionDelay = i * 0.15 + 's';
+  io.observe(el);
+});
+
+function handleEmail() {
+  const el = document.getElementById('femail');
+  if (!el.value.includes('@')) { alert('Please enter a valid email.'); return; }
+  alert('You\'re in! We\'ll be in touch at ' + el.value);
+  el.value = '';
+}
+</script>
+</body>
+</html>

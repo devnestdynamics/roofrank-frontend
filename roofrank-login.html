@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#f7f4ef;--cream-2:#f0ece4;--white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;--forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);--border:#e0d9cf;--border-2:#cbc3b6;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:10px}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;font-size:14px;-webkit-font-smoothing:antialiased}
+/* subtle dot grid */
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle,rgba(28,74,53,.07) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+.card{width:100%;max-width:400px;background:var(--white);border:1px solid var(--border-2);border-radius:14px;padding:2rem 2rem 1.75rem;box-shadow:0 6px 32px rgba(28,31,28,.09);position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:1.6rem;text-decoration:none}
+.brand-name{font-family:var(--serif);font-size:1.1rem;font-weight:500;color:var(--ink)}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.tab{flex:1;padding:.6rem;font-size:.82rem;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.tab.on{color:var(--forest);border-bottom-color:var(--forest);font-weight:500}
+.panel{display:none}
+.panel.on{display:block}
+label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.3rem;margin-top:.85rem}
+label:first-of-type{margin-top:0}
+input[type="text"],input[type="email"],input[type="password"]{width:100%;padding:.58rem .75rem;border:1px solid var(--border-2);border-radius:var(--r);font-size:.84rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;transition:border-color .15s}
+input:focus{border-color:var(--forest)}
+.forgot{float:right;font-size:.72rem;color:var(--muted);text-decoration:none;margin-top:.3rem;transition:color .15s}
+.forgot:hover{color:var(--forest)}
+.submit{display:block;width:100%;background:var(--forest);color:#fff;border:none;padding:.65rem;border-radius:var(--r);font-size:.86rem;font-weight:500;cursor:pointer;font-family:var(--sans);margin-top:1.2rem;transition:background .15s}
+.submit:hover{background:var(--forest-2)}
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.1rem 0;font-size:.72rem;color:var(--faint)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.oauth{display:flex;flex-direction:column;gap:.5rem}
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.55rem;border:1px solid var(--border-2);border-radius:var(--r);font-size:.8rem;color:var(--ink);background:var(--white);cursor:pointer;font-family:var(--sans);transition:all .15s}
+.oauth-btn:hover{border-color:var(--border-2);background:var(--cream)}
+.oauth-btn img{width:16px;height:16px}
+.foot-note{text-align:center;margin-top:1.25rem;font-size:.72rem;color:var(--muted)}
+.foot-note a{color:var(--forest);text-decoration:none}
+.terms{font-size:.68rem;color:var(--faint);text-align:center;margin-top:.85rem;line-height:1.55}
+.terms a{color:var(--muted);text-decoration:none}
+@media(max-width:480px){body{padding:1rem}.card{padding:1.5rem 1.25rem 1.5rem}}
+</style>
+<script src="api.js"></script>
+</head>
+<body>
+<div class="card">
+  <a href="roofrank-landing.html" class="brand">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('signin',this)">Sign In</button>
+    <button class="tab" onclick="showTab('signup',this)">Create Account</button>
+  </div>
+
+  <!-- SIGN IN -->
+  <div class="panel on" id="signin">
+    <label for="si-email">Email</label>
+    <input type="email" id="si-email" placeholder="you@email.com" autocomplete="email">
+    <label for="si-pw">Password <a href="#" class="forgot">Forgot?</a></label>
+    <input type="password" id="si-pw" placeholder="••••••••" autocomplete="current-password">
+    <button class="submit" onclick="handleSignin()">Sign In →</button>
+    <div class="divider">or</div>
+    <div class="oauth">
+      <button class="oauth-btn">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 29.8 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    <p class="foot-note">No account? <a href="#" onclick="showTab('signup',document.querySelectorAll('.tab')[1])">Sign up free →</a></p>
+  </div>
+
+  <!-- SIGN UP -->
+  <div class="panel" id="signup">
+    <label for="su-name">Full Name</label>
+    <input type="text" id="su-name" placeholder="Michael Ross">
+    <label for="su-email">Email</label>
+    <input type="email" id="su-email" placeholder="you@email.com">
+    <label for="su-pw">Password</label>
+    <input type="password" id="su-pw" placeholder="8+ characters">
+    <button class="submit" onclick="handleSignup()">Create Account — Free →</button>
+    <div class="divider">or</div>
+    <div class="oauth">
+      <button class="oauth-btn">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 29.8 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2C11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
+        Sign up with Google
+      </button>
+    </div>
+    <p class="terms">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+    <p class="foot-note">Already have an account? <a href="#" onclick="showTab('signin',document.querySelectorAll('.tab')[0])">Sign in →</a></p>
+  </div>
+</div>
+
+<script>
+const p=new URLSearchParams(location.search);
+if(p.get('mode')==='signup'){showTab('signup',document.querySelectorAll('.tab')[1]);}
+
+
+
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+async function handleSignin(){
+  const email=document.getElementById('si-email').value.trim();
+  const pw=document.getElementById('si-pw').value;
+  if(!email||!pw){showToast('Please fill in all fields.','warning');return;}
+  const btn=document.querySelector('#signin .submit');
+  btn.textContent='Signing in…';btn.disabled=true;
+  try{
+    await AuthAPI.login(email,pw);
+    location.href='roofrank-dashboard.html';
+  }catch(e){
+    btn.textContent='Sign In →';btn.disabled=false;
+    showToast(e.status===401?'Invalid email or password.':'Sign in failed — please try again.','error');
+  }
+}
+
+async function handleSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pw=document.getElementById('su-pw').value;
+  if(!name||!email||!pw){showToast('Please fill in all fields.','warning');return;}
+  if(pw.length<8){showToast('Password must be at least 8 characters.','warning');return;}
+  const btn=document.querySelector('#signup .submit');
+  btn.textContent='Creating account…';btn.disabled=true;
+  try{
+    await AuthAPI.register(email,pw,name);
+    location.href='roofrank-onboarding.html';
+  }catch(e){
+    btn.textContent='Create Account — Free →';btn.disabled=false;
+    showToast(e.status===409?'That email is already registered. Try signing in.':e.message||'Registration failed.','error');
+  }
+}
+</script>
+</body>
+</html>
