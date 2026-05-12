@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<script>window.ROOFRANK_API_URL="http://localhost:3000/api";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Deal Feed</title>
@@ -227,10 +227,24 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   </header>
   <div class="content">
     <div class="stats">
-      <div class="stat"><div class="stat-val g" id="s1">—</div><div class="stat-lbl">Active Listings</div></div>
-      <div class="stat"><div class="stat-val g">3</div><div class="stat-lbl">Strong Buys</div></div>
-      <div class="stat"><div class="stat-val" id="s3">—</div><div class="stat-lbl">Avg Score</div></div>
-      <div class="stat"><div class="stat-val" id="s4">—</div><div class="stat-lbl">Markets</div></div>
+      <div class="stat" id="tile1" onclick="scrollToTop()" style="cursor:pointer">
+        <div class="stat-val g" id="s1">—</div>
+        <div class="stat-lbl">Active Listings</div>
+      </div>
+      <div class="stat" id="tile2">
+        <div class="stat-val g" id="s2">—</div>
+        <div class="stat-lbl">Top Cash Flow</div>
+        <div class="stat-sub" id="s2addr" style="font-size:.58rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%"></div>
+      </div>
+      <div class="stat" id="tile3">
+        <div class="stat-val" id="s3">—</div>
+        <div class="stat-lbl">New Since Your Visit</div>
+      </div>
+      <div class="stat" id="tile4" onclick="filterByMotivated()" style="cursor:pointer">
+        <div class="stat-val" id="s4">—</div>
+        <div class="stat-lbl">Motivated Sellers</div>
+        <div class="stat-sub" style="font-size:.58rem;color:var(--muted);margin-top:2px">60+ days listed</div>
+      </div>
     </div>
 
     <div class="mkt-strip" id="mktStrip"></div>
@@ -294,11 +308,41 @@ async function loadFeed(reset=true){
     const deals = data.deals || [];
     allDeals = reset ? deals : [...allDeals, ...deals];
     renderDeals(allDeals, reset);
-    const sbs = allDeals.filter(d=>(d.rankScore||0)>=75).length;
-    const avg = allDeals.length ? (allDeals.reduce((s,d)=>s+(d.rankScore||0),0)/allDeals.length).toFixed(0) : '—';
+    // Tile 1 — Active Listings
     const _s1=document.getElementById('s1'); if(_s1) _s1.textContent=allDeals.length;
-    const _s2=document.getElementById('s2'); if(_s2) _s2.textContent=sbs;
-    const _s3=document.getElementById('s3'); if(_s3) _s3.textContent=avg;
+
+    // Tile 2 — Top Cash Flow
+    const sortedByCF = [...allDeals].sort((a,b)=>{
+      const cfA = a.reportData?.financials?.monthlyCashFlow || 0;
+      const cfB = b.reportData?.financials?.monthlyCashFlow || 0;
+      return cfB - cfA;
+    });
+    const topDeal = sortedByCF[0];
+    const topCF = topDeal?.reportData?.financials?.monthlyCashFlow;
+    const _s2=document.getElementById('s2');
+    const _s2addr=document.getElementById('s2addr');
+    if(_s2) _s2.textContent = topCF ? '$'+Math.round(topCF).toLocaleString()+'/mo' : '—';
+    if(_s2addr && topDeal) {
+      const shortAddr = topDeal.address?.split(',')[0] || '';
+      _s2addr.textContent = shortAddr;
+    }
+
+    // Tile 3 — New Since Last Visit
+    const lastVisit = localStorage.getItem('rr_last_visit');
+    const lastVisitDate = lastVisit ? new Date(lastVisit) : new Date(Date.now() - 86400000);
+    const newSince = allDeals.filter(d => {
+      if (!d.listedDate && !d.createdAt) return false;
+      const listed = new Date(d.listedDate || d.createdAt);
+      return listed > lastVisitDate;
+    }).length;
+    const _s3=document.getElementById('s3');
+    if(_s3) _s3.textContent = newSince || '0';
+    localStorage.setItem('rr_last_visit', new Date().toISOString());
+
+    // Tile 4 — Motivated Sellers (60+ DOM)
+    const motivated = allDeals.filter(d => (d.daysOnMarket || 0) >= 60).length;
+    const _s4=document.getElementById('s4');
+    if(_s4) _s4.textContent = motivated || '0';
     const _sb=document.getElementById('sbBadge'); if(_sb) _sb.textContent=allDeals.length;
     const _ts=document.getElementById('topSub');
     if(_ts){
@@ -431,6 +475,17 @@ async function toggleW(id,e){
   syncWC();
 }
 function syncWC(){const n=WatchlistAPI.count(),b=document.getElementById('wc');if(b){b.textContent=n;b.style.display=n?'':'none';}}
+function filterByMotivated(){
+  // Filter to show 60+ DOM deals
+  const motivated = allDeals.filter(d => (d.daysOnMarket || 0) >= 60);
+  renderDeals(motivated, true);
+  document.getElementById('topSub').textContent = motivated.length + ' motivated seller' + (motivated.length !== 1 ? 's' : '') + ' · 60+ days listed';
+}
+
+function scrollToTop(){
+  document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
+}
+
 function setFilter(el,min){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');minScore=min;loadFeed();}
 function resetFilters(){minScore=0;filterCity=filterState='';document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('on',i===0));document.querySelectorAll('.mkt-chip').forEach((c,i)=>c.classList.toggle('on',i===0));loadFeed();}
 function filterMkt(el,city,state){document.querySelectorAll('.mkt-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');filterCity=city;filterState=state;loadFeed();}
