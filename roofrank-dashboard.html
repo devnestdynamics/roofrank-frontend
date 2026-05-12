@@ -175,6 +175,10 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .stat{padding:.55rem .6rem}
   .stat-val{font-size:1.4rem}
 }
+
+.stat[onclick]{transition:background .15s,transform .1s}
+.stat[onclick]:hover{background:var(--sage-dim);transform:translateY(-1px)}
+.stat[onclick]:active{transform:translateY(0)}
 </style>
 <script src="api.js"></script>
 </head>
@@ -231,12 +235,12 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
         <div class="stat-val g" id="s1">—</div>
         <div class="stat-lbl">Active Listings</div>
       </div>
-      <div class="stat" id="tile2">
+      <div class="stat" id="tile2" style="cursor:pointer" onclick="openTopDeal()">
         <div class="stat-val g" id="s2">—</div>
         <div class="stat-lbl">Top Cash Flow</div>
         <div class="stat-sub" id="s2addr" style="font-size:.58rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%"></div>
       </div>
-      <div class="stat" id="tile3">
+      <div class="stat" id="tile3" style="cursor:pointer" onclick="filterByNew()">
         <div class="stat-val" id="s3">—</div>
         <div class="stat-lbl">New Since Your Visit</div>
       </div>
@@ -325,6 +329,8 @@ async function loadFeed(reset=true){
     if(_s2addr && topDeal) {
       const shortAddr = topDeal.address?.split(',')[0] || '';
       _s2addr.textContent = shortAddr;
+      window._topDealFid = topDeal.id || topDeal.fid;
+      window._topDealData = topDeal;
     }
 
     // Tile 3 — New Since Last Visit
@@ -337,6 +343,9 @@ async function loadFeed(reset=true){
     }).length;
     const _s3=document.getElementById('s3');
     if(_s3) _s3.textContent = newSince || '0';
+    // Save previous visit for "new since" filtering, then update current
+    const prevVisit = localStorage.getItem('rr_last_visit');
+    if(prevVisit) localStorage.setItem('rr_last_visit_prev', prevVisit);
     localStorage.setItem('rr_last_visit', new Date().toISOString());
 
     // Tile 4 — Motivated Sellers (60+ DOM)
@@ -475,6 +484,28 @@ async function toggleW(id,e){
   syncWC();
 }
 function syncWC(){const n=WatchlistAPI.count(),b=document.getElementById('wc');if(b){b.textContent=n;b.style.display=n?'':'none';}}
+function openTopDeal(){
+  const fid = window._topDealFid;
+  if(!fid) return;
+  sessionStorage.setItem('rr_deal_'+fid, JSON.stringify(window._topDealData));
+  window.location.href = 'roofrank-deal-detail.html?fid='+encodeURIComponent(fid);
+}
+
+function filterByNew(){
+  const lastVisit = localStorage.getItem('rr_last_visit_prev');
+  const lastVisitDate = lastVisit ? new Date(lastVisit) : new Date(Date.now() - 86400000);
+  const newDeals = allDeals.filter(d => {
+    if (!d.listedDate && !d.createdAt) return false;
+    return new Date(d.listedDate || d.createdAt) > lastVisitDate;
+  });
+  if(newDeals.length === 0){
+    document.getElementById('topSub').textContent = 'No new listings since your last visit';
+    return;
+  }
+  renderDeals(newDeals, true);
+  document.getElementById('topSub').textContent = newDeals.length + ' new listing' + (newDeals.length !== 1 ? 's' : '') + ' since your last visit';
+}
+
 function filterByMotivated(){
   // Filter to show 60+ DOM deals
   const motivated = allDeals.filter(d => (d.daysOnMarket || 0) >= 60);
