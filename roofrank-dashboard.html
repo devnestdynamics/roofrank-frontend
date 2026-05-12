@@ -231,7 +231,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   </header>
   <div class="content">
     <div class="stats">
-      <div class="stat" id="tile1" onclick="scrollToTop()" style="cursor:pointer">
+      <div class="stat" id="tile1" onclick="filterReset()" style="cursor:pointer" title="Show all listings">
         <div class="stat-val g" id="s1">—</div>
         <div class="stat-lbl">Active Listings</div>
       </div>
@@ -453,7 +453,7 @@ function dealCardHtml(d,i){
           ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
           ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
           ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
-          ${d.yearBuilt?`<span class="kp">${d.yearBuilt}</span>`:''}
+          ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
         </div>
       </div>
       <div class="dright">
@@ -511,6 +511,15 @@ function filterByMotivated(){
   const motivated = allDeals.filter(d => (d.daysOnMarket || 0) >= 60);
   renderDeals(motivated, true);
   document.getElementById('topSub').textContent = motivated.length + ' motivated seller' + (motivated.length !== 1 ? 's' : '') + ' · 60+ days listed';
+}
+
+function filterReset(){
+  // Reset all filters and scroll to top
+  minScore=0; filterCity=''; filterState='';
+  document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('on',i===0));
+  document.querySelectorAll('.mkt-chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+  loadFeed();
+  document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
 }
 
 function scrollToTop(){
