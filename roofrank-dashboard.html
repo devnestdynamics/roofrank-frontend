@@ -487,8 +487,15 @@ function syncWC(){const n=WatchlistAPI.count(),b=document.getElementById('wc');i
 function openTopDeal(){
   const fid = window._topDealFid;
   if(!fid) return;
-  sessionStorage.setItem('rr_deal_'+fid, JSON.stringify(window._topDealData));
-  window.location.href = 'roofrank-deal-detail.html?fid='+encodeURIComponent(fid);
+  // Scroll to and highlight the top cash flow deal in the feed
+  const dealEl = document.querySelector('.deal[onclick*="'+fid+'"]');
+  if(dealEl){
+    dealEl.scrollIntoView({behavior:'smooth', block:'center'});
+    dealEl.style.boxShadow = '0 0 0 2px var(--forest)';
+    dealEl.style.transition = 'box-shadow .3s';
+    setTimeout(()=>{ dealEl.style.boxShadow = ''; }, 2000);
+  }
+  document.getElementById('topSub').textContent = 'Showing top cash flow deal — click to open';
 }
 
 function filterByNew(){
