@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<script>window.ROOFRANK_API_URL="http://localhost:3000/api";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Deal Feed</title>
@@ -56,9 +56,9 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .stat-val{font-family:var(--mono);font-size:1.45rem;color:var(--ink);line-height:1;margin-bottom:3px}
 .stat-val.g{color:var(--forest)}
 .stat-lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
-.mkt-strip{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:1.1rem;padding-bottom:.1rem;scrollbar-width:none}
+.mkt-strip{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:1.1rem;padding-bottom:.25rem;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-right:.75rem}
 .mkt-strip::-webkit-scrollbar{display:none}
-.mkt-chip{flex-shrink:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.4rem .8rem;cursor:pointer;transition:all .15s}
+.mkt-chip{flex-shrink:0;white-space:nowrap;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.4rem .8rem;cursor:pointer;transition:all .15s}
 .mkt-chip.on{border-color:var(--forest);background:var(--sage-dim)}
 .mkt-chip-n{font-size:.75rem;font-weight:500;color:var(--ink)}
 .mkt-chip.on .mkt-chip-n{color:var(--forest)}
@@ -72,7 +72,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .sort-sel{padding:.26rem .55rem;border-radius:var(--r);border:1px solid var(--border);background:var(--white);font-size:.7rem;color:var(--muted);font-family:var(--sans);cursor:pointer;outline:none}
 .deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden;opacity:0;animation:fu .28s ease forwards}
 @keyframes fu{to{opacity:1;transform:none}from{opacity:0;transform:translateY(5px)}}
-.dotd{background:linear-gradient(135deg,#1c4a35 0%,#2d6448 100%);border-radius:var(--r);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.dotd{background:linear-gradient(135deg,#1c4a35 0%,#2d6448 100%);border-radius:var(--r);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;max-width:100%;box-sizing:border-box}
 .dotd:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(28,74,53,.28)}
 .dotd::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
 .dotd-badge{font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);background:rgba(255,255,255,.1);padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
@@ -144,7 +144,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .skel-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
 .sk{background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;border-radius:5px}
 @keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
-@media(max-width:860px){.sidebar{display:none}.main{margin-left:0}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.sidebar{display:none}.main{margin-left:0;padding:.75rem}.stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){
   .content{padding:1rem .9rem 4rem}
   .topbar{padding:0 .9rem}
@@ -165,6 +165,15 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .tb-sub{font-size:.62rem}
   .btn-primary{font-size:.72rem;padding:.3rem .7rem}
   .btn-ghost{font-size:.72rem;padding:.3rem .65rem}
+}
+
+@media(max-width:600px){
+  .dotd{padding:.85rem .9rem;gap:.75rem}
+  .dotd-addr{font-size:.88rem}
+  .dotd-badges{flex-wrap:wrap;gap:.3rem}
+  .dotd-badge{font-size:.62rem;padding:.18rem .45rem}
+  .stat{padding:.55rem .6rem}
+  .stat-val{font-size:1.4rem}
 }
 </style>
 <script src="api.js"></script>
@@ -291,7 +300,17 @@ async function loadFeed(reset=true){
     const _s2=document.getElementById('s2'); if(_s2) _s2.textContent=sbs;
     const _s3=document.getElementById('s3'); if(_s3) _s3.textContent=avg;
     const _sb=document.getElementById('sbBadge'); if(_sb) _sb.textContent=allDeals.length;
-    const _ts=document.getElementById('topSub'); if(_ts) _ts.textContent=allDeals.length+' ranked deal'+(allDeals.length!==1?'s':'')+' · Updated nightly';
+    const _ts=document.getElementById('topSub');
+    if(_ts){
+      const now=new Date();
+      const hour=now.getHours();
+      const lastRun=new Date(now);
+      if(hour<2) lastRun.setDate(lastRun.getDate()-1);
+      lastRun.setHours(2,0,0,0);
+      const hoursAgo=Math.round((now-lastRun)/3600000);
+      const timeStr=hoursAgo<1?'just now':hoursAgo===1?'1 hour ago':hoursAgo+' hours ago';
+      _ts.textContent=allDeals.length+' ranked deal'+(allDeals.length!==1?'s':'')+' · Updated '+timeStr;
+    }
     const lmw=document.getElementById('loadMoreWrap'); if(lmw) lmw.style.display=deals.length===20?'flex':'none';
   } catch(e) {
     console.error('loadFeed error:', e);
