@@ -179,6 +179,42 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .stat[onclick]{transition:background .15s,transform .1s}
 .stat[onclick]:hover{background:var(--sage-dim);transform:translateY(-1px)}
 .stat[onclick]:active{transform:translateY(0)}
+
+@media(max-width:430px){
+  /* Stats grid — equal columns, no overflow */
+  .stats{grid-template-columns:1fr 1fr !important;gap:.4rem}
+  .stat{padding:.65rem .7rem;min-width:0;overflow:hidden}
+  .stat-val{font-size:1.25rem !important}
+  .stat-sub{font-size:.56rem !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Deal of the Day — tighter, no wrap */
+  .dotd{padding:.8rem .85rem;gap:.65rem}
+  .dotd-info{min-width:0;flex:1;overflow:hidden}
+  .dotd-addr{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dotd-meta{font-size:.65rem}
+  .dotd-badges{display:flex;flex-wrap:nowrap;gap:.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .dotd-badges::-webkit-scrollbar{display:none}
+  .dotd-badge{flex-shrink:0;font-size:.6rem;padding:.15rem .4rem}
+
+  /* Deal cards — metric badges on one scrollable row */
+  .dkpis{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:.25rem;padding-bottom:2px}
+  .dkpis::-webkit-scrollbar{display:none}
+  .kp{flex-shrink:0;font-size:.65rem;padding:.18rem .45rem}
+  .daddr{font-size:.82rem}
+  .dmeta{font-size:.62rem}
+  .dprice{font-size:.8rem}
+  .sbadge{font-size:.58rem;padding:.18rem .4rem}
+
+  /* Market chips — scroll hint via fade */  
+  .mkt-strip{padding-right:2rem;mask-image:linear-gradient(to right,black 85%,transparent 100%);-webkit-mask-image:linear-gradient(to right,black 85%,transparent 100%)}
+
+  /* Feed header */
+  .tb{font-size:.85rem}
+  .tb-sub{font-size:.6rem}
+
+  /* Top bar buttons */
+  .btn-refresh{display:none}
+}
 </style>
 <script src="api.js"></script>
 </head>
