@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Pricing</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -90,7 +90,241 @@ nav{background:rgba(247,244,239,.95);border-bottom:1px solid var(--border);paddi
   <div class="header">
     <div class="eyebrow">Pricing</div>
     <h1 class="h1">Simple pricing for<br>serious <em>investors.</em></h1>
-    <p class="sub">Start free. Upgrade when you're closing regularly. No contracts, no surprises — cancel any time.</p>
+    <p class="sub">Start free. Upgrade when the product saves you more than it costs — which happens on your first good deal. No contracts, cancel any time.</p>
+    <div class="toggle-wrap">
+      <span class="toggle-label active" id="moLabel">Monthly</span>
+      <div class="toggle" id="billingToggle" onclick="toggleBilling()"><div class="toggle-knob"></div></div>
+      <span class="toggle-label" id="yrLabel">Annual <span class="save-badge">Save 13%</span></span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="plan">
+      <div class="plan-top">
+        <div class="plan-name">Starter</div>
+        <div class="plan-desc">For investors exploring their first deal or testing a new market.</div>
+        <div class="price-row"><span class="price-amt">$0</span><span class="price-period">/month</span></div>
+        <div style="font-size:.7rem;color:var(--faint);margin-bottom:.1rem">Free forever</div>
+      </div>
+      <button class="plan-cta cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Get Started Free</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All 9 markets · up to 30 deals/month</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Score + signal per deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>10 Analyzer reports/month</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Watchlist (up to 10 deals)</li>
+      </ul>
+    </div>
+
+    <div class="plan">
+      <div class="plan-top">
+        <div class="plan-name">Essentials</div>
+        <div class="plan-desc">For investors actively tracking deals in 1–3 markets without a team.</div>
+        <div class="price-row">
+          <span class="price-amt" id="essPrice">$29</span>
+          <span class="price-period">/month</span>
+          <span class="price-orig" id="essOrig">$29</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--faint);margin-bottom:.1rem" id="essBilled">billed monthly</div>
+      </div>
+      <button class="plan-cta cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>3 markets · unlimited deal browsing</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Full 8-metric breakdown per deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>15 Analyzer reports/month</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Watchlist (unlimited)</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Weekly deal digest email</li>
+      </ul>
+    </div>
+
+    <div class="plan featured">
+      <div class="plan-top">
+        <div class="plan-name">Pro</div>
+        <div class="plan-desc">For active investors tracking multiple markets and closing regularly.</div>
+        <div class="price-row">
+          <span class="price-amt" id="proPrice">$79</span>
+          <span class="price-period">/month</span>
+          <span class="price-orig" id="proOrig">$79</span>
+        </div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:.1rem" id="proBilled">billed monthly</div>
+      </div>
+      <button class="plan-cta cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start 14-Day Free Trial →</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All 9 NE markets · unlimited deals</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Full 8-metric breakdown per deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Morning email digest</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Strong Buy real-time alerts</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>25 Analyzer reports/month</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Watchlist · 2 team seats</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Priority support</li>
+      </ul>
+    </div>
+
+    <div class="plan">
+      <div class="plan-top">
+        <div class="plan-name">Team</div>
+        <div class="plan-desc">For partnerships, syndicators, or growing firms tracking more volume.</div>
+        <div class="price-row">
+          <span class="price-amt" id="teamPrice">$199</span>
+          <span class="price-period">/month</span>
+          <span class="price-orig" id="teamOrig">$199</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--faint);margin-bottom:.1rem" id="teamBilled">billed monthly</div>
+      </div>
+      <button class="plan-cta cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Everything in Pro</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Unlimited Analyzer reports</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Custom markets on request</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Up to 5 team members</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Org-wide watchlist sync</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Onboarding call included</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-title">Common questions</div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What counts as a "report"? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">A report is a full financial analysis run in the Analyzer — where you enter your own numbers (rents, expenses, down payment) and get a full proforma with score. Browsing the deal feed and viewing pre-computed scores doesn't count toward your limit.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What markets are covered? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Currently 9 New England markets: Boston MA, Providence RI, Hartford CT, Worcester MA, Manchester NH, New Haven CT, Springfield MA, Bridgeport CT, and Lowell MA. National expansion is on the roadmap — join the waitlist if you want a specific market.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How accurate are the scores? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Scores are computed from public listing data, tax records, and RentCast rent estimates. They're a reliable first-pass filter — not a substitute for your own proforma. Use the Analyzer to pressure-test any deal before making an offer.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I cancel anytime? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Yes. Cancel from your billing page at any time — no questions, no penalties. You'll keep access through the end of your current billing period.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is this investment advice? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">No. RoofRank is a deal-scoring tool, not a financial advisor. Scores and signals are based on financial metrics — always do your own due diligence, consult a licensed advisor, and verify numbers independently before purchasing any property.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let annual=false;
+function toggleBilling(){
+  annual=!annual;
+  const t=document.getElementById('billingToggle');
+  t.classList.toggle('annual',annual);
+  document.getElementById('moLabel').classList.toggle('active',!annual);
+  document.getElementById('yrLabel').classList.toggle('active',annual);
+  if(annual){
+    document.getElementById('essPrice').textContent='$25';
+    document.getElementById('essBilled').textContent='$300 billed annually';
+    document.getElementById('essOrig').classList.add('show');
+    document.getElementById('proPrice').textContent='$69';
+    document.getElementById('proOrig').textContent='$79';
+    document.getElementById('proOrig').classList.add('show');
+    document.getElementById('proBilled').textContent='$828 billed annually';
+    document.getElementById('teamPrice').textContent='$173';
+    document.getElementById('teamOrig').textContent='$199';
+    document.getElementById('teamOrig').classList.add('show');
+    document.getElementById('teamBilled').textContent='$2,076 billed annually';
+  } else {
+    document.getElementById('essPrice').textContent='$29';
+    document.getElementById('essOrig').classList.remove('show');
+    document.getElementById('essBilled').textContent='billed monthly';
+    document.getElementById('proPrice').textContent='$79';
+    document.getElementById('proOrig').classList.remove('show');
+    document.getElementById('proBilled').textContent='billed monthly';
+    document.getElementById('teamPrice').textContent='$199';
+    document.getElementById('teamOrig').classList.remove('show');
+    document.getElementById('teamBilled').textContent='billed monthly';
+  }
+}
+function toggleFaq(el){
+  const wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f=>f.classList.remove('open'));
+  if(!wasOpen)el.classList.add('open');
+}
+</script>
+</body>
+</html><div class="plans">
+
+    <!-- STARTER -->
+    <div class="plan">
+      <div class="plan-top">
+        <div class="plan-name">Starter</div>
+        <div class="plan-desc">For investors exploring the product or new to multifamily investing.</div>
+        <div class="price-row"><span class="price-amt">$0</span><span class="price-period">/month</span></div>
+      </div>
+      <button class="plan-cta cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Get Started Free</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>2 markets · 5 deal views per day</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>RoofRank score + signal per deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Basic deal analyzer (3 reports/month)</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Watchlist (up to 5 deals)</li>
+      </ul>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-top">
+        <div class="plan-name">Pro</div>
+        <div class="plan-desc">For active investors closing deals and tracking multiple markets.</div>
+        <div class="price-row">
+          <span class="price-amt" id="proPrice">$79</span><span class="price-period">/month</span>
+        </div>
+        <div class="price-annual" id="proAnnual" style="display:none;font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.25rem">$828/year · save $120</div>
+      </div>
+      <button class="plan-cta cta-primary" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All NE markets · unlimited deal browsing</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Full 8-metric breakdown per deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ AI deal narratives on every listing</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ Ask the Analyst — AI chat on any deal</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ AI morning deal brief · daily email</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Strong Buy real-time alerts</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Unlimited analyzer reports</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Watchlist · unlimited deals</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Priority support</li>
+      </ul>
+    </div>
+
+    <!-- AGENT / TEAM -->
+    <div class="plan">
+      <div class="plan-top">
+        <div class="plan-name">Agent &amp; Team</div>
+        <div class="plan-desc">For investor-focused agents and partnerships sharing deal flow with clients.</div>
+        <div class="price-row">
+          <span class="price-amt" id="teamPrice">$249</span><span class="price-period">/month</span>
+        </div>
+        <div class="price-annual" id="teamAnnual" style="display:none;font-size:.72rem;color:var(--muted);margin-top:.25rem">$2,388/year · save $600</div>
+      </div>
+      <button class="plan-cta cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Start Team →</button>
+      <div class="divider"></div>
+      <ul class="features">
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Everything in Pro</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>3 seats — share with clients or partners</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Client-shareable deal reports (PDF)</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>White-label report with your branding</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Custom market requests</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Dedicated onboarding call</li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<div class="wrapper">
+  <div class="header">
+    <div class="eyebrow">Pricing</div>
+    <h1 class="h1">Simple pricing for<br>serious <em>investors.</em></h1>
+    <p class="sub">Start free. Upgrade when the product saves you more than it costs — which happens on your first good deal. No contracts, cancel any time.</p>
     <div class="toggle-wrap">
       <span class="toggle-label active" id="moLabel">Monthly</span>
       <div class="toggle" id="billingToggle" onclick="toggleBilling()"><div class="toggle-knob"></div></div>
