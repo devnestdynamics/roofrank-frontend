@@ -260,6 +260,47 @@ input[type=range]{width:100%;accent-color:var(--forest)}
 </div>
 
 <script>
+
+// ── Pre-populate from deal detail if params present ──────────────────────────
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (!p.get('price') && !p.get('addr')) return; // No deal data — stay blank
+
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+
+  set('addr',     p.get('addr'));
+  set('city',     p.get('city') || 'Boston');
+  set('units',    p.get('units'));
+  set('yearBuilt', p.get('yearBuilt'));
+  set('askPrice', p.get('price'));
+  set('purPrice', p.get('price'));
+  set('grossRent', p.get('rent'));
+  set('propTax',  p.get('tax'));
+  set('insurance', p.get('insurance'));
+
+  // Set property type dropdown
+  const ptEl = document.getElementById('propType');
+  if(ptEl && p.get('propType')) {
+    const val = p.get('propType');
+    Array.from(ptEl.options).forEach(o => {
+      if(o.text.toLowerCase().includes(val.toLowerCase().split(' ')[0])) ptEl.value = o.value;
+    });
+  }
+
+  // Add banner showing this is pre-populated from a deal
+  const addr = p.get('addr') || '';
+  if(addr) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2);border-radius:8px;padding:.5rem .75rem;font-size:.75rem;color:#1c4a35;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem';
+    banner.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Pre-filled from <strong style="margin:0 .2rem">' + addr.split(',')[0] + '</strong> — adjust any numbers below';
+    const form = document.querySelector('.analyzer-form, .form, form, .panel');
+    if(form) form.insertBefore(banner, form.firstChild);
+  }
+
+  // Trigger recalc after a short delay
+  setTimeout(() => { if(typeof runAnalysis === 'function') runAnalysis(); }, 100);
+})();
+
 async function saveReport(){
   const btn=document.getElementById('saveBtn');
   const addr=document.getElementById('addr').value||'Manual Analysis';

@@ -131,7 +131,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
   </div>
   <div class="nav-right">
     <button class="btn-ghost" id="wbtn" onclick="toggleWatch()"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Save</button>
-    <button class="btn-ghost" onclick="location.href='roofrank-analyzer.html'"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Re-Analyze</button>
+    <button class="btn-ghost" onclick="openInAnalyzer()"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Re-Analyze</button>
     <button class="btn-primary" onclick="handleExport()">Export PDF</button>
   </div>
 </nav>
@@ -212,7 +212,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
     <div class="cta-card">
       <div class="cta-t">Ready to run your own numbers?</div>
       <div class="cta-s">Adjust rents, expenses, and down payment in the Analyzer.</div>
-      <a href="roofrank-analyzer.html" class="cta-btn">Open in Analyzer →</a>
+      <a href="#" class="cta-btn" onclick="openInAnalyzer(); return false;">Open in Analyzer →</a>
     </div>
   </div>
 </div>
@@ -469,6 +469,25 @@ async function boot(){
   }catch(e){document.getElementById('loading').textContent='Could not load deal: '+e.message;}
 }
 document.addEventListener('DOMContentLoaded',boot);
+
+function openInAnalyzer() {
+  const d = window._dealData;
+  if (!d) { window.location.href = 'roofrank-analyzer.html'; return; }
+  const fin = d.reportData?.financials || {};
+  const params = new URLSearchParams({
+    addr:     d.address || '',
+    city:     d.city || '',
+    state:    d.state || '',
+    units:    d.units || '',
+    yearBuilt: d.yearBuilt || '',
+    price:    d.askingPrice || '',
+    rent:     Math.round((fin.grossRentalIncome || 0) / 12) || '',
+    tax:      Math.round(fin.annualTaxes || (d.askingPrice * 0.012)) || '',
+    insurance: Math.round(fin.annualInsurance || (d.askingPrice * 0.004)) || '',
+    propType: d.propertyType || '',
+  });
+  window.location.href = 'roofrank-analyzer.html?' + params.toString();
+}
 </script>
 </body>
 </html>
