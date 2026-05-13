@@ -121,11 +121,11 @@ input[type=range]{width:100%;accent-color:var(--forest)}
       <div class="card-body">
         <div class="row2">
           <div class="field"><label>Address</label><input type="text" id="addr" placeholder="Enter property address"></div>
-          <div class="field"><label>City</label><input type="text" id="city" placeholder="Boston" value="Boston"></div>
+          <div class="field"><label>City</label><input type="text" id="city" placeholder="Boston" value=""></div>
         </div>
         <div class="row2">
           <div class="field"><label>State</label><select id="state"><option>MA</option><option>RI</option><option>CT</option><option>NH</option></select></div>
-          <div class="field"><label>Number of Units</label><input type="number" id="units" value="5" min="2" max="6"></div>
+          <div class="field"><label>Number of Units</label><input type="number" id="units" value="" min="1" max="20"></div>
         </div>
         <div class="row2">
           <div class="field"><label>Property Type</label><select id="ptype"><option>Triple Decker</option><option>Duplex</option><option>Quad</option><option>5-Family</option><option>6-Family</option></select></div>
@@ -143,17 +143,17 @@ input[type=range]{width:100%;accent-color:var(--forest)}
       <div class="card-body">
         <div class="row2">
           <div class="field"><label>Asking Price ($)</label><input type="number" id="price" value=""></div>
-          <div class="field"><label>Purchase Price ($)</label><input type="number" id="purchase" value="1550000"></div>
+          <div class="field"><label>Purchase Price ($)</label><input type="number" id="purchase" value=""></div>
         </div>
         <div class="field">
           <label>Down Payment — <span id="dpLbl">25%</span></label>
           <div class="range-row"><input type="range" id="dp" min="10" max="50" value="25" oninput="document.getElementById('dpLbl').textContent=this.value+'%'"><span class="range-val" id="dpAmt">$387,500</span></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Interest Rate (%)</label><input type="number" id="rate" value="7.1" step="0.1"></div>
+          <div class="field"><label>Interest Rate (%)</label><input type="number" id="rate" value="6.5" step="0.1"></div>
           <div class="field"><label>Loan Term (yrs)</label><select id="term"><option>30</option><option>20</option><option>15</option></select></div>
         </div>
-        <div class="field"><label>Closing Costs ($)</label><input type="number" id="closing" value="25000"></div>
+        <div class="field"><label>Closing Costs ($)</label><input type="number" id="closing" value=""></div>
       </div>
     </div>
 
@@ -164,7 +164,7 @@ input[type=range]{width:100%;accent-color:var(--forest)}
         <svg class="card-head-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="card-body">
-        <div class="field"><label>Gross Monthly Rent ($)</label><input type="number" id="rent" value="16500"></div>
+        <div class="field"><label>Gross Monthly Rent ($)</label><input type="number" id="rent" value=""></div>
         <div class="field">
           <label>Vacancy Rate — <span id="vacLbl">5%</span></label>
           <div class="range-row"><input type="range" id="vac" min="0" max="15" value="5" oninput="document.getElementById('vacLbl').textContent=this.value+'%'"></div>
@@ -180,16 +180,16 @@ input[type=range]{width:100%;accent-color:var(--forest)}
       </div>
       <div class="card-body">
         <div class="row2">
-          <div class="field"><label>Property Tax ($/yr)</label><input type="number" id="tax" value="14200"></div>
-          <div class="field"><label>Insurance ($/yr)</label><input type="number" id="ins" value="4800"></div>
+          <div class="field"><label>Property Tax ($/yr)</label><input type="number" id="tax" value=""></div>
+          <div class="field"><label>Insurance ($/yr)</label><input type="number" id="ins" value=""></div>
         </div>
         <div class="row2">
           <div class="field"><label>Property Mgmt (%)</label><input type="number" id="mgmt" value="8" step="0.5"></div>
-          <div class="field"><label>Maintenance ($/yr)</label><input type="number" id="maint" value="6000"></div>
+          <div class="field"><label>Maintenance ($/yr)</label><input type="number" id="maint" value=""></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Utilities ($/mo)</label><input type="number" id="util" value="400"></div>
-          <div class="field"><label>CapEx Reserve ($/yr)</label><input type="number" id="capex" value="9800"></div>
+          <div class="field"><label>Utilities ($/mo)</label><input type="number" id="util" value=""></div>
+          <div class="field"><label>CapEx Reserve ($/yr)</label><input type="number" id="capex" value=""></div>
         </div>
       </div>
     </div>
@@ -266,39 +266,41 @@ input[type=range]{width:100%;accent-color:var(--forest)}
   const p = new URLSearchParams(window.location.search);
   if (!p.get('price') && !p.get('addr')) return; // No deal data — stay blank
 
-  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val !== null && val !== '') el.value = val; };
 
+  // Map URL params to actual field IDs in the analyzer
   set('addr',     p.get('addr'));
-  set('city',     p.get('city') || 'Boston');
+  set('city',     p.get('city'));
   set('units',    p.get('units'));
-  set('yearBuilt', p.get('yearBuilt'));
-  set('askPrice', p.get('price'));
-  set('purPrice', p.get('price'));
-  set('grossRent', p.get('rent'));
-  set('propTax',  p.get('tax'));
-  set('insurance', p.get('insurance'));
+  set('yr',       p.get('yearBuilt'));
+  set('price',    p.get('price'));
+  set('purchase', p.get('price'));
+  set('rent',     p.get('rent'));
+  set('tax',      p.get('tax'));
+  set('ins',      p.get('insurance'));
 
   // Set property type dropdown
   const ptEl = document.getElementById('propType');
   if(ptEl && p.get('propType')) {
-    const val = p.get('propType');
+    const val = p.get('propType').toLowerCase();
     Array.from(ptEl.options).forEach(o => {
-      if(o.text.toLowerCase().includes(val.toLowerCase().split(' ')[0])) ptEl.value = o.value;
+      if(o.text.toLowerCase().includes(val.split(' ')[0])) ptEl.value = o.value;
     });
   }
 
-  // Add banner showing this is pre-populated from a deal
+  // Add green banner showing pre-populated from deal
   const addr = p.get('addr') || '';
   if(addr) {
     const banner = document.createElement('div');
-    banner.style.cssText = 'background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2);border-radius:8px;padding:.5rem .75rem;font-size:.75rem;color:#1c4a35;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem';
-    banner.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Pre-filled from <strong style="margin:0 .2rem">' + addr.split(',')[0] + '</strong> — adjust any numbers below';
-    const form = document.querySelector('.analyzer-form, .form, form, .panel');
-    if(form) form.insertBefore(banner, form.firstChild);
+    banner.style.cssText = 'background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2);border-radius:8px;padding:.6rem .85rem;font-size:.76rem;color:#1c4a35;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem';
+    banner.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Pre-filled from <strong style="margin:0 .25rem">' + addr.split(',')[0] + '</strong>&nbsp;· adjust any number below';
+    const firstSection = document.querySelector('.section, .panel, .card, form');
+    if(firstSection) firstSection.insertBefore(banner, firstSection.firstChild);
+    else document.body.insertBefore(banner, document.body.firstChild);
   }
 
-  // Trigger recalc after a short delay
-  setTimeout(() => { if(typeof runAnalysis === 'function') runAnalysis(); }, 100);
+  // Trigger recalc after fields are set
+  setTimeout(() => { if(typeof analyze === 'function') analyze(); }, 200);
 })();
 
 async function saveReport(){
@@ -331,7 +333,7 @@ async function saveReport(){
     setTimeout(()=>{btn.textContent='Save Report';btn.disabled=false;},3000);
   }catch(e){
     btn.textContent='Save Report';btn.disabled=false;
-    showToast(e.status===429?'Monthly report limit reached. <a href="roofrank-pricing.html?v=2" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>':'Failed to save report — try again.','error',4000);
+    showToast(e.status===429?'Monthly report limit reached. <a href="roofrank-pricing.html" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>':'Failed to save report — try again.','error',4000);
   }
 }
 function toggle(id){const c=document.getElementById(id);c.classList.toggle('open');}
