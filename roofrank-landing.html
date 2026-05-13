@@ -1539,9 +1539,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       </div>
 
       <div class="plan fade-up">
-        <div class="plan-name">Essentials</div>
+        <div class="plan-name">Pro</div>
         <div class="plan-desc">For investors actively tracking 1–3 markets.</div>
-        <div class="plan-price" id="lp-ess-price">$29</div>
+        <div class="plan-price" id="lp-ess-price">$49</div>
         <div class="plan-period" id="lp-ess-period">/month</div>
         <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
         <div style="height:1px;background:var(--border);margin-bottom:1.5rem"></div>
@@ -1571,9 +1571,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       </div>
 
       <div class="plan fade-up">
-        <div class="plan-name">Team</div>
+        <div class="plan-name">Agent &amp; Team</div>
         <div class="plan-desc">For partnerships, syndicators, or growing firms.</div>
-        <div class="plan-price" id="lp-team-price">$199</div>
+        <div class="plan-price" id="lp-team-price">$249</div>
         <div class="plan-period" id="lp-team-period">/month</div>
         <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
         <div class="plan-divider"></div>
@@ -1599,7 +1599,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
       <button class="btn-cta-outline" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See All Plans →</button>
     </div>
-    <p class="cta-fine">14-day free trial on Pro · No credit card required · Cancel anytime</p>
+    <p class="cta-fine">Founding member pricing · Locked in forever · Cancel anytime</p>
   </div>
 </section>
 
@@ -1707,11 +1707,11 @@ function lpToggleBilling(){
   document.getElementById('lp-mo-lbl').style.color=lpAnnual?'var(--muted)':'var(--ink)';
   document.getElementById('lp-yr-lbl').style.color=lpAnnual?'var(--ink)':'var(--muted)';
   document.getElementById('lp-yr-lbl').style.fontWeight=lpAnnual?'500':'400';
-  document.getElementById('lp-ess-price').textContent=lpAnnual?'$25':'$29';
+  document.getElementById('lp-ess-price').textContent=lpAnnual?'$39':'$49';
   document.getElementById('lp-ess-period').textContent=lpAnnual?'/month · billed $300/year':'/month';
-  document.getElementById('lp-pro-price').textContent=lpAnnual?'$69':'$79';
+  document.getElementById('lp-pro-price').textContent=lpAnnual?'$39':'$49';
   document.getElementById('lp-pro-period').innerHTML=lpAnnual?'/month · billed <strong>$828/year</strong>':'/month · or <strong>$69/mo</strong> billed annually';
-  document.getElementById('lp-team-price').textContent=lpAnnual?'$173':'$199';
+  document.getElementById('lp-team-price').textContent=lpAnnual?'$199':'$249';
   document.getElementById('lp-team-period').innerHTML=lpAnnual?'/month · billed <strong>$2,076/year</strong>':'/month';
 }
 function handleEmail() {
