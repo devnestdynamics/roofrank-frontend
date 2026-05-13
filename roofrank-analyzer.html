@@ -331,7 +331,7 @@ async function saveReport(){
     setTimeout(()=>{btn.textContent='Save Report';btn.disabled=false;},3000);
   }catch(e){
     btn.textContent='Save Report';btn.disabled=false;
-    showToast(e.status===429?'Monthly report limit reached. <a href="roofrank-pricing.html" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>':'Failed to save report — try again.','error',4000);
+    showToast(e.status===429?'Monthly report limit reached. <a href="roofrank-pricing.html?v=2" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>':'Failed to save report — try again.','error',4000);
   }
 }
 function toggle(id){const c=document.getElementById(id);c.classList.toggle('open');}

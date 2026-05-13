@@ -392,7 +392,7 @@ async function toggleWatch(){
 }
 
 function handleExport(){
-  showToast('PDF export available on Pro plan. <a href="roofrank-pricing.html" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>','warning',4000);
+  showToast('PDF export available on Pro plan. <a href="roofrank-pricing.html?v=2" style="color:rgba(255,255,255,.8);text-decoration:underline">Upgrade →</a>','warning',4000);
 }
 
 function pmtOffer(r,n,pv){if(r===0)return pv/n;return pv*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);}
