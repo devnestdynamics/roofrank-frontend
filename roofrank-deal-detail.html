@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<script>window.ROOFRANK_API_URL="http://localhost:3000/api";</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Deal Detail</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -125,7 +125,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 <body>
 <nav>
   <div class="nav-left">
-    <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <button class="back-btn" onclick="history.length > 1 ? history.back() : window.location.href='roofrank-dashboard.html'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
     <span class="nav-divider">/</span>
     <span class="nav-addr" id="navAddr">Loading…</span>
   </div>
@@ -183,7 +183,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
       </div>
       <div class="offer-input-row">
         <span class="offer-label">Interest rate %</span>
-        <input class="offer-input" type="number" id="offerRate" value="7.25" step="0.25" oninput="calcMaxOffer()">
+        <input class="offer-input" type="number" id="offerRate" value="6.5" step="0.25" oninput="calcMaxOffer()">
       </div>
       <div class="offer-result" id="offerResult">
         <div class="offer-score-ring">
@@ -407,7 +407,7 @@ function calcMaxOffer(){
 
   const targetScore=parseInt(document.getElementById('offerTargetScore').value)||75;
   const dpPct=(parseInt(document.getElementById('offerDp').value)||25)/100;
-  const rate=(parseFloat(document.getElementById('offerRate').value)||7.25)/100;
+  const rate=(parseFloat(document.getElementById('offerRate').value)||6.5)/100;
 
   // Binary search for max price where score hits target
   // Score is driven by cap rate — target cap rate for given score
