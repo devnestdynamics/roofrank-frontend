@@ -1513,75 +1513,68 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="inner">
     <div class="pricing-header">
       <div class="eyebrow fade-up">Simple Pricing</div>
-      <h2 class="section-h2 fade-up">Start free. Upgrade when<br><em>you're ready to go deeper.</em></h2>
+      <h2 class="section-h2 fade-up">Start free. Upgrade when<br><em>the product pays for itself.</em></h2>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.75rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.7" class="fade-up">Founding member pricing — locked in forever for early subscribers. No contracts, cancel any time.</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.25rem" class="fade-up">
         <span style="font-size:.8rem;color:var(--ink);font-weight:500" id="lp-mo-lbl">Monthly</span>
         <div id="lpToggle" onclick="lpToggleBilling()" style="width:40px;height:22px;background:var(--forest);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0">
           <div id="lpKnob" style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>
         </div>
-        <span style="font-size:.8rem;color:var(--muted)" id="lp-yr-lbl">Annual <span style="font-size:.62rem;font-weight:600;background:var(--sage-dim);color:var(--forest);border:1px solid var(--sage-border);padding:1px 6px;border-radius:3px;margin-left:3px">Save 13%</span></span>
+        <span style="font-size:.8rem;color:var(--muted)" id="lp-yr-lbl">Annual <span style="font-size:.62rem;font-weight:600;background:var(--sage-dim);color:var(--forest);border:1px solid var(--sage-border);padding:1px 6px;border-radius:3px;margin-left:3px">Save 15%</span></span>
       </div>
     </div>
-    <div class="pricing-grid">
+    <div class="pricing-grid" style="grid-template-columns:repeat(3,1fr);max-width:860px">
+      <!-- STARTER -->
       <div class="plan fade-up">
         <div class="plan-name">Starter</div>
-        <div class="plan-desc">For investors exploring their first deal or a new market.</div>
+        <div class="plan-desc">For investors exploring the product or new to multifamily investing.</div>
         <div class="plan-price">$0</div>
         <div class="plan-period">Free forever</div>
         <button class="plan-cta plan-cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Get Started Free</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All 9 markets · up to 30 deals/mo</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Score ring + signal (Strong Buy/Buy/Watch/Pass)</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Analyzer: 10 reports/month</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>2 markets · 5 deal views per day</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>RoofRank score + signal per deal</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Basic analyzer (3 reports/month)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist (up to 5 deals)</li>
         </ul>
       </div>
 
-      <div class="plan fade-up">
+      <!-- PRO -->
+      <div class="plan featured fade-up" style="position:relative">
+        <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--forest-3);color:#fff;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.22rem .7rem;border-radius:20px;white-space:nowrap">Founding Member Price</div>
         <div class="plan-name">Pro</div>
-        <div class="plan-desc">For investors actively tracking 1–3 markets.</div>
-        <div class="plan-price" id="lp-ess-price">$49</div>
-        <div class="plan-period" id="lp-ess-period">/month</div>
-        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
-        <div style="height:1px;background:var(--border);margin-bottom:1.5rem"></div>
-        <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>3 markets · unlimited browsing</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Full 8-metric breakdown</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>15 Analyzer reports/month</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist · weekly digest</li>
-        </ul>
-      </div>
-
-      <div class="plan featured fade-up">
-        <div class="plan-name">Pro</div>
-        <div class="plan-desc">For active investors tracking multiple markets and closing regularly.</div>
+        <div class="plan-desc">For active investors closing deals and tracking multiple markets.</div>
         <div class="plan-price" id="lp-pro-price">$49</div>
-        <div class="plan-period" id="lp-pro-period">/month · founding member rate · locked in forever</div>
-        <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start 14-Day Free Trial →</button>
+        <div class="plan-period" id="lp-pro-period">/month · locked in forever</div>
+        <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All 9 NE markets · unlimited deals</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All NE markets · unlimited deals</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Full 8-metric breakdown per deal</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Morning email digest · Strong Buy alerts</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Analyzer: 25 reports/month</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist + team sharing (2 seats)</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI deal narratives on every listing</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Ask the Analyst — AI chat on any deal</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI morning deal brief · daily email</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Strong Buy real-time alerts</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited analyzer reports</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Priority support</li>
         </ul>
       </div>
 
+      <!-- AGENT & TEAM -->
       <div class="plan fade-up">
         <div class="plan-name">Agent &amp; Team</div>
-        <div class="plan-desc">For partnerships, syndicators, or growing firms.</div>
+        <div class="plan-desc">For investor-focused agents and partnerships sharing deal flow with clients.</div>
         <div class="plan-price" id="lp-team-price">$249</div>
         <div class="plan-period" id="lp-team-period">/month</div>
-        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Free Trial</button>
+        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Team →</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Everything in Pro</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited reports + custom markets</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Up to 5 team members</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Org-wide watchlist sync</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>3 seats — share with clients or partners</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Client-shareable deal reports (PDF)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>White-label reports with your branding</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Custom market requests</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Dedicated onboarding call</li>
         </ul>
       </div>
@@ -1599,7 +1592,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
       <button class="btn-cta-outline" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See All Plans →</button>
     </div>
-    <p class="cta-fine">Founding member pricing · Locked in forever · Cancel anytime</p>
+    <p class="cta-fine">14-day free trial on Pro · No credit card required · Cancel anytime</p>
   </div>
 </section>
 
@@ -1624,7 +1617,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <ul>
           <li><a href="#features">Features</a></li>
           <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="roofrank-pricing.html?v=2">Pricing</a></li>
+          <li><a href="roofrank-pricing.html">Pricing</a></li>
           <li><a href="roofrank-dashboard.html">Deal Feed</a></li>
         </ul>
       </div>
@@ -1707,7 +1700,7 @@ function lpToggleBilling(){
   document.getElementById('lp-mo-lbl').style.color=lpAnnual?'var(--muted)':'var(--ink)';
   document.getElementById('lp-yr-lbl').style.color=lpAnnual?'var(--ink)':'var(--muted)';
   document.getElementById('lp-yr-lbl').style.fontWeight=lpAnnual?'500':'400';
-  document.getElementById('lp-ess-price').textContent=lpAnnual?'$39':'$49';
+  
   document.getElementById('lp-ess-period').textContent=lpAnnual?'/month · billed $300/year':'/month';
   document.getElementById('lp-pro-price').textContent=lpAnnual?'$39':'$49';
   document.getElementById('lp-pro-period').innerHTML=lpAnnual?'/month · billed <strong>$828/year</strong>':'/month · or <strong>$69/mo</strong> billed annually';
