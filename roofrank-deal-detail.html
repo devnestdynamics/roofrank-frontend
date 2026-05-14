@@ -457,6 +457,7 @@ function handleExport(){
 function pmtOffer(r,n,pv){if(r===0)return pv/n;return pv*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);}
 
 function calcMaxOffer(){
+  if(!document.getElementById('offerTargetScore')) return;
   if(!_deal) return;
   const fin=(_deal.reportData||{}).financials||{};
   const noi=fin.noi;
@@ -648,6 +649,51 @@ async function typewriterEffect(el, text){
     if(msgs) msgs.scrollTop = msgs.scrollHeight;
     await new Promise(r => setTimeout(r, 30 + Math.random() * 15));
   }
+}
+
+function updateMsgCount(){
+  const count = Math.floor(aiHistory.length / 2);
+  let counter = document.getElementById('aiMsgCount');
+  if(count < 2){ if(counter) counter.remove(); return; }
+  if(!counter){
+    counter = document.createElement('div');
+    counter.id = 'aiMsgCount';
+    counter.className = 'ai-msg-count';
+    const inputRow = document.querySelector('.ai-full-input-row');
+    if(inputRow) inputRow.parentNode.insertBefore(counter, inputRow);
+  }
+  counter.textContent = count + ' exchanges in this conversation';
+}
+
+function addFollowUps(question, answer){
+  const q = (question||'').toLowerCase();
+  const a = (answer||'').toLowerCase();
+  let chips = [];
+  if(q.includes('risk')) chips = ['What should I offer?', 'How do I negotiate?', 'What to inspect first?'];
+  else if(q.includes('offer') || q.includes('price')) chips = ['What is the biggest risk?', 'How do I make my offer stronger?', 'What if they counter?'];
+  else if(q.includes('first') || q.includes('beginner')) chips = ['What should I inspect?', 'What are typical expenses?', 'How do I find tenants?'];
+  else if(a.includes('maintenance') || a.includes('inspect')) chips = ['How much should I budget?', 'What professionals do I need?', 'Red flags to look for?'];
+  else chips = ['What is the biggest risk?', 'What should I offer?', 'Would you buy this deal?'];
+
+  const old = document.getElementById('aiFollowUps');
+  if(old) old.remove();
+
+  const followDiv = document.createElement('div');
+  followDiv.id = 'aiFollowUps';
+  followDiv.className = 'ai-follow-ups';
+  chips.forEach(c => {
+    const chip = document.createElement('span');
+    chip.className = 'ai-follow-up';
+    chip.textContent = c;
+    chip.onclick = () => {
+      document.getElementById('aiInput').value = c;
+      followDiv.remove();
+      sendAiMessage();
+    };
+    followDiv.appendChild(chip);
+  });
+  const inputRow = document.querySelector('.ai-full-input-row');
+  if(inputRow) inputRow.parentNode.insertBefore(followDiv, inputRow);
 }
 </script>
 </body>
