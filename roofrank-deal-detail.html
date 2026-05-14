@@ -306,16 +306,6 @@ nav.top{
 }
 .fin-lock-btn:hover{background:var(--forest-2)}
 
-/* ── PROPERTY DETAILS ──────────────────────────────────────────────────── */
-.prop-grid{
-  display:grid; grid-template-columns:repeat(2,1fr); gap:1px;
-  background:var(--border); border-radius:var(--r); overflow:hidden;
-  border:1px solid var(--border);
-}
-.prop-cell{background:#fff; padding:.85rem 1rem}
-.prop-k{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.25rem}
-.prop-v{font-size:.95rem; font-weight:500}
-
 /* ── PRO UPSELL ────────────────────────────────────────────────────────── */
 .pro-card{
   background:linear-gradient(135deg, var(--forest) 0%, var(--forest-2) 100%);
@@ -410,7 +400,6 @@ nav.top{
   .ai-card{padding:1.35rem 1.15rem}
   .pro-card{padding:1.75rem 1.25rem}
   .pro-title{font-size:1.4rem}
-  .prop-grid{grid-template-columns:1fr}
   .sticky-bar{display:block}
   .section-title{font-size:1.15rem}
   .bd-bar-wrap{width:72px}
@@ -550,12 +539,6 @@ nav.top{
         <a href="roofrank-pricing.html" class="fin-lock-btn">Unlock with Pro →</a>
       </div>
     </div>
-  </section>
-
-  <!-- ── PROPERTY DETAILS ─────────────────────────────────────────── -->
-  <section>
-    <div class="section-title">Property details</div>
-    <div class="prop-grid" id="propDetails"></div>
   </section>
 
   <!-- ── PRO UPSELL ───────────────────────────────────────────────── -->
@@ -798,17 +781,6 @@ function renderDeal(d){
   ];
   setHTML('finGridPublic', finRender(finPublic));
   setHTML('finGrid', finRender(finLocked));
-
-  // ── Property details
-  const _pd=document.getElementById('propDetails');
-  if(_pd) _pd.innerHTML = [
-    ['Units', d.units],
-    ['Type', d.propertyType],
-    ['Year Built', d.yearBuilt],
-    ['Days on Market', d.daysOnMarket!=null?d.daysOnMarket+'d':null],
-    ['Zip Code', d.zipCode],
-    ['Asking Price', d.askingPrice?fmtK(d.askingPrice):null],
-  ].filter(([,v])=>v!=null&&v!=='').map(([k,v])=>`<div class="prop-cell"><div class="prop-k">${k}</div><div class="prop-v">${v}</div></div>`).join('');
 
   // ── Narrative
   const narSec=document.getElementById('narrativeSection');
