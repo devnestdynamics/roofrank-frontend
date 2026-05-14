@@ -423,10 +423,10 @@ function renderDeal(d){
   const c=scoreColor(score), cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
   const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
 
-  (function(){const _e=document.getElementById('navAddr');if(_e)_e.textContent=d.address;})();
-  (function(){const _e=document.getElementById('heroAddr');if(_e)_e.textContent=d.address;})();
-  (function(){const _e=document.getElementById('heroCity');if(_e)_e.textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;})();
-  (function(){const _e=document.getElementById('heroBadges');if(_e)_e.innerHTML=[
+  const _e=document.getElementById('navAddr');if(_e)_e.textContent=d.address;
+  const _e=document.getElementById('heroAddr');if(_e)_e.textContent=d.address;
+  const _e=document.getElementById('heroCity');if(_e)_e.textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
+  const _e=document.getElementById('heroBadges');if(_e)_e.innerHTML=[
     `<span class="badge g">Score ${score}/100</span>`,
     `<span class="badge g">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
@@ -435,12 +435,12 @@ function renderDeal(d){
     d.daysOnMarket!=null?`<span class="badge">${d.daysOnMarket} days on market</span>`:'',
   ].filter(Boolean).join('');
 
-  (function(){const _e=document.getElementById('hrNum');if(_e)_e.textContent=score;})();
-  (function(){const _e=document.getElementById('hrNum');if(_e)_e.style.color=c;})();
-  (function(){const _e=document.getElementById('hrSig');if(_e)_e.textContent=signal;})();
-  (function(){const _e=document.getElementById('hrSig');if(_e)_e.style.color=c;})();
-  (function(){const _e=document.getElementById('hrFill');if(_e)_e.style.stroke=c;})();
-  (function(){const _e=document.getElementById('hrFill');if(_e)_e.style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);})();
+  const _e=document.getElementById('hrNum');if(_e)_e.textContent=score;
+  const _e=document.getElementById('hrNum');if(_e)_e.style.color=c;
+  const _e=document.getElementById('hrSig');if(_e)_e.textContent=signal;
+  const _e=document.getElementById('hrSig');if(_e)_e.style.color=c;
+  const _e=document.getElementById('hrFill');if(_e)_e.style.stroke=c;
+  const _e=document.getElementById('hrFill');if(_e)_e.style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
 
   function kpi(id,val,good){
     const el=document.getElementById(id);if(!el||val==null)return;
@@ -460,7 +460,7 @@ function renderDeal(d){
     ['CapEx Reserve',sc.capexReserve||65,'Moderate'],
     ['Neighborhood Grade',sc.neighborhoodGrade||65,(d.reportData||{}).neighborhoodGrade||'B'],
   ];
-  (function(){const _e=document.getElementById('scoreBreakdown');if(_e)_e.innerHTML=bars.map(([name,pct,label])=>{
+  const _e=document.getElementById('scoreBreakdown');if(_e)_e.innerHTML=bars.map(([name,pct,label])=>{
     const p=Math.max(0,Math.min(100,pct||0));
     const bc=p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
     const bl=p>=70?'good':p>=40?'ok':'low';
@@ -478,13 +478,13 @@ function renderDeal(d){
     ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
     ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
   ];
-  (function(){const _e=document.getElementById('finGrid');if(_e)_e.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  const _e=document.getElementById('finGrid');if(_e)_e.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
-  (function(){const _e=document.getElementById('verdictCard');if(_e)_e.className='verdict '+cls;})();
-  (function(){const _e=document.getElementById('vBadge');if(_e)_e.textContent=(score>=75?'✓ ':'')+signal;})();
-  (function(){const _e=document.getElementById('vText');if(_e)_e.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');})();
+  const _e=document.getElementById('verdictCard');if(_e)_e.className='verdict '+cls;
+  const _e=document.getElementById('vBadge');if(_e)_e.textContent=(score>=75?'✓ ':'')+signal;
+  const _e=document.getElementById('vText');if(_e)_e.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
-  (function(){const _e=document.getElementById('propDetails');if(_e)_e.innerHTML=[
+  const _e=document.getElementById('propDetails');if(_e)_e.innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
     ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
@@ -543,8 +543,8 @@ function renderDeal(d){
     if(txt){nb.innerHTML=txt;nb.style.display='block';}
   }
 
-  (function(){const _e=document.getElementById('loading');if(_e)_e.style.display='none';})();
-  (function(){const _e=document.getElementById('mainLayout');if(_e)_e.style.display='grid';})();
+  const _e=document.getElementById('loading');if(_e)_e.style.display='none';
+  const _e=document.getElementById('mainLayout');if(_e)_e.style.display='grid';
   document.title='RoofRank — '+d.address;
 
   // Generate score sparkline (simulated 4-week trend)
