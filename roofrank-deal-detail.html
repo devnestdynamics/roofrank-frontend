@@ -416,165 +416,173 @@ function scoreSignal(s){return s>=75?'Strong Buy':s>=60?'Buy':s>=45?'Watch':'Pas
 let _deal = null; // current deal for calculator
 
 function renderDeal(d){
-  _deal = d; // store for offer calculator
   const fin=(d.reportData||{}).financials||{};
-  const sc=(d.reportData||{}).scores||{};
-  const score=d.rankScore||0, signal=(d.reportData||{}).signal||scoreSignal(score);
-  const c=scoreColor(score), cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
-  const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
+  const score=(d.reportData||{}).score||0;
+  const signal=(d.reportData||{}).signal||'';
+  const c=score>=75?'var(--forest)':score>=60?'var(--sage)':score>=45?'var(--gold)':'var(--muted)';
 
-  const _e1=document.getElementById('navAddr');if(_e1)_e1.textContent=d.address;
-  const _e2=document.getElementById('heroAddr');if(_e2)_e2.textContent=d.address;
-  const _e3=document.getElementById('heroCity');if(_e3)_e3.textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
-  const _e4=document.getElementById('heroBadges');if(_e4)_e4.innerHTML=[
+  // Safe helpers
+  const $=(id)=>document.getElementById(id);
+  const T=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+  const H=(id,v)=>{const e=$(id);if(e)e.innerHTML=v;};
+  const S=(id,p,v)=>{const e=$(id);if(e)e.style[p]=v;};
+  const C=(id,v)=>{const e=$(id);if(e)e.className=v;};
+
+  // Nav + hero
+  T('navAddr', d.address);
+  T('heroAddr', d.address);
+  T('heroCity', [d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`);
+  T('hrNum', score);
+  S('hrNum','color',c);
+  T('hrSig', signal);
+  S('hrSig','color',c);
+  S('hrFill','stroke',c);
+  S('hrFill','strokeDashoffset',(2*Math.PI*39)*(1-score/100));
+
+  // Badges
+  const dom=d.daysOnMarket;
+  H('heroBadges',[
     `<span class="badge g">Score ${score}/100</span>`,
-    `<span class="badge g">${signal}</span>`,
+    `<span class="badge ${score>=75?'sb':score>=60?'b':score>=45?'w':'p'}">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
     d.propertyType?`<span class="badge">${d.propertyType}</span>`:'',
     d.yearBuilt?`<span class="badge">${d.yearBuilt}</span>`:'',
-    d.daysOnMarket!=null?`<span class="badge">${d.daysOnMarket} days on market</span>`:'',
-  ].filter(Boolean).join('');
+    dom?`<span class="badge ${dom>=60?'dom-hot':''}">${dom} days on market</span>`:'',
+  ].filter(Boolean).join(''));
 
-  const _e5=document.getElementById('hrNum');if(_e5)_e5.textContent=score;
-  const _e6=document.getElementById('hrNum');if(_e6)_e6.style.color=c;
-  const _e7=document.getElementById('hrSig');if(_e7)_e7.textContent=signal;
-  const _e8=document.getElementById('hrSig');if(_e8)_e8.style.color=c;
-  const _e9=document.getElementById('hrFill');if(_e9)_e9.style.stroke=c;
-  const _e10=document.getElementById('hrFill');if(_e10)_e10.style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
+  // Narrative
+  const nb=$('narrative');
+  if(nb) nb.innerHTML=(d.reportData||{}).narrative||generateNarrative(d,fin,score);
 
-  function kpi(id,val,good){
-    const el=document.getElementById(id);if(!el||val==null)return;
-    el.textContent=id==='kDscr'?val.toFixed(2):id==='kGrm'?val.toFixed(1)+'×':val.toFixed(1)+'%';
+  // CF highlight bar
+  const cfBar=$('cfBar');
+  if(cfBar && fin.monthlyCashFlow!=null){
+    const cf=Math.round(fin.monthlyCashFlow);
+    cfBar.style.display='flex';
+    T('cfBarVal',(cf>=0?'+':'')+'$'+Math.abs(cf).toLocaleString()+'/mo');
+    S('cfBarVal','color',cf>=0?'#fff':'#f08080');
+    T('cfBarAnn','$'+Math.abs(Math.round(cf*12)).toLocaleString()+'/yr');
+  }
+
+  // KPI tiles
+  const kpis=[
+    ['kCoc',fin.cashOnCashReturn,8],
+    ['kCap',fin.capRate,6.5],
+    ['kDscr',fin.dscr,1.25],
+    ['kGrm',fin.grm,10],
+  ];
+  kpis.forEach(([id,val,good])=>{
+    if(val==null)return;
+    const el=$(id);
+    if(!el)return;
     const better=id==='kGrm'?val<=good:val>=good;
     el.className='kpi-val '+(better?'g':val<good*0.7?'r':'a');
-  }
-  kpi('kCoc',fin.cashOnCashReturn,8);kpi('kCap',fin.capRate,6.5);kpi('kDscr',fin.dscr,1.25);kpi('kGrm',fin.grm,10);
+    el.textContent=id==='kDscr'?val.toFixed(2):id==='kGrm'?val.toFixed(1)+'×':val.toFixed(1)+'%';
+  });
 
+  // Score breakdown bars
   const bars=[
-    ['Cash-on-Cash Return',sc.cashOnCash||Math.min(100,(fin.cashOnCashReturn||0)/12*100),fin.cashOnCashReturn!=null?fin.cashOnCashReturn.toFixed(1)+'%':'—'],
-    ['Cap Rate',sc.capRate||Math.min(100,(fin.capRate||0)/8.5*100),fin.capRate!=null?fin.capRate.toFixed(1)+'%':'—'],
-    ['DSCR',sc.dscr||Math.min(100,((fin.dscr||0)-0.8)/0.8*100),fin.dscr!=null?fin.dscr.toFixed(2):'—'],
-    ['Gross Rent Multiplier',sc.grm||Math.min(100,((15-(fin.grm||15))/7)*100),fin.grm!=null?fin.grm.toFixed(1)+'×':'—'],
-    ['Price / Unit',sc.pricePerUnit||Math.min(100,(500000-(fin.pricePerUnit||500000))/3000),fmtK(fin.pricePerUnit)],
-    ['Net Operating Income',sc.noi||Math.min(100,(fin.noi||0)/150000*100),fmt$(fin.noi)],
-    ['CapEx Reserve',sc.capexReserve||65,'Moderate'],
-    ['Neighborhood Grade',sc.neighborhoodGrade||65,(d.reportData||{}).neighborhoodGrade||'B'],
+    ['Cash-on-Cash Return',fin.cashOnCashReturn,20,'%'],
+    ['Cap Rate',fin.capRate,15,'%'],
+    ['DSCR',fin.dscr/2*100,null,''],
+    ['Gross Rent Multiplier',(15-Math.min(fin.grm||15,15))/15*100,null,''],
+    ['Price / Unit',Math.max(0,100-(fin.pricePerUnit||0)/5000),null,''],
+    ['Net Operating Income',Math.min((fin.noi||0)/50000*100,100),null,''],
+    ['CapEx Reserve',(d.yearBuilt&&d.yearBuilt>1990?80:d.yearBuilt>1970?60:d.yearBuilt>1950?40:30),null,''],
+    ['Neighborhood Grade',(d.neighborhoodGrade==='A'?100:d.neighborhoodGrade==='B'?70:d.neighborhoodGrade==='C'?40:20),null,''],
   ];
-  const _e11=document.getElementById('scoreBreakdown');if(_e11)_e11.innerHTML=bars.map(([name,pct,label])=>{
-    const p=Math.max(0,Math.min(100,pct||0));
-    const bc=p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
-    const bl=p>=70?'good':p>=40?'ok':'low';
-    const bn=p>=75?'Great':p>=55?'Good':p>=35?'Watch':'Low';
-    return`<div class="metric-row"><div class="mr-name">${name}</div><div class="mr-bar"><div class="mr-fill" style="width:${p}%;background:${bc}"></div></div><div class="mr-val">${label} <span class="mr-badge ${bl}">${bn}</span></div></div>`;
-  }).join('');
 
+  const scoreBreakdownEl = $('scoreBreakdown');
+  if(scoreBreakdownEl){
+    const labels=['Great','Great','Great','Great','Good','Watch','Good','Good'];
+    scoreBreakdownEl.innerHTML = (d.reportData?.scores||[]).length > 0
+      ? (d.reportData.scores||[]).map(s=>{
+          const pct=Math.round((s.score/s.maxScore||0)*100);
+          const lbl=pct>=80?'Great':pct>=60?'Good':pct>=40?'Watch':'Poor';
+          const col=pct>=80?'var(--forest)':pct>=60?'var(--gold)':'var(--rose)';
+          return `<div class="bar-row"><span class="bar-label">${s.name}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val">${s.displayValue||''}</span><span class="bar-badge ${lbl.toLowerCase()}">${lbl}</span></div>`;
+        }).join('')
+      : '<div style="color:var(--muted);font-size:.8rem;padding:.5rem 0">Score breakdown not available</div>';
+  }
+
+  // Financials
   const fins=[
-    ['Ask Price',fmt$(d.askingPrice),false],['Down Payment (25%)',fmt$(fin.downPayment),false],
-    ['Closing Costs',fmt$(fin.totalCashToClose&&fin.downPayment?fin.totalCashToClose-fin.downPayment:null),false],
-    ['Total Cash Invested',fmt$(fin.totalCashToClose),true],
-    ['Monthly Gross Rent',fin.grossRentalIncome?fmt$(fin.grossRentalIncome/12):'—',true],
-    ['Annual Gross Rent',fmt$(fin.grossRentalIncome),true],['Vacancy (5%)',fmt$(fin.vacancyLoss),false],
-    ['Effective Gross Income',fmt$(fin.effectiveGrossIncome),true],['Operating Expenses',fmt$(fin.totalExpenses),false],
-    ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
-    ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
+    ['ASK PRICE','$'+(d.askingPrice||0).toLocaleString()],
+    ['DOWN PAYMENT (25%)','$'+Math.round((d.askingPrice||0)*0.25).toLocaleString()],
+    ['CLOSING COSTS','$'+Math.round(fin.closingCosts||0).toLocaleString()],
+    ['TOTAL CASH INVESTED','$'+Math.round(fin.totalCashInvested||0).toLocaleString()],
+    ['MONTHLY GROSS RENT','$'+Math.round((fin.grossRentalIncome||0)/12).toLocaleString()],
+    ['ANNUAL GROSS RENT','$'+Math.round(fin.grossRentalIncome||0).toLocaleString()],
+    ['VACANCY (5%)','—'],
+    ['EFFECTIVE GROSS INCOME','$'+Math.round(fin.effectiveGrossIncome||fin.grossRentalIncome||0).toLocaleString()],
+    ['OPERATING EXPENSES','$'+Math.round(fin.totalExpenses||0).toLocaleString()],
+    ['NET OPERATING INCOME','$'+Math.round(fin.noi||0).toLocaleString()],
+    ['ANNUAL DEBT SERVICE','$'+Math.round(fin.annualDebtService||0).toLocaleString()],
+    ['ANNUAL CASH FLOW','$'+Math.round((fin.monthlyCashFlow||0)*12).toLocaleString()],
+    ['MONTHLY CASH FLOW','$'+Math.round(fin.monthlyCashFlow||0).toLocaleString(),true],
   ];
-  const _e12=document.getElementById('finGrid');if(_e12)_e12.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  const finGridEl=$('finGrid');
+  if(finGridEl) finGridEl.innerHTML=fins.map(([k,v,hl])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${hl?' g':''}">${v}</div></div>`).join('');
 
-  const _e13=document.getElementById('verdictCard');if(_e13)_e13.className='verdict '+cls;
-  const _e14=document.getElementById('vBadge');if(_e14)_e14.textContent=(score>=75?'✓ ':'')+signal;
-  const _e15=document.getElementById('vText');if(_e15)_e15.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
+  // Smart verdict
+  const svSignal=$('svSignal'); if(svSignal) svSignal.textContent=(signal||'')+' ✓';
+  const svScore=$('svScore'); if(svScore) svScore.textContent=score+'/100 · RoofRank Score';
+  const coc=fin.cashOnCashReturn||0, cap=fin.capRate||0, dscr=fin.dscr||0, ppu=fin.pricePerUnit||0;
+  const svMetrics=$('svMetrics');
+  if(svMetrics) svMetrics.innerHTML=[
+    {lbl:'Cash-on-Cash',val:coc.toFixed(1)+'%',avg:'4.8% avg',delta:coc>6?'up':'flat',lbl2:coc>6?'↑ above avg':'→ at avg'},
+    {lbl:'Cap Rate',val:cap.toFixed(1)+'%',avg:'6.1% avg',delta:cap>7?'up':'flat',lbl2:cap>7?'↑ above avg':'→ at avg'},
+    {lbl:'DSCR',val:dscr.toFixed(2),avg:'1.13 avg',delta:dscr>1.25?'up':'flat',lbl2:dscr>1.25?'↑ strong':'→ ok'},
+    {lbl:'Price/Unit',val:'$'+Math.round(ppu/1000)+'K',avg:'$280K avg',delta:ppu<280000?'up':'flat',lbl2:ppu<280000?'↓ below avg':'→ at market'},
+  ].map(m=>`<div class="sv-metric"><span class="sv-metric-lbl">${m.lbl}</span><div class="sv-metric-vals"><span class="sv-metric-val">${m.val}</span><span class="sv-metric-avg">${m.avg}</span><span class="sv-metric-delta ${m.delta}">${m.lbl2}</span></div></div>`).join('');
 
-  const _e16=document.getElementById('propDetails');if(_e16)_e16.innerHTML=[
+  const watches=[];
+  if(d.yearBuilt&&d.yearBuilt<1950) watches.push('Built '+d.yearBuilt+' — budget for deferred maintenance');
+  if(dscr<1.15) watches.push('DSCR '+dscr.toFixed(2)+' — tight coverage');
+  const svWatch=$('svWatch');
+  if(svWatch&&watches.length){svWatch.style.display='block';svWatch.innerHTML='<div class="sv-watch-title">⚠ Watch</div>'+watches.map(w=>'· '+w).join('<br>');}
+  const svUrgency=$('svUrgency');
+  if(svUrgency&&score>=75){svUrgency.style.display='block';svUrgency.textContent='Strong Buy deals typically go under contract within 7–10 days.';}
+
+  // Property details
+  const propDetailsEl=$('propDetails');
+  if(propDetailsEl) propDetailsEl.innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
-    ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
+    ['Days on Market',d.daysOnMarket],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
 
-  function mktR(label,val,avg,hi,fmt){
-    if(val==null)return'';
-    const better=hi?val>avg:val<avg;
-    return`<div class="mkt-row"><span class="mkt-label">${label}</span><div class="mkt-vals"><span class="mkt-this ${better?'win':'lose'}">${fmt(val)}</span><span class="mkt-avg">${fmt(avg)} avg</span></div></div>`;
-  }
-  const mktH=[
-    mktR('Cap Rate',fin.capRate,avgs.capRate,true,v=>v.toFixed(1)+'%'),
-    mktR('Cash-on-Cash',fin.cashOnCashReturn,avgs.coc,true,v=>v.toFixed(1)+'%'),
-    mktR('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
-    mktR('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
-  ].filter(Boolean).join('');
-  if(mktH){document.getElementById('mktRows').innerHTML=mktH;document.getElementById('mktCompare').style.display='block';}
-
-  const uc=document.getElementById('upgradeCard');
-  if(false && score>=75){  // removed - info shown in smart verdict card
-    uc.className='side-card upgrade-card sb';uc.style.display='block';
-    uc.innerHTML='<div class="upgrade-title">✓ Already a Strong Buy</div><div style="font-size:.78rem;color:var(--muted);line-height:1.65">This deal meets Strong Buy criteria. Move quickly — deals at this score typically go under contract within 7–10 days.</div>';
-  } else if(fin.noi&&d.askingPrice){
-    const tp=Math.round(fin.noi/0.08);const sv=d.askingPrice-tp;
-    const cr=fin.grossRentalIncome?Math.round(fin.grossRentalIncome/12):null;
-    const ir=cr?Math.round(cr*1.15):null;
-    let rows='';
-    if(sv>0)rows+=`<div class="upgrade-row"><span class="upgrade-label">Negotiate price to</span><span class="upgrade-val">${fmtK(tp)}</span></div><div class="upgrade-row"><span class="upgrade-label">Reduction needed</span><span class="upgrade-val">$${Math.round(sv/1000)}K (${((sv/d.askingPrice)*100).toFixed(1)}%)</span></div>`;
-    if(ir&&cr)rows+=`<div class="upgrade-row"><span class="upgrade-label">Or push rents to</span><span class="upgrade-val">${fmtK(ir)}/mo</span></div>`;
-    if(rows){uc.className='side-card upgrade-card';uc.style.display='block';uc.innerHTML='<div class="upgrade-title">What would make this a Strong Buy?</div>'+rows;}
-  }
-
-  // Populate cash flow highlight bar
-  const cfBar = document.getElementById('cfBar');
-  const cfBarVal = document.getElementById('cfBarVal');
-  const cfBarAnn = document.getElementById('cfBarAnn');
-  const _cfVal = fin.monthlyCashFlow || fin.cashFlow || 0;
-  if(cfBar && (_cfVal !== 0 || fin.monthlyCashFlow === 0)){
-    cfBar.style.display = 'flex';
-    const cf = Math.round(_cfVal);
-    cfBarVal.textContent = (cf >= 0 ? '+' : '') + '$' + Math.abs(cf).toLocaleString() + '/mo';
-    cfBarVal.style.color = cf >= 0 ? '#fff' : '#f08080';
-    if(cfBarAnn) cfBarAnn.textContent = '$' + Math.abs(Math.round(cf * 12)).toLocaleString() + '/yr';
-  }
-
-  const nb=document.getElementById('narrative');
-  if(nb&&d.city){
-    const ppu=fin.pricePerUnit?Math.round(fin.pricePerUnit/1000):null;
-    const cv=fin.capRate?(fin.capRate-avgs.capRate).toFixed(1):null;
-    const age=d.yearBuilt?2025-d.yearBuilt:null;
-    let txt='';
-    if(ppu)txt+=`At <strong>$${ppu}K per unit</strong> in ${d.city}, you're paying <strong style="color:${ppu<avgs.ppu/1000?'var(--forest)':'var(--ink)'}">${ppu<avgs.ppu/1000?'below market average':'at market rate'}</strong>. `;
-    if(cv!=null)txt+=`The <strong>${fin.capRate.toFixed(1)}% cap rate</strong> is <strong style="color:${cv>0?'var(--forest)':'var(--rose)'}">${Math.abs(cv)}% ${cv>0?'above':'below'}</strong> the ${d.city} average. `;
-    if(age>80)txt+=`With a <strong>${d.yearBuilt} build</strong>, budget for CapEx carefully on a ${age}-year-old building. `;
-    if(fin.dscr&&fin.dscr<1.1)txt+=`⚠️ <strong style="color:var(--rose)">DSCR of ${fin.dscr.toFixed(2)}</strong> is tight — lenders typically require 1.25 minimum.`;
-    else if(fin.dscr&&fin.dscr>=1.35)txt+=`<strong style="color:var(--forest)">DSCR of ${fin.dscr.toFixed(2)}</strong> gives solid cushion above lender minimums.`;
-    if(txt){nb.innerHTML=txt;nb.style.display='block';}
-  }
-
-  const _e17=document.getElementById('loading');if(_e17)_e17.style.display='none';
-  const _e18=document.getElementById('mainLayout');if(_e18)_e18.style.display='grid';
-  document.title='RoofRank — '+d.address;
-
-  // Generate score sparkline (simulated 4-week trend)
-  const spark=document.getElementById('sparkline');
-  const sparkTrend=document.getElementById('sparkTrend');
-  if(spark&&score>0){
-    // Simulate last 4 weeks of score — slight variance around current
-    const seed=score+d.daysOnMarket||score;
-    const hist=[
-      Math.round(score*(0.88+((seed*7)%15)/100)),
-      Math.round(score*(0.92+((seed*13)%10)/100)),
-      Math.round(score*(0.95+((seed*3)%8)/100)),
-      score
-    ].map(s=>Math.min(100,Math.max(0,s)));
-    const maxH=Math.max(...hist);
-    const trend=hist[3]-hist[0];
+  // Score history sparkline
+  const hist=(d.reportData||{}).scoreHistory||[score,score,score,score];
+  const spark=$('spark');
+  if(spark){
+    const maxH=Math.max(...hist,1);
     spark.innerHTML=hist.map((s,i)=>{
       const h=Math.round((s/maxH)*20)+4;
-      const c=i===3?scoreColor(score):'var(--cream-3)';
-      return`<div class="spark-bar" style="height:${h}px;background:${c}"></div>`;
+      const col=i===hist.length-1?c:'var(--cream-3)';
+      return`<div class="spark-bar" style="height:${h}px;background:${col}"></div>`;
     }).join('');
-    if(sparkTrend) sparkTrend.textContent=trend>0?`↑ ${trend} pts, 4 wks`:trend<0?`↓ ${Math.abs(trend)} pts, 4 wks`:'Stable, 4 wks';
-    if(sparkTrend) sparkTrend.style.color=trend>0?'var(--forest)':trend<0?'var(--rose)':'var(--faint)';
+  }
+  const sparkTrend=$('sparkTrend');
+  if(sparkTrend){
+    const trend=hist[hist.length-1]-hist[0];
+    sparkTrend.textContent=trend>0?`↑ ${trend} pts, 4 wks`:trend<0?`↓ ${Math.abs(trend)} pts, 4 wks`:'Stable, 4 wks';
+    sparkTrend.style.color=trend>0?'var(--forest)':trend<0?'var(--rose)':'var(--faint)';
   }
 
-  // Show offer calculator
-  const oc=document.getElementById('offerCard');
-  if(oc) oc.style.display='block';
-  setTimeout(calcMaxOffer, 100);
+  // Show layout
+  S('loading','display','none');
+  S('mainLayout','display','grid');
+  document.title='RoofRank — '+d.address;
+  window._dealData=d;
+  aiDealId=d.id;
+
+  // Open financials by default on mobile
+  if(window.innerWidth<=430){
+    const finSection=finGridEl?.closest('.section-card');
+    if(finSection) finSection.classList.add('open');
+  }
 }
+
 
 async function toggleWatch(){
   if(!fid)return;
