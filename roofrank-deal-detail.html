@@ -199,6 +199,80 @@ nav.top{
 .sv-watch-title{font-weight:700; margin-bottom:.25rem; letter-spacing:.04em}
 .sv-urgency{margin-top:1rem; font-size:.88rem; color:rgba(255,255,255,.72); font-style:italic; line-height:1.6}
 
+/* ── ANALYST VERDICT (the AI's voice — leads the card) ─────────────────── */
+.analyst-verdict{
+  font-family:var(--serif); font-size:1.05rem; line-height:1.65;
+  color:rgba(255,255,255,.92); font-style:italic; font-weight:400;
+  margin-bottom:1.15rem; padding-bottom:1.1rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.analyst-verdict::before{
+  content:'"'; font-size:2.4rem; color:var(--sage); line-height:0;
+  margin-right:.18rem; vertical-align:-.35em; font-style:normal; font-family:var(--serif);
+}
+.analyst-verdict b{color:#fff; font-weight:600; font-style:normal}
+
+/* ── ANALYST CHAT (chat lives inside the analyst card now) ────────────── */
+.analyst-chat-divider{height:1px; background:rgba(255,255,255,.08); margin:1.25rem 0 1rem}
+.analyst-chat-prompt{
+  display:flex; align-items:center; gap:.5rem;
+  font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(255,255,255,.55); margin-bottom:.85rem;
+}
+.analyst-chat-prompt::before{
+  content:''; width:14px; height:14px; flex-shrink:0;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237aaa8f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>") no-repeat center / contain;
+}
+.analyst-card .ai-suggestions{margin-bottom:.85rem; display:flex; flex-wrap:wrap; gap:.4rem}
+.analyst-card .ai-suggestion{
+  font-size:.78rem; padding:.4rem .75rem; border-radius:999px;
+  background:rgba(122,170,143,.14); border:1px solid rgba(122,170,143,.3); color:var(--sage);
+  cursor:pointer; transition:all .15s; font-family:var(--sans);
+}
+.analyst-card .ai-suggestion:hover{background:var(--sage); color:#1c1f1c; border-color:var(--sage)}
+.analyst-card .ai-messages{
+  display:flex; flex-direction:column; gap:.65rem;
+  margin-bottom:.85rem; max-height:340px; overflow-y:auto;
+}
+.analyst-card .ai-messages:empty{display:none}
+.analyst-card .ai-msg{
+  font-size:.92rem; line-height:1.65; padding:.85rem 1rem; border-radius:10px;
+  word-wrap:break-word; white-space:pre-wrap;
+}
+.analyst-card .ai-msg.user{
+  background:rgba(122,170,143,.18); border:1px solid rgba(122,170,143,.3);
+  color:#fff; align-self:flex-end; max-width:88%;
+}
+.analyst-card .ai-msg.assistant{
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.92);
+}
+.analyst-card .ai-msg.assistant.loading{color:rgba(255,255,255,.5); font-style:italic}
+.analyst-card .ai-msg.assistant.loading::after{
+  content:''; display:inline-block; width:7px; height:7px; background:var(--sage);
+  border-radius:50%; margin-left:6px; animation:aiPulse 1s infinite;
+}
+.analyst-card .ai-input-row{display:flex; gap:.5rem}
+.analyst-card .ai-input{
+  flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.15);
+  color:#fff; border-radius:10px; padding:.75rem .95rem;
+  font-size:.95rem; font-family:var(--sans); outline:none; min-width:0;
+  transition:all .15s;
+}
+.analyst-card .ai-input::placeholder{color:rgba(255,255,255,.4)}
+.analyst-card .ai-input:focus{border-color:var(--sage); background:rgba(255,255,255,.08)}
+.analyst-card .ai-send{
+  background:var(--sage); color:#1c1f1c; border:none; border-radius:10px;
+  padding:.75rem 1.1rem; font-size:.92rem; font-weight:600;
+  cursor:pointer; font-family:var(--sans); white-space:nowrap;
+}
+.analyst-card .ai-send:hover{background:#94c4a4}
+.analyst-card .ai-send:disabled{opacity:.5; cursor:not-allowed}
+.analyst-card .ai-foot{
+  font-size:.7rem; color:rgba(255,255,255,.4); text-align:center; margin-top:.85rem;
+}
+
 /* ── NARRATIVE ─────────────────────────────────────────────────────────── */
 .narrative{
   font-size:1rem; line-height:1.8; color:var(--ink);
@@ -526,41 +600,21 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── MARKET SIGNAL ────────────────────────────────────────────── -->
-  <section class="market-signal" id="marketSignal" style="display:none"></section>
-
-  <!-- ── ANALYST CARD ─────────────────────────────────────────────── -->
-  <section>
+  <!-- ── ANALYST CARD (verdict + metrics + chat — single AI identity) ── -->
+  <section id="analystSection">
     <div class="analyst-card">
       <div class="analyst-head">
         <div class="analyst-dot"></div>
         <div class="analyst-title">RoofRank Analyst</div>
         <div class="analyst-badge">AI</div>
       </div>
+      <div class="analyst-verdict" id="analystVerdict">—</div>
       <div id="svMetrics"></div>
       <div class="sv-watch" id="svWatch" style="display:none"></div>
       <div class="sv-urgency" id="svUrgency" style="display:none"></div>
-    </div>
-  </section>
 
-  <!-- ── NARRATIVE ────────────────────────────────────────────────── -->
-  <section id="narrativeSection" style="display:none">
-    <div class="eyebrow">Analyst Notes</div>
-    <div class="narrative" id="narrative"></div>
-  </section>
-
-  <!-- ── AI CHAT ──────────────────────────────────────────────────── -->
-  <section>
-    <div class="ai-card">
-      <div class="ai-head">
-        <div class="ai-icon">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <div>
-          <div class="ai-title">Ask the Analyst</div>
-          <div class="ai-sub">Specific answers on this exact deal</div>
-        </div>
-      </div>
+      <div class="analyst-chat-divider"></div>
+      <div class="analyst-chat-prompt">Ask a follow-up</div>
       <div class="ai-suggestions" id="aiSuggestions">
         <span class="ai-suggestion" onclick="askSuggestion(this)">Biggest risk?</span>
         <span class="ai-suggestion" onclick="askSuggestion(this)">What should I offer?</span>
@@ -576,7 +630,24 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── CASH FLOW WATERFALL ─────────────────────────────────────── -->
+  <!-- ── SCORE BREAKDOWN — "why this score" — partially locked ─────── -->
+  <section>
+    <div class="section-title">Why this score <span class="meta">how we got to <span id="bdScore">—</span></span></div>
+    <div id="scoreBreakdownPublic"></div>
+    <div class="pro-locked">
+      <div class="pro-locked-inner" id="scoreBreakdownLocked"></div>
+      <div class="pro-lock-overlay">
+        <div class="pro-lock-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="pro-lock-title">See the full breakdown</div>
+        <div class="pro-lock-sub">All eight scoring dimensions — including CapEx, neighborhood grade, and price-per-unit benchmarks.</div>
+        <a href="roofrank-pricing.html" class="pro-lock-btn">Unlock with Pro →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CASH FLOW WATERFALL — "the math" ─────────────────────────── -->
   <section id="cfSection" style="display:none">
     <div class="section-title">Cash flow <span class="meta">where every rent dollar goes</span></div>
     <div class="cf-assum">
@@ -615,23 +686,6 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── SCORE BREAKDOWN (locked) ─────────────────────────────────── -->
-  <section>
-    <div class="section-title">Score breakdown <span class="meta">how we got to <span id="bdScore">—</span></span></div>
-    <div id="scoreBreakdownPublic"></div>
-    <div class="pro-locked">
-      <div class="pro-locked-inner" id="scoreBreakdownLocked"></div>
-      <div class="pro-lock-overlay">
-        <div class="pro-lock-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <div class="pro-lock-title">See the full breakdown</div>
-        <div class="pro-lock-sub">All eight scoring dimensions — including CapEx, neighborhood grade, and price-per-unit benchmarks.</div>
-        <a href="roofrank-pricing.html" class="pro-lock-btn">Unlock with Pro →</a>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <div class="loading" id="loading">Loading deal…</div>
@@ -646,11 +700,14 @@ nav.top{
         <div class="sticky-cf" id="stickyCf">—</div>
       </div>
     </div>
-    <a href="roofrank-pricing.html" class="sticky-cta">Unlock Pro →</a>
+    <a href="#" class="sticky-cta" id="stickyCta">★ Save</a>
   </div>
 </div>
 
 <!-- Hidden legacy IDs (kept so any legacy JS calls don't error) -->
+<span id="marketSignal" style="display:none"></span>
+<span id="narrative" style="display:none"></span>
+<span id="narrativeSection" style="display:none"></span>
 <span id="hrSig" style="display:none"></span>
 <span id="svSignal" style="display:none"></span>
 <span id="svScore" style="display:none"></span>
@@ -718,6 +775,43 @@ function computeScenarioFin(d, fin, state){
 }
 
 // ── Scenario-dependent renderers (called by both initial render and applyScenario)
+// Build a one-or-two-sentence verdict in the analyst's "voice" from current scenario state
+function buildAnalystVerdict(d, sFin, score){
+  const cf = sFin.monthlyCashFlow;
+  const dscr = sFin.dscr;
+  const coc = sFin.cashOnCashReturn;
+  const dom = d.daysOnMarket;
+  let lead = '';
+  if(score>=75 && cf!=null && cf>500 && coc!=null){
+    lead = `<b>Strong fundamentals</b> — ${coc.toFixed(1)}% cash-on-cash with <b>$${Math.round(cf).toLocaleString()}/mo</b> coming in.`;
+  } else if(score>=75){
+    lead = `<b>Strong buy on the score</b>, though cash flow is thinner than top-tier comps in this market.`;
+  } else if(score>=60 && cf!=null && cf>0 && coc!=null){
+    lead = `<b>Solid deal at current pricing</b> — ${coc.toFixed(1)}% return with $${Math.round(cf).toLocaleString()}/mo in your pocket.`;
+  } else if(score>=60){
+    lead = `<b>Decent score</b>, but the cash flow is razor-thin — confirm your rate assumption is real.`;
+  } else if(score>=45){
+    lead = `<b>Borderline deal</b> — only pencils out if you're aggressive on rate or push rents above market.`;
+  } else {
+    lead = `<b>Numbers don't pencil</b> at current pricing — pass, or push for a material price cut.`;
+  }
+  let follow = '';
+  if(dscr!=null && dscr<1.25){
+    follow = ` DSCR of <b>${dscr.toFixed(2)}</b> is below lender minimums — confirm financing before committing.`;
+  } else if(cf!=null && cf<0){
+    follow = ` Cash flow only turns positive at materially lower rates or higher rents.`;
+  } else if(dom!=null && dom>60){
+    follow = ` <b>${dom} days on market</b> — seller is likely open to a serious offer.`;
+  } else if(d.yearBuilt && (2025-d.yearBuilt)>80){
+    follow = ` Built in <b>${d.yearBuilt}</b> — budget CapEx aggressively on a ${2025-d.yearBuilt}-year-old building.`;
+  } else if(score>=75 && dom!=null && dom<14){
+    follow = ` Fresh listing — deals at this score typically go under contract within <b>7–10 days</b>.`;
+  } else if(dscr!=null && dscr>=1.4){
+    follow = ` DSCR of <b>${dscr.toFixed(2)}</b> gives solid cushion above lender minimums.`;
+  }
+  return lead + follow;
+}
+
 function renderAnalystMetrics(d, sFin, avgs){
   const _svMetrics=document.getElementById('svMetrics');
   if(!_svMetrics) return;
@@ -840,7 +934,12 @@ function applyScenario(){
   const fin = (d.reportData||{}).financials || {};
   const avgs = MARKET_AVGS[d.city] || MARKET_AVGS['default'];
   const sFin = computeScenarioFin(d, fin, scenario);
-  try { renderAnalystMetrics(d, sFin, avgs); renderAnalystWatch(d, sFin); } catch(e){ console.error('analyst failed:', e); }
+  try {
+    const score = d.rankScore || 0;
+    setHTML('analystVerdict', buildAnalystVerdict(d, sFin, score));
+    renderAnalystMetrics(d, sFin, avgs);
+    renderAnalystWatch(d, sFin);
+  } catch(e){ console.error('analyst failed:', e); }
   renderHeroCashFlow(d, sFin);
   renderCfWaterfall(d, sFin);
   renderStickyCf(sFin);
@@ -866,6 +965,34 @@ function applyScenario(){
   document.querySelectorAll('#cfDpToggle .cf-edit-opt').forEach(b => {
     b.classList.toggle('active', Math.abs(parseFloat(b.dataset.val) - scenario.dpPct) < 0.001);
   });
+}
+
+// Sticky bottom CTA: starts as 'Save', swaps to 'Unlock Pro' once the analyst card is scrolled past
+function setupStickyCta(){
+  const cta = document.getElementById('stickyCta');
+  const anchor = document.getElementById('analystSection');
+  if(!cta || !anchor) return;
+  let mode = 'save';
+  const setMode = (next) => {
+    if(next===mode) return;
+    mode = next;
+    if(next==='pro'){
+      cta.textContent = 'Unlock Pro →';
+      cta.setAttribute('href','roofrank-pricing.html');
+      cta.onclick = null;
+    } else {
+      cta.textContent = '★ Save';
+      cta.setAttribute('href','#');
+      cta.onclick = (e) => { e.preventDefault(); toggleWatch(); };
+    }
+  };
+  setMode('save');
+  const update = () => {
+    const rect = anchor.getBoundingClientRect();
+    setMode(rect.bottom < 0 ? 'pro' : 'save');
+  };
+  window.addEventListener('scroll', update, { passive:true });
+  update();
 }
 
 function setupScenarioControls(){
@@ -949,7 +1076,19 @@ function renderDeal(d){
   setText('navAddr', d.address);
   setText('heroAddr', d.address);
   const unitLabel = d.units===1?'Unit':'Units';
-  setText('heroCity', [d.city,d.state,d.zipCode].filter(Boolean).join(', ') + (d.units?` · ${d.units} ${unitLabel}`:'') + (d.propertyType?` · ${d.propertyType}`:'') + (d.yearBuilt?` · Built ${d.yearBuilt}`:''));
+  const cityBase = [d.city,d.state,d.zipCode].filter(Boolean).join(', ') + (d.units?` · ${d.units} ${unitLabel}`:'') + (d.propertyType?` · ${d.propertyType}`:'') + (d.yearBuilt?` · Built ${d.yearBuilt}`:'');
+  // Fold market signal into the city line as a colored suffix
+  let marketTag = '';
+  if(d.city && score>0){
+    if(score>=80) marketTag = `Top ${Math.max(5,100-score)}% in ${d.city}`;
+    else if(score>=65) marketTag = `Beats ${score}% of ${d.city} listings`;
+    else if(score>=45) marketTag = `Middle of pack in ${d.city}`;
+    else marketTag = `Bottom ${100-score}% in ${d.city}`;
+  }
+  const heroCityEl = document.getElementById('heroCity');
+  if(heroCityEl){
+    heroCityEl.innerHTML = cityBase + (marketTag ? ` <span style="color:var(--forest);font-weight:500">· ${marketTag}</span>` : '');
+  }
 
   // ── Score ring
   setText('hrNum', score);
@@ -964,25 +1103,12 @@ function renderDeal(d){
   const sigEl=document.getElementById('heroSignal');
   if(sigEl){ sigEl.textContent=String(signal||'').toUpperCase(); sigEl.className='hero-signal '+cls; }
 
-  // ── Hero badges (context only — no signal/score, those are above)
+  // ── Hero badges (context only — no signal/score/price; those are elsewhere)
   const _hb=document.getElementById('heroBadges');
   if(_hb) _hb.innerHTML=[
     d.daysOnMarket!=null?`<span class="badge">${d.daysOnMarket}d on market</span>`:'',
     d.zipCode?`<span class="badge">ZIP ${d.zipCode}</span>`:'',
-    d.askingPrice?`<span class="badge">Ask ${fmtK(d.askingPrice)}</span>`:'',
   ].filter(Boolean).join('');
-
-  // ── Market signal
-  const marketSig=document.getElementById('marketSignal');
-  if(marketSig && d.city && score>0){
-    let txt;
-    if(score>=80) txt = `Ranks in the <b>top ${Math.max(5,100-score)}%</b> of ${d.city} multifamily deals we've analyzed`;
-    else if(score>=65) txt = `Stronger than <b>${score}%</b> of recent ${d.city} multifamily listings`;
-    else if(score>=45) txt = `Middle of the pack for ${d.city} — <b>${score}/100</b> overall`;
-    else txt = `In the <b>bottom ${100-score}%</b> of ${d.city} deals — proceed carefully`;
-    marketSig.innerHTML = txt;
-    marketSig.style.display = 'block';
-  }
 
   // ── Score breakdown
   const bars=[
@@ -1010,22 +1136,6 @@ function renderDeal(d){
   setHTML('scoreBreakdownPublic', publicBars.map(renderBar).join(''));
   setHTML('scoreBreakdownLocked', lockedBars.map(renderBar).join(''));
 
-  // ── Narrative
-  const narSec=document.getElementById('narrativeSection');
-  const nb=document.getElementById('narrative');
-  if(nb&&d.city){
-    const ppu = fin.pricePerUnit?Math.round(fin.pricePerUnit/1000):null;
-    const cv  = fin.capRate?(fin.capRate-avgs.capRate).toFixed(1):null;
-    const age = d.yearBuilt?2025-d.yearBuilt:null;
-    let txt='';
-    if(ppu) txt+=`At <strong>$${ppu}K per unit</strong> in ${d.city}, you're paying <strong style="color:${ppu<avgs.ppu/1000?'var(--forest)':'var(--ink)'}">${ppu<avgs.ppu/1000?'below market average':'at or above market rate'}</strong>. `;
-    if(cv!=null) txt+=`The <strong>${fin.capRate.toFixed(1)}% cap rate</strong> is <strong style="color:${cv>0?'var(--forest)':'var(--rose)'}">${Math.abs(cv)}% ${cv>0?'above':'below'}</strong> the ${d.city} average. `;
-    if(age&&age>80) txt+=`With a <strong>${d.yearBuilt} build</strong>, budget for CapEx carefully on a ${age}-year-old building. `;
-    if(fin.dscr&&fin.dscr<1.1) txt+=`<strong style="color:var(--rose)">DSCR of ${fin.dscr.toFixed(2)}</strong> is tight — lenders typically require 1.25 minimum.`;
-    else if(fin.dscr&&fin.dscr>=1.35) txt+=`<strong style="color:var(--forest)">DSCR of ${fin.dscr.toFixed(2)}</strong> gives solid cushion above lender minimums.`;
-    if(txt && narSec){ nb.innerHTML=txt; narSec.style.display='block'; }
-  }
-
   // ── Sticky bottom bar (mobile only — CSS handles display); score & signal are static
   const sNum=document.getElementById('stickyNum');
   const sSig=document.getElementById('stickySignal');
@@ -1037,6 +1147,7 @@ function renderDeal(d){
   // ── Wire scenario controls and run the first render of all scenario-dependent parts
   setupScenarioControls();
   applyScenario();
+  setupStickyCta();
 
   // ── Reveal
   document.getElementById('loading').style.display='none';
