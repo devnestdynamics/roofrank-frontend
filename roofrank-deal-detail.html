@@ -268,28 +268,66 @@ nav.top{
 .bd-badge.poor{background:rgba(160,48,48,.11); color:var(--rose)}
 
 /* ── CASH FLOW WATERFALL ───────────────────────────────────────────────── */
-.cf-sub{
-  font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--muted); margin:0 0 .5rem;
-}
-.cf-sub + .cf-sub{margin-top:1.4rem}
-.cf-grid{display:flex; flex-direction:column}
-.cf-row{
+.cf-rent-cap{
   display:flex; justify-content:space-between; align-items:baseline;
-  padding:.7rem 0; font-size:.95rem; border-bottom:1px solid var(--cream-2);
+  font-size:.78rem; color:var(--muted); margin-bottom:.55rem;
 }
-.cf-row:last-child{border-bottom:none}
-.cf-k{color:var(--ink)}
-.cf-v{font-family:var(--mono); font-weight:500; color:var(--ink)}
-.cf-row.income .cf-v{color:var(--forest)}
-.cf-row.expense .cf-v{color:var(--ink)}
-.cf-row.total{
-  margin-top:.4rem; padding:1rem 0 .25rem;
-  border-top:2px solid var(--ink); border-bottom:none;
+.cf-rent-cap b{color:var(--ink); font-family:var(--mono); font-weight:500; font-size:.9rem}
+.cf-bar{
+  display:flex; height:46px; border-radius:10px; overflow:hidden;
+  background:var(--cream-3); box-shadow:inset 0 0 0 1px var(--border);
+  margin-bottom:1.25rem;
 }
-.cf-row.total .cf-k{font-weight:600; font-size:1.02rem}
-.cf-row.total .cf-v{font-size:1.3rem; font-weight:600; color:var(--forest)}
-.cf-row.total.negative .cf-v{color:var(--rose)}
+.cf-seg{
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; font-weight:600; color:#fff;
+  white-space:nowrap; padding:0 .35rem; min-width:0; overflow:hidden;
+  position:relative;
+  transition:flex .9s cubic-bezier(.22,1,.36,1);
+}
+.cf-seg.pi{background:#1c4a35}
+.cf-seg.tax{background:#3e8160}
+.cf-seg.ins{background:#7aaa8f}
+.cf-seg.cf{background:#c5e0c8; color:#1c4a35}
+.cf-seg.deficit{background:#a03030; color:#fff}
+.cf-seg + .cf-seg{box-shadow:inset 1px 0 0 rgba(255,255,255,.18)}
+.cf-seg .cf-seg-pct{opacity:.85}
+.cf-legend{display:flex; flex-direction:column}
+.cf-leg{
+  display:flex; align-items:center; gap:.75rem;
+  padding:.65rem 0; font-size:.95rem;
+  border-bottom:1px solid var(--cream-2);
+}
+.cf-leg:last-child{border-bottom:none}
+.cf-leg-dot{width:10px; height:10px; border-radius:3px; flex-shrink:0}
+.cf-leg-name{flex:1; color:var(--ink)}
+.cf-leg-vals{display:flex; align-items:baseline; gap:.65rem; font-family:var(--mono)}
+.cf-leg-val{font-weight:500; color:var(--ink)}
+.cf-leg-pct{color:var(--muted); font-size:.8rem; min-width:38px; text-align:right}
+.cf-leg.pi  .cf-leg-dot{background:#1c4a35}
+.cf-leg.tax .cf-leg-dot{background:#3e8160}
+.cf-leg.ins .cf-leg-dot{background:#7aaa8f}
+.cf-leg.cf  .cf-leg-dot{background:#c5e0c8; box-shadow:inset 0 0 0 1px rgba(28,74,53,.3)}
+.cf-leg.cf{
+  margin-top:.35rem; padding-top:.95rem;
+  border-top:1px solid var(--border); border-bottom:none;
+}
+.cf-leg.cf .cf-leg-name{font-weight:600; font-size:1rem}
+.cf-leg.cf .cf-leg-val{color:var(--forest); font-weight:600; font-size:1.15rem}
+.cf-leg.cf.negative .cf-leg-val{color:var(--rose)}
+.cf-leg.cf.negative .cf-leg-dot{background:#a03030; box-shadow:none}
+.cf-upfront{
+  margin-top:1.5rem; padding:.85rem 1rem;
+  background:var(--cream-2); border-radius:10px;
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:.88rem;
+}
+.cf-upfront-k{color:var(--muted)}
+.cf-upfront-v{font-family:var(--mono); font-weight:500; color:var(--ink)}
+@media(max-width:520px){
+  .cf-bar{height:38px}
+  .cf-seg{font-size:.62rem}
+}
 
 /* ── PRO LOCK (used by score breakdown) ────────────────────────────────── */
 .pro-locked{position:relative; margin-top:.5rem}
@@ -476,13 +514,19 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── CASH FLOW ────────────────────────────────────────────────── -->
-  <section>
-    <div class="section-title">Cash flow <span class="meta">the math behind the headline</span></div>
-    <div class="cf-sub">Upfront</div>
-    <div class="cf-grid" id="cfUpfront"></div>
-    <div class="cf-sub">Monthly</div>
-    <div class="cf-grid" id="cfMonthly"></div>
+  <!-- ── CASH FLOW WATERFALL ─────────────────────────────────────── -->
+  <section id="cfSection" style="display:none">
+    <div class="section-title">Cash flow <span class="meta">where every rent dollar goes</span></div>
+    <div class="cf-rent-cap">
+      <span>Monthly rent</span>
+      <b id="cfRentVal">—</b>
+    </div>
+    <div class="cf-bar" id="cfBar"></div>
+    <div class="cf-legend" id="cfLegend"></div>
+    <div class="cf-upfront" id="cfUpfront" style="display:none">
+      <span class="cf-upfront-k">Total Cash to Close</span>
+      <span class="cf-upfront-v" id="cfUpfrontVal">—</span>
+    </div>
   </section>
 
   <!-- ── SCORE BREAKDOWN (locked) ─────────────────────────────────── -->
@@ -721,38 +765,72 @@ function renderDeal(d){
   setHTML('scoreBreakdownPublic', publicBars.map(renderBar).join(''));
   setHTML('scoreBreakdownLocked', lockedBars.map(renderBar).join(''));
 
-  // ── Cash flow waterfall (public — the story behind the headline number)
+  // ── Cash flow waterfall: bar + legend
   const monthlyRent = fin.grossRentalIncome ? fin.grossRentalIncome/12 : null;
   const monthlyPI   = fin.annualDebtService ? fin.annualDebtService/12 : null;
   const monthlyTax  = fin.annualTaxes ? fin.annualTaxes/12 : (d.askingPrice ? d.askingPrice*0.012/12 : null);
   const monthlyIns  = fin.annualInsurance ? fin.annualInsurance/12 : (d.askingPrice ? d.askingPrice*0.004/12 : null);
   const monthlyCf   = fin.monthlyCashFlow!=null ? fin.monthlyCashFlow : null;
 
-  const cfRow = (label, val, kind) => {
-    if(val==null) return '';
-    const sign = kind==='income' ? '+' : kind==='expense' ? '−' : (val>=0?'+':'−');
-    const amount = '$' + Math.round(Math.abs(val)).toLocaleString();
-    return `<div class="cf-row ${kind}"><span class="cf-k">${label}</span><span class="cf-v">${sign}${amount}</span></div>`;
-  };
-  const cfTotalRow = (label, val) => {
-    if(val==null) return '';
-    const cls = val<0 ? ' negative' : '';
-    const sign = val>=0 ? '+' : '−';
-    return `<div class="cf-row total${cls}"><span class="cf-k">${label}</span><span class="cf-v">${sign}$${Math.round(Math.abs(val)).toLocaleString()}</span></div>`;
-  };
+  const cfSection = document.getElementById('cfSection');
+  if(cfSection && monthlyRent && monthlyPI!=null){
+    cfSection.style.display='';
+    setText('cfRentVal', '+$'+Math.round(monthlyRent).toLocaleString()+'/mo');
 
-  setHTML('cfUpfront',
-    fin.totalCashToClose!=null
-      ? `<div class="cf-row"><span class="cf-k">Total Cash to Close</span><span class="cf-v">${fmt$(fin.totalCashToClose)}</span></div>`
-      : ''
-  );
-  setHTML('cfMonthly', [
-    cfRow('Monthly Rent', monthlyRent, 'income'),
-    cfRow('Mortgage P&I', monthlyPI, 'expense'),
-    cfRow('Property Taxes', monthlyTax, 'expense'),
-    cfRow('Insurance', monthlyIns, 'expense'),
-    cfTotalRow('Monthly Cash Flow', monthlyCf),
-  ].filter(Boolean).join(''));
+    // Bar: segments proportional to monthlyRent (which equals PI+Tax+Ins+CF when CF>=0)
+    // If CF < 0, expenses exceed rent — segments scaled so expenses fill the bar and a red deficit segment is appended.
+    const denom = monthlyCf >= 0 ? monthlyRent : (monthlyPI + monthlyTax + monthlyIns + Math.abs(monthlyCf));
+    const pct = v => Math.max(0, (v/denom)*100);
+    const cfPct = monthlyCf >= 0 ? pct(monthlyCf) : pct(Math.abs(monthlyCf));
+    const cfClass = monthlyCf >= 0 ? 'cf' : 'deficit';
+    const cfShortLabel = monthlyCf >= 0 ? 'Cash' : 'Loss';
+
+    const segHTML = (cls, label, p) => p>0.5
+      ? `<div class="cf-seg ${cls}" style="flex:${p.toFixed(2)}">${p>=11?label+' ':''}<span class="cf-seg-pct">${p.toFixed(0)}%</span></div>`
+      : '';
+    setHTML('cfBar', [
+      segHTML('pi', 'P&I',  pct(monthlyPI)),
+      segHTML('tax','Tax',  pct(monthlyTax)),
+      segHTML('ins','Ins',  pct(monthlyIns)),
+      segHTML(cfClass, cfShortLabel, cfPct),
+    ].join(''));
+
+    // Legend
+    const legRow = (cls, name, val, p) => `<div class="cf-leg ${cls}">
+      <span class="cf-leg-dot"></span>
+      <span class="cf-leg-name">${name}</span>
+      <span class="cf-leg-vals">
+        <span class="cf-leg-val">$${Math.round(Math.abs(val)).toLocaleString()}/mo</span>
+        <span class="cf-leg-pct">${p.toFixed(0)}%</span>
+      </span>
+    </div>`;
+    const legCfRow = () => {
+      const cls = 'cf' + (monthlyCf < 0 ? ' negative' : '');
+      const sign = monthlyCf >= 0 ? '+' : '−';
+      const p = monthlyRent ? (Math.abs(monthlyCf)/monthlyRent)*100 : 0;
+      return `<div class="cf-leg ${cls}">
+        <span class="cf-leg-dot"></span>
+        <span class="cf-leg-name">${monthlyCf>=0?'Monthly Cash Flow':'Monthly Loss'}</span>
+        <span class="cf-leg-vals">
+          <span class="cf-leg-val">${sign}$${Math.round(Math.abs(monthlyCf)).toLocaleString()}/mo</span>
+          <span class="cf-leg-pct">${p.toFixed(0)}%</span>
+        </span>
+      </div>`;
+    };
+    setHTML('cfLegend', [
+      legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI)),
+      legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax)),
+      legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns)),
+      legCfRow(),
+    ].join(''));
+
+    // Upfront cost chip
+    if(fin.totalCashToClose!=null){
+      const _cu=document.getElementById('cfUpfront');
+      setText('cfUpfrontVal', fmt$(fin.totalCashToClose));
+      if(_cu) _cu.style.display='';
+    }
+  }
 
   // ── Narrative
   const narSec=document.getElementById('narrativeSection');
