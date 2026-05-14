@@ -391,6 +391,15 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 <div class="loading" id="loading">Loading deal…</div>
 
 <script>
+// Safe DOM helper — prevents null errors
+const $ = id => document.getElementById(id);
+const set = (id, prop, val) => { const el=$(id); if(el) el[prop]=val; };
+const html_ = (id, val) => { const el=$(id); if(el) el.innerHTML=val; };
+const text = (id, val) => { const el=$(id); if(el) el.textContent=val; };
+const css = (id, prop, val) => { const el=$(id); if(el) el.style[prop]=val; };
+const cls = (id, val) => { const el=$(id); if(el) el.className=val; };
+
+
 const fid = new URLSearchParams(location.search).get('fid');
 const MARKET_AVGS = {
   'Boston':{capRate:5.8,coc:4.2,ppu:380000,dscr:1.12},'Providence':{capRate:6.1,coc:4.8,ppu:290000,dscr:1.14},
@@ -684,8 +693,8 @@ function _toggleAiChat_old(){
 }
 
 function askSuggestion(el){
-  document.getElementById('aiInput').value = el.textContent;
-  document.getElementById('aiSuggestions').style.display = 'none';
+  const _ai=$('aiInput'); if(_ai) _ai.value=el.textContent;
+  css('aiSuggestions','display','none');
   sendAiMessage();
 }
 
