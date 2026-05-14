@@ -385,8 +385,8 @@ function renderDeal(d){
   document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
   const vc=document.getElementById('verdictCard'); if(vc) vc.className='verdict '+cls;
-  document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
-  document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
+  const vb=document.getElementById('vBadge'); if(vb) vb.textContent=(score>=75?'✓ ':'')+signal;
+  const vt=document.getElementById('vText'); if(vt) vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
   document.getElementById('propDetails').innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
