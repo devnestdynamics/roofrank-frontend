@@ -579,7 +579,7 @@ async function boot(){
     const deal=await FeedAPI.get(fid);
     if(deal)renderDeal(deal);
     else document.getElementById('loading').textContent='Deal not found.';
-  }catch(e){document.getElementById('loading').textContent='Could not load deal: '+e.message;}
+  }catch(e){document.getElementById('loading').textContent='Could not load deal: '+e.message+' | '+e.stack?.split('\n')[1];console.error(e);}
 }
 document.addEventListener('DOMContentLoaded',boot);
 
