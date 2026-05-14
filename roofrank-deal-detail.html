@@ -429,9 +429,9 @@ function renderDeal(d){
   document.getElementById('navAddr').textContent=d.address;
   document.getElementById('heroAddr').textContent=d.address;
   document.getElementById('heroCity').textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
-  document.getElementById('heroBadges').innerHTML=[
+  const _hb=document.getElementById('heroBadges');
+  if(_hb) _hb.innerHTML=[
     `<span class="badge g">Score ${score}/100</span>`,
-    `<span class="badge g">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
     d.propertyType?`<span class="badge">${d.propertyType}</span>`:'',
     d.yearBuilt?`<span class="badge">${d.yearBuilt}</span>`:'',
@@ -463,7 +463,8 @@ function renderDeal(d){
     ['CapEx Reserve',sc.capexReserve||65,'Moderate'],
     ['Neighborhood Grade',sc.neighborhoodGrade||65,(d.reportData||{}).neighborhoodGrade||'B'],
   ];
-  document.getElementById('scoreBreakdown').innerHTML=bars.map(([name,pct,label])=>{
+  const _sb=document.getElementById('scoreBreakdown');
+  if(_sb) _sb.innerHTML=bars.map(([name,pct,label])=>{
     const p=Math.max(0,Math.min(100,pct||0));
     const bc=p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
     const bl=p>=70?'good':p>=40?'ok':'low';
@@ -481,13 +482,15 @@ function renderDeal(d){
     ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
     ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
   ];
-  document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  const _fg=document.getElementById('finGrid');
+  if(_fg) _fg.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
   const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
   const _vb=document.getElementById('vBadge'); if(_vb) _vb.textContent=(score>=75?'✓ ':'')+signal;
   const _vt=document.getElementById('vText'); if(_vt) _vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
-  document.getElementById('propDetails').innerHTML=[
+  const _pd=document.getElementById('propDetails');
+  if(_pd) _pd.innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
     ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
@@ -511,15 +514,7 @@ function renderDeal(d){
   }
 
   const uc=document.getElementById('upgradeCard');
-  if(uc && fin.noi&&d.askingPrice){
-    const tp=Math.round(fin.noi/0.08);const sv=d.askingPrice-tp;
-    const cr=fin.grossRentalIncome?Math.round(fin.grossRentalIncome/12):null;
-    const ir=cr?Math.round(cr*1.15):null;
-    let rows='';
-    if(sv>0)rows+=`<div class="upgrade-row"><span class="upgrade-label">Negotiate price to</span><span class="upgrade-val">${fmtK(tp)}</span></div><div class="upgrade-row"><span class="upgrade-label">Reduction needed</span><span class="upgrade-val">$${Math.round(sv/1000)}K (${((sv/d.askingPrice)*100).toFixed(1)}%)</span></div>`;
-    if(ir&&cr)rows+=`<div class="upgrade-row"><span class="upgrade-label">Or push rents to</span><span class="upgrade-val">${fmtK(ir)}/mo</span></div>`;
-    if(rows){uc.className='side-card upgrade-card';uc.style.display='block';uc.innerHTML='<div class="upgrade-title">What would make this a Strong Buy?</div>'+rows;}
-  }
+  if(uc) uc.style.display='none';
 
   // Populate cash flow highlight bar
   const cfBar = document.getElementById('cfBar');
