@@ -120,6 +120,31 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 .offer-score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.88rem;font-weight:500;border:2.5px solid;flex-shrink:0}
 .offer-verdict{font-size:.78rem;font-weight:500}
 @media(max-width:780px){.layout{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column}}
+
+/* ── Ask the Analyst ─────────────────────────────────────────────────────── */
+.ai-chat-card{border:1px solid var(--sage-border);border-radius:var(--r);margin-bottom:.75rem;overflow:hidden;background:#fff}
+.ai-chat-header{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;background:var(--forest);cursor:pointer;user-select:none}
+.ai-chat-header-icon{width:22px;height:22px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-chat-header-icon svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ai-chat-title{font-size:.8rem;font-weight:600;color:#fff;flex:1}
+.ai-chat-badge{font-size:.58rem;font-weight:600;letter-spacing:.06em;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);padding:.15rem .5rem;border-radius:4px}
+.ai-chat-body{padding:.85rem 1rem;display:none}
+.ai-chat-card.open .ai-chat-body{display:block}
+.ai-messages{display:flex;flex-direction:column;gap:.65rem;margin-bottom:.75rem;max-height:320px;overflow-y:auto}
+.ai-msg{font-size:.82rem;line-height:1.7;padding:.65rem .8rem;border-radius:8px}
+.ai-msg.user{background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--ink);align-self:flex-end;max-width:85%}
+.ai-msg.assistant{background:var(--cream-2,#f0ece4);color:var(--ink);border:1px solid var(--border)}
+.ai-msg.assistant.loading{color:var(--muted);font-style:italic}
+.ai-suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.65rem}
+.ai-suggestion{font-size:.72rem;background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest);padding:.3rem .65rem;border-radius:20px;cursor:pointer;transition:all .15s}
+.ai-suggestion:hover{background:var(--forest);color:#fff}
+.ai-input-row{display:flex;gap:.5rem}
+.ai-input{flex:1;border:1px solid var(--border-2);border-radius:8px;padding:.5rem .75rem;font-size:.8rem;font-family:var(--sans);outline:none;transition:border-color .15s}
+.ai-input:focus{border-color:var(--forest)}
+.ai-send{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:.5rem .85rem;font-size:.8rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s;white-space:nowrap}
+.ai-send:hover{background:var(--forest-2)}
+.ai-send:disabled{opacity:.5;cursor:not-allowed}
+.ai-powered{font-size:.62rem;color:var(--muted);text-align:center;margin-top:.5rem}
 </style>
 </head>
 <body>
@@ -209,6 +234,32 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
     <div class="side-card"><div class="side-title">Property Details</div><div id="propDetails"></div></div>
     <div class="side-card" id="mktCompare" style="display:none"><div class="side-title">How does this compare?</div><div id="mktRows"></div></div>
     <div id="upgradeCard" style="display:none"></div>
+
+    <!-- ASK THE ANALYST -->
+    <div class="ai-chat-card" id="aiChatCard">
+      <div class="ai-chat-header" onclick="toggleAiChat()">
+        <div class="ai-chat-header-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <span class="ai-chat-title">Ask the Analyst</span>
+        <span class="ai-chat-badge">✦ AI</span>
+      </div>
+      <div class="ai-chat-body">
+        <div class="ai-messages" id="aiMessages"></div>
+        <div class="ai-suggestions" id="aiSuggestions">
+          <span class="ai-suggestion" onclick="askSuggestion(this)">What's the biggest risk?</span>
+          <span class="ai-suggestion" onclick="askSuggestion(this)">What should I offer?</span>
+          <span class="ai-suggestion" onclick="askSuggestion(this)">How does this compare to similar deals?</span>
+          <span class="ai-suggestion" onclick="askSuggestion(this)">Is this a good deal for a first-time investor?</span>
+        </div>
+        <div class="ai-input-row">
+          <input class="ai-input" id="aiInput" type="text" placeholder="Ask anything about this deal..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+          <button class="ai-send" id="aiSend" onclick="sendAiMessage()">Ask →</button>
+        </div>
+        <div class="ai-powered">Powered by Claude AI · Responses are AI-generated, not financial advice</div>
+      </div>
+    </div>
+
     <div class="cta-card">
       <div class="cta-t">Ready to run your own numbers?</div>
       <div class="cta-s">Adjust rents, expenses, and down payment in the Analyzer.</div>
@@ -487,6 +538,102 @@ function openInAnalyzer() {
     propType: d.propertyType || '',
   });
   window.location.href = 'roofrank-analyzer.html?' + params.toString();
+}
+
+// ── Ask the Analyst ───────────────────────────────────────────────────────
+let aiHistory = [];
+let aiDealId = null;
+
+function toggleAiChat(){
+  document.getElementById('aiChatCard').classList.toggle('open');
+}
+
+function askSuggestion(el){
+  document.getElementById('aiInput').value = el.textContent;
+  document.getElementById('aiSuggestions').style.display = 'none';
+  sendAiMessage();
+}
+
+function addAiMessage(role, text, isLoading=false){
+  const msgs = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + role + (isLoading ? ' loading' : '');
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function sendAiMessage(){
+  const input = document.getElementById('aiInput');
+  const send = document.getElementById('aiSend');
+  const message = input.value.trim();
+  if(!message) return;
+
+  // Get deal ID from URL
+  if(!aiDealId){
+    const params = new URLSearchParams(window.location.search);
+    aiDealId = params.get('fid');
+    // Try to get the DB id from stored deal data
+    if(window._dealData?.id) aiDealId = window._dealData.id;
+  }
+
+  if(!aiDealId){ addAiMessage('assistant', 'Unable to load deal data. Please refresh the page.'); return; }
+
+  input.value = '';
+  send.disabled = true;
+  addAiMessage('user', message);
+  const loadingEl = addAiMessage('assistant', 'Analyzing...', true);
+
+  try {
+    const token = localStorage.getItem('rr_token') || sessionStorage.getItem('rr_token');
+    const res = await fetch(window.ROOFRANK_API_URL + '/ai/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
+    });
+
+    if(!res.ok){ loadingEl.textContent = 'Sorry, the AI is unavailable right now.'; loadingEl.classList.remove('loading'); send.disabled=false; return; }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    loadingEl.textContent = '';
+    loadingEl.classList.remove('loading');
+
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('
+');
+      for(const line of lines){
+        if(line.startsWith('data: ')){
+          const data = line.slice(6);
+          if(data === '[DONE]') break;
+          try{
+            const parsed = JSON.parse(data);
+            if(parsed.text){ fullText += parsed.text; loadingEl.textContent = fullText; }
+          } catch(e){}
+        }
+      }
+    }
+
+    aiHistory.push({ role: 'user', content: message });
+    aiHistory.push({ role: 'assistant', content: fullText });
+    // Keep last 10 messages
+    if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
+
+  } catch(err){
+    loadingEl.textContent = 'Something went wrong. Please try again.';
+    loadingEl.classList.remove('loading');
+  }
+
+  send.disabled = false;
+  document.getElementById('aiMessages').scrollTop = 999999;
 }
 </script>
 </body>
