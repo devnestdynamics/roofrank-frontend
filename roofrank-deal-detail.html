@@ -404,7 +404,7 @@ function renderDeal(d){
     mktR('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
     mktR('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
   ].filter(Boolean).join('');
-  if(mktH){document.getElementById('mktRows').innerHTML=mktH;document.getElementById('mktCompare').style.display='block';}
+  const mktRowsEl=document.getElementById('mktRows'); const mktCmpEl=document.getElementById('mktCompare'); if(mktH&&mktRowsEl){mktRowsEl.innerHTML=mktH;} if(mktH&&mktCmpEl){mktCmpEl.style.display='block';}
 
   const uc=document.getElementById('upgradeCard');
   if(score>=75){
