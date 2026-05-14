@@ -183,6 +183,25 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
   .ai-msg.user{max-width:90%}
   .ai-full-input{font-size:.8rem}
 }
+
+/* ── Smart Verdict Card ──────────────────────────────────────────────────── */
+.smart-verdict{background:var(--forest);border-radius:var(--r);padding:1.25rem;margin-bottom:.75rem;color:#fff}
+.sv-signal{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:.25rem}
+.sv-score{font-family:var(--serif);font-size:2rem;font-weight:400;color:#fff;line-height:1.1;margin-bottom:.1rem}
+.sv-divider{height:1px;background:rgba(255,255,255,.15);margin:.85rem 0}
+.sv-metrics{display:flex;flex-direction:column;gap:.5rem}
+.sv-metric{display:flex;align-items:center;justify-content:space-between;font-size:.78rem}
+.sv-metric-lbl{color:rgba(255,255,255,.65)}
+.sv-metric-vals{display:flex;align-items:center;gap:.5rem}
+.sv-metric-val{font-weight:600;color:#fff}
+.sv-metric-avg{font-size:.68rem;color:rgba(255,255,255,.45)}
+.sv-metric-delta{font-size:.65rem;padding:.1rem .35rem;border-radius:3px;font-weight:600}
+.sv-metric-delta.up{background:rgba(122,170,143,.25);color:#7aaa8f}
+.sv-metric-delta.down{background:rgba(200,100,100,.2);color:#f08080}
+.sv-metric-delta.flat{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.sv-watch{font-size:.75rem;color:rgba(255,200,100,.9);line-height:1.6;padding:.5rem .6rem;background:rgba(255,200,100,.08);border-radius:6px;border:1px solid rgba(255,200,100,.2)}
+.sv-watch-title{font-weight:600;margin-bottom:.2rem}
+.sv-urgency{font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.6;margin-top:.75rem;font-style:italic}
 </style>
 </head>
 <body>
@@ -223,6 +242,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
       <div class="kpi"><div class="kpi-lbl">DSCR</div><div class="kpi-val" id="kDscr">—</div><div class="kpi-tgt">Lender min 1.25</div></div>
       <div class="kpi"><div class="kpi-lbl">GRM</div><div class="kpi-val" id="kGrm">—</div><div class="kpi-tgt">Target ≤ 10×</div></div>
     </div>
+
     <div class="section-card">
       <div class="sc-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Full Score Breakdown</div>
       <div id="scoreBreakdown"></div>
@@ -260,17 +280,23 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
     </div>
   </div>
   <div>
-    <div class="verdict" id="verdictCard">
-      <div class="v-badge" id="vBadge">—</div>
-      <div class="v-text" id="vText">—</div>
+    <!-- SMART VERDICT CARD -->
+    <div class="smart-verdict" id="smartVerdict">
+      <div class="sv-signal" id="svSignal">—</div>
+      <div class="sv-score" id="svScore">—</div>
+      <div class="sv-divider"></div>
+      <div class="sv-metrics" id="svMetrics"></div>
+      <div class="sv-divider"></div>
+      <div class="sv-watch" id="svWatch" style="display:none"></div>
+      <div class="sv-urgency" id="svUrgency" style="display:none"></div>
     </div>
+
     <div class="side-card"><div class="side-title">Property Details</div><div id="propDetails"></div></div>
-    <div class="side-card" id="mktCompare" style="display:none"><div class="side-title">How does this compare?</div><div id="mktRows"></div></div>
     <div id="upgradeCard" style="display:none"></div>
 
     <div class="cta-card">
-      <div class="cta-t">Ready to run your own numbers?</div>
-      <div class="cta-s">Adjust rents, expenses, and down payment in the Analyzer.</div>
+      <div class="cta-t">Run your own numbers</div>
+      <div class="cta-s">Adjust rate, rent, and down payment in the Analyzer.</div>
       <a href="#" class="cta-btn" onclick="openInAnalyzer(); return false;">Open in Analyzer →</a>
     </div>
   </div>
@@ -457,7 +483,6 @@ function handleExport(){
 function pmtOffer(r,n,pv){if(r===0)return pv/n;return pv*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);}
 
 function calcMaxOffer(){
-  if(!document.getElementById('offerTargetScore')) return;
   if(!_deal) return;
   const fin=(_deal.reportData||{}).financials||{};
   const noi=fin.noi;
@@ -606,94 +631,43 @@ async function sendAiMessage(){
       body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
     });
 
-    if(!res.ok){
-      loadingEl.textContent = 'Sorry, the AI analyst is unavailable right now.';
-      loadingEl.classList.remove('loading');
-      send.disabled = false;
-      return;
-    }
+    if(!res.ok){ loadingEl.textContent = 'Sorry, the AI is unavailable right now.'; loadingEl.classList.remove('loading'); send.disabled=false; return; }
 
-    const data = await res.json();
-    const fullText = data.text || 'Sorry, no response received.';
-    loadingEl.classList.remove('loading');
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
     loadingEl.textContent = '';
+    loadingEl.classList.remove('loading');
 
-    // Typewriter effect
-    await typewriterEffect(loadingEl, fullText);
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      for(const line of lines){
+        if(line.startsWith('data: ')){
+          const data = line.slice(6);
+          if(data === '[DONE]') break;
+          try{
+            const parsed = JSON.parse(data);
+            if(parsed.text){ fullText += parsed.text; loadingEl.textContent = fullText; }
+          } catch(e){}
+        }
+      }
+    }
 
     aiHistory.push({ role: 'user', content: message });
     aiHistory.push({ role: 'assistant', content: fullText });
+    // Keep last 10 messages
     if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
 
-    try { addFollowUps(message, fullText); } catch(e){ console.error('followups error:', e); }
-    try { updateMsgCount(); } catch(e){ console.error('msgcount error:', e); }
-
   } catch(err){
-    console.error('AI chat error:', err);
-    if(!loadingEl.textContent) {
-      loadingEl.textContent = 'Something went wrong. Please try again.';
-    }
+    loadingEl.textContent = 'Something went wrong. Please try again.';
     loadingEl.classList.remove('loading');
   }
 
   send.disabled = false;
-}
-
-async function typewriterEffect(el, text){
-  const words = text.split(' ');
-  let displayed = '';
-  for(let i = 0; i < words.length; i++){
-    displayed += (i > 0 ? ' ' : '') + words[i];
-    el.textContent = displayed;
-    const msgs = document.getElementById('aiMessages');
-    if(msgs) msgs.scrollTop = msgs.scrollHeight;
-    await new Promise(r => setTimeout(r, 30 + Math.random() * 15));
-  }
-}
-
-function updateMsgCount(){
-  const count = Math.floor(aiHistory.length / 2);
-  let counter = document.getElementById('aiMsgCount');
-  if(count < 2){ if(counter) counter.remove(); return; }
-  if(!counter){
-    counter = document.createElement('div');
-    counter.id = 'aiMsgCount';
-    counter.className = 'ai-msg-count';
-    const inputRow = document.querySelector('.ai-full-input-row');
-    if(inputRow) inputRow.parentNode.insertBefore(counter, inputRow);
-  }
-  counter.textContent = count + ' exchanges in this conversation';
-}
-
-function addFollowUps(question, answer){
-  const q = (question||'').toLowerCase();
-  const a = (answer||'').toLowerCase();
-  let chips = [];
-  if(q.includes('risk')) chips = ['What should I offer?', 'How do I negotiate?', 'What to inspect first?'];
-  else if(q.includes('offer') || q.includes('price')) chips = ['What is the biggest risk?', 'How do I make my offer stronger?', 'What if they counter?'];
-  else if(q.includes('first') || q.includes('beginner')) chips = ['What should I inspect?', 'What are typical expenses?', 'How do I find tenants?'];
-  else if(a.includes('maintenance') || a.includes('inspect')) chips = ['How much should I budget?', 'What professionals do I need?', 'Red flags to look for?'];
-  else chips = ['What is the biggest risk?', 'What should I offer?', 'Would you buy this deal?'];
-
-  const old = document.getElementById('aiFollowUps');
-  if(old) old.remove();
-
-  const followDiv = document.createElement('div');
-  followDiv.id = 'aiFollowUps';
-  followDiv.className = 'ai-follow-ups';
-  chips.forEach(c => {
-    const chip = document.createElement('span');
-    chip.className = 'ai-follow-up';
-    chip.textContent = c;
-    chip.onclick = () => {
-      document.getElementById('aiInput').value = c;
-      followDiv.remove();
-      sendAiMessage();
-    };
-    followDiv.appendChild(chip);
-  });
-  const inputRow = document.querySelector('.ai-full-input-row');
-  if(inputRow) inputRow.parentNode.insertBefore(followDiv, inputRow);
+  document.getElementById('aiMessages').scrollTop = 999999;
 }
 </script>
 </body>
