@@ -384,7 +384,7 @@ function renderDeal(d){
   ];
   document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
-  document.getElementById('verdictCard').className='verdict '+cls;
+  const vc=document.getElementById('verdictCard'); if(vc) vc.className='verdict '+cls;
   document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
   document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
