@@ -511,15 +511,20 @@ function renderDeal(d){
           const col=pct>=80?'var(--forest)':pct>=60?'var(--gold)':'var(--rose)';
           return `<div class="bar-row"><span class="bar-label">${s.name}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val">${s.displayValue||''}</span><span class="bar-badge ${lbl.toLowerCase()}">${lbl}</span></div>`;
         }).join('')
-      : '<div style="color:var(--muted);font-size:.8rem;padding:.5rem 0">Score breakdown not available</div>';
+      : bars.map(([name,pct])=>{
+          const p=Math.min(Math.round(pct),100);
+          const lbl=p>=80?'Great':p>=60?'Good':p>=40?'Watch':'Poor';
+          const col=p>=80?'var(--forest)':p>=60?'var(--gold)':'var(--rose)';
+          return `<div class="bar-row"><span class="bar-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${col}"></div></div><span class="bar-badge ${lbl.toLowerCase()}">${lbl}</span></div>`;
+        }).join('');
   }
 
   // Financials
   const fins=[
     ['ASK PRICE','$'+(d.askingPrice||0).toLocaleString()],
     ['DOWN PAYMENT (25%)','$'+Math.round((d.askingPrice||0)*0.25).toLocaleString()],
-    ['CLOSING COSTS','$'+Math.round(fin.closingCosts||0).toLocaleString()],
-    ['TOTAL CASH INVESTED','$'+Math.round(fin.totalCashInvested||0).toLocaleString()],
+    ['CLOSING COSTS','$'+Math.round(fin.closingCosts||((d.askingPrice||0)*0.02)).toLocaleString()],
+    ['TOTAL CASH INVESTED','$'+Math.round(fin.totalCashInvested||(((d.askingPrice||0)*0.25)+((d.askingPrice||0)*0.02))).toLocaleString()],
     ['MONTHLY GROSS RENT','$'+Math.round((fin.grossRentalIncome||0)/12).toLocaleString()],
     ['ANNUAL GROSS RENT','$'+Math.round(fin.grossRentalIncome||0).toLocaleString()],
     ['VACANCY (5%)','—'],
