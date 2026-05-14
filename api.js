@@ -2,7 +2,7 @@
 // Set window.ROOFRANK_API_URL before loading this script for production:
 //   <script>window.ROOFRANK_API_URL = 'https://api.roofrank.io/api';</script>
 
-const BASE_URL = window.ROOFRANK_API_URL || 'http://localhost:3000/api';
+const BASE_URL = window.ROOFRANK_API_URL || 'https://api.roofrank.io/api';
 
 const Auth = {
   getToken:   ()  => localStorage.getItem('rr_token'),

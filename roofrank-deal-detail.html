@@ -484,8 +484,8 @@ function renderDeal(d){
   document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
   const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
-  document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
-  document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
+  const _vb=document.getElementById('vBadge'); if(_vb) _vb.textContent=(score>=75?'✓ ':'')+signal;
+  const _vt=document.getElementById('vText'); if(_vt) _vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
   document.getElementById('propDetails').innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
@@ -503,13 +503,15 @@ function renderDeal(d){
     mktR('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
     mktR('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
   ].filter(Boolean).join('');
-  if(mktH){document.getElementById('mktRows').innerHTML=mktH;document.getElementById('mktCompare').style.display='block';}
+  if(mktH){
+    const _mr=document.getElementById('mktRows');
+    const _mc=document.getElementById('mktCompare');
+    if(_mr) _mr.innerHTML=mktH;
+    if(_mc) _mc.style.display='block';
+  }
 
   const uc=document.getElementById('upgradeCard');
-  if(false && score>=75){  // removed - info shown in smart verdict card
-    if(uc){uc.className='side-card upgrade-card sb';uc.style.display='block';}
-    uc.innerHTML='<div class="upgrade-title">✓ Already a Strong Buy</div><div style="font-size:.78rem;color:var(--muted);line-height:1.65">This deal meets Strong Buy criteria. Move quickly — deals at this score typically go under contract within 7–10 days.</div>';
-  } else if(fin.noi&&d.askingPrice){
+  if(uc && fin.noi&&d.askingPrice){
     const tp=Math.round(fin.noi/0.08);const sv=d.askingPrice-tp;
     const cr=fin.grossRentalIncome?Math.round(fin.grossRentalIncome/12):null;
     const ir=cr?Math.round(cr*1.15):null;
@@ -575,8 +577,10 @@ function renderDeal(d){
 
   // Show offer calculator
   const oc=document.getElementById('offerCard');
-  if(oc) oc.style.display='block';
-  setTimeout(calcMaxOffer, 100);
+  if(oc){
+    oc.style.display='block';
+    setTimeout(calcMaxOffer, 100);
+  }
 }
 
 async function toggleWatch(){
@@ -602,9 +606,13 @@ function calcMaxOffer(){
   const totalOps=fin.totalExpenses;
   if(!noi||!grossRent) return;
 
-  const targetScore=parseInt(document.getElementById('offerTargetScore').value)||75;
-  const dpPct=(parseInt(document.getElementById('offerDp').value)||25)/100;
-  const rate=(parseFloat(document.getElementById('offerRate').value)||6.5)/100;
+  const _ts=document.getElementById('offerTargetScore');
+  const _dp=document.getElementById('offerDp');
+  const _rt=document.getElementById('offerRate');
+  if(!_ts||!_dp||!_rt) return;
+  const targetScore=parseInt(_ts.value)||75;
+  const dpPct=(parseInt(_dp.value)||25)/100;
+  const rate=(parseFloat(_rt.value)||6.5)/100;
 
   // Binary search for max price where score hits target
   // Score is driven by cap rate — target cap rate for given score
