@@ -203,6 +203,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 .sv-watch-title{font-weight:600;margin-bottom:.2rem}
 .sv-urgency{font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.6;margin-top:.75rem;font-style:italic}
 
+/* ── Cash Flow Highlight Bar ─────────────────────────────────────────────── */
+.cf-highlight-bar{background:var(--forest);padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:.75rem}
+.cf-highlight-bar .cf-label{font-size:.72rem;font-weight:500;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.04em}
+.cf-highlight-bar .cf-val{font-family:var(--serif);font-size:1.5rem;font-weight:400;color:#fff}
+.cf-highlight-bar .cf-sub{font-size:.65rem;color:rgba(255,255,255,.5);margin-top:1px}
+
 /* ── Mobile Optimized Layout ─────────────────────────────────────────────── */
 @media(max-width:430px){
 
@@ -420,11 +426,57 @@ let _deal = null; // current deal for calculator
 
 function renderDeal(d){
   _deal = d; // store for offer calculator
+  window._dealData = d;
   const fin=(d.reportData||{}).financials||{};
   const sc=(d.reportData||{}).scores||{};
   const score=d.rankScore||0, signal=(d.reportData||{}).signal||scoreSignal(score);
   const c=scoreColor(score), cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
   const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
+
+  // Populate Smart Verdict card EARLY so any later DOM error can't block it
+  try {
+    const _svSignal=document.getElementById('svSignal');
+    const _svScore=document.getElementById('svScore');
+    const _svMetrics=document.getElementById('svMetrics');
+    const _svWatch=document.getElementById('svWatch');
+    const _svUrgency=document.getElementById('svUrgency');
+    if(_svSignal) _svSignal.textContent=String(signal||'').toUpperCase();
+    if(_svScore) _svScore.textContent=score+'/100';
+    if(_svMetrics){
+      const svMetric=(label,val,avg,hi,fmt)=>{
+        if(val==null||avg==null) return '';
+        const delta=hi?val-avg:avg-val;
+        const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
+        const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
+        const dTxt=dCls==='flat'?'flat':`${arrow} ${Math.abs(delta)<10?Math.abs(delta).toFixed(1):Math.round(Math.abs(delta))}`;
+        return`<div class="sv-metric"><span class="sv-metric-lbl">${label}</span><span class="sv-metric-vals"><span class="sv-metric-val">${fmt(val)}</span><span class="sv-metric-avg">vs ${fmt(avg)}</span><span class="sv-metric-delta ${dCls}">${dTxt}</span></span></div>`;
+      };
+      _svMetrics.innerHTML=[
+        svMetric('Cap Rate',fin.capRate,avgs.capRate,true,v=>v.toFixed(1)+'%'),
+        svMetric('Cash-on-Cash',fin.cashOnCashReturn,avgs.coc,true,v=>v.toFixed(1)+'%'),
+        svMetric('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
+        svMetric('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
+      ].filter(Boolean).join('');
+    }
+    if(_svWatch){
+      const watches=[];
+      if(fin.dscr!=null&&fin.dscr<1.25) watches.push(`DSCR ${fin.dscr.toFixed(2)} is below the 1.25 lender minimum.`);
+      if(fin.monthlyCashFlow!=null&&fin.monthlyCashFlow<0) watches.push(`Negative monthly cash flow of $${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}.`);
+      if(d.yearBuilt&&(2025-d.yearBuilt)>80) watches.push(`Building is ${2025-d.yearBuilt} years old — budget for CapEx.`);
+      if(watches.length){
+        _svWatch.innerHTML=`<div class="sv-watch-title">⚠ Watch</div>${watches.join(' ')}`;
+        _svWatch.style.display='block';
+      } else _svWatch.style.display='none';
+    }
+    if(_svUrgency){
+      let urg='';
+      if(score>=75) urg=d.daysOnMarket!=null&&d.daysOnMarket<14?`Fresh listing (${d.daysOnMarket}d on market) — strong deals at this score typically go under contract within 7–10 days.`:'Strong deals at this score typically go under contract within 7–10 days.';
+      else if(score>=60&&d.daysOnMarket!=null&&d.daysOnMarket>60) urg=`On market ${d.daysOnMarket} days — seller may be open to negotiation.`;
+      else if(score<45) urg='Below investment thresholds — pass unless seller will negotiate materially.';
+      if(urg){_svUrgency.textContent=urg;_svUrgency.style.display='block';}
+      else _svUrgency.style.display='none';
+    }
+  } catch(e){ console.error('smartVerdict populate failed:', e); }
 
   document.getElementById('navAddr').textContent=d.address;
   document.getElementById('heroAddr').textContent=d.address;
@@ -488,51 +540,6 @@ function renderDeal(d){
   const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
   const _vb=document.getElementById('vBadge'); if(_vb) _vb.textContent=(score>=75?'✓ ':'')+signal;
   const _vt=document.getElementById('vText'); if(_vt) _vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
-
-  // Populate Smart Verdict card
-  const _svSignal=document.getElementById('svSignal');
-  const _svScore=document.getElementById('svScore');
-  const _svMetrics=document.getElementById('svMetrics');
-  const _svWatch=document.getElementById('svWatch');
-  const _svUrgency=document.getElementById('svUrgency');
-  if(_svSignal) _svSignal.textContent=signal.toUpperCase();
-  if(_svScore) _svScore.textContent=score+'/100';
-  if(_svMetrics){
-    function svMetric(label,val,avg,hi,fmt){
-      if(val==null||avg==null) return '';
-      const delta=hi?val-avg:avg-val;
-      const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
-      const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
-      const dTxt=dCls==='flat'?'flat':`${arrow} ${typeof delta==='number'&&Math.abs(delta)<10?Math.abs(delta).toFixed(1):Math.round(Math.abs(delta))}`;
-      return`<div class="sv-metric"><span class="sv-metric-lbl">${label}</span><span class="sv-metric-vals"><span class="sv-metric-val">${fmt(val)}</span><span class="sv-metric-avg">vs ${fmt(avg)}</span><span class="sv-metric-delta ${dCls}">${dTxt}</span></span></div>`;
-    }
-    _svMetrics.innerHTML=[
-      svMetric('Cap Rate',fin.capRate,avgs.capRate,true,v=>v.toFixed(1)+'%'),
-      svMetric('Cash-on-Cash',fin.cashOnCashReturn,avgs.coc,true,v=>v.toFixed(1)+'%'),
-      svMetric('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
-      svMetric('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
-    ].filter(Boolean).join('');
-  }
-  if(_svWatch){
-    const watches=[];
-    if(fin.dscr!=null&&fin.dscr<1.25) watches.push(`DSCR ${fin.dscr.toFixed(2)} is below the 1.25 lender minimum.`);
-    if(fin.monthlyCashFlow!=null&&fin.monthlyCashFlow<0) watches.push(`Negative monthly cash flow of $${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}.`);
-    if(d.yearBuilt&&(2025-d.yearBuilt)>80) watches.push(`Building is ${2025-d.yearBuilt} years old — budget for CapEx.`);
-    if(watches.length){
-      _svWatch.innerHTML=`<div class="sv-watch-title">⚠ Watch</div>${watches.join(' ')}`;
-      _svWatch.style.display='block';
-    } else {
-      _svWatch.style.display='none';
-    }
-  }
-  if(_svUrgency){
-    let urg='';
-    if(score>=75) urg=d.daysOnMarket!=null&&d.daysOnMarket<14?`Fresh listing (${d.daysOnMarket}d on market) — strong deals at this score typically go under contract within 7–10 days.`:'Strong deals at this score typically go under contract within 7–10 days.';
-    else if(score>=60&&d.daysOnMarket!=null&&d.daysOnMarket>60) urg=`On market ${d.daysOnMarket} days — seller may be open to negotiation.`;
-    else if(score<45) urg='Below investment thresholds — pass unless seller will negotiate materially.';
-    if(urg){_svUrgency.textContent=urg;_svUrgency.style.display='block';}
-    else _svUrgency.style.display='none';
-  }
 
   const _pd=document.getElementById('propDetails');
   if(_pd) _pd.innerHTML=[
