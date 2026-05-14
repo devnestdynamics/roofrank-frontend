@@ -471,7 +471,7 @@ function renderDeal(d){
   ];
   document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
-  document.getElementById('verdictCard').className='verdict '+cls;
+  const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
   document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
   document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
@@ -495,7 +495,7 @@ function renderDeal(d){
 
   const uc=document.getElementById('upgradeCard');
   if(score>=75){
-    uc.className='side-card upgrade-card sb';uc.style.display='block';
+    if(uc){uc.className='side-card upgrade-card sb';uc.style.display='block';}
     uc.innerHTML='<div class="upgrade-title">✓ Already a Strong Buy</div><div style="font-size:.78rem;color:var(--muted);line-height:1.65">This deal meets Strong Buy criteria. Move quickly — deals at this score typically go under contract within 7–10 days.</div>';
   } else if(fin.noi&&d.askingPrice){
     const tp=Math.round(fin.noi/0.08);const sv=d.askingPrice-tp;
