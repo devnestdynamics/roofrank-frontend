@@ -268,6 +268,68 @@ nav.top{
 .bd-badge.poor{background:rgba(160,48,48,.11); color:var(--rose)}
 
 /* ── CASH FLOW WATERFALL ───────────────────────────────────────────────── */
+.cf-assum{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.4rem;
+  font-size:.88rem; color:var(--muted);
+  margin-bottom:.85rem;
+}
+.cf-chip{
+  display:inline-flex; align-items:center; gap:.3rem;
+  background:var(--cream-2); border:1px solid var(--border);
+  color:var(--ink); font-family:var(--sans); font-size:.85rem; font-weight:500;
+  padding:.3rem .65rem .3rem .75rem; border-radius:999px;
+  cursor:pointer; transition:all .15s; line-height:1;
+}
+.cf-chip::after{
+  content:''; width:6px; height:6px; border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
+  transform:rotate(45deg) translateY(-2px); margin-left:.15rem; transition:border-color .15s;
+}
+.cf-chip:hover{ border-color:var(--forest); color:var(--forest); background:#fff }
+.cf-chip:hover::after{ border-color:var(--forest) }
+.cf-chip.active{ border-color:var(--forest); color:var(--forest); background:var(--sage-dim) }
+.cf-chip.active::after{ border-color:var(--forest); transform:rotate(225deg) translateY(-2px) }
+.cf-reset{
+  margin-left:auto; background:none; border:none; cursor:pointer;
+  font-size:.78rem; color:var(--muted); font-family:var(--sans);
+  display:inline-flex; align-items:center; gap:.3rem;
+}
+.cf-reset:hover{ color:var(--forest); text-decoration:underline }
+.cf-editor{
+  display:none; background:var(--cream-2); border:1px solid var(--border);
+  border-radius:12px; padding:1rem 1.1rem; margin-bottom:1.1rem;
+}
+.cf-editor.open{ display:block; animation:cfEditorIn .25s ease-out }
+@keyframes cfEditorIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.cf-edit-row{ display:flex; align-items:center; gap:.9rem; padding:.45rem 0; flex-wrap:wrap }
+.cf-edit-row + .cf-edit-row{ border-top:1px solid var(--border); margin-top:.45rem; padding-top:.85rem }
+.cf-edit-lbl{ font-size:.78rem; color:var(--muted); min-width:110px; flex-shrink:0 }
+.cf-edit-toggle{ display:flex; gap:.3rem }
+.cf-edit-opt{
+  padding:.4rem .8rem; border:1px solid var(--border-2); background:#fff;
+  border-radius:8px; font-size:.82rem; font-family:var(--sans); cursor:pointer;
+  color:var(--muted); font-weight:500; transition:all .15s; min-width:54px;
+}
+.cf-edit-opt:hover:not(.active){ border-color:var(--forest); color:var(--forest) }
+.cf-edit-opt.active{ background:var(--forest); color:#fff; border-color:var(--forest) }
+.cf-edit-slider{ flex:1; display:flex; align-items:center; gap:.85rem; min-width:0 }
+.cf-edit-range{
+  flex:1; -webkit-appearance:none; appearance:none; height:5px;
+  background:linear-gradient(to right, var(--forest) 0%, var(--forest) var(--rate-pct), var(--cream-3) var(--rate-pct), var(--cream-3) 100%);
+  border-radius:3px; outline:none; cursor:pointer; min-width:120px;
+}
+.cf-edit-range::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:20px; height:20px;
+  border-radius:50%; background:#fff; border:2px solid var(--forest);
+  cursor:pointer; box-shadow:0 2px 6px rgba(28,74,53,.25);
+}
+.cf-edit-range::-moz-range-thumb{
+  width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid var(--forest);
+  cursor:pointer; box-shadow:0 2px 6px rgba(28,74,53,.25);
+}
+.cf-edit-val{
+  font-family:var(--mono); font-size:.95rem; font-weight:500;
+  color:var(--ink); min-width:62px; text-align:right;
+}
 .cf-rent-cap{
   display:flex; justify-content:space-between; align-items:baseline;
   font-size:.78rem; color:var(--muted); margin-bottom:.55rem;
@@ -517,6 +579,30 @@ nav.top{
   <!-- ── CASH FLOW WATERFALL ─────────────────────────────────────── -->
   <section id="cfSection" style="display:none">
     <div class="section-title">Cash flow <span class="meta">where every rent dollar goes</span></div>
+    <div class="cf-assum">
+      <span>Assumes</span>
+      <button type="button" class="cf-chip" id="cfChipDp">25% down</button>
+      <span>at</span>
+      <button type="button" class="cf-chip" id="cfChipRate">6.5% rate</button>
+      <button type="button" class="cf-reset" id="cfReset" style="display:none">↺ Reset</button>
+    </div>
+    <div class="cf-editor" id="cfEditor">
+      <div class="cf-edit-row">
+        <span class="cf-edit-lbl">Down payment</span>
+        <div class="cf-edit-toggle" id="cfDpToggle">
+          <button type="button" class="cf-edit-opt" data-val="0.20">20%</button>
+          <button type="button" class="cf-edit-opt active" data-val="0.25">25%</button>
+          <button type="button" class="cf-edit-opt" data-val="0.30">30%</button>
+        </div>
+      </div>
+      <div class="cf-edit-row">
+        <span class="cf-edit-lbl">Interest rate</span>
+        <div class="cf-edit-slider">
+          <input type="range" class="cf-edit-range" id="cfRateRange" min="5" max="9" step="0.125" value="6.5">
+          <span class="cf-edit-val" id="cfRateVal">6.5%</span>
+        </div>
+      </div>
+    </div>
     <div class="cf-rent-cap">
       <span>Monthly rent</span>
       <b id="cfRentVal">—</b>
@@ -595,8 +681,222 @@ function scoreColor(s){return s>=75?'#1c4a35':s>=60?'#3e8160':s>=45?'#a06a00':'#
 function scoreSignal(s){return s>=75?'Strong Buy':s>=60?'Buy':s>=45?'Watch':'Pass';}
 function setText(id, val){const el=document.getElementById(id); if(el) el.textContent=val;}
 function setHTML(id, val){const el=document.getElementById(id); if(el) el.innerHTML=val;}
+function pmt(r, n, pv){ if(r===0) return pv/n; return pv*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1); }
+function fmtRate(r){ const s=(r*100).toFixed(3); return s.replace(/0+$/,'').replace(/\.$/,'')+'%'; }
 
 let _deal = null;
+const SCEN_DEFAULT = { dpPct: 0.25, rate: 0.065 };
+let scenario = { ...SCEN_DEFAULT };
+
+// Compute a fin object overridden by current scenario state
+function computeScenarioFin(d, fin, state){
+  if(!d.askingPrice || !fin.grossRentalIncome) return fin;
+  const price = d.askingPrice;
+  const dp = price * state.dpPct;
+  const loan = price * (1 - state.dpPct);
+  const closing = price * 0.014;
+  const totalCash = dp + closing;
+  const monthlyPI = pmt(state.rate/12, 360, loan);
+  const monthlyRent = fin.grossRentalIncome / 12;
+  const monthlyTax = fin.annualTaxes ? fin.annualTaxes/12 : price*0.012/12;
+  const monthlyIns = fin.annualInsurance ? fin.annualInsurance/12 : price*0.004/12;
+  const monthlyCf = monthlyRent - monthlyPI - monthlyTax - monthlyIns;
+  const annualCf = monthlyCf * 12;
+  const coc = totalCash>0 ? (annualCf/totalCash)*100 : null;
+  const noi = (monthlyRent - monthlyTax - monthlyIns) * 12; // PITI-consistent NOI (no opex/vacancy)
+  const dscr = monthlyPI>0 ? noi/(monthlyPI*12) : null;
+  return {
+    ...fin,
+    cashOnCashReturn: coc,
+    dscr: dscr,
+    monthlyCashFlow: monthlyCf,
+    annualDebtService: monthlyPI*12,
+    totalCashToClose: totalCash,
+    downPayment: dp,
+    _monthlyPI: monthlyPI, _monthlyTax: monthlyTax, _monthlyIns: monthlyIns, _monthlyRent: monthlyRent,
+  };
+}
+
+// ── Scenario-dependent renderers (called by both initial render and applyScenario)
+function renderAnalystMetrics(d, sFin, avgs){
+  const _svMetrics=document.getElementById('svMetrics');
+  if(!_svMetrics) return;
+  const svMetric=(label,val,avg,target,targetLabel,hi,fmt)=>{
+    if(val==null) return '';
+    let deltaPart='';
+    if(avg!=null){
+      const delta=hi?val-avg:avg-val;
+      const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
+      const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
+      const dTxt=dCls==='flat'?'flat':`${arrow} ${Math.abs(delta)<10?Math.abs(delta).toFixed(1):Math.round(Math.abs(delta))}`;
+      deltaPart=`<span class="sv-metric-delta ${dCls}">${dTxt}</span>`;
+    }
+    let vCls='n';
+    if(target!=null){
+      const hits=hi?val>=target:val<=target;
+      const tooFar=hi?val<target*0.7:val>target*1.3;
+      vCls=hits?'g':tooFar?'r':'a';
+    }
+    const metaTxt = avg!=null ? `${fmt(avg)} ${d.city||'market'} avg` : '';
+    return`<div class="sv-metric"><div class="sv-metric-left"><div class="sv-metric-lbl">${label}</div>${targetLabel?`<div class="sv-metric-tgt">${targetLabel}</div>`:''}</div><div class="sv-metric-right"><div class="sv-metric-val-row"><span class="sv-metric-val ${vCls}">${fmt(val)}</span>${deltaPart}</div>${metaTxt?`<div class="sv-metric-meta"><span class="sv-metric-avg">${metaTxt}</span></div>`:''}</div></div>`;
+  };
+  _svMetrics.innerHTML=[
+    svMetric('Cash-on-Cash', sFin.cashOnCashReturn, avgs.coc,      8,    'target ≥ 8%',   true,  v=>v.toFixed(1)+'%'),
+    svMetric('Cap Rate',     sFin.capRate,          avgs.capRate,  6.5,  'target ≥ 6.5%', true,  v=>v.toFixed(1)+'%'),
+    svMetric('DSCR',         sFin.dscr,             avgs.dscr,     1.25, 'lender ≥ 1.25', true,  v=>v.toFixed(2)),
+    svMetric('Price / Unit', sFin.pricePerUnit,     avgs.ppu,      null, '',              false, v=>'$'+Math.round(v/1000)+'K'),
+  ].filter(Boolean).join('');
+}
+function renderAnalystWatch(d, sFin){
+  const _svWatch=document.getElementById('svWatch');
+  if(!_svWatch) return;
+  const watches=[];
+  if(sFin.dscr!=null&&sFin.dscr<1.25) watches.push(`DSCR ${sFin.dscr.toFixed(2)} is below the 1.25 lender minimum.`);
+  if(sFin.monthlyCashFlow!=null&&sFin.monthlyCashFlow<0) watches.push(`Negative monthly cash flow of $${Math.round(Math.abs(sFin.monthlyCashFlow)).toLocaleString()}.`);
+  if(d.yearBuilt&&(2025-d.yearBuilt)>80) watches.push(`Building is ${2025-d.yearBuilt} years old — budget for CapEx.`);
+  if(watches.length){
+    _svWatch.innerHTML=`<div class="sv-watch-title">⚠ Watch</div>${watches.join(' ')}`;
+    _svWatch.style.display='block';
+  } else _svWatch.style.display='none';
+}
+function renderHeroCashFlow(d, sFin){
+  const heroCf=document.getElementById('heroCf');
+  const heroCfVal=document.getElementById('heroCfVal');
+  const heroCfSub=document.getElementById('heroCfSub');
+  const heroCfLabel=document.getElementById('heroCfLabel');
+  if(!(heroCf && heroCfVal && heroCfSub)) return;
+  const cf = Math.round(sFin.monthlyCashFlow || 0);
+  const cfYear = Math.round(cf * 12);
+  const coc = sFin.cashOnCashReturn;
+  if(cf < 0){
+    heroCf.classList.add('negative');
+    if(heroCfLabel) heroCfLabel.textContent='Projected monthly shortfall';
+  } else {
+    heroCf.classList.remove('negative');
+    if(heroCfLabel) heroCfLabel.textContent='Projected monthly cash flow';
+  }
+  heroCfVal.innerHTML = (cf >= 0 ? '+' : '−') + '$' + Math.abs(cf).toLocaleString() + '<span class="unit">/mo</span>';
+  const parts=[];
+  if(cfYear) parts.push(`<b>$${Math.abs(cfYear).toLocaleString()}</b>/yr`);
+  if(coc!=null) parts.push(`<b>${coc.toFixed(1)}%</b> cash-on-cash`);
+  if(sFin.totalCashToClose) parts.push(`on <b>${fmtK(sFin.totalCashToClose)}</b> cash invested`);
+  heroCfSub.innerHTML = parts.join(' · ') || 'After mortgage · taxes · insurance';
+}
+function renderCfWaterfall(d, sFin){
+  const cfSection = document.getElementById('cfSection');
+  const monthlyRent = sFin._monthlyRent || (sFin.grossRentalIncome?sFin.grossRentalIncome/12:null);
+  const monthlyPI   = sFin._monthlyPI || (sFin.annualDebtService?sFin.annualDebtService/12:null);
+  const monthlyTax  = sFin._monthlyTax;
+  const monthlyIns  = sFin._monthlyIns;
+  const monthlyCf   = sFin.monthlyCashFlow;
+  if(!cfSection || !monthlyRent || monthlyPI==null) return;
+  cfSection.style.display='';
+  setText('cfRentVal', '+$'+Math.round(monthlyRent).toLocaleString()+'/mo');
+
+  const denom = monthlyCf >= 0 ? monthlyRent : (monthlyPI + monthlyTax + monthlyIns + Math.abs(monthlyCf));
+  const pct = v => Math.max(0, (v/denom)*100);
+  const cfPct = monthlyCf >= 0 ? pct(monthlyCf) : pct(Math.abs(monthlyCf));
+  const cfClass = monthlyCf >= 0 ? 'cf' : 'deficit';
+  const cfShortLabel = monthlyCf >= 0 ? 'Cash' : 'Loss';
+  const segHTML = (cls, label, p) => p>0.5
+    ? `<div class="cf-seg ${cls}" style="flex:${p.toFixed(2)}">${p>=11?label+' ':''}<span class="cf-seg-pct">${p.toFixed(0)}%</span></div>`
+    : '';
+  setHTML('cfBar', [
+    segHTML('pi', 'P&I',  pct(monthlyPI)),
+    segHTML('tax','Tax',  pct(monthlyTax)),
+    segHTML('ins','Ins',  pct(monthlyIns)),
+    segHTML(cfClass, cfShortLabel, cfPct),
+  ].join(''));
+
+  const legRow = (cls, name, val, p) => `<div class="cf-leg ${cls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${name}</span><span class="cf-leg-vals"><span class="cf-leg-val">$${Math.round(Math.abs(val)).toLocaleString()}/mo</span><span class="cf-leg-pct">${p.toFixed(0)}%</span></span></div>`;
+  const cfRowCls = 'cf' + (monthlyCf < 0 ? ' negative' : '');
+  const cfSign = monthlyCf >= 0 ? '+' : '−';
+  const cfLegPct = monthlyRent ? (Math.abs(monthlyCf)/monthlyRent)*100 : 0;
+  const legCfRow = `<div class="cf-leg ${cfRowCls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${monthlyCf>=0?'Monthly Cash Flow':'Monthly Loss'}</span><span class="cf-leg-vals"><span class="cf-leg-val">${cfSign}$${Math.round(Math.abs(monthlyCf)).toLocaleString()}/mo</span><span class="cf-leg-pct">${cfLegPct.toFixed(0)}%</span></span></div>`;
+  setHTML('cfLegend', [
+    legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI)),
+    legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax)),
+    legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns)),
+    legCfRow,
+  ].join(''));
+
+  if(sFin.totalCashToClose!=null){
+    const _cu=document.getElementById('cfUpfront');
+    setText('cfUpfrontVal', fmt$(sFin.totalCashToClose));
+    if(_cu) _cu.style.display='';
+  }
+}
+function renderStickyCf(sFin){
+  const sCf=document.getElementById('stickyCf');
+  if(!sCf || sFin.monthlyCashFlow==null) return;
+  const cf=Math.round(sFin.monthlyCashFlow);
+  sCf.textContent = (cf>=0?'+':'−') + '$' + Math.abs(cf).toLocaleString() + '/mo';
+}
+
+// ── Scenario application: recompute and re-render everything that depends on rate/dp
+function applyScenario(){
+  if(!_deal) return;
+  const d = _deal;
+  const fin = (d.reportData||{}).financials || {};
+  const avgs = MARKET_AVGS[d.city] || MARKET_AVGS['default'];
+  const sFin = computeScenarioFin(d, fin, scenario);
+  try { renderAnalystMetrics(d, sFin, avgs); renderAnalystWatch(d, sFin); } catch(e){ console.error('analyst failed:', e); }
+  renderHeroCashFlow(d, sFin);
+  renderCfWaterfall(d, sFin);
+  renderStickyCf(sFin);
+  // Update chip labels and reset visibility
+  const chipDp = document.getElementById('cfChipDp');
+  if(chipDp) chipDp.textContent = (scenario.dpPct*100).toFixed(0)+'% down';
+  const chipRate = document.getElementById('cfChipRate');
+  if(chipRate) chipRate.textContent = fmtRate(scenario.rate)+' rate';
+  const reset = document.getElementById('cfReset');
+  if(reset){
+    const dirty = scenario.dpPct!==SCEN_DEFAULT.dpPct || scenario.rate!==SCEN_DEFAULT.rate;
+    reset.style.display = dirty ? '' : 'none';
+  }
+  // Slider gradient + value display
+  const range = document.getElementById('cfRateRange');
+  if(range){
+    const min = parseFloat(range.min), max = parseFloat(range.max);
+    const p = ((scenario.rate*100 - min)/(max-min))*100;
+    range.style.setProperty('--rate-pct', p+'%');
+  }
+  setText('cfRateVal', fmtRate(scenario.rate));
+  // DP toggle active state
+  document.querySelectorAll('#cfDpToggle .cf-edit-opt').forEach(b => {
+    b.classList.toggle('active', Math.abs(parseFloat(b.dataset.val) - scenario.dpPct) < 0.001);
+  });
+}
+
+function setupScenarioControls(){
+  const chipDp = document.getElementById('cfChipDp');
+  const chipRate = document.getElementById('cfChipRate');
+  const editor = document.getElementById('cfEditor');
+  const toggleEditor = (which) => {
+    const open = editor.classList.toggle('open');
+    chipDp?.classList.toggle('active', open);
+    chipRate?.classList.toggle('active', open);
+  };
+  chipDp?.addEventListener('click', toggleEditor);
+  chipRate?.addEventListener('click', toggleEditor);
+  document.querySelectorAll('#cfDpToggle .cf-edit-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      scenario.dpPct = parseFloat(btn.dataset.val);
+      applyScenario();
+    });
+  });
+  const range = document.getElementById('cfRateRange');
+  range?.addEventListener('input', () => {
+    scenario.rate = parseFloat(range.value)/100;
+    applyScenario();
+  });
+  document.getElementById('cfReset')?.addEventListener('click', () => {
+    scenario = { ...SCEN_DEFAULT };
+    const r = document.getElementById('cfRateRange');
+    if(r) r.value = (SCEN_DEFAULT.rate*100).toString();
+    applyScenario();
+  });
+}
 
 function renderDeal(d){
   _deal = d;
@@ -609,61 +909,30 @@ function renderDeal(d){
   const cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
   const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
 
-  // ── Smart verdict (analyst card) — populate FIRST so any later issue won't kill it
+  // Seed scenario from the backend's implied rate if we can derive it from the deal
+  // (loan = price × .75, annualDebtService given → solve for rate). Skip if data missing.
+  if(d.askingPrice && fin.annualDebtService){
+    const loan = d.askingPrice * (1 - SCEN_DEFAULT.dpPct);
+    const targetPI = fin.annualDebtService / 12;
+    // Newton's method over rate, bounded
+    let lo=0.03, hi=0.12;
+    for(let i=0;i<40;i++){
+      const mid=(lo+hi)/2;
+      const guess = pmt(mid/12, 360, loan);
+      if(guess > targetPI) hi = mid; else lo = mid;
+    }
+    const inferred = (lo+hi)/2;
+    if(inferred>=0.04 && inferred<=0.10){
+      SCEN_DEFAULT.rate = Math.round(inferred*1000)/1000; // 3 decimals
+      scenario.rate = SCEN_DEFAULT.rate;
+      const r = document.getElementById('cfRateRange');
+      if(r) r.value = (SCEN_DEFAULT.rate*100).toString();
+    }
+  }
+
+  // ── Urgency (static — score + DOM based)
   try {
-    const _svMetrics=document.getElementById('svMetrics');
-    const _svWatch=document.getElementById('svWatch');
     const _svUrgency=document.getElementById('svUrgency');
-    if(_svMetrics){
-      // hi = "higher is better" for both market comparison and target check
-      const svMetric=(label,val,avg,target,targetLabel,hi,fmt)=>{
-        if(val==null) return '';
-        let deltaPart='';
-        if(avg!=null){
-          const delta=hi?val-avg:avg-val;
-          const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
-          const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
-          const dTxt=dCls==='flat'?'flat':`${arrow} ${Math.abs(delta)<10?Math.abs(delta).toFixed(1):Math.round(Math.abs(delta))}`;
-          deltaPart=`<span class="sv-metric-delta ${dCls}">${dTxt}</span>`;
-        }
-        let vCls='n';
-        if(target!=null){
-          const hits=hi?val>=target:val<=target;
-          const tooFar=hi?val<target*0.7:val>target*1.3;
-          vCls=hits?'g':tooFar?'r':'a';
-        }
-        const metaTxt = avg!=null ? `${fmt(avg)} ${d.city||'market'} avg` : '';
-        return`<div class="sv-metric">
-          <div class="sv-metric-left">
-            <div class="sv-metric-lbl">${label}</div>
-            ${targetLabel?`<div class="sv-metric-tgt">${targetLabel}</div>`:''}
-          </div>
-          <div class="sv-metric-right">
-            <div class="sv-metric-val-row">
-              <span class="sv-metric-val ${vCls}">${fmt(val)}</span>
-              ${deltaPart}
-            </div>
-            ${metaTxt?`<div class="sv-metric-meta"><span class="sv-metric-avg">${metaTxt}</span></div>`:''}
-          </div>
-        </div>`;
-      };
-      _svMetrics.innerHTML=[
-        svMetric('Cash-on-Cash', fin.cashOnCashReturn, avgs.coc,      8,    'target ≥ 8%',   true,  v=>v.toFixed(1)+'%'),
-        svMetric('Cap Rate',     fin.capRate,          avgs.capRate,  6.5,  'target ≥ 6.5%', true,  v=>v.toFixed(1)+'%'),
-        svMetric('DSCR',         fin.dscr,             avgs.dscr,     1.25, 'lender ≥ 1.25', true,  v=>v.toFixed(2)),
-        svMetric('Price / Unit', fin.pricePerUnit,     avgs.ppu,      null, '',              false, v=>'$'+Math.round(v/1000)+'K'),
-      ].filter(Boolean).join('');
-    }
-    if(_svWatch){
-      const watches=[];
-      if(fin.dscr!=null&&fin.dscr<1.25) watches.push(`DSCR ${fin.dscr.toFixed(2)} is below the 1.25 lender minimum.`);
-      if(fin.monthlyCashFlow!=null&&fin.monthlyCashFlow<0) watches.push(`Negative monthly cash flow of $${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}.`);
-      if(d.yearBuilt&&(2025-d.yearBuilt)>80) watches.push(`Building is ${2025-d.yearBuilt} years old — budget for CapEx.`);
-      if(watches.length){
-        _svWatch.innerHTML=`<div class="sv-watch-title">⚠ Watch</div>${watches.join(' ')}`;
-        _svWatch.style.display='block';
-      } else _svWatch.style.display='none';
-    }
     if(_svUrgency){
       let urg='';
       if(score>=75) urg=d.daysOnMarket!=null&&d.daysOnMarket<14
@@ -674,7 +943,7 @@ function renderDeal(d){
       if(urg){_svUrgency.textContent=urg; _svUrgency.style.display='block';}
       else _svUrgency.style.display='none';
     }
-  } catch(e){ console.error('smartVerdict populate failed:', e); }
+  } catch(e){ console.error('urgency failed:', e); }
 
   // ── Nav + hero text
   setText('navAddr', d.address);
@@ -702,30 +971,6 @@ function renderDeal(d){
     d.zipCode?`<span class="badge">ZIP ${d.zipCode}</span>`:'',
     d.askingPrice?`<span class="badge">Ask ${fmtK(d.askingPrice)}</span>`:'',
   ].filter(Boolean).join('');
-
-  // ── Hero cash flow — THE HOOK
-  const heroCf=document.getElementById('heroCf');
-  const heroCfVal=document.getElementById('heroCfVal');
-  const heroCfSub=document.getElementById('heroCfSub');
-  const heroCfLabel=document.getElementById('heroCfLabel');
-  if(heroCf && heroCfVal && heroCfSub){
-    const cf = Math.round(fin.monthlyCashFlow || 0);
-    const cfYear = Math.round(cf * 12);
-    const coc = fin.cashOnCashReturn;
-    if(cf < 0){
-      heroCf.classList.add('negative');
-      if(heroCfLabel) heroCfLabel.textContent='Projected monthly shortfall';
-    } else {
-      heroCf.classList.remove('negative');
-      if(heroCfLabel) heroCfLabel.textContent='Projected monthly cash flow';
-    }
-    heroCfVal.innerHTML = (cf >= 0 ? '+' : '−') + '$' + Math.abs(cf).toLocaleString() + '<span class="unit">/mo</span>';
-    const parts=[];
-    if(cfYear) parts.push(`<b>$${Math.abs(cfYear).toLocaleString()}</b>/yr`);
-    if(coc!=null) parts.push(`<b>${coc.toFixed(1)}%</b> cash-on-cash`);
-    if(fin.totalCashToClose) parts.push(`on <b>${fmtK(fin.totalCashToClose)}</b> cash invested`);
-    heroCfSub.innerHTML = parts.join(' · ') || 'After mortgage · taxes · insurance · vacancy';
-  }
 
   // ── Market signal
   const marketSig=document.getElementById('marketSignal');
@@ -765,73 +1010,6 @@ function renderDeal(d){
   setHTML('scoreBreakdownPublic', publicBars.map(renderBar).join(''));
   setHTML('scoreBreakdownLocked', lockedBars.map(renderBar).join(''));
 
-  // ── Cash flow waterfall: bar + legend
-  const monthlyRent = fin.grossRentalIncome ? fin.grossRentalIncome/12 : null;
-  const monthlyPI   = fin.annualDebtService ? fin.annualDebtService/12 : null;
-  const monthlyTax  = fin.annualTaxes ? fin.annualTaxes/12 : (d.askingPrice ? d.askingPrice*0.012/12 : null);
-  const monthlyIns  = fin.annualInsurance ? fin.annualInsurance/12 : (d.askingPrice ? d.askingPrice*0.004/12 : null);
-  const monthlyCf   = fin.monthlyCashFlow!=null ? fin.monthlyCashFlow : null;
-
-  const cfSection = document.getElementById('cfSection');
-  if(cfSection && monthlyRent && monthlyPI!=null){
-    cfSection.style.display='';
-    setText('cfRentVal', '+$'+Math.round(monthlyRent).toLocaleString()+'/mo');
-
-    // Bar: segments proportional to monthlyRent (which equals PI+Tax+Ins+CF when CF>=0)
-    // If CF < 0, expenses exceed rent — segments scaled so expenses fill the bar and a red deficit segment is appended.
-    const denom = monthlyCf >= 0 ? monthlyRent : (monthlyPI + monthlyTax + monthlyIns + Math.abs(monthlyCf));
-    const pct = v => Math.max(0, (v/denom)*100);
-    const cfPct = monthlyCf >= 0 ? pct(monthlyCf) : pct(Math.abs(monthlyCf));
-    const cfClass = monthlyCf >= 0 ? 'cf' : 'deficit';
-    const cfShortLabel = monthlyCf >= 0 ? 'Cash' : 'Loss';
-
-    const segHTML = (cls, label, p) => p>0.5
-      ? `<div class="cf-seg ${cls}" style="flex:${p.toFixed(2)}">${p>=11?label+' ':''}<span class="cf-seg-pct">${p.toFixed(0)}%</span></div>`
-      : '';
-    setHTML('cfBar', [
-      segHTML('pi', 'P&I',  pct(monthlyPI)),
-      segHTML('tax','Tax',  pct(monthlyTax)),
-      segHTML('ins','Ins',  pct(monthlyIns)),
-      segHTML(cfClass, cfShortLabel, cfPct),
-    ].join(''));
-
-    // Legend
-    const legRow = (cls, name, val, p) => `<div class="cf-leg ${cls}">
-      <span class="cf-leg-dot"></span>
-      <span class="cf-leg-name">${name}</span>
-      <span class="cf-leg-vals">
-        <span class="cf-leg-val">$${Math.round(Math.abs(val)).toLocaleString()}/mo</span>
-        <span class="cf-leg-pct">${p.toFixed(0)}%</span>
-      </span>
-    </div>`;
-    const legCfRow = () => {
-      const cls = 'cf' + (monthlyCf < 0 ? ' negative' : '');
-      const sign = monthlyCf >= 0 ? '+' : '−';
-      const p = monthlyRent ? (Math.abs(monthlyCf)/monthlyRent)*100 : 0;
-      return `<div class="cf-leg ${cls}">
-        <span class="cf-leg-dot"></span>
-        <span class="cf-leg-name">${monthlyCf>=0?'Monthly Cash Flow':'Monthly Loss'}</span>
-        <span class="cf-leg-vals">
-          <span class="cf-leg-val">${sign}$${Math.round(Math.abs(monthlyCf)).toLocaleString()}/mo</span>
-          <span class="cf-leg-pct">${p.toFixed(0)}%</span>
-        </span>
-      </div>`;
-    };
-    setHTML('cfLegend', [
-      legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI)),
-      legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax)),
-      legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns)),
-      legCfRow(),
-    ].join(''));
-
-    // Upfront cost chip
-    if(fin.totalCashToClose!=null){
-      const _cu=document.getElementById('cfUpfront');
-      setText('cfUpfrontVal', fmt$(fin.totalCashToClose));
-      if(_cu) _cu.style.display='';
-    }
-  }
-
   // ── Narrative
   const narSec=document.getElementById('narrativeSection');
   const nb=document.getElementById('narrative');
@@ -848,18 +1026,17 @@ function renderDeal(d){
     if(txt && narSec){ nb.innerHTML=txt; narSec.style.display='block'; }
   }
 
-  // ── Sticky bottom bar (mobile only — CSS handles display)
+  // ── Sticky bottom bar (mobile only — CSS handles display); score & signal are static
   const sNum=document.getElementById('stickyNum');
   const sSig=document.getElementById('stickySignal');
-  const sCf =document.getElementById('stickyCf');
   if(sNum){ sNum.textContent=score; sNum.style.background=c; }
   if(sSig){ sSig.textContent=String(signal||'').toUpperCase(); sSig.style.color=c; }
-  if(sCf){
-    const cf=Math.round(fin.monthlyCashFlow||0);
-    sCf.textContent = (cf>=0?'+':'−') + '$' + Math.abs(cf).toLocaleString() + '/mo';
-  }
   const stickyBar=document.getElementById('stickyBar');
-  if(stickyBar) stickyBar.style.display=''; // CSS @media gates visibility
+  if(stickyBar) stickyBar.style.display='';
+
+  // ── Wire scenario controls and run the first render of all scenario-dependent parts
+  setupScenarioControls();
+  applyScenario();
 
   // ── Reveal
   document.getElementById('loading').style.display='none';
