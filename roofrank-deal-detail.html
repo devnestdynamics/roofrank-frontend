@@ -605,35 +605,27 @@ async function sendAiMessage(){
       body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
     });
 
-    if(!res.ok){ loadingEl.textContent = 'Sorry, the AI is unavailable right now.'; loadingEl.classList.remove('loading'); send.disabled=false; return; }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let fullText = '';
-    loadingEl.textContent = '';
-    loadingEl.classList.remove('loading');
-
-    while(true){
-      const {done, value} = await reader.read();
-      if(done) break;
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-      for(const line of lines){
-        if(line.startsWith('data: ')){
-          const data = line.slice(6);
-          if(data === '[DONE]') break;
-          try{
-            const parsed = JSON.parse(data);
-            if(parsed.text){ fullText += parsed.text; loadingEl.textContent = fullText; }
-          } catch(e){}
-        }
-      }
+    if(!res.ok){
+      loadingEl.textContent = 'Sorry, the AI analyst is unavailable right now.';
+      loadingEl.classList.remove('loading');
+      send.disabled = false;
+      return;
     }
+
+    const data = await res.json();
+    const fullText = data.text || 'Sorry, no response received.';
+    loadingEl.classList.remove('loading');
+    loadingEl.textContent = '';
+
+    // Typewriter effect
+    await typewriterEffect(loadingEl, fullText);
 
     aiHistory.push({ role: 'user', content: message });
     aiHistory.push({ role: 'assistant', content: fullText });
-    // Keep last 10 messages
     if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
+
+    addFollowUps(message, fullText);
+    updateMsgCount();
 
   } catch(err){
     loadingEl.textContent = 'Something went wrong. Please try again.';
@@ -641,7 +633,18 @@ async function sendAiMessage(){
   }
 
   send.disabled = false;
-  document.getElementById('aiMessages').scrollTop = 999999;
+}
+
+async function typewriterEffect(el, text){
+  const words = text.split(' ');
+  let displayed = '';
+  for(let i = 0; i < words.length; i++){
+    displayed += (i > 0 ? ' ' : '') + words[i];
+    el.textContent = displayed;
+    const msgs = document.getElementById('aiMessages');
+    if(msgs) msgs.scrollTop = msgs.scrollHeight;
+    await new Promise(r => setTimeout(r, 30 + Math.random() * 15));
+  }
 }
 </script>
 </body>
