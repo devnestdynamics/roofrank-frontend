@@ -414,10 +414,10 @@ function renderDeal(d){
   const c=scoreColor(score), cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
   const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
 
-  const _na=document.getElementById('navAddr'); if(_na) _na.textContent=d.address;
-  const _ha=document.getElementById('heroAddr'); if(_ha) _ha.textContent=d.address;
-  const _hc=document.getElementById('heroCity'); if(_hc) _hc.textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
-  const _heroBadges=document.getElementById('heroBadges'); if(_heroBadges) _heroBadges.innerHTML=[
+  document.getElementById('navAddr').textContent=d.address;
+  document.getElementById('heroAddr').textContent=d.address;
+  document.getElementById('heroCity').textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
+  document.getElementById('heroBadges').innerHTML=[
     `<span class="badge g">Score ${score}/100</span>`,
     `<span class="badge g">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
@@ -426,12 +426,12 @@ function renderDeal(d){
     d.daysOnMarket!=null?`<span class="badge">${d.daysOnMarket} days on market</span>`:'',
   ].filter(Boolean).join('');
 
-  const _hn=document.getElementById('hrNum'); if(_hn) _hn.textContent=score;
-  const _hrNum=document.getElementById('hrNum'); if(_hrNum) _hrNum.style.color=c;
-  const _hs=document.getElementById('hrSig'); if(_hs) _hs.textContent=signal;
-  const _hrSig=document.getElementById('hrSig'); if(_hrSig) _hrSig.style.color=c;
-  const _hrFill=document.getElementById('hrFill'); if(_hrFill) _hrFill.style.stroke=c;
-  const _hrF2=document.getElementById('hrFill'); if(_hrF2) _hrF2.style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
+  document.getElementById('hrNum').textContent=score;
+  document.getElementById('hrNum').style.color=c;
+  document.getElementById('hrSig').textContent=signal;
+  document.getElementById('hrSig').style.color=c;
+  document.getElementById('hrFill').style.stroke=c;
+  document.getElementById('hrFill').style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
 
   function kpi(id,val,good){
     const el=document.getElementById(id);if(!el||val==null)return;
@@ -451,7 +451,7 @@ function renderDeal(d){
     ['CapEx Reserve',sc.capexReserve||65,'Moderate'],
     ['Neighborhood Grade',sc.neighborhoodGrade||65,(d.reportData||{}).neighborhoodGrade||'B'],
   ];
-  const _sb2=document.getElementById('scoreBreakdown'); if(_sb2) _sb2.innerHTML=bars.map(([name,pct,label])=>{
+  document.getElementById('scoreBreakdown').innerHTML=bars.map(([name,pct,label])=>{
     const p=Math.max(0,Math.min(100,pct||0));
     const bc=p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
     const bl=p>=70?'good':p>=40?'ok':'low';
@@ -469,13 +469,13 @@ function renderDeal(d){
     ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
     ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
   ];
-  const _finGrid=document.getElementById('finGrid'); if(_finGrid) _finGrid.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
-  const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
-  const _vb=document.getElementById('vBadge'); if(_vb) _vb.textContent=(score>=75?'✓ ':'')+signal;
-  const _vt=document.getElementById('vText'); if(_vt) _vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
+  document.getElementById('verdictCard').className='verdict '+cls;
+  document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
+  document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
-  const _propDetails=document.getElementById('propDetails'); if(_propDetails) _propDetails.innerHTML=[
+  document.getElementById('propDetails').innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
     ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
@@ -491,11 +491,11 @@ function renderDeal(d){
     mktR('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
     mktR('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
   ].filter(Boolean).join('');
-  const _mr=document.getElementById('mktRows'); if(mktH&&_mr){_mr.innerHTML=mktH; const _mc=document.getElementById('mktCompare'); if(_mc) _mc.style.display='block';}
+  if(mktH){document.getElementById('mktRows').innerHTML=mktH;document.getElementById('mktCompare').style.display='block';}
 
   const uc=document.getElementById('upgradeCard');
-  if(score>=75){
-    if(uc){uc.className='side-card upgrade-card sb';uc.style.display='block';}
+  if(false && score>=75){  // removed - info shown in smart verdict card
+    uc.className='side-card upgrade-card sb';uc.style.display='block';
     uc.innerHTML='<div class="upgrade-title">✓ Already a Strong Buy</div><div style="font-size:.78rem;color:var(--muted);line-height:1.65">This deal meets Strong Buy criteria. Move quickly — deals at this score typically go under contract within 7–10 days.</div>';
   } else if(fin.noi&&d.askingPrice){
     const tp=Math.round(fin.noi/0.08);const sv=d.askingPrice-tp;
@@ -511,9 +511,10 @@ function renderDeal(d){
   const cfBar = document.getElementById('cfBar');
   const cfBarVal = document.getElementById('cfBarVal');
   const cfBarAnn = document.getElementById('cfBarAnn');
-  if(cfBar && fin.monthlyCashFlow != null){
+  const _cfVal = fin.monthlyCashFlow || fin.cashFlow || 0;
+  if(cfBar && (_cfVal !== 0 || fin.monthlyCashFlow === 0)){
     cfBar.style.display = 'flex';
-    const cf = Math.round(fin.monthlyCashFlow);
+    const cf = Math.round(_cfVal);
     cfBarVal.textContent = (cf >= 0 ? '+' : '') + '$' + Math.abs(cf).toLocaleString() + '/mo';
     cfBarVal.style.color = cf >= 0 ? '#fff' : '#f08080';
     if(cfBarAnn) cfBarAnn.textContent = '$' + Math.abs(Math.round(cf * 12)).toLocaleString() + '/yr';
@@ -533,8 +534,8 @@ function renderDeal(d){
     if(txt){nb.innerHTML=txt;nb.style.display='block';}
   }
 
-  const _ld=document.getElementById('loading'); if(_ld) _ld.style.display='none';
-  const _ml=document.getElementById('mainLayout'); if(_ml) _ml.style.display='grid';
+  document.getElementById('loading').style.display='none';
+  document.getElementById('mainLayout').style.display='grid';
   document.title='RoofRank — '+d.address;
 
   // Generate score sparkline (simulated 4-week trend)
@@ -683,8 +684,8 @@ function _toggleAiChat_old(){
 }
 
 function askSuggestion(el){
-  const _ai=document.getElementById('aiInput'); if(_ai) _ai.value = el.textContent;
-  const _as=document.getElementById('aiSuggestions'); if(_as) _as.style.display = 'none';
+  document.getElementById('aiInput').value = el.textContent;
+  document.getElementById('aiSuggestions').style.display = 'none';
   sendAiMessage();
 }
 
