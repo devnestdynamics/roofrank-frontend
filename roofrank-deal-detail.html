@@ -267,77 +267,54 @@ nav.top{
 .bd-badge.watch{background:rgba(160,106,0,.13); color:var(--amber)}
 .bd-badge.poor{background:rgba(160,48,48,.11); color:var(--rose)}
 
-/* ── FINANCIALS (Pro tease) ────────────────────────────────────────────── */
-.fin-grid{display:flex; flex-direction:column}
-.fin-row{
-  display:flex; justify-content:space-between; align-items:baseline;
-  padding:.75rem 0; font-size:.95rem; border-bottom:1px solid var(--cream-2);
+/* ── CASH FLOW WATERFALL ───────────────────────────────────────────────── */
+.cf-sub{
+  font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 .5rem;
 }
-.fin-row:last-child{border-bottom:none}
-.fin-k{color:var(--muted)}
-.fin-v{font-family:var(--mono); font-weight:500}
-.fin-v.g{color:var(--forest)}
-.fin-locked{position:relative; margin-top:.25rem}
-.fin-locked .fin-grid{filter:blur(5px); user-select:none; pointer-events:none}
-.fin-lock-overlay{
+.cf-sub + .cf-sub{margin-top:1.4rem}
+.cf-grid{display:flex; flex-direction:column}
+.cf-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:.7rem 0; font-size:.95rem; border-bottom:1px solid var(--cream-2);
+}
+.cf-row:last-child{border-bottom:none}
+.cf-k{color:var(--ink)}
+.cf-v{font-family:var(--mono); font-weight:500; color:var(--ink)}
+.cf-row.income .cf-v{color:var(--forest)}
+.cf-row.expense .cf-v{color:var(--ink)}
+.cf-row.total{
+  margin-top:.4rem; padding:1rem 0 .25rem;
+  border-top:2px solid var(--ink); border-bottom:none;
+}
+.cf-row.total .cf-k{font-weight:600; font-size:1.02rem}
+.cf-row.total .cf-v{font-size:1.3rem; font-weight:600; color:var(--forest)}
+.cf-row.total.negative .cf-v{color:var(--rose)}
+
+/* ── PRO LOCK (used by score breakdown) ────────────────────────────────── */
+.pro-locked{position:relative; margin-top:.5rem}
+.pro-locked-inner{filter:blur(5px); user-select:none; pointer-events:none}
+.pro-lock-overlay{
   position:absolute; inset:0; padding:1.5rem 1rem;
-  background:linear-gradient(180deg, rgba(247,244,239,.2) 0%, rgba(247,244,239,.92) 35%, var(--cream) 100%);
+  background:linear-gradient(180deg, rgba(247,244,239,.15) 0%, rgba(247,244,239,.9) 35%, var(--cream) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
   text-align:center;
 }
-.fin-lock-icon{
+.pro-lock-icon{
   width:38px; height:38px; background:var(--forest);
   border-radius:50%; display:flex; align-items:center; justify-content:center;
   margin-bottom:.75rem;
 }
-.fin-lock-icon svg{width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2}
-.fin-lock-title{font-family:var(--serif); font-size:1.15rem; font-weight:500; margin-bottom:.35rem}
-.fin-lock-sub{font-size:.88rem; color:var(--muted); margin-bottom:1rem; max-width:340px; line-height:1.55}
-.fin-lock-btn{
+.pro-lock-icon svg{width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2}
+.pro-lock-title{font-family:var(--serif); font-size:1.15rem; font-weight:500; margin-bottom:.35rem}
+.pro-lock-sub{font-size:.88rem; color:var(--muted); margin-bottom:1rem; max-width:340px; line-height:1.55}
+.pro-lock-btn{
   background:var(--forest); color:#fff; text-decoration:none;
   border:none; border-radius:999px; padding:.7rem 1.6rem;
   font-size:.88rem; font-weight:500; font-family:var(--sans); cursor:pointer;
   display:inline-block;
 }
-.fin-lock-btn:hover{background:var(--forest-2)}
-
-/* ── PRO UPSELL ────────────────────────────────────────────────────────── */
-.pro-card{
-  background:linear-gradient(135deg, var(--forest) 0%, var(--forest-2) 100%);
-  color:#fff; border-radius:var(--r-lg); padding:2rem 1.5rem;
-  text-align:center; position:relative; overflow:hidden;
-  box-shadow:0 8px 28px rgba(28,74,53,.18);
-}
-.pro-card::before{
-  content:''; position:absolute; top:-40%; right:-25%;
-  width:340px; height:340px; pointer-events:none;
-  background:radial-gradient(circle, rgba(255,255,255,.08), transparent 60%);
-}
-.pro-eyebrow{
-  font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
-  color:rgba(255,255,255,.65); margin-bottom:.7rem; position:relative;
-}
-.pro-title{
-  font-family:var(--serif); font-size:1.65rem; font-weight:500;
-  line-height:1.25; margin-bottom:.75rem; position:relative;
-}
-.pro-sub{font-size:.95rem; color:rgba(255,255,255,.78); margin-bottom:1.5rem; line-height:1.65; position:relative}
-.pro-features{
-  display:flex; flex-direction:column; gap:.7rem;
-  margin:0 auto 1.75rem; text-align:left;
-  max-width:320px; position:relative;
-}
-.pro-feat{display:flex; align-items:center; gap:.7rem; font-size:.92rem; color:rgba(255,255,255,.95)}
-.pro-feat svg{width:18px; height:18px; stroke:var(--sage); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0}
-.pro-cta-btn{
-  background:#fff; color:var(--forest); border:none; border-radius:999px;
-  padding:.9rem 2rem; font-size:.95rem; font-weight:600;
-  font-family:var(--sans); cursor:pointer; text-decoration:none;
-  display:inline-block; position:relative;
-  transition:transform .15s, box-shadow .15s;
-}
-.pro-cta-btn:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.18)}
-.pro-meta{margin-top:.9rem; font-size:.75rem; color:rgba(255,255,255,.55); position:relative}
+.pro-lock-btn:hover{background:var(--forest-2)}
 
 /* ── STICKY BOTTOM BAR (mobile) ────────────────────────────────────────── */
 .sticky-bar{
@@ -499,44 +476,29 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── SCORE BREAKDOWN ──────────────────────────────────────────── -->
+  <!-- ── CASH FLOW ────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-title">Cash flow <span class="meta">the math behind the headline</span></div>
+    <div class="cf-sub">Upfront</div>
+    <div class="cf-grid" id="cfUpfront"></div>
+    <div class="cf-sub">Monthly</div>
+    <div class="cf-grid" id="cfMonthly"></div>
+  </section>
+
+  <!-- ── SCORE BREAKDOWN (locked) ─────────────────────────────────── -->
   <section>
     <div class="section-title">Score breakdown <span class="meta">how we got to <span id="bdScore">—</span></span></div>
-    <div id="scoreBreakdown"></div>
-  </section>
-
-  <!-- ── FINANCIALS ───────────────────────────────────────────────── -->
-  <section>
-    <div class="section-title">Financials</div>
-    <div class="fin-grid" id="finGridPublic"></div>
-    <div class="fin-locked">
-      <div class="fin-grid" id="finGrid"></div>
-      <div class="fin-lock-overlay">
-        <div class="fin-lock-icon">
+    <div id="scoreBreakdownPublic"></div>
+    <div class="pro-locked">
+      <div class="pro-locked-inner" id="scoreBreakdownLocked"></div>
+      <div class="pro-lock-overlay">
+        <div class="pro-lock-icon">
           <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
-        <div class="fin-lock-title">See the full breakdown</div>
-        <div class="fin-lock-sub">Every line item — debt service, expense ratios, what to negotiate. Included with Pro.</div>
-        <a href="roofrank-pricing.html" class="fin-lock-btn">Unlock with Pro →</a>
+        <div class="pro-lock-title">See the full breakdown</div>
+        <div class="pro-lock-sub">All eight scoring dimensions — including CapEx, neighborhood grade, and price-per-unit benchmarks.</div>
+        <a href="roofrank-pricing.html" class="pro-lock-btn">Unlock with Pro →</a>
       </div>
-    </div>
-  </section>
-
-  <!-- ── PRO UPSELL ───────────────────────────────────────────────── -->
-  <section>
-    <div class="pro-card">
-      <div class="pro-eyebrow">RoofRank Pro</div>
-      <div class="pro-title">Stop guessing.<br>Buy with conviction.</div>
-      <div class="pro-sub">Get the analyst, the comps, and the full picture on every deal in your market.</div>
-      <div class="pro-features">
-        <div class="pro-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI analyst conversations</div>
-        <div class="pro-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full financial breakdown + PDF exports</div>
-        <div class="pro-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Comparable deals in your market</div>
-        <div class="pro-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Offer calculator + negotiation playbook</div>
-        <div class="pro-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Daily deal alerts in your markets</div>
-      </div>
-      <a href="roofrank-pricing.html" class="pro-cta-btn">Start free trial →</a>
-      <div class="pro-meta">7-day free trial · Cancel anytime</div>
     </div>
   </section>
 
@@ -744,36 +706,53 @@ function renderDeal(d){
     ['CapEx Reserve', sc.capexReserve||65, 'Moderate'],
     ['Neighborhood Grade', sc.neighborhoodGrade||65, (d.reportData||{}).neighborhoodGrade||'B'],
   ];
-  const _sb=document.getElementById('scoreBreakdown');
-  if(_sb) _sb.innerHTML = bars.map(([name,pct,label])=>{
+  // Score breakdown: split into public teaser (top 2 strongest + 1 weakest) and locked
+  const renderBar = ([name,pct,label]) => {
     const p = Math.max(0,Math.min(100, pct||0));
     const bc = p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
     const bn = p>=75?'great':p>=55?'good':p>=35?'watch':'poor';
     const bnTxt = p>=75?'Great':p>=55?'Good':p>=35?'Watch':'Poor';
     return `<div class="bd-row"><div class="bd-name">${name}</div><div class="bd-bar-wrap"><div class="bd-bar-fill" style="width:${p}%;background:${bc}"></div></div><div class="bd-val">${label}</div><span class="bd-badge ${bn}">${bnTxt}</span></div>`;
-  }).join('');
+  };
+  const sorted = [...bars].map((b,i)=>({b, pct:b[1]||0, i})).sort((a,b)=>b.pct-a.pct);
+  const topNames = new Set([sorted[0]?.b[0], sorted[1]?.b[0], sorted[sorted.length-1]?.b[0]].filter(Boolean));
+  const publicBars = bars.filter(b=>topNames.has(b[0]));
+  const lockedBars = bars.filter(b=>!topNames.has(b[0]));
+  setHTML('scoreBreakdownPublic', publicBars.map(renderBar).join(''));
+  setHTML('scoreBreakdownLocked', lockedBars.map(renderBar).join(''));
 
-  // ── Financials — split: 3 public, rest blurred (Pro tease)
-  const finRender = arr => arr.filter(([,v])=>v!='—'&&v!=null).map(([k,v,g])=>`<div class="fin-row"><span class="fin-k">${k}</span><span class="fin-v${g?' g':''}">${v}</span></div>`).join('');
-  const finPublic = [
-    ['Ask Price', fmt$(d.askingPrice), false],
-    ['Total Cash to Close', fmt$(fin.totalCashToClose), true],
-    ['Monthly Cash Flow', fmt$(fin.monthlyCashFlow), true],
-  ];
-  const finLocked = [
-    ['Down Payment (25%)', fmt$(fin.downPayment), false],
-    ['Closing Costs', fmt$(fin.totalCashToClose&&fin.downPayment?fin.totalCashToClose-fin.downPayment:null), false],
-    ['Monthly Gross Rent', fin.grossRentalIncome?fmt$(fin.grossRentalIncome/12):'—', true],
-    ['Annual Gross Rent', fmt$(fin.grossRentalIncome), true],
-    ['Vacancy (5%)', fmt$(fin.vacancyLoss), false],
-    ['Effective Gross Income', fmt$(fin.effectiveGrossIncome), true],
-    ['Operating Expenses', fmt$(fin.totalExpenses), false],
-    ['Net Operating Income', fmt$(fin.noi), true],
-    ['Annual Debt Service', fmt$(fin.annualDebtService), false],
-    ['Annual Cash Flow', fmt$(fin.beforeTaxCashFlow), true],
-  ];
-  setHTML('finGridPublic', finRender(finPublic));
-  setHTML('finGrid', finRender(finLocked));
+  // ── Cash flow waterfall (public — the story behind the headline number)
+  const monthlyRent = fin.grossRentalIncome ? fin.grossRentalIncome/12 : null;
+  const monthlyPI   = fin.annualDebtService ? fin.annualDebtService/12 : null;
+  const monthlyTax  = fin.annualTaxes ? fin.annualTaxes/12 : (d.askingPrice ? d.askingPrice*0.012/12 : null);
+  const monthlyIns  = fin.annualInsurance ? fin.annualInsurance/12 : (d.askingPrice ? d.askingPrice*0.004/12 : null);
+  const monthlyCf   = fin.monthlyCashFlow!=null ? fin.monthlyCashFlow : null;
+
+  const cfRow = (label, val, kind) => {
+    if(val==null) return '';
+    const sign = kind==='income' ? '+' : kind==='expense' ? '−' : (val>=0?'+':'−');
+    const amount = '$' + Math.round(Math.abs(val)).toLocaleString();
+    return `<div class="cf-row ${kind}"><span class="cf-k">${label}</span><span class="cf-v">${sign}${amount}</span></div>`;
+  };
+  const cfTotalRow = (label, val) => {
+    if(val==null) return '';
+    const cls = val<0 ? ' negative' : '';
+    const sign = val>=0 ? '+' : '−';
+    return `<div class="cf-row total${cls}"><span class="cf-k">${label}</span><span class="cf-v">${sign}$${Math.round(Math.abs(val)).toLocaleString()}</span></div>`;
+  };
+
+  setHTML('cfUpfront',
+    fin.totalCashToClose!=null
+      ? `<div class="cf-row"><span class="cf-k">Total Cash to Close</span><span class="cf-v">${fmt$(fin.totalCashToClose)}</span></div>`
+      : ''
+  );
+  setHTML('cfMonthly', [
+    cfRow('Monthly Rent', monthlyRent, 'income'),
+    cfRow('Mortgage P&I', monthlyPI, 'expense'),
+    cfRow('Property Taxes', monthlyTax, 'expense'),
+    cfRow('Insurance', monthlyIns, 'expense'),
+    cfTotalRow('Monthly Cash Flow', monthlyCf),
+  ].filter(Boolean).join(''));
 
   // ── Narrative
   const narSec=document.getElementById('narrativeSection');
