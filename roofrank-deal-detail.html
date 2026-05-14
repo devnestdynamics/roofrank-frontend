@@ -624,11 +624,14 @@ async function sendAiMessage(){
     aiHistory.push({ role: 'assistant', content: fullText });
     if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
 
-    addFollowUps(message, fullText);
-    updateMsgCount();
+    try { addFollowUps(message, fullText); } catch(e){ console.error('followups error:', e); }
+    try { updateMsgCount(); } catch(e){ console.error('msgcount error:', e); }
 
   } catch(err){
-    loadingEl.textContent = 'Something went wrong. Please try again.';
+    console.error('AI chat error:', err);
+    if(!loadingEl.textContent) {
+      loadingEl.textContent = 'Something went wrong. Please try again.';
+    }
     loadingEl.classList.remove('loading');
   }
 
