@@ -417,7 +417,7 @@ function renderDeal(d){
   const _na=document.getElementById('navAddr'); if(_na) _na.textContent=d.address;
   const _ha=document.getElementById('heroAddr'); if(_ha) _ha.textContent=d.address;
   const _hc=document.getElementById('heroCity'); if(_hc) _hc.textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
-  document.getElementById('heroBadges').innerHTML=[
+  const _heroBadges=document.getElementById('heroBadges'); if(_heroBadges) _heroBadges.innerHTML=[
     `<span class="badge g">Score ${score}/100</span>`,
     `<span class="badge g">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
@@ -427,11 +427,11 @@ function renderDeal(d){
   ].filter(Boolean).join('');
 
   const _hn=document.getElementById('hrNum'); if(_hn) _hn.textContent=score;
-  document.getElementById('hrNum').style.color=c;
+  const _hrNum=document.getElementById('hrNum'); if(_hrNum) _hrNum.style.color=c;
   const _hs=document.getElementById('hrSig'); if(_hs) _hs.textContent=signal;
-  document.getElementById('hrSig').style.color=c;
-  document.getElementById('hrFill').style.stroke=c;
-  document.getElementById('hrFill').style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
+  const _hrSig=document.getElementById('hrSig'); if(_hrSig) _hrSig.style.color=c;
+  const _hrFill=document.getElementById('hrFill'); if(_hrFill) _hrFill.style.stroke=c;
+  const _hrF2=document.getElementById('hrFill'); if(_hrF2) _hrF2.style.strokeDashoffset=(2*Math.PI*39)*(1-score/100);
 
   function kpi(id,val,good){
     const el=document.getElementById(id);if(!el||val==null)return;
@@ -469,13 +469,13 @@ function renderDeal(d){
     ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
     ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
   ];
-  document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  const _finGrid=document.getElementById('finGrid'); if(_finGrid) _finGrid.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
   const _vc=document.getElementById('verdictCard'); if(_vc) _vc.className='verdict '+cls;
   const _vb=document.getElementById('vBadge'); if(_vb) _vb.textContent=(score>=75?'✓ ':'')+signal;
   const _vt=document.getElementById('vText'); if(_vt) _vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
-  document.getElementById('propDetails').innerHTML=[
+  const _propDetails=document.getElementById('propDetails'); if(_propDetails) _propDetails.innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
     ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
@@ -533,8 +533,8 @@ function renderDeal(d){
     if(txt){nb.innerHTML=txt;nb.style.display='block';}
   }
 
-  document.getElementById('loading').style.display='none';
-  document.getElementById('mainLayout').style.display='grid';
+  const _ld=document.getElementById('loading'); if(_ld) _ld.style.display='none';
+  const _ml=document.getElementById('mainLayout'); if(_ml) _ml.style.display='grid';
   document.title='RoofRank — '+d.address;
 
   // Generate score sparkline (simulated 4-week trend)
@@ -683,8 +683,8 @@ function _toggleAiChat_old(){
 }
 
 function askSuggestion(el){
-  document.getElementById('aiInput').value = el.textContent;
-  document.getElementById('aiSuggestions').style.display = 'none';
+  const _ai=document.getElementById('aiInput'); if(_ai) _ai.value = el.textContent;
+  const _as=document.getElementById('aiSuggestions'); if(_as) _as.style.display = 'none';
   sendAiMessage();
 }
 
