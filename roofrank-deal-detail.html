@@ -202,6 +202,81 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
 .sv-watch{font-size:.75rem;color:rgba(255,200,100,.9);line-height:1.6;padding:.5rem .6rem;background:rgba(255,200,100,.08);border-radius:6px;border:1px solid rgba(255,200,100,.2)}
 .sv-watch-title{font-weight:600;margin-bottom:.2rem}
 .sv-urgency{font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.6;margin-top:.75rem;font-style:italic}
+
+/* ── Mobile Optimized Layout ─────────────────────────────────────────────── */
+@media(max-width:430px){
+
+  /* Nav — compact */
+  nav{padding:0 .75rem;height:48px}
+  .nav-addr{font-size:.72rem;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .btn-ghost{padding:.28rem .55rem;font-size:.68rem}
+  .btn-export{padding:.28rem .55rem;font-size:.68rem}
+
+  /* Hero — stack score ring and info */
+  .hero{padding:.9rem .9rem .75rem;gap:.75rem}
+  .hero-ring{width:64px;height:64px;flex-shrink:0}
+  .hero-ring svg{width:64px;height:64px}
+  .hr-num{font-size:1.3rem}
+  .hr-sig{font-size:.42rem}
+  .hero-info{min-width:0}
+  .hero-addr{font-size:.95rem}
+  .hero-city{font-size:.68rem}
+  .hero-badges{gap:.25rem;margin-top:.4rem}
+  .hbadge{font-size:.58rem;padding:.15rem .4rem}
+
+  /* Narrative — readable */
+  .narrative{font-size:.84rem;line-height:1.8;padding:.85rem .9rem}
+
+  /* Cash flow bar — NEW prominent bar */
+  .cf-highlight-bar{
+    background:var(--forest);
+    padding:.9rem .9rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .cf-highlight-bar .cf-label{font-size:.68rem;font-weight:500;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.04em}
+  .cf-highlight-bar .cf-val{font-family:var(--serif);font-size:1.6rem;font-weight:400;color:#fff}
+  .cf-highlight-bar .cf-sub{font-size:.62rem;color:rgba(255,255,255,.5);margin-top:1px}
+
+  /* KPI tiles — 2x2, bigger numbers */
+  .kpi-grid{grid-template-columns:repeat(2,1fr) !important;gap:1px;background:var(--border)}
+  .kpi-tile{padding:.8rem .9rem;background:var(--white)}
+  .kpi-label{font-size:.62rem;letter-spacing:.04em}
+  .kpi-val{font-size:1.35rem !important}
+  .kpi-sub{font-size:.62rem}
+
+  /* Score breakdown — collapsible on mobile */
+  .section-card.collapsible .sc-body{display:none}
+  .section-card.collapsible.open .sc-body{display:block}
+  .section-card.collapsible .sc-title{cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .section-card.collapsible .sc-title::after{content:"▾";font-size:.8rem;color:var(--muted);transition:transform .2s}
+  .section-card.collapsible.open .sc-title::after{transform:rotate(180deg)}
+
+  /* Financials — collapsible on mobile */
+  .fin-grid{display:flex;flex-direction:column;gap:0}
+  .fin-cell{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--cream-2);font-size:.78rem}
+  .fin-cell:last-child{border:none}
+  .fin-k{color:var(--muted)}
+  .fin-v{font-weight:600}
+
+  /* Layout — single column, sidebar moves below */
+  .layout{grid-template-columns:1fr !important}
+  .sidebar-col{order:3}
+  .main-col{order:1}
+  .ai-section-wrap{order:2}
+
+  /* AI section */
+  .ai-full-card{margin-top:0;border-radius:0;border-left:none;border-right:none}
+  .ai-full-suggestions{padding-bottom:3px}
+
+  /* Smart verdict — full width at bottom */
+  .smart-verdict{border-radius:0;margin-bottom:0}
+
+  /* CTA */
+  .cta-card{border-radius:0}
+}
 </style>
 </head>
 <body>
@@ -236,7 +311,19 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
       </div>
     </div>
     <div class="narrative" id="narrative" style="display:none"></div>
-    <div class="kpi-grid">
+    <!-- Cash Flow Highlight Bar — mobile prominent -->
+    <div class="cf-highlight-bar" id="cfBar" style="display:none">
+      <div>
+        <div class="cf-label">Monthly Cash Flow</div>
+        <div class="cf-sub">After mortgage · taxes · insurance</div>
+      </div>
+      <div style="text-align:right">
+        <div class="cf-val" id="cfBarVal">—</div>
+        <div class="cf-sub" id="cfBarAnn">—</div>
+      </div>
+    </div>
+
+        <div class="kpi-grid">
       <div class="kpi"><div class="kpi-lbl">Cash-on-Cash</div><div class="kpi-val" id="kCoc">—</div><div class="kpi-tgt">Target ≥ 8%</div></div>
       <div class="kpi"><div class="kpi-lbl">Cap Rate</div><div class="kpi-val" id="kCap">—</div><div class="kpi-tgt">Target ≥ 6.5%</div></div>
       <div class="kpi"><div class="kpi-lbl">DSCR</div><div class="kpi-val" id="kDscr">—</div><div class="kpi-tgt">Lender min 1.25</div></div>
@@ -244,12 +331,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5r
     </div>
 
     <div class="section-card">
-      <div class="sc-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Full Score Breakdown</div>
-      <div id="scoreBreakdown"></div>
+      <div class="sc-title" onclick="this.closest('.section-card').classList.toggle('open')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Full Score Breakdown</div>
+      <div class="sc-body"><div id="scoreBreakdown"></div></div>
     </div>
     <div class="section-card">
-      <div class="sc-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Financials</div>
-      <div class="fin-grid" id="finGrid"></div>
+      <div class="sc-title" onclick="this.closest('.section-card').classList.toggle('open')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Financials</div>
+      <div class="sc-body"><div class="fin-grid" id="finGrid"></div></div>
     </div>
 
     <!-- ASK THE ANALYST — Full width below financials -->
@@ -330,7 +417,7 @@ function renderDeal(d){
   document.getElementById('navAddr').textContent=d.address;
   document.getElementById('heroAddr').textContent=d.address;
   document.getElementById('heroCity').textContent=[d.city,d.state,d.zipCode].filter(Boolean).join(', ')+` · ${d.units||'?'} Units · ${d.propertyType||''} · Built ${d.yearBuilt||'?'}`;
-  const hb=document.getElementById('heroBadges'); if(hb) hb.innerHTML=[
+  document.getElementById('heroBadges').innerHTML=[
     `<span class="badge g">Score ${score}/100</span>`,
     `<span class="badge g">${signal}</span>`,
     d.units?`<span class="badge">${d.units} Units</span>`:'',
@@ -364,7 +451,7 @@ function renderDeal(d){
     ['CapEx Reserve',sc.capexReserve||65,'Moderate'],
     ['Neighborhood Grade',sc.neighborhoodGrade||65,(d.reportData||{}).neighborhoodGrade||'B'],
   ];
-  const sb=document.getElementById('scoreBreakdown'); if(sb) sb.innerHTML=bars.map(([name,pct,label])=>{
+  document.getElementById('scoreBreakdown').innerHTML=bars.map(([name,pct,label])=>{
     const p=Math.max(0,Math.min(100,pct||0));
     const bc=p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
     const bl=p>=70?'good':p>=40?'ok':'low';
@@ -382,13 +469,13 @@ function renderDeal(d){
     ['Net Operating Income',fmt$(fin.noi),true],['Annual Debt Service',fmt$(fin.annualDebtService),false],
     ['Annual Cash Flow',fmt$(fin.beforeTaxCashFlow),true],['Monthly Cash Flow',fmt$(fin.monthlyCashFlow),true],
   ];
-  const fg=document.getElementById('finGrid'); if(fg) fg.innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
+  document.getElementById('finGrid').innerHTML=fins.map(([k,v,g])=>`<div class="fin-cell"><div class="fin-k">${k}</div><div class="fin-v${g?' g':''}">${v}</div></div>`).join('');
 
-  const vc=document.getElementById('verdictCard'); if(vc) vc.className='verdict '+cls;
-  const vb=document.getElementById('vBadge'); if(vb) vb.textContent=(score>=75?'✓ ':'')+signal;
-  const vt=document.getElementById('vText'); if(vt) vt.textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
+  document.getElementById('verdictCard').className='verdict '+cls;
+  document.getElementById('vBadge').textContent=(score>=75?'✓ ':'')+signal;
+  document.getElementById('vText').textContent=(d.reportData||{}).summary||(score>=75?'Strong fundamentals at current rates.':score>=60?'Good deal worth pursuing.':score>=45?'Marginal — may improve with negotiation.':'Below investment thresholds.');
 
-  const pd=document.getElementById('propDetails'); if(pd) pd.innerHTML=[
+  document.getElementById('propDetails').innerHTML=[
     ['Units',d.units],['Type',d.propertyType],['Year Built',d.yearBuilt],
     ['Days on Market',d.daysOnMarket!=null?d.daysOnMarket+'d':null],['Zip Code',d.zipCode],
   ].filter(([,v])=>v!=null).map(([k,v])=>`<div class="side-row"><span class="side-k">${k}</span><span class="side-v">${v}</span></div>`).join('');
@@ -404,7 +491,7 @@ function renderDeal(d){
     mktR('Price / Unit',fin.pricePerUnit,avgs.ppu,false,v=>'$'+Math.round(v/1000)+'K'),
     mktR('DSCR',fin.dscr,avgs.dscr,true,v=>v.toFixed(2)),
   ].filter(Boolean).join('');
-  const mktRowsEl=document.getElementById('mktRows'); const mktCmpEl=document.getElementById('mktCompare'); if(mktH&&mktRowsEl){mktRowsEl.innerHTML=mktH;} if(mktH&&mktCmpEl){mktCmpEl.style.display='block';}
+  if(mktH){document.getElementById('mktRows').innerHTML=mktH;document.getElementById('mktCompare').style.display='block';}
 
   const uc=document.getElementById('upgradeCard');
   if(score>=75){
@@ -420,32 +507,16 @@ function renderDeal(d){
     if(rows){uc.className='side-card upgrade-card';uc.style.display='block';uc.innerHTML='<div class="upgrade-title">What would make this a Strong Buy?</div>'+rows;}
   }
 
-    // ── Smart Verdict Card ───────────────────────────────────────
-  const sv = document.getElementById('smartVerdict');
-  if(sv && fin){
-    const coc = fin.cashOnCashReturn || 0;
-    const cap = fin.capRate || 0;
-    const dscr = fin.dscr || 0;
-    const ppu = fin.pricePerUnit || 0;
-    const sigEl = document.getElementById('svSignal');
-    const scoreEl = document.getElementById('svScore');
-    const metricsEl = document.getElementById('svMetrics');
-    const watchEl = document.getElementById('svWatch');
-    const urgencyEl = document.getElementById('svUrgency');
-    if(sigEl) sigEl.textContent = (signal||'') + ' ✓';
-    if(scoreEl) scoreEl.textContent = score + '/100 · RoofRank Score';
-    const metrics = [
-      { lbl: 'Cash-on-Cash', val: coc.toFixed(1)+'%', avg: '4.8% avg', delta: coc > 6 ? 'up' : coc > 4 ? 'flat' : 'down', deltaLbl: coc > 6 ? '↑ above avg' : '→ at avg' },
-      { lbl: 'Cap Rate',     val: cap.toFixed(1)+'%', avg: '6.1% avg', delta: cap > 7 ? 'up' : cap > 5.5 ? 'flat' : 'down', deltaLbl: cap > 7 ? '↑ above avg' : '→ at avg' },
-      { lbl: 'DSCR',         val: dscr.toFixed(2),    avg: '1.13 avg', delta: dscr > 1.25 ? 'up' : dscr > 1.05 ? 'flat' : 'down', deltaLbl: dscr > 1.25 ? '↑ strong' : '→ ok' },
-      { lbl: 'Price / Unit', val: '$'+Math.round(ppu/1000)+'K', avg: '$280K avg', delta: ppu < 280000 ? 'up' : ppu < 350000 ? 'flat' : 'down', deltaLbl: ppu < 280000 ? '↓ below avg' : '→ at market' },
-    ];
-    if(metricsEl) metricsEl.innerHTML = metrics.map(m=>`<div class="sv-metric"><span class="sv-metric-lbl">${m.lbl}</span><div class="sv-metric-vals"><span class="sv-metric-val">${m.val||'--'}</span><span class="sv-metric-avg">${m.avg}</span><span class="sv-metric-delta ${m.delta}">${m.deltaLbl}</span></div></div>`).join('');
-    const watches = [];
-    if(d.yearBuilt && d.yearBuilt < 1950) watches.push('Built ' + d.yearBuilt + ' — budget for deferred maintenance');
-    if(dscr < 1.15) watches.push('DSCR ' + dscr.toFixed(2) + ' — tight coverage, one vacancy hurts');
-    if(watchEl && watches.length){ watchEl.style.display='block'; watchEl.innerHTML='<div class="sv-watch-title">⚠ Watch</div>' + watches.map(w=>'· '+w).join('<br>'); }
-    if(urgencyEl && score >= 75){ urgencyEl.style.display='block'; urgencyEl.textContent='Strong Buy deals in this market typically go under contract within 7–10 days.'; }
+  // Populate cash flow highlight bar
+  const cfBar = document.getElementById('cfBar');
+  const cfBarVal = document.getElementById('cfBarVal');
+  const cfBarAnn = document.getElementById('cfBarAnn');
+  if(cfBar && fin.monthlyCashFlow != null){
+    cfBar.style.display = 'flex';
+    const cf = Math.round(fin.monthlyCashFlow);
+    cfBarVal.textContent = (cf >= 0 ? '+' : '') + '$' + Math.abs(cf).toLocaleString() + '/mo';
+    cfBarVal.style.color = cf >= 0 ? '#fff' : '#f08080';
+    if(cfBarAnn) cfBarAnn.textContent = '$' + Math.abs(Math.round(cf * 12)).toLocaleString() + '/yr';
   }
 
   const nb=document.getElementById('narrative');
@@ -579,7 +650,7 @@ async function boot(){
     const deal=await FeedAPI.get(fid);
     if(deal)renderDeal(deal);
     else document.getElementById('loading').textContent='Deal not found.';
-  }catch(e){document.getElementById('loading').textContent='Could not load deal: '+e.message+' | '+e.stack?.split('\n')[1];console.error(e);}
+  }catch(e){document.getElementById('loading').textContent='Could not load deal: '+e.message;}
 }
 document.addEventListener('DOMContentLoaded',boot);
 
@@ -696,6 +767,16 @@ async function sendAiMessage(){
 
   send.disabled = false;
   document.getElementById('aiMessages').scrollTop = 999999;
+}
+
+// On mobile, open financials by default, keep breakdown collapsed
+if(window.innerWidth <= 430){
+  document.addEventListener('DOMContentLoaded', () => {
+    const fins = document.querySelectorAll('.section-card.collapsible');
+    fins.forEach(el => {
+      if(el.querySelector('#finGrid')) el.classList.add('open');
+    });
+  });
 }
 </script>
 </body>
