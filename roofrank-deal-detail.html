@@ -452,7 +452,16 @@ function renderDeal(d){
 
   // Narrative
   const nb=$('narrative');
-  if(nb) nb.innerHTML=(d.reportData||{}).narrative||generateNarrative(d,fin,score);
+  if(nb){
+    const narr=(d.reportData||{}).narrative;
+    if(narr){ nb.innerHTML=narr; }
+    else {
+      const ppu=Math.round((fin.pricePerUnit||0)/1000);
+      const cap=(fin.capRate||0).toFixed(1);
+      const dscr=(fin.dscr||0).toFixed(2);
+      nb.innerHTML=`At <strong>$${ppu}K per unit</strong> in ${d.city||'this market'}, this property scores <strong>${score}/100</strong>. The <strong>${cap}% cap rate</strong> reflects current market conditions. With a <strong>${d.yearBuilt||'older'} build</strong>, factor in CapEx carefully. <strong>DSCR of ${dscr}</strong> ${parseFloat(dscr)>=1.25?'gives solid cushion above lender minimums':'is tight — monitor closely'}.`;
+    }
+  }
 
   // CF highlight bar
   const cfBar=$('cfBar');
