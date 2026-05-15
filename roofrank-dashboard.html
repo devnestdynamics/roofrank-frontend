@@ -127,6 +127,51 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .dtake::before{content:'"';color:var(--sage);font-style:normal;margin-right:2px}
 .dtake::after{content:'"';color:var(--sage);font-style:normal;margin-left:1px}
 
+/* ── LENSES — AI-curated views, replace filter chrome ──────────────────── */
+.lenses-wrap{margin:0 0 .55rem}
+.lens-row{
+  display:flex;gap:.45rem;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:.4rem;
+}
+.lens-row::-webkit-scrollbar{display:none}
+.lens{
+  display:inline-flex;align-items:center;gap:.4rem;
+  flex-shrink:0;white-space:nowrap;
+  background:var(--white);border:1px solid var(--border);
+  color:var(--ink);font-family:var(--sans);font-size:.78rem;font-weight:500;
+  padding:.4rem .75rem .4rem .6rem;border-radius:999px;
+  cursor:pointer;transition:all .15s;
+}
+.lens svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:stroke .15s}
+.lens .lens-count{
+  display:inline-block;background:var(--cream-2);color:var(--muted);
+  font-family:var(--mono);font-size:.65rem;font-weight:500;
+  padding:1px 6px;border-radius:8px;margin-left:.15rem;
+}
+.lens:hover{border-color:var(--sage-border);color:var(--forest)}
+.lens:hover svg{stroke:var(--forest)}
+.lens.on{
+  background:var(--forest);color:#fff;border-color:var(--forest);
+  box-shadow:0 2px 12px rgba(28,74,53,.18);
+}
+.lens.on svg{stroke:var(--sage)}
+.lens.on .lens-count{background:rgba(122,170,143,.2);color:var(--sage)}
+.lens-voice{
+  font-family:var(--serif);font-style:italic;font-size:.88rem;
+  color:var(--muted);padding:.4rem .1rem 1rem;line-height:1.5;
+}
+.lens-voice b{color:var(--ink);font-weight:600;font-style:normal}
+
+/* ── Analyst's Pick sparkle badge on top-of-feed deal cards ────────── */
+.dpick{
+  display:inline-flex;align-items:center;gap:.25rem;
+  font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:.15rem .4rem .15rem .3rem;border-radius:4px;
+  margin-right:.4rem;vertical-align:middle;line-height:1;
+}
+.dpick svg{width:10px;height:10px;fill:var(--forest);animation:markSpin 14s linear infinite;flex-shrink:0}
+
 /* ── FEED DIVIDER between curated picks and long-tail compact rows ─── */
 .feed-divider{
   display:flex;align-items:center;gap:.75rem;margin:1.1rem 0 .55rem;
@@ -153,20 +198,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .deal.compact .wbtn{display:none}
 .deal.compact::before{display:none}
 
-.mkt-strip{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:1.1rem;padding-bottom:.25rem;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-right:.75rem}
-.mkt-strip::-webkit-scrollbar{display:none}
-.mkt-chip{flex-shrink:0;white-space:nowrap;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.4rem .8rem;cursor:pointer;transition:all .15s}
-.mkt-chip.on{border-color:var(--forest);background:var(--sage-dim)}
-.mkt-chip-n{font-size:.75rem;font-weight:500;color:var(--ink)}
-.mkt-chip.on .mkt-chip-n{color:var(--forest)}
-.mkt-chip-m{font-size:.6rem;color:var(--muted);font-family:var(--mono)}
-.controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;flex-wrap:wrap;gap:.5rem}
-.ctrl-left{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
-.ctrl-title{font-family:var(--serif);font-size:.88rem;font-weight:500;color:var(--ink);margin-right:.1rem}
-.pill{padding:.25rem .7rem;border-radius:20px;font-size:.7rem;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--sans);transition:all .14s}
-.pill:hover{border-color:var(--sage-border);color:var(--ink)}
-.pill.on{background:var(--sage-dim);border-color:var(--sage-border);color:var(--forest);font-weight:500}
-.sort-sel{padding:.26rem .55rem;border-radius:var(--r);border:1px solid var(--border);background:var(--white);font-size:.7rem;color:var(--muted);font-family:var(--sans);cursor:pointer;outline:none}
 .deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden;opacity:0;animation:fu .28s ease forwards}
 @keyframes fu{to{opacity:1;transform:none}from{opacity:0;transform:translateY(5px)}}
 .new-divider{display:flex;align-items:center;gap:.75rem;margin:.6rem 0 .5rem;opacity:0;animation:fu .3s ease .2s forwards}
@@ -228,7 +259,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .topbar{padding:0 .9rem}
   .topbar{display:none}
   .main{padding-top:0}
-  .ctrl-title{display:none}
   .deal{padding:.85rem .85rem;gap:.7rem}
   .ring{width:48px;height:48px}
   .deal.sb .ring{width:52px;height:52px}
@@ -243,7 +273,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .sbadge{font-size:.6rem;padding:3px 7px}
   .ddom{font-size:.68rem}
   .dtake{font-size:.85rem;line-height:1.5;margin-top:.55rem}
-  .controls{flex-direction:column;align-items:flex-start}
   .tb-left{flex-direction:column;align-items:flex-start;gap:.1rem}
   .tb-sub{font-size:.62rem}
   .btn-primary{font-size:.72rem;padding:.3rem .7rem}
@@ -268,7 +297,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .sbadge{font-size:.58rem;padding:.18rem .4rem}
 
   /* Market chips — scroll hint via fade */  
-  .mkt-strip{padding-right:2rem;mask-image:linear-gradient(to right,black 85%,transparent 100%);-webkit-mask-image:linear-gradient(to right,black 85%,transparent 100%)}
 
   /* Feed header */
   .tb{font-size:.85rem}
@@ -344,22 +372,9 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
       </div>
     </section>
 
-    <div class="mkt-strip" id="mktStrip"></div>
-
-    <div class="controls">
-      <div class="ctrl-left">
-        <span class="ctrl-title">Ranked Deals</span>
-        <button class="pill on" onclick="setFilter(this,0)">All</button>
-        <button class="pill" onclick="setFilter(this,75)">Strong Buy</button>
-        <button class="pill" onclick="setFilter(this,60)">Buy</button>
-        <button class="pill" onclick="setFilter(this,45)">Watch</button>
-      </div>
-      <select class="sort-sel" onchange="render()">
-        <option value="score">Top Score</option>
-        <option value="price_asc">Price ↑</option>
-        <option value="price_desc">Price ↓</option>
-        <option value="newest">Newest</option>
-      </select>
+    <div class="lenses-wrap">
+      <div class="lens-row" id="lensRow"></div>
+      <div class="lens-voice" id="lensVoice"></div>
     </div>
     <div id="dealList"></div>
   <div id="loadMoreWrap" style="display:none;justify-content:center;padding:1rem"><button style="background:none;border:1px solid var(--border-2);color:var(--muted);padding:.5rem 1.25rem;border-radius:var(--r);font-size:.78rem;cursor:pointer;font-family:var(--sans)" onclick="loadMore()">Load more deals</button></div>
@@ -414,7 +429,6 @@ const circ=2*Math.PI*19;
 
 async function boot(){
   // Load feed immediately — don't wait for sidebar calls
-  loadMktStats();
   loadFeed();
   syncWC();
 
@@ -434,6 +448,75 @@ async function boot(){
   }).catch(()=>{});
 
   WatchlistAPI.loadIds().then(()=>syncWC()).catch(()=>{});
+}
+
+// ── LENSES — AI-curated views replacing traditional filter chrome ──────
+// Each lens is the analyst's framing: a filter+sort with a one-line voice subtitle.
+const LENSES = [
+  {
+    id:'curated', label:'Picked for you',
+    iconSvg:'<path d="M12 2 L13.6 9.4 L21 11 L13.6 12.6 L12 20 L10.4 12.6 L3 11 L10.4 9.4 Z"/>',
+    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 10),
+    voice: (n, deals) => n === 0 ? `Nothing exceptional today. Try Move fast or come back tomorrow.`
+      : `Showing the <b>${n}</b> deal${n!==1?'s':''} I'd open first.`
+  },
+  {
+    id:'standouts', label:'Standouts',
+    iconSvg:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
+    voice: (n) => n === 0 ? `No Strong Buys in your markets right now. Hold the line.`
+      : `<b>${n}</b> Strong Buy${n!==1?'s':''} — the cream of the feed.`
+  },
+  {
+    id:'earners', label:'Top earners',
+    iconSvg:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    apply: deals => [...deals].sort((a,b) => (b.reportData?.financials?.monthlyCashFlow||0) - (a.reportData?.financials?.monthlyCashFlow||0)),
+    voice: (n, deals) => {
+      const top = deals[0]; const cf = top?.reportData?.financials?.monthlyCashFlow;
+      return cf ? `Sorted by monthly cash flow. <b>${top.address?.split(',')[0]}</b> leads at <b>$${Math.round(cf).toLocaleString()}/mo</b>.`
+        : `Sorted by monthly cash flow.`;
+    }
+  },
+  {
+    id:'fresh', label:'Move fast',
+    iconSvg:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=65 && (d.daysOnMarket||999)<=14),
+    voice: (n) => n === 0 ? `Nothing fresh and worth the urgency right now.`
+      : `<b>${n}</b> listing${n!==1?'s':''} fresh under two weeks and scoring well — first-mover window.`
+  },
+  {
+    id:'negotiation', label:'Negotiation plays',
+    iconSvg:'<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=50 && (d.daysOnMarket||0)>=60),
+    voice: (n) => n === 0 ? `No tired sellers today. Patience.`
+      : `<b>${n}</b> seller${n!==1?'s have':' has'} sat 60+ days — real room on price.`
+  },
+];
+let activeLens = 'curated';
+let currentLensDeals = [];
+
+function renderLensRow(){
+  const row = document.getElementById('lensRow');
+  if(!row || !allDeals) return;
+  row.innerHTML = LENSES.map(l => {
+    const count = l.apply(allDeals).length;
+    return `<button class="lens${l.id===activeLens?' on':''}" data-lens="${l.id}" onclick="applyLens('${l.id}')">
+      <svg viewBox="0 0 24 24">${l.iconSvg}</svg>
+      <span>${l.label}</span>
+      <span class="lens-count">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function applyLens(id){
+  const lens = LENSES.find(l => l.id === id);
+  if(!lens) return;
+  activeLens = id;
+  document.querySelectorAll('.lens').forEach(b => b.classList.toggle('on', b.dataset.lens === id));
+  currentLensDeals = lens.apply(allDeals);
+  const voiceEl = document.getElementById('lensVoice');
+  if(voiceEl) voiceEl.innerHTML = lens.voice(currentLensDeals.length, currentLensDeals);
+  renderDeals(currentLensDeals, true);
 }
 
 // One-line analyst voice per deal card. Returns '' for middle-of-the-road deals
@@ -559,7 +642,17 @@ function renderAnalystBrief(deals){
     body += `Days like this favor patient buyers. I'll have fresh inventory after the nightly refresh.`;
   }
 
-  setHTML('anaBriefBody', body);
+  // First-load type-out on the leading clause (rest is instant) — sells the "AI is generating this" feel
+  const bodyEl = document.getElementById('anaBriefBody');
+  const briefTypedKey = 'rr_brief_typed';
+  if(bodyEl){
+    if(!sessionStorage.getItem(briefTypedKey)){
+      sessionStorage.setItem(briefTypedKey, '1');
+      typeOutLead(bodyEl, body, 22);
+    } else {
+      bodyEl.innerHTML = body;
+    }
+  }
 
   // Picks carousel
   const picksEl = document.getElementById('anaBriefPicks');
@@ -586,6 +679,38 @@ function renderAnalystBrief(deals){
 
 function setHTML(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
 
+// Type out HTML content character-by-character up to the end of the first sentence,
+// then reveal the rest instantly. Tags are emitted atomically so markup isn't visible mid-type.
+function typeOutLead(el, html, speedMs){
+  // Tokenize: HTML tags are single tokens; characters in text are individual tokens
+  const tokens = [];
+  let i = 0;
+  while(i < html.length){
+    if(html[i] === '<'){
+      const j = html.indexOf('>', i);
+      tokens.push(html.slice(i, j === -1 ? html.length : j+1));
+      i = (j === -1) ? html.length : j+1;
+    } else { tokens.push(html[i]); i++; }
+  }
+  // Find the end-of-first-sentence token index (after '.' '!' or '?')
+  let breakIdx = tokens.length;
+  for(let k = 0; k < tokens.length; k++){
+    if(tokens[k] === '.' || tokens[k] === '!' || tokens[k] === '?'){ breakIdx = k + 1; break; }
+  }
+  el.innerHTML = '';
+  let cursor = 0;
+  const tick = () => {
+    if(cursor >= tokens.length) return;
+    if(cursor >= breakIdx){ el.innerHTML = html; return; } // reveal the rest instantly
+    el.innerHTML += tokens[cursor++];
+    // Tags are emitted with no delay; only visible characters slow down
+    const last = tokens[cursor-1];
+    if(last[0] === '<') tick();
+    else setTimeout(tick, speedMs);
+  };
+  tick();
+}
+
 async function loadFeed(reset=true){
   if(reset){page=1;allDeals=[];}
   const list=document.getElementById('dealList');
@@ -595,7 +720,10 @@ async function loadFeed(reset=true){
     const data = await FeedAPI.list({page,limit:20,minScore,...(filterCity&&{city:filterCity,state:filterState}),sort});
     const deals = data.deals || [];
     allDeals = reset ? deals : [...allDeals, ...deals];
-    renderDeals(allDeals, reset);
+    // Render lens row first so counts are based on the full feed,
+    // then apply the active lens to filter/sort for the visible deals.
+    renderLensRow();
+    applyLens(activeLens);
 
     // Track visit timestamp for "new since" divider in the feed list
     const prevVisit = localStorage.getItem('rr_last_visit');
@@ -669,10 +797,14 @@ function dealCardHtml(d,i,compact=false){
     const on=WatchlistAPI.has(d.id);
     const pct=getPercentile(score,allDeals);
     const take=dealTake(d,fin,score);
+    const isPick = !compact && i < 3 && score >= 60; // Top 3 rich cards with decent scores get the AI pick badge
+    const pickBadge = isPick
+      ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
+      : '';
     return`<div class="deal ${cl}${compact?' compact':''}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
       <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
       <div class="dbody">
-        <div class="daddr">${d.address||'Unknown'}</div>
+        <div class="daddr">${pickBadge}${d.address||'Unknown'}</div>
         <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
         <div class="dkpis">
           ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
@@ -715,20 +847,8 @@ function syncWC(){
   const m=document.getElementById('bnWatchBadge'); if(m){m.textContent=n;m.style.display=n?'':'none';}
 }
 
-function setFilter(el,min){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');minScore=min;loadFeed();}
-function resetFilters(){minScore=0;filterCity=filterState='';document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('on',i===0));document.querySelectorAll('.mkt-chip').forEach((c,i)=>c.classList.toggle('on',i===0));loadFeed();}
-function filterMkt(el,city,state){document.querySelectorAll('.mkt-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');filterCity=city;filterState=state;loadFeed();}
-async function loadMktStats(){
-  try{
-    const data=await FeedAPI.marketStats();
-    const mkts=Array.isArray(data)?data:(data.rows||[]);
-    const strip=document.getElementById('mktStrip');
-    if(strip && mkts.length){
-      strip.innerHTML=`<div class="mkt-chip on" onclick="filterMkt(this,'','')"><div class="mkt-chip-n">All Markets</div><div class="mkt-chip-m">${allDeals.length||'—'} deals</div></div>`
-        +mkts.slice(0,8).map(m=>`<div class="mkt-chip" onclick="filterMkt(this,'${m.city}','${m.state}')"><div class="mkt-chip-n">${m.city}</div><div class="mkt-chip-m">${m.state} · avg ${Math.round(m.avg_score||0)} · ${m.total_listings||0}</div></div>`).join('');
-    }
-  }catch{}
-}
+// "Clear filters" in empty state now resets to the default lens
+function resetFilters(){ activeLens = 'curated'; applyLens('curated'); }
 async function loadMore(){page++;await loadFeed(false);}
 async function handleRefresh(btn){
   btn.disabled=true;
