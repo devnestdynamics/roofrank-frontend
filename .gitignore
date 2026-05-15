@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
+
+# Secrets — never commit any of these
+*.pem
+*.key
+*_secret*.json
+*_accessKeys.csv
+*.env
+.env*
+!.env.example
+secrets/
