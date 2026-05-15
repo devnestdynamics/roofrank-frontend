@@ -1,6 +1,6 @@
 # RoofRank Product Backlog
 
-**Last updated:** May 14, 2026
+**Last updated:** May 15, 2026
 
 ---
 
@@ -8,11 +8,12 @@
 
 | Status | Count |
 |---|---|
-| ✅ Done | 8 |
-| 🔴 MVP Scope | 14 |
-| 🟡 Phase 2 | 61 |
-| 🟢 Phase 3 / Backlog | 37 |
-| **Total** | **120** |
+| ✅ Done | 22 |
+| 🔴 MVP Scope | 16 |
+| 🟡 Phase 2 | 55 |
+| 🟢 Phase 3 / Backlog | 32 |
+| ❌ Dropped (strategy change) | 6 |
+| **Total** | **131** |
 
 ---
 
@@ -20,19 +21,25 @@
 
 | # | Item | Status |
 |---|---|---|
+| 27 | Ask the Analyst — AI chat | ✅ Done — deal detail + dashboard |
+| 28 | AI Deal Narrative — Analyst quality | ✅ Done — Claude-generated, cached |
+| 61 | Negotiation Coach (with comps) | 🔴 MVP — promoted from Phase 2 (May 15) |
+| 80 | Tax Benefits Panel (after-tax CF) | 🔴 MVP — promoted from Phase 2 (May 15) |
+| 81 | Payback Period Visual | 🔴 MVP — promoted from Phase 2 (May 15) |
 | 99 | Analyzer PITI Consistency Fix | 🔲 Todo |
 | 100 | Replace Fake Landing Page Data | 🔲 Todo |
 | 101 | Onboarding Goal → Feed Personalization | 🔲 Todo |
-| 103 | AI Narrative on Deal Detail | 🔲 Todo |
-| 105 | Make it Work Offer Calculator | 🔲 Todo |
+| 105 | Make it Work Offer Calculator | 🟡 In Progress — replaced max-offer card |
 | 116 | Deploy Script | 🔲 Todo |
 | 119 | Rebuild Onboarding — 3 Steps | 🔲 Todo |
 | 120 | AI Analyst Standalone Page | 🔲 Todo |
 | 121 | MVP Checklist — Pre-Launch Gates | 🔲 Todo |
 | 122 | SMS Alerts | 🔲 Todo |
+| 123 | Brand decision (RoofRank vs Deckers) | 🔲 Deferred per user May 15 |
+| 124 | Roof silhouette tier-color A/B/C pick | 🔲 Awaiting decision — see roof-options.html |
 | — | Fix nightly ingestion (item 75) | 🔲 Todo |
 | — | Zero console errors | 🔲 Todo |
-| — | Mobile deal detail optimized | 🔲 In Progress |
+| — | Mobile deal detail rebuild | ✅ Done May 14 |
 | — | Stripe checkout tested end to end | 🔲 Todo |
 
 ---
@@ -42,13 +49,27 @@
 | # | Item | Date |
 |---|---|---|
 | 7 | PITI-Only Scoring | May 2026 |
+| 27 | Ask the Analyst AI chat (deal detail + dashboard) | May 14 |
+| 28 | AI Deal Narrative (Claude, cached) | May 14 |
+| 32 | Landing copy "analyst" repositioning | May 13 |
 | 33 | Fix ATTOM API | May 2026 |
 | 56 | Open Graph Tags | May 2026 |
+| 71 | "Your Analyst" narrative across copy | May 13 |
 | — | ATTOM unit count fix (use RentCast) | May 2026 |
 | — | Real data Lynn (24 deals) | May 2026 |
 | — | Real data Worcester (15 deals) | May 2026 |
-| — | Ask the Analyst AI chat | May 2026 |
 | — | Dashboard stat tiles redesign | May 2026 |
+| — | Mobile deal detail rebuild — hero score ring, signal pill, dark CF | May 14 |
+| — | Conversation-first dashboard rebuild — Analyst Brief + lenses | May 14 |
+| — | National positioning on landing (dropped NE-specific) | May 14 |
+| — | Narrowed scope to 2–6 units (was 2–30) | May 14 |
+| — | Pro gating — lens locks, long-tail blur, upgrade modal | May 14 |
+| — | "How We Compare" landing section | May 14 |
+| — | Bunny Fonts swap (kills iOS privacy warning) | May 15 |
+| — | Landing mobile overflow + pricing-stack fix | May 15 |
+| — | Project relocation to ~/Code/, docs/ tracked in git | May 15 |
+| — | Repo reorg: backend + infra split, all under devnestdynamics | May 15 |
+| — | PWA setup (manifest, service worker, icons) | May 15 |
 
 ---
 
@@ -1560,3 +1581,41 @@ Replace email as primary alert channel with SMS. Email for billing/receipts only
 - Billing receipts
 - Password reset
 
+
+---
+
+## 🔄 Strategy Changes — May 15, 2026
+
+Captured here so future reviewers understand why specific items moved.
+
+### Promoted to MVP
+- **#61 Negotiation Coach** — user identified this as essential differentiator vs. Excel/calculators. Pairs naturally with deal detail's "Make it Work" card.
+- **#80 Tax Benefits Panel** — user noted serious investors evaluate deals net-of-tax. Pre-tax CF alone hides the real return. Significant trust signal for the experienced-investor segment.
+- **#81 Payback Period Visual** — natural pairing with #80; combines cash flow + rent growth + tax savings into "years to get my money back," a number investors already think in.
+
+### New MVP gates added
+- **#123 Brand decision** — RoofRank refined vs Deckers, deferred for now (user thinking)
+- **#124 Roof silhouette tier-color** — see `roof-options.html` for A/B/C side-by-side. Pick determines mark treatment across dashboard, deal detail, landing.
+
+### Deferred (no longer in MVP critical path)
+- **#1 Search & Filter on Dashboard** — replaced by Lenses + Ask the Analyst overlay. Address search alone may resurface later as a Cmd+K palette.
+- **#21 Market Trends Dashboard** — superseded by AI Market Intelligence Strip (#95) for the conversation-first surface.
+- **#25 Mockup Scores Match Real Data** — landing redesigned, no longer applicable.
+- **#32 / #71 AI narrative repositioning** — done as part of landing rebuild.
+- **#60 Social Proof on Landing** — user explicitly removed fake testimonials. Reintroduce only with real quotes post-launch.
+- **#117 Migrate to React/Next.js** — defer trigger raised from 20 paying users to 50. Vanilla HTML + service worker is fine at current scale.
+
+### Dropped (strategy-misaligned)
+- City-filter UI on dashboard — replaced by lens system
+- NE-specific positioning on landing — gone, national multifamily now
+- 2–30 unit scope on landing — narrowed to 2–6 units
+- "Powered by AI" badge — sparkle + first-person voice carries it
+
+### New ops/infra items (ship-time)
+| # | Item | Priority |
+|---|---|---|
+| 125 | gh CLI auth as devnestdynamics (or add alijsheikh as collab to private repos) | 🟡 Phase 2 |
+| 126 | Rotate the `roofrank-deploy` PAT — expires Jun 9 2026 | 🟡 Phase 2 |
+| 127 | Wire `AWS_*` + `ECR_*` secrets in roofrank-infra repo so deploy.yml runs | 🔴 MVP — see #43 |
+| 128 | First push of roofrank-backend `.env.example` (not yet in repo) | 🟡 Phase 2 |
+| 129 | Mobile-test PWA install flow on iOS + Android once live | 🟡 Phase 2 |
