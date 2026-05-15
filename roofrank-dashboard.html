@@ -828,20 +828,36 @@ async function sendTestAlert(){
   const orig = lbl.textContent;
   lbl.textContent = 'Sending…';
   hint.textContent = '';
-  try {
+
+  async function ping(){
     const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
     const res = await fetch((window.ROOFRANK_API_URL || 'https://api.roofrank.io/api') + '/notifications/test', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
-    const out = await res.json().catch(() => ({}));
+    return res.json().catch(() => ({}));
+  }
+
+  try {
+    let out = await ping();
+
+    // 0 sent could mean the browser thinks it's subscribed but the server lost
+    // the record — try to resync the local sub to the server and ping once more.
+    if((out.sent || 0) === 0 && window.Push?.resync){
+      lbl.textContent = 'Re-syncing…';
+      const re = await window.Push.resync();
+      if(re){
+        out = await ping();
+      }
+    }
+
     if(out.sent > 0){
       lbl.textContent = '✓ Sent';
       hint.textContent = out.sent + ' device' + (out.sent === 1 ? '' : 's');
     } else {
-      lbl.textContent = 'No devices subscribed';
-      hint.textContent = 'enable push first';
+      lbl.textContent = 'No devices yet';
+      hint.textContent = 'add to home screen first';
     }
   } catch(err){
     console.error('test alert failed', err);
@@ -1039,9 +1055,11 @@ function renderChangedSinceStrip(){
     return;
   }
 
-  // Suppress for visits within 6 hours — strip is for return-after-a-while signal
-  const elapsedHrs = (Date.now() - (prev.ts || 0)) / (1000 * 60 * 60);
-  if(elapsedHrs < 6){
+  // Suppress for very fresh visits (page refresh) — strip is for "return after a while" signal.
+  // URL override ?showChanged=1 bypasses the cooldown so QA can verify the diff renders.
+  const elapsedMin = (Date.now() - (prev.ts || 0)) / (1000 * 60);
+  const forceShow = new URLSearchParams(location.search).get('showChanged') === '1';
+  if(elapsedMin < 30 && !forceShow){
     strip.style.display = 'none';
     return;
   }

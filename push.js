@@ -54,14 +54,55 @@ const Push = {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
     }
-    // apiFetch is provided by api.js — falls back to fetch if missing (anon endpoint).
+    // Always tell the server about this subscription. If the server-side record
+    // doesn't exist (e.g., user re-subscribes after we lost the row, or this is
+    // a fresh device), the upsert at /subscribe will create it.
     const body = JSON.stringify(sub.toJSON());
-    if (typeof apiFetch === 'function') {
-      await apiFetch('/notifications/subscribe', { method: 'POST', body });
-    } else {
-      await fetch('/api/notifications/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    let ok = false;
+    try {
+      if (typeof apiFetch === 'function') {
+        await apiFetch('/notifications/subscribe', { method: 'POST', body });
+      } else {
+        const res = await fetch((window.ROOFRANK_API_URL || 'https://api.roofrank.io/api') + '/notifications/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+        });
+        if (!res.ok) throw new Error('subscribe failed: HTTP ' + res.status);
+      }
+      ok = true;
+    } catch (err) {
+      // Server-side subscribe failed — undo the local subscription so we don't
+      // end up with the browser thinking it's subscribed while the server has
+      // no record. Next attempt is then a clean slate.
+      try { await sub.unsubscribe(); } catch {}
+      throw err;
     }
     return sub;
+  },
+
+  // Belt-and-suspenders: if the browser has a sub but the server claims none,
+  // re-subscribe transparently. Called by callers that hit "0 devices subscribed".
+  async resync() {
+    if (!('serviceWorker' in navigator)) return null;
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (!sub) return null;
+    const body = JSON.stringify(sub.toJSON());
+    try {
+      if (typeof apiFetch === 'function') {
+        await apiFetch('/notifications/subscribe', { method: 'POST', body });
+      } else {
+        await fetch((window.ROOFRANK_API_URL || 'https://api.roofrank.io/api') + '/notifications/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+        });
+      }
+      return sub;
+    } catch {
+      return null;
+    }
   },
 
   async unsubscribe() {
