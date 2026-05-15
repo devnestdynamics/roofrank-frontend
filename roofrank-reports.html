@@ -73,6 +73,13 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 @media(max-width:860px){.sidebar{display:none}.main{margin-left:0}.content{max-width:100%}}
 </style>
 <script src="api.js"></script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c4a35">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RoofRank">
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
 <body>
 <aside class="sidebar">

@@ -1,0 +1,17 @@
+{
+  "name": "RoofRank — Multifamily Deal Analyst",
+  "short_name": "RoofRank",
+  "description": "An AI analyst for every multifamily deal. Reads every active 2–6 unit listing in your markets, scores it, and writes you a daily brief.",
+  "start_url": "/roofrank-dashboard.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f4ef",
+  "theme_color": "#1c4a35",
+  "categories": ["finance", "productivity", "business"],
+  "icons": [
+    { "src": "/icons/icon.svg",     "type": "image/svg+xml", "sizes": "any",     "purpose": "any" },
+    { "src": "/icons/icon-192.png", "type": "image/png",     "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "type": "image/png",     "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}

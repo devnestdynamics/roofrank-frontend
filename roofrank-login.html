@@ -41,6 +41,13 @@ input:focus{border-color:var(--forest)}
 @media(max-width:480px){body{padding:1rem}.card{padding:1.5rem 1.25rem 1.5rem}}
 </style>
 <script src="api.js"></script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c4a35">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RoofRank">
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
 <body>
 <div class="card">
