@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deckers · score-as-logo mockup</title>
+<title>Deckers · unified mark mockup</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -25,13 +25,13 @@ body{
   -webkit-font-smoothing:antialiased;min-height:100vh;
 }
 
-/* ── Page header (preview-level, not the mocked product) ────────────── */
+/* ── Page header (preview-level) ─────────────────────────────────────── */
 .preview-hdr{max-width:780px;margin:2rem auto 1.5rem;padding:0 1.25rem;text-align:center}
 .preview-hdr .eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.5rem}
 .preview-hdr h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;margin-bottom:.45rem}
 .preview-hdr p{font-size:.92rem;color:var(--muted);max-width:580px;margin:0 auto;line-height:1.65}
 
-/* ── The mocked product viewport ────────────────────────────────────── */
+/* ── Mocked product viewport ────────────────────────────────────────── */
 .product{
   max-width:780px;margin:0 auto;
   background:var(--cream);
@@ -40,13 +40,61 @@ body{
   box-shadow:0 8px 32px rgba(28,31,28,.06);
 }
 
-/* Top app bar with the canonical (sage) brand mark */
+/* ── UNIFIED DECKERS MARK ────────────────────────────────────────────
+   ONE SVG primitive used everywhere — brand mark, score viz, legend.
+   - All instances share the same viewBox (0 0 40 40) and proportions
+   - The roof is ALWAYS sage (the constant brand element)
+   - Floors are CSS-driven: each floor (-1 bottom, -2 middle, -3 top)
+     is colored independently. Default = dim. Tier class lights N
+     floors from the bottom up, in the tier color.
+   ─────────────────────────────────────────────────────────────────── */
+.mark{display:block}
+.mark .mk-roof{
+  fill:none;stroke:var(--sage);stroke-width:2.6;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.mark .mk-floor{fill:var(--cream-3)}  /* default: dim (unlit) */
+
+/* Strong Buy: all 3 floors lit in forest */
+.mark.sb .mk-floor-1,
+.mark.sb .mk-floor-2,
+.mark.sb .mk-floor-3{fill:var(--forest)}
+
+/* Buy: bottom 2 floors lit in forest-3, top dim */
+.mark.buy .mk-floor-1,
+.mark.buy .mk-floor-2{fill:var(--forest-3)}
+
+/* Watch: bottom 1 floor lit in amber, top 2 dim */
+.mark.wat .mk-floor-1{fill:var(--amber)}
+
+/* Pass: bottom 1 floor lit in rose, top 2 dim */
+.mark.pas .mk-floor-1{fill:var(--rose)}
+
+/* Brand-only variant: roof + all floors in sage (the identity mark) */
+.mark.brand .mk-floor-1,
+.mark.brand .mk-floor-2,
+.mark.brand .mk-floor-3{fill:var(--sage)}
+/* Brand-on-dark variant: roof white, floors sage */
+.mark.brand-dark .mk-roof{stroke:#fff}
+.mark.brand-dark .mk-floor-1,
+.mark.brand-dark .mk-floor-2,
+.mark.brand-dark .mk-floor-3{fill:var(--sage)}
+
+/* Sizes */
+.mark-32{width:32px;height:32px}
+.mark-40{width:40px;height:40px}
+.mark-48{width:48px;height:48px}
+
+/* ── App bar ───────────────────────────────────────────────────────── */
 .appbar{
   background:#fff;border-bottom:1px solid var(--border);
   padding:.85rem 1.2rem;display:flex;align-items:center;justify-content:space-between;
 }
 .brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--ink)}
-.brand svg{width:32px;height:32px;flex-shrink:0}
+.brand .mark-wrap{
+  background:var(--forest);border-radius:8px;padding:5px;
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+}
 .brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
 .appbar-right{display:flex;align-items:center;gap:.45rem}
 .appbar-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:.4rem;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -56,16 +104,14 @@ body{
 /* Page body */
 .page{padding:1.25rem 1.25rem 2rem}
 
-/* Analyst's Brief at the top — uses the canonical sage brand mark */
+/* Analyst's Brief */
 .brief-card{
   background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);
   color:#fff;border-radius:14px;padding:1.4rem 1.3rem;
   box-shadow:0 6px 24px rgba(20,32,26,.15);
   position:relative;overflow:hidden;margin-bottom:1.5rem;
 }
-.brief-eye{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:.9rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.brief-eye-mark{width:18px;height:18px;flex-shrink:0;color:var(--sage)}
-.brief-eye-mark svg{width:100%;height:100%;display:block}
+.brief-eye{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:.9rem;border-bottom:1px solid rgba(255,255,255,.08)}
 .brief-eye-label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
 .brief-eye-sep{color:rgba(255,255,255,.25);font-size:.7rem}
 .brief-eye-meta{font-size:.66rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
@@ -82,7 +128,7 @@ body{
 .sec-title{font-family:var(--serif);font-size:1.15rem;font-weight:500;flex:1}
 .sec-count{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
 
-/* ── DEAL CARD with the silhouette-as-score-tile ──────────────────── */
+/* ── Deal card ─────────────────────────────────────────────────────── */
 .deal{
   background:#fff;border:1px solid var(--border);border-radius:10px;
   padding:.95rem 1rem;display:flex;align-items:center;gap:1.1rem;
@@ -97,32 +143,18 @@ body{
 .deal.wat::before{background:var(--amber)}
 .deal.pas::before{background:var(--rose)}
 
-/* The score block — number + ALWAYS-ON silhouette mini-logo,
-   color-coded by tier. The silhouette IS the score viz. */
+/* The score block — number above the unified mark */
 .score-block{
-  flex-shrink:0;width:58px;
-  display:flex;flex-direction:column;align-items:center;gap:.45rem;
+  flex-shrink:0;width:64px;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
 }
 .score-num{
-  font-family:var(--mono);font-size:1.3rem;font-weight:500;line-height:1;
+  font-family:var(--mono);font-size:1.3rem;font-weight:500;line-height:1;color:var(--ink);
 }
-.score-mark{
-  width:42px;height:30px;display:block;
-}
-.score-mark .sm-roof{
-  fill:none;stroke:currentColor;stroke-width:2.4;
-  stroke-linecap:round;stroke-linejoin:round;
-}
-.score-mark .sm-floor{fill:currentColor}
-/* Tier coloring — applied to score-mark AND score-num together */
-.score-block.sb{color:var(--forest)}
-.score-block.buy{color:var(--forest-3)}
-.score-block.wat{color:var(--amber)}
-.score-block.pas{color:var(--rose)}
-.score-block.sb .score-num,
-.score-block.buy .score-num,
-.score-block.wat .score-num,
-.score-block.pas .score-num{color:inherit}
+.score-block.sb .score-num{color:var(--forest)}
+.score-block.buy .score-num{color:var(--forest-3)}
+.score-block.wat .score-num{color:var(--amber)}
+.score-block.pas .score-num{color:var(--rose)}
 
 .deal-body{flex:1;min-width:0;overflow:hidden}
 .deal-addr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
@@ -141,7 +173,16 @@ body{
 .deal-price{font-family:var(--mono);font-size:.82rem;color:var(--ink)}
 .deal-dom{font-size:.66rem;color:var(--muted)}
 
-/* Annotation block at bottom */
+/* Legend */
+.legend{
+  display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;
+  margin-top:1.5rem;padding:1rem 1.2rem;
+  background:var(--white);border:1px solid var(--border);border-radius:8px;
+}
+.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--ink)}
+.legend-label{font-weight:500}
+
+/* Annotation block */
 .annot{
   max-width:780px;margin:1.5rem auto 4rem;padding:0 1.25rem;
   font-size:.82rem;color:var(--muted);line-height:1.7;
@@ -150,44 +191,29 @@ body{
 .annot ul{list-style:none;padding:0;margin:.6rem 0 0}
 .annot li{padding:.3rem 0;padding-left:1.1rem;position:relative}
 .annot li::before{content:'→';position:absolute;left:0;color:var(--sage);font-weight:600}
-
-/* Legend showing tier color mapping */
-.legend{
-  display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;
-  margin-top:1.25rem;padding:1rem 1.2rem;
-  background:var(--white);border:1px solid var(--border);border-radius:8px;
-}
-.legend-item{display:flex;align-items:center;gap:.45rem;font-size:.78rem;color:var(--ink)}
-.legend-mark{width:24px;height:18px;display:block}
-.legend-mark .sm-roof{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.legend-mark .sm-floor{fill:currentColor}
-.legend-item.sb{color:var(--forest)}
-.legend-item.buy{color:var(--forest-3)}
-.legend-item.wat{color:var(--amber)}
-.legend-item.pas{color:var(--rose)}
-.legend-label{color:var(--ink)}
 </style>
 </head>
 <body>
 
 <header class="preview-hdr">
-  <div class="eyebrow">Mockup · Not in production</div>
-  <h1>The Deckers silhouette becomes the score.</h1>
-  <p>Every deal card carries a tiny Logo B silhouette next to its score — same shape always, color shifts by tier. The brand mark and the in-product score visualization are literally the same primitive.</p>
+  <div class="eyebrow">Mockup v3 · Not in production</div>
+  <h1>One mark, four signals.</h1>
+  <p>The brand mark and the score viz are now the same SVG primitive — same viewBox, same proportions, same stroke and bar weights. Only the floor colors and fill count change to encode tier.</p>
 </header>
 
 <main class="product">
 
-  <!-- App bar with the canonical sage brand mark -->
+  <!-- App bar with the brand mark (sage on forest, full floors lit) -->
   <header class="appbar">
     <a href="#" class="brand">
-      <svg viewBox="0 0 56 56" fill="none">
-        <rect width="56" height="56" rx="11" fill="#1c4a35"/>
-        <path d="M14 22 L28 11 L42 22" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <rect x="15" y="28" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
-        <rect x="15" y="35" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
-        <rect x="15" y="42" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
-      </svg>
+      <div class="mark-wrap">
+        <svg class="mark mark-32 brand-dark" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+      </div>
       <span class="brand-name">Deckers</span>
     </a>
     <div class="appbar-right">
@@ -198,17 +224,15 @@ body{
 
   <div class="page">
 
-    <!-- Analyst's Brief with sage brand mark in eyebrow -->
+    <!-- Analyst's Brief with the brand mark in the eyebrow -->
     <div class="brief-card">
       <div class="brief-eye">
-        <span class="brief-eye-mark">
-          <svg viewBox="0 0 40 28">
-            <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-            <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-            <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-            <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
-          </svg>
-        </span>
+        <svg class="mark mark-40 brand-dark" viewBox="0 0 40 40" style="width:18px;height:18px">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
         <span class="brief-eye-label">Deckers' Brief</span>
         <span class="brief-eye-sep">·</span>
         <span class="brief-eye-meta">Tuesday morning</span>
@@ -228,15 +252,15 @@ body{
       <div class="sec-count">5 of 24</div>
     </div>
 
-    <!-- Strong Buy -->
+    <!-- Strong Buy — all 3 floors lit forest -->
     <div class="deal sb">
       <div class="score-block sb">
         <div class="score-num">87</div>
-        <svg class="score-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+        <svg class="mark mark-40 sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
       </div>
       <div class="deal-body">
@@ -255,15 +279,15 @@ body{
       </div>
     </div>
 
-    <!-- Strong Buy -->
+    <!-- Strong Buy — 3 floors -->
     <div class="deal sb">
       <div class="score-block sb">
         <div class="score-num">83</div>
-        <svg class="score-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+        <svg class="mark mark-40 sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
       </div>
       <div class="deal-body">
@@ -282,15 +306,15 @@ body{
       </div>
     </div>
 
-    <!-- Buy -->
+    <!-- Buy — bottom 2 floors lit forest-3, top dim -->
     <div class="deal buy">
       <div class="score-block buy">
         <div class="score-num">72</div>
-        <svg class="score-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+        <svg class="mark mark-40 buy" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
       </div>
       <div class="deal-body">
@@ -309,15 +333,15 @@ body{
       </div>
     </div>
 
-    <!-- Watch -->
+    <!-- Watch — bottom floor lit amber, top 2 dim -->
     <div class="deal wat">
       <div class="score-block wat">
         <div class="score-num">56</div>
-        <svg class="score-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+        <svg class="mark mark-40 wat" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
       </div>
       <div class="deal-body">
@@ -335,15 +359,15 @@ body{
       </div>
     </div>
 
-    <!-- Pass -->
+    <!-- Pass — bottom floor lit rose, top 2 dim -->
     <div class="deal pas">
       <div class="score-block pas">
         <div class="score-num">38</div>
-        <svg class="score-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+        <svg class="mark mark-40 pas" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
       </div>
       <div class="deal-body">
@@ -361,41 +385,41 @@ body{
       </div>
     </div>
 
-    <!-- Legend: how silhouette color maps to tier -->
+    <!-- Legend -->
     <div class="legend">
-      <div class="legend-item sb">
-        <svg class="legend-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+      <div class="legend-item">
+        <svg class="mark mark-40 sb" viewBox="0 0 40 40" style="width:32px;height:32px">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
         <span class="legend-label">Strong Buy</span>
       </div>
-      <div class="legend-item buy">
-        <svg class="legend-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+      <div class="legend-item">
+        <svg class="mark mark-40 buy" viewBox="0 0 40 40" style="width:32px;height:32px">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
         <span class="legend-label">Buy</span>
       </div>
-      <div class="legend-item wat">
-        <svg class="legend-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+      <div class="legend-item">
+        <svg class="mark mark-40 wat" viewBox="0 0 40 40" style="width:32px;height:32px">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
         <span class="legend-label">Watch</span>
       </div>
-      <div class="legend-item pas">
-        <svg class="legend-mark" viewBox="0 0 40 28">
-          <path class="sm-roof" d="M5 11 L20 3 L35 11"/>
-          <rect class="sm-floor" x="6" y="14" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="19" width="28" height="2.5" rx=".5"/>
-          <rect class="sm-floor" x="6" y="24" width="28" height="2.5" rx=".5"/>
+      <div class="legend-item">
+        <svg class="mark mark-40 pas" viewBox="0 0 40 40" style="width:32px;height:32px">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
         <span class="legend-label">Pass</span>
       </div>
@@ -405,13 +429,13 @@ body{
 </main>
 
 <aside class="annot">
-  <b>How this works:</b>
+  <b>What's new in this version:</b>
   <ul>
-    <li>Every deal card carries the <b>full Deckers silhouette</b> — roof + three floors — next to its score number. The silhouette is always there, on every card, in every tier.</li>
-    <li><b>Color is the signal.</b> Strong Buy is forest. Buy is forest-3. Watch is amber. Pass is rose. The number AND the silhouette share the same color so the eye reads them as one unit.</li>
-    <li><b>Shape never changes</b> — even a Pass deal carries the brand mark. We're not hiding floors or leaving the tile empty. The deal is in the system; its color tells you the verdict.</li>
-    <li>The canonical brand mark in the <b>app bar</b> stays sage on forest — that's the brand identity, separate from any deal's score. So the silhouette serves double duty: brand mark when it's sage, score viz when it's tier-colored.</li>
-    <li>Roof: stroke <code>currentColor</code>, 2.4px. Floors: fill <code>currentColor</code>, three thin bars. Same SVG path renders every state — only the parent's color class changes.</li>
+    <li><b>One unified SVG primitive</b> — same viewBox (0 0 40 40), same path coordinates, same proportions. Whether it's the brand mark in the app bar, the brand mark inside the Brief eyebrow, or the score viz on a deal card, it's literally the same component with different classes.</li>
+    <li><b>Roof always sage.</b> The roof never changes color — it's the constant brand element. Only floors carry the score.</li>
+    <li><b>Floors light up bottom-up by count.</b> Strong Buy lights all 3 in forest. Buy lights bottom 2 in forest-3. Watch lights bottom 1 in amber. Pass lights bottom 1 in rose. The remaining floors stay dim (cream-3 ghost color) so the silhouette is always recognizable as a building.</li>
+    <li><b>The number above the mark</b> shares the tier color, so the two read as one unit at a glance.</li>
+    <li><b>Two distinct visual roles for the same shape:</b> sage-on-forest in the app bar means "this is Deckers" (the identity). Tier-colored floors on a deal card means "this deal scored X" (the verdict). Brand and score are the same primitive doing different jobs.</li>
   </ul>
 </aside>
 
