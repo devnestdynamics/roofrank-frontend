@@ -1040,6 +1040,7 @@ function renderDeal(d){
     d.units?`${d.units} ${unitLabel}`:'',
     d.propertyType||'',
     d.yearBuilt?`Built ${d.yearBuilt}`:'',
+    d.daysOnMarket!=null?`${d.daysOnMarket}d on market`:'',
   ].filter(Boolean).join(' · ');
   let marketTag = '';
   if(d.city && score>0){
@@ -1068,11 +1069,9 @@ function renderDeal(d){
   const sigEl=document.getElementById('heroSignal');
   if(sigEl){ sigEl.textContent=String(signal||'').toUpperCase(); sigEl.className='hero-signal '+cls; }
 
-  // ── Hero badges — just time-on-market (location/ZIP already in address; price elsewhere)
+  // Hero badges row no longer used — all facts live in the summary line now
   const _hb=document.getElementById('heroBadges');
-  if(_hb) _hb.innerHTML = d.daysOnMarket!=null
-    ? `<span class="badge">${d.daysOnMarket}d on market</span>`
-    : '';
+  if(_hb) _hb.innerHTML = '';
 
   // ── Score breakdown
   const bars=[
@@ -1240,35 +1239,59 @@ async function sendAiMessage(){
       if(loadingEl){ loadingEl.textContent='Sorry, the AI is unavailable right now (status '+res.status+'). Try again in a moment.'; loadingEl.classList.remove('loading'); }
       send.disabled = false; return;
     }
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
+
     let fullText = '';
-    let firstChunk = true;
-    let buffer = '';
-    while(true){
-      const {done, value} = await reader.read();
-      if(done) break;
-      buffer += decoder.decode(value, {stream:true});
-      // Process complete lines; keep any partial line for next iteration
-      let nl;
-      while((nl = buffer.indexOf('\n')) !== -1){
-        const line = buffer.slice(0, nl);
-        buffer = buffer.slice(nl + 1);
-        if(line.startsWith('data: ')){
-          const data = line.slice(6).trim();
-          if(data === '[DONE]') continue;
-          try{
-            const parsed = JSON.parse(data);
-            const piece = parsed.text || parsed.delta || parsed.content || '';
-            if(piece){
-              if(firstChunk && loadingEl){ loadingEl.textContent=''; loadingEl.classList.remove('loading'); firstChunk=false; }
-              fullText += piece;
-              if(loadingEl) loadingEl.textContent = fullText;
-            }
-          } catch(e){}
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    const setLoadingText = (t) => { if(loadingEl){ loadingEl.textContent=t; loadingEl.classList.remove('loading'); } };
+
+    if(ct.includes('text/event-stream')){
+      // SSE streaming path
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let firstChunk = true;
+      let buffer = '';
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        buffer += decoder.decode(value, {stream:true});
+        let nl;
+        while((nl = buffer.indexOf('\n')) !== -1){
+          const line = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 1);
+          if(line.startsWith('data: ')){
+            const data = line.slice(6).trim();
+            if(data === '[DONE]') continue;
+            try{
+              const parsed = JSON.parse(data);
+              const piece = parsed.text || parsed.delta || parsed.content || '';
+              if(piece){
+                if(firstChunk){ setLoadingText(''); firstChunk=false; }
+                fullText += piece;
+                if(loadingEl) loadingEl.textContent = fullText;
+              }
+            } catch(e){ /* ignore malformed lines */ }
+          }
         }
       }
+    } else {
+      // Non-streaming: read the whole body once and parse JSON or take as text
+      const raw = await res.text();
+      if(ct.includes('application/json')){
+        try{
+          const j = JSON.parse(raw);
+          fullText = j.response || j.message || j.text || j.content || j.answer || j.reply || j.output || '';
+          if(!fullText && j.choices && j.choices[0]){
+            fullText = j.choices[0].message?.content || j.choices[0].text || '';
+          }
+          if(!fullText) fullText = raw; // fallback: show raw JSON so we can see what came back
+        } catch(e){ fullText = raw; }
+      } else {
+        // Plain text or unknown — just show it
+        fullText = raw;
+      }
+      setLoadingText(fullText || '');
     }
+
     if(!fullText && loadingEl){
       loadingEl.textContent = 'No response received. The AI service may be offline — please try again.';
       loadingEl.classList.remove('loading');
