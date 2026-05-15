@@ -63,10 +63,19 @@ Anything matching `*_secret*.json`, `*_accessKeys.csv`, `.env*`, `*.pem`, `*.key
 
 ## Sibling repos
 
+Everything under the [`devnestdynamics`](https://github.com/devnestdynamics) GitHub account (the RoofRank LLC):
+
+| Repo | Visibility | What |
+|---|---|---|
+| [`roofrank-frontend`](https://github.com/devnestdynamics/roofrank-frontend) | public | this repo — static site |
+| [`roofrank-backend`](https://github.com/devnestdynamics/roofrank-backend) | private | Node/TS API, scoring, ingestion, AI chat |
+| [`roofrank-infra`](https://github.com/devnestdynamics/roofrank-infra) | private | terraform, nginx, deploy workflow |
+
+Local layout:
 ```
-~/Code/roofrank-frontend/   ← this repo (HTML/CSS/JS, public on GitHub)
-~/Code/roofrank-backend/    ← Node/TS API + drizzle migrations + nested infra (terraform/nginx).
-                              Local-only — devnestdynamics/roofrank-backend has not been pushed yet.
+~/Code/roofrank-frontend/   ← this repo
+~/Code/roofrank-backend/
+~/Code/roofrank-infra/
 ~/Code/roofrank-secrets/    ← OAuth client secret + AWS access keys (chmod 700/600, never in any repo)
 ~/Code/roofrank-archive/    ← old zips, doorrank-starter, stale html snapshots
 ```
