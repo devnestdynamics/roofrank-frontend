@@ -273,28 +273,7 @@ nav.top{
   font-size:.7rem; color:rgba(255,255,255,.4); text-align:center; margin-top:.85rem;
 }
 
-/* ── NARRATIVE ─────────────────────────────────────────────────────────── */
-.narrative{
-  font-size:1rem; line-height:1.8; color:var(--ink);
-  background:var(--sage-dim); border:1px solid var(--sage-border);
-  border-radius:var(--r); padding:1.15rem 1.25rem;
-}
-.narrative strong{font-weight:600}
-
-/* ── AI CHAT ───────────────────────────────────────────────────────────── */
-.ai-card{
-  background:#fff; border:1px solid var(--sage-border);
-  border-radius:var(--r-lg); padding:1.5rem 1.35rem;
-  box-shadow:0 2px 12px rgba(28,74,53,.05);
-}
-.ai-head{display:flex; align-items:center; gap:.75rem; margin-bottom:1.1rem}
-.ai-icon{
-  width:38px; height:38px; background:var(--forest); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-}
-.ai-icon svg{width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
-.ai-title{font-family:var(--serif); font-size:1.1rem; font-weight:500}
-.ai-sub{font-size:.8rem; color:var(--muted); margin-top:.1rem}
+/* ── AI CHAT (base styles — dark-mode overrides live under .analyst-card) ─ */
 .ai-suggestions{display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem}
 .ai-suggestion{
   font-size:.78rem; background:var(--sage-dim); border:1px solid var(--sage-border);
@@ -540,7 +519,6 @@ nav.top{
   .hero-cf-val{font-size:2.4rem}
   .hero-cf-sub{font-size:.88rem}
   .analyst-card{padding:1.35rem 1.15rem}
-  .ai-card{padding:1.35rem 1.15rem}
   .pro-card{padding:1.75rem 1.25rem}
   .pro-title{font-size:1.4rem}
   .sticky-bar{display:block}
@@ -703,25 +681,6 @@ nav.top{
     <a href="#" class="sticky-cta" id="stickyCta">★ Save</a>
   </div>
 </div>
-
-<!-- Hidden legacy IDs (kept so any legacy JS calls don't error) -->
-<span id="marketSignal" style="display:none"></span>
-<span id="narrative" style="display:none"></span>
-<span id="narrativeSection" style="display:none"></span>
-<span id="hrSig" style="display:none"></span>
-<span id="svSignal" style="display:none"></span>
-<span id="svScore" style="display:none"></span>
-<span id="sparkline" style="display:none"></span>
-<span id="sparkTrend" style="display:none"></span>
-<span id="cfBar" style="display:none"></span>
-<span id="cfBarVal" style="display:none"></span>
-<span id="cfBarAnn" style="display:none"></span>
-<span id="upgradeCard" style="display:none"></span>
-<span id="mktRows" style="display:none"></span>
-<span id="mktCompare" style="display:none"></span>
-<span id="verdictCard" style="display:none"></span>
-<span id="vBadge" style="display:none"></span>
-<span id="vText" style="display:none"></span>
 
 <script>
 const fid = new URLSearchParams(location.search).get('fid');
@@ -1247,12 +1206,36 @@ async function sendAiMessage(){
   const loadingEl = addAiMessage('assistant', 'Analyzing…', true);
 
   try{
-    const token = localStorage.getItem('rr_token') || sessionStorage.getItem('rr_token');
-    const res = await fetch(window.ROOFRANK_API_URL + '/ai/chat', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
-    });
+    const aiFetch = () => {
+      const tok = (typeof Auth !== 'undefined' && Auth.getToken)
+        ? Auth.getToken()
+        : (localStorage.getItem('rr_token') || sessionStorage.getItem('rr_token'));
+      return fetch(window.ROOFRANK_API_URL + '/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
+        body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
+      });
+    };
+    let res = await aiFetch();
+    // On 401, try the refresh-token flow once, then retry — mirrors api.js apiFetch logic
+    if(res.status === 401 && typeof Auth !== 'undefined' && Auth.getRefresh && Auth.getRefresh()){
+      try {
+        const refreshed = await apiFetch('/auth/refresh', {
+          method: 'POST',
+          body: JSON.stringify({ refreshToken: Auth.getRefresh() })
+        }, false);
+        if(refreshed && refreshed.accessToken){
+          Auth.setToken(refreshed.accessToken);
+          res = await aiFetch();
+        }
+      } catch(e){ /* refresh failed — fall through */ }
+    }
+    if(res.status === 401){
+      if(loadingEl){ loadingEl.textContent='Your session has expired. Redirecting to sign-in…'; loadingEl.classList.remove('loading'); }
+      if(typeof Auth !== 'undefined' && Auth.clear) Auth.clear();
+      setTimeout(()=>{ window.location.href = 'roofrank-login.html'; }, 1200);
+      send.disabled = false; return;
+    }
     if(!res.ok){
       if(loadingEl){ loadingEl.textContent='Sorry, the AI is unavailable right now (status '+res.status+'). Try again in a moment.'; loadingEl.classList.remove('loading'); }
       send.disabled = false; return;
