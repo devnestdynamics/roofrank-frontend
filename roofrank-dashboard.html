@@ -4,408 +4,520 @@
 <script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RoofRank — Deal Feed</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>RoofRank — Today</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="api.js"></script>
 <style>
+/* ── RoofRank Today — conversation-first dashboard ────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;
-  --ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
-  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
-  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);
-  --amber:#a06a00;--rose:#a03030;
-  --border:#e0d9cf;--border-2:#cbc3b6;
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
   --serif:'Playfair Display',Georgia,serif;
   --sans:'DM Sans',system-ui,sans-serif;
   --mono:'DM Mono',monospace;
-  --sw:240px;--r:10px
+  --r:10px;
+  --page-max:720px;
+  --ask-h:64px; --bnav-h:62px;
 }
 html{color-scheme:light;overflow-x:hidden}
-body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw}
-.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
-.sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
-.sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
-.sb-user{padding:.75rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
-.sb-av{width:26px;height:26px;border-radius:50%;background:var(--forest-2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0}
-.sb-uname{font-size:.78rem;font-weight:500;color:var(--ink)}
-.sb-plan{font-size:.55rem;font-weight:600;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:1px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;display:inline-block;margin-top:2px}
-.sb-nav{padding:.4rem 0;flex:1;overflow-y:auto}
-.sb-sect{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:.5rem 1.3rem .2rem}
-.sb-link{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.3rem;font-size:.8rem;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;transition:all .15s;font-family:var(--sans)}
-.sb-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6;stroke-linecap:round;stroke-linejoin:round}
-.sb-link:hover{color:var(--ink);background:var(--cream)}
-.sb-link.active{color:var(--forest);background:var(--sage-dim);border-left-color:var(--forest);font-weight:500}
-.sb-link.active svg{opacity:1;stroke:var(--forest)}
-.sb-count{margin-left:auto;background:var(--forest);color:#fff;font-size:.55rem;font-weight:600;font-family:var(--mono);padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
-.sb-foot{padding:.75rem 1.3rem;border-top:1px solid var(--border);flex-shrink:0}
-.sb-upgrade{display:block;width:100%;text-align:center;background:var(--forest);color:#fff;border:none;padding:.5rem;border-radius:var(--r);font-family:var(--sans);font-size:.76rem;font-weight:500;cursor:pointer;text-decoration:none}
-.sb-upgrade:hover{background:var(--forest-2)}
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;max-width:100%}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
-.tb-left{display:flex;align-items:baseline;gap:.55rem}
-.tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
-.tb-sub{font-size:.68rem;color:var(--muted)}
-.tb-right{display:flex;gap:.45rem}
-.btn-ghost{background:none;border:1px solid var(--border-2);color:var(--muted);padding:.32rem .75rem;border-radius:var(--r);font-size:.74rem;cursor:pointer;font-family:var(--sans);transition:all .15s}
-.btn-ghost:hover{border-color:var(--forest);color:var(--forest)}
-.btn-primary{background:var(--forest);color:#fff;border:none;padding:.35rem .9rem;border-radius:var(--r);font-size:.76rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
-.btn-primary:hover{background:var(--forest-2)}
-.content{padding:1.3rem 1.4rem 4rem;flex:1}
-
-/* ── MOBILE BOTTOM NAV (replaces sidebar below 860px) ────────────────── */
-.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:60;box-shadow:0 -6px 20px rgba(28,31,28,.06);padding-bottom:env(safe-area-inset-bottom,0)}
-.bnav-inner{display:flex;align-items:stretch;max-width:520px;margin:0 auto}
-.bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:.55rem .4rem;color:var(--muted);text-decoration:none;font-family:var(--sans);font-size:.62rem;font-weight:500;background:none;border:none;cursor:pointer;transition:color .12s;position:relative;letter-spacing:.02em}
-.bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.bn-tab.active{color:var(--forest)}
-.bn-tab.active::before{content:'';position:absolute;top:0;left:30%;right:30%;height:2px;background:var(--forest);border-radius:0 0 2px 2px}
-.bn-tab .bn-badge{position:absolute;top:4px;right:50%;transform:translateX(18px);background:var(--forest);color:#fff;font-size:.5rem;font-weight:700;font-family:var(--mono);padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2}
-.bn-sheet{display:none;position:fixed;inset:0;z-index:70;background:rgba(20,32,26,.5);align-items:flex-end;justify-content:center;animation:bnFadeIn .2s ease-out}
-.bn-sheet.open{display:flex}
-@keyframes bnFadeIn{from{opacity:0}to{opacity:1}}
-.bn-sheet-card{width:100%;max-width:520px;background:#fff;border-radius:14px 14px 0 0;padding:.85rem 1rem 1.4rem;animation:bnSlideUp .25s ease-out;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom,0))}
-@keyframes bnSlideUp{from{transform:translateY(20px)}to{transform:translateY(0)}}
-.bn-sheet-grip{width:38px;height:4px;background:var(--border-2);border-radius:2px;margin:0 auto .9rem}
-.bn-sheet-link{display:flex;align-items:center;gap:.7rem;padding:.85rem .35rem;font-size:.9rem;color:var(--ink);text-decoration:none;border:none;background:none;width:100%;text-align:left;cursor:pointer;font-family:var(--sans);font-weight:500;border-radius:8px}
-.bn-sheet-link:hover{background:var(--cream-2)}
-.bn-sheet-link svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.7;stroke-linecap:round;stroke-linejoin:round}
-.bn-sheet-link + .bn-sheet-link{border-top:1px solid var(--cream-2)}
-@media(max-width:860px){.bnav{display:block}}
-
-/* ── ANALYST'S BRIEF — dashboard AI moment, matches detail page Analyst ── */
-.ana-brief{margin-bottom:1.2rem}
-.ana-brief-card{
-  background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);
-  color:#fff;border-radius:12px;padding:1.4rem 1.4rem;
-  box-shadow:0 4px 22px rgba(20,32,26,.15);position:relative;overflow:hidden;
+body{
+  background:var(--cream); color:var(--ink);
+  font-family:var(--sans); line-height:1.55; font-size:15px;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  overflow-x:hidden; max-width:100vw;
+  padding-bottom:calc(var(--ask-h) + var(--bnav-h));
 }
-.ana-brief-head{display:flex;align-items:center;gap:.55rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.08)}
-/* Animated sparkle mark — more distinctly "AI" than the old pulse dot */
-.ana-brief-mark{
-  width:18px;height:18px;flex-shrink:0;color:var(--sage);
-  filter:drop-shadow(0 0 6px rgba(122,170,143,.45));
+
+/* ── HEADER — minimal: logo + avatar ──────────────────────────────────── */
+.rh{
+  display:flex; align-items:center; justify-content:space-between;
+  max-width:var(--page-max); margin:0 auto;
+  padding:1rem 1.1rem .85rem;
+}
+.rh-logo{display:flex; align-items:center; gap:.55rem; text-decoration:none; color:var(--ink)}
+.rh-logo svg{width:24px; height:24px; flex-shrink:0}
+.rh-logo span{font-family:var(--serif); font-size:1rem; font-weight:500}
+.rh-right{display:flex; align-items:center; gap:.5rem}
+.rh-nav{display:flex; align-items:center; gap:.1rem}
+.rh-nav a{
+  font-size:.82rem; color:var(--muted); text-decoration:none;
+  padding:.4rem .75rem; border-radius:8px; transition:all .15s;
+  position:relative;
+}
+.rh-nav a:hover{color:var(--ink); background:var(--cream-2)}
+.rh-nav a.active{color:var(--forest); font-weight:500}
+.rh-nav a.active::after{content:'';position:absolute;left:.75rem;right:.75rem;bottom:.05rem;height:2px;background:var(--forest);border-radius:1px}
+.rh-avatar{
+  width:32px; height:32px; border-radius:50%; background:var(--forest-2); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.78rem; font-weight:500; border:none; cursor:pointer;
+}
+.rh-avatar:hover{background:var(--forest)}
+
+/* ── PAGE LAYOUT — single column, centered ────────────────────────────── */
+.page{
+  max-width:var(--page-max);
+  margin:0 auto;
+  padding:0 1.1rem 1rem;
+}
+
+/* ── BRIEF — editorial hero, no card, AI identity via typography ──────── */
+.brief{padding:.5rem 0 1.5rem}
+.brief-eyebrow{
+  display:flex; align-items:center; gap:.5rem;
+  margin-bottom:1rem;
+}
+.brief-mark{
+  width:18px; height:18px; flex-shrink:0; color:var(--forest);
+  filter:drop-shadow(0 0 4px rgba(122,170,143,.4));
   animation:markSpin 14s linear infinite;
 }
-.ana-brief-mark svg{width:100%;height:100%;fill:currentColor;display:block}
+.brief-mark svg{width:100%; height:100%; fill:currentColor; display:block}
 @keyframes markSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.ana-brief-title{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
-.ana-brief-day{font-size:.72rem;color:rgba(255,255,255,.4);font-style:italic;margin-left:.15rem}
-.ana-brief-live{
-  display:inline-flex;align-items:center;gap:.3rem;
-  font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(122,170,143,.7);margin-left:.2rem;
+.brief-label{
+  font-size:.66rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--forest);
 }
-.ana-brief-live::before{
-  content:'';width:6px;height:6px;border-radius:50%;background:var(--sage);
-  box-shadow:0 0 8px var(--sage);animation:liveBlink 1.8s ease-in-out infinite;
+.brief-sep{color:var(--faint); font-size:.7rem; margin:0 .1rem}
+.brief-meta{font-size:.66rem; color:var(--faint); letter-spacing:.06em; text-transform:uppercase; font-weight:500}
+.brief-live{
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--forest-3);
 }
-@keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.35}}
-.ana-brief-badge{font-size:.6rem;font-weight:700;letter-spacing:.1em;background:rgba(122,170,143,.2);color:var(--sage);padding:.2rem .5rem;border-radius:4px;margin-left:auto}
-.ana-brief-body{
-  font-family:var(--serif);font-size:1.02rem;line-height:1.65;
-  color:rgba(255,255,255,.92);font-style:italic;font-weight:400;
-  margin-bottom:1.1rem;
+.brief-live::before{
+  content:''; width:5px; height:5px; border-radius:50%; background:var(--forest-3);
+  box-shadow:0 0 6px var(--forest-3); animation:liveBlink 1.8s ease-in-out infinite;
+}
+@keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.brief-greeting{
+  font-family:var(--serif); font-size:1.85rem; font-weight:500;
+  line-height:1.15; color:var(--ink); margin-bottom:.85rem;
+}
+.brief-body{
+  font-family:var(--serif); font-size:1.05rem; font-weight:400;
+  line-height:1.6; color:var(--ink); font-style:italic;
+  margin-bottom:1.25rem; max-width:62ch;
   animation:briefFadeIn .9s cubic-bezier(.22,1,.36,1);
 }
-@keyframes briefFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.ana-brief-body b{color:#fff;font-weight:600;font-style:normal}
-.ana-brief-body::before{content:'"';font-size:2.2rem;color:var(--sage);line-height:0;margin-right:.15rem;vertical-align:-.35em;font-style:normal;font-family:var(--serif)}
-.ana-brief-picks{display:flex;gap:.6rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin:0 -1.4rem;padding-left:1.4rem;padding-right:1.4rem}
-.ana-brief-picks::-webkit-scrollbar{display:none}
-.ana-brief-pick{flex-shrink:0;min-width:240px;max-width:260px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.85rem .9rem;cursor:pointer;transition:all .15s}
-.ana-brief-pick:hover{background:rgba(255,255,255,.08);border-color:rgba(122,170,143,.3);transform:translateY(-1px)}
-.ana-brief-pick-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
-.ana-brief-pick-score{width:30px;height:30px;border-radius:50%;background:var(--sage);color:#1c1f1c;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:600;flex-shrink:0}
-.ana-brief-pick-sig{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage)}
-.ana-brief-pick-addr{font-family:var(--serif);font-size:.88rem;font-weight:500;color:#fff;margin-bottom:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ana-brief-pick-meta{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:.35rem}
-.ana-brief-pick-cf{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--sage)}
-.ana-brief-pick-cf.r{color:#ff9b9b}
+@keyframes briefFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.brief-body b{font-weight:600; font-style:normal; color:var(--ink)}
 
-/* ── DEAL CARD micro-take (one-line italic analyst voice per card) ────── */
-.dtake{font-family:var(--serif);font-style:italic;font-size:.78rem;color:var(--muted);margin-top:.45rem;line-height:1.4}
-.dtake::before{content:'"';color:var(--sage);font-style:normal;margin-right:2px}
-.dtake::after{content:'"';color:var(--sage);font-style:normal;margin-left:1px}
+.followups{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;
+  font-size:.85rem; color:var(--muted);
+  line-height:1.7;
+}
+.followups-prefix{font-style:italic; font-family:var(--serif); margin-right:.2rem}
+.followup{
+  display:inline-flex; align-items:center; gap:.3rem;
+  background:var(--white); border:1px solid var(--border);
+  color:var(--ink); font-family:var(--sans); font-size:.82rem; font-weight:500;
+  padding:.32rem .7rem; border-radius:999px;
+  cursor:pointer; transition:all .15s; line-height:1;
+}
+.followup:hover{border-color:var(--forest); color:var(--forest); background:var(--sage-dim)}
+.followup.on{background:var(--forest); color:#fff; border-color:var(--forest)}
+.followup-count{
+  font-family:var(--mono); font-size:.65rem; color:var(--faint);
+  background:var(--cream-2); padding:1px 5px; border-radius:6px;
+}
+.followup.on .followup-count{background:rgba(255,255,255,.15); color:rgba(255,255,255,.85)}
 
-/* ── LENSES — AI-curated views, replace filter chrome ──────────────────── */
-.lenses-wrap{margin:0 0 .55rem}
-.lens-row{
-  display:flex;gap:.45rem;overflow-x:auto;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;padding-bottom:.4rem;
+/* ── PICKS / DEALS SECTION ────────────────────────────────────────────── */
+.section-head{
+  display:flex; align-items:baseline; gap:.6rem;
+  margin:1.5rem 0 .9rem;
+  border-top:1px solid var(--border); padding-top:1.5rem;
 }
-.lens-row::-webkit-scrollbar{display:none}
-.lens{
-  display:inline-flex;align-items:center;gap:.4rem;
-  flex-shrink:0;white-space:nowrap;
-  background:var(--white);border:1px solid var(--border);
-  color:var(--ink);font-family:var(--sans);font-size:.78rem;font-weight:500;
-  padding:.4rem .75rem .4rem .6rem;border-radius:999px;
-  cursor:pointer;transition:all .15s;
+.section-eyebrow{
+  font-size:.62rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint);
 }
-.lens svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:stroke .15s}
-.lens .lens-count{
-  display:inline-block;background:var(--cream-2);color:var(--muted);
-  font-family:var(--mono);font-size:.65rem;font-weight:500;
-  padding:1px 6px;border-radius:8px;margin-left:.15rem;
+.section-title{
+  font-family:var(--serif); font-size:1.2rem; font-weight:500; color:var(--ink);
+  flex:1;
 }
-.lens:hover{border-color:var(--sage-border);color:var(--forest)}
-.lens:hover svg{stroke:var(--forest)}
-.lens.on{
-  background:var(--forest);color:#fff;border-color:var(--forest);
-  box-shadow:0 2px 12px rgba(28,74,53,.18);
-}
-.lens.on svg{stroke:var(--sage)}
-.lens.on .lens-count{background:rgba(122,170,143,.2);color:var(--sage)}
-.lens-voice{
-  font-family:var(--serif);font-style:italic;font-size:.88rem;
-  color:var(--muted);padding:.4rem .1rem 1rem;line-height:1.5;
-}
-.lens-voice b{color:var(--ink);font-weight:600;font-style:normal}
-
-/* ── Analyst's Pick sparkle badge on top-of-feed deal cards ────────── */
-.dpick{
-  display:inline-flex;align-items:center;gap:.25rem;
-  font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);
-  padding:.15rem .4rem .15rem .3rem;border-radius:4px;
-  margin-right:.4rem;vertical-align:middle;line-height:1;
-}
-.dpick svg{width:10px;height:10px;fill:var(--forest);animation:markSpin 14s linear infinite;flex-shrink:0}
-
-/* ── FEED DIVIDER between curated picks and long-tail compact rows ─── */
-.feed-divider{
-  display:flex;align-items:center;gap:.75rem;margin:1.1rem 0 .55rem;
-}
-.feed-divider-line{flex:1;height:1px;background:var(--border)}
-.feed-divider-label{
-  font-size:.64rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--faint);white-space:nowrap;
+.section-count{
+  font-family:var(--mono); font-size:.78rem; color:var(--muted);
 }
 
-/* Compact card variant — for cards beyond the top 5 */
-.deal.compact{padding:.6rem .85rem;gap:.7rem;margin-bottom:.3rem;background:var(--cream);border-color:var(--cream-3)}
-.deal.compact:hover{background:var(--white);border-color:var(--sage-border)}
-.deal.compact .ring{width:36px;height:36px}
-.deal.compact .rn{font-size:.72rem}
-.deal.compact .daddr{font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0}
-.deal.compact .dmeta{font-size:.66rem;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.deal.compact .dkpis{display:none}
-.deal.compact .dtake{display:none}
-.deal.compact .dright{min-width:auto;gap:1px}
-.deal.compact .dprice{font-size:.78rem}
-.deal.compact .sbadge{font-size:.55rem;padding:1px 5px}
-.deal.compact .ddom{display:none}
-.deal.compact .wbtn{display:none}
-.deal.compact::before{display:none}
+.deals{display:flex; flex-direction:column; gap:.5rem}
 
-.deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden;opacity:0;animation:fu .28s ease forwards}
+/* ── DEAL CARD — rich version ─────────────────────────────────────────── */
+.deal{
+  background:var(--white); border:1px solid var(--border); border-radius:var(--r);
+  padding:.95rem 1rem; display:flex; align-items:center; gap:.85rem;
+  cursor:pointer; transition:all .14s; position:relative; overflow:hidden;
+  opacity:0; animation:fu .28s ease forwards;
+}
 @keyframes fu{to{opacity:1;transform:none}from{opacity:0;transform:translateY(5px)}}
-.new-divider{display:flex;align-items:center;gap:.75rem;margin:.6rem 0 .5rem;opacity:0;animation:fu .3s ease .2s forwards}
-.new-divider-line{flex:1;height:1px;background:linear-gradient(90deg,var(--forest-3),transparent)}
-.new-divider-label{font-size:.64rem;font-weight:600;color:var(--forest);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;background:var(--sage-dim);border:1px solid var(--sage-border);padding:2px 8px;border-radius:4px;flex-shrink:0}
-.new-divider-line.right{background:linear-gradient(270deg,var(--forest-3),transparent)}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-.fresh-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--forest-3);animation:pulse 1.8s ease-in-out infinite;margin-right:4px;vertical-align:middle;flex-shrink:0}
-.fresh-dot.hot{background:var(--amber)}
-.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
-.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-.deal.sb{
-  padding:.95rem 1rem;
-  border-color:rgba(28,74,53,.22);
-  box-shadow:0 2px 0 0 var(--forest), 0 4px 20px rgba(28,74,53,.1);
-}
-.deal.sb::before{background:var(--forest);width:4px}
-.deal.sb .ring{width:56px;height:56px}
-.deal.sb .daddr{font-size:.94rem}
+.deal:hover{border-color:var(--sage-border); box-shadow:0 3px 14px rgba(28,31,28,.07); transform:translateY(-1px)}
+.deal::before{content:''; position:absolute; left:0; top:0; bottom:0; width:3px}
+.deal.sb{border-color:rgba(28,74,53,.22); box-shadow:0 2px 0 0 var(--forest), 0 4px 20px rgba(28,74,53,.08)}
+.deal.sb::before{background:var(--forest); width:4px}
 .deal.buy::before{background:var(--forest-3)}
 .deal.wat::before{background:var(--amber)}
 .deal.pas::before{background:var(--rose)}
-.ring{width:48px;height:48px;flex-shrink:0;position:relative}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.rt{fill:none;stroke:var(--cream-3);stroke-width:4}
-.rf{fill:none;stroke-width:4;stroke-linecap:round}
-.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:500}
-.dbody{flex:1;min-width:0;overflow:hidden}
-.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:.4rem;min-width:0;margin-bottom:1px}
-.daddr-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dmeta{font-size:.68rem;color:var(--muted);margin-bottom:4px}
-.dkpis{display:flex;gap:.28rem;flex-wrap:wrap}
-.kp{font-size:.62rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
-.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
-.dright{text-align:right;flex-shrink:0;min-width:80px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.sbadge{font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
-.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
-.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
-.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
-.sbadge.pas{background:rgba(160,48,48,.07);color:var(--rose);border-color:rgba(160,48,48,.2)}
-.dprice{font-family:var(--mono);font-size:.8rem;color:var(--ink)}
-.ddom{font-size:.62rem;color:var(--muted)}
-.wbtn{background:none;border:none;cursor:pointer;color:var(--faint);line-height:0;padding:4px;transition:color .14s;flex-shrink:0}
-.wbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+.ring{width:48px; height:48px; flex-shrink:0; position:relative}
+.deal.sb .ring{width:54px; height:54px}
+.ring svg{width:100%; height:100%; transform:rotate(-90deg)}
+.rt{fill:none; stroke:var(--cream-3); stroke-width:4}
+.rf{fill:none; stroke-width:4; stroke-linecap:round}
+.rn{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.88rem; font-weight:500}
+
+.dbody{flex:1; min-width:0; overflow:hidden}
+.daddr{
+  font-family:var(--serif); font-size:.95rem; font-weight:500; color:var(--ink);
+  display:flex; align-items:center; gap:.4rem; min-width:0; margin-bottom:1px;
+}
+.daddr-text{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.dpick{
+  display:inline-flex; align-items:center; gap:.22rem;
+  font-size:.58rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--forest); background:var(--sage-dim); border:1px solid var(--sage-border);
+  padding:.15rem .4rem .15rem .3rem; border-radius:4px; line-height:1; flex-shrink:0;
+}
+.dpick svg{width:9px; height:9px; fill:var(--forest); animation:markSpin 14s linear infinite; flex-shrink:0}
+.dmeta{font-size:.72rem; color:var(--muted); margin-bottom:.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.dkpis{display:flex; gap:.3rem; flex-wrap:wrap}
+.kp{font-size:.66rem; font-family:var(--mono); padding:2px 6px; border-radius:3px; border:1px solid var(--border); color:var(--muted); background:var(--cream)}
+.kp.g{color:var(--forest); border-color:var(--sage-border); background:var(--sage-dim)}
+.kp.r{color:var(--rose); border-color:rgba(160,48,48,.2); background:rgba(160,48,48,.05)}
+.dtake{font-family:var(--serif); font-style:italic; font-size:.82rem; color:var(--muted); margin-top:.5rem; line-height:1.45}
+.dtake::before{content:'"'; color:var(--sage); font-style:normal; margin-right:2px}
+.dtake::after{content:'"'; color:var(--sage); font-style:normal; margin-left:1px}
+
+.dright{text-align:right; flex-shrink:0; min-width:80px; display:flex; flex-direction:column; align-items:flex-end; gap:3px}
+.sbadge{font-size:.58rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:4px; border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08); color:var(--forest); border-color:rgba(28,74,53,.2)}
+.sbadge.buy{background:rgba(62,129,96,.07); color:var(--forest-3); border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.08); color:var(--amber); border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.07); color:var(--rose); border-color:rgba(160,48,48,.2)}
+.dprice{font-family:var(--mono); font-size:.82rem; color:var(--ink)}
+.ddom{font-size:.64rem; color:var(--muted)}
+.wbtn{background:none; border:none; cursor:pointer; color:var(--faint); line-height:0; padding:4px; transition:color .14s; flex-shrink:0}
+.wbtn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round}
 .wbtn:hover,.wbtn.on{color:var(--forest)}
-.wbtn.on svg{fill:var(--forest);stroke:var(--forest)}
-.empty{text-align:center;padding:3.5rem 1.5rem}
-.empty-ic{width:44px;height:44px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
-.empty-ic svg{width:18px;height:18px;stroke:var(--forest);fill:none;stroke-width:1.8}
-.empty-t{font-family:var(--serif);font-size:.95rem;color:var(--ink);margin-bottom:.3rem}
-.empty-s{font-size:.78rem;color:var(--muted);max-width:260px;margin:0 auto .9rem;line-height:1.6}
-.empty-btn{background:var(--forest);color:#fff;border:none;padding:.48rem 1.1rem;border-radius:var(--r);font-size:.76rem;cursor:pointer;font-family:var(--sans)}
-.skel-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
-.sk{background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;border-radius:5px}
+.wbtn.on svg{fill:var(--forest); stroke:var(--forest)}
+.fresh-dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--forest-3); animation:pulse 1.8s ease-in-out infinite; margin-right:4px; vertical-align:middle}
+.fresh-dot.hot{background:var(--amber)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+/* ── COMPACT ROWS — long tail ──────────────────────────────────────────── */
+.compact-list{display:flex; flex-direction:column; gap:1px; margin-top:.5rem}
+.compact{
+  background:var(--white); border:1px solid var(--border); border-left:3px solid transparent;
+  padding:.6rem .85rem; display:flex; align-items:center; gap:.7rem;
+  cursor:pointer; transition:all .14s;
+}
+.compact:first-child{border-radius:var(--r) var(--r) 0 0}
+.compact:last-child{border-radius:0 0 var(--r) var(--r)}
+.compact:only-child{border-radius:var(--r)}
+.compact + .compact{border-top:none}
+.compact:hover{background:var(--cream-2); border-left-color:var(--sage)}
+.compact.sb{border-left-color:var(--forest)}
+.compact.buy{border-left-color:var(--forest-3)}
+.compact.wat{border-left-color:var(--amber)}
+.compact.pas{border-left-color:var(--rose)}
+.compact .c-ring{
+  width:34px; height:34px; flex-shrink:0; border-radius:50%;
+  border:2px solid; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:.72rem; font-weight:500;
+}
+.c-body{flex:1; min-width:0; overflow:hidden}
+.c-addr{font-family:var(--serif); font-size:.86rem; font-weight:500; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.c-meta{font-size:.66rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.c-right{text-align:right; flex-shrink:0}
+.c-cf{font-family:var(--mono); font-size:.78rem; color:var(--ink); font-weight:500}
+.c-cf.r{color:var(--rose)}
+.c-cf.g{color:var(--forest)}
+.c-price{font-size:.62rem; color:var(--muted); font-family:var(--mono)}
+
+/* ── EMPTY STATE / LOADING ─────────────────────────────────────────────── */
+.empty{text-align:center; padding:2.5rem 1rem; color:var(--muted)}
+.empty-t{font-family:var(--serif); font-size:1rem; color:var(--ink); margin-bottom:.3rem}
+.empty-s{font-size:.85rem; margin-bottom:1rem; line-height:1.55; max-width:300px; margin-left:auto; margin-right:auto}
+.empty-btn{background:var(--forest); color:#fff; border:none; padding:.5rem 1.1rem; border-radius:var(--r); font-size:.78rem; cursor:pointer; font-family:var(--sans)}
+.skel{
+  background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);
+  background-size:200% 100%; animation:sh 1.4s infinite; border-radius:5px;
+}
 @keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
-@media(max-width:860px){.sidebar{display:none}.main{margin-left:0;padding:.75rem}.tb-right{display:none}}
+.skel-card{
+  background:var(--white); border:1px solid var(--border); border-radius:var(--r);
+  padding:.95rem 1rem; display:flex; align-items:center; gap:.85rem; margin-bottom:.5rem;
+}
+
+/* ── STICKY BOTTOM: ASK + BOTTOM NAV ──────────────────────────────────── */
+.rr-bottom{position:fixed; bottom:0; left:0; right:0; z-index:60; pointer-events:none}
+.rr-bottom > *{pointer-events:auto}
+
+.ask-bar{
+  background:var(--white); border-top:1px solid var(--border);
+  padding:.7rem 1rem;
+  box-shadow:0 -8px 22px rgba(28,31,28,.06);
+}
+.ask-inner{max-width:var(--page-max); margin:0 auto; display:flex; gap:.5rem; align-items:center}
+.ask-mark{
+  width:18px; height:18px; flex-shrink:0; color:var(--forest);
+  animation:markSpin 14s linear infinite;
+}
+.ask-mark svg{width:100%; height:100%; fill:currentColor; display:block}
+.ask-input{
+  flex:1; background:var(--cream-2); border:1px solid var(--border);
+  border-radius:999px; padding:.65rem 1rem; font-size:.92rem;
+  font-family:var(--sans); color:var(--ink); outline:none; min-width:0;
+  transition:all .15s;
+}
+.ask-input::placeholder{color:var(--muted)}
+.ask-input:focus{border-color:var(--forest); background:#fff}
+.ask-send{
+  width:38px; height:38px; flex-shrink:0; border-radius:50%;
+  background:var(--forest); color:#fff; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.ask-send:hover{background:var(--forest-2)}
+.ask-send svg{width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+
+/* ── BOTTOM TAB NAV (mobile only) ─────────────────────────────────────── */
+.bnav{
+  background:#fff; border-top:1px solid var(--border);
+  padding-bottom:env(safe-area-inset-bottom,0);
+  display:none;
+}
+.bnav-inner{display:flex; max-width:var(--page-max); margin:0 auto}
+.bn-tab{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:.55rem .4rem; color:var(--muted); text-decoration:none; background:none; border:none;
+  cursor:pointer; font-family:var(--sans); font-size:.62rem; font-weight:500;
+  transition:color .12s; position:relative; letter-spacing:.02em;
+}
+.bn-tab svg{width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.bn-tab.active{color:var(--forest)}
+.bn-tab.active::before{content:''; position:absolute; top:0; left:30%; right:30%; height:2px; background:var(--forest); border-radius:0 0 2px 2px}
+.bn-badge{
+  position:absolute; top:4px; right:50%; transform:translateX(18px);
+  background:var(--forest); color:#fff; font-size:.5rem; font-weight:700; font-family:var(--mono);
+  padding:1px 4px; border-radius:8px; min-width:14px; text-align:center; line-height:1.2;
+}
+.bn-sheet{display:none; position:fixed; inset:0; z-index:70; background:rgba(20,32,26,.5); align-items:flex-end; justify-content:center}
+.bn-sheet.open{display:flex}
+.bn-sheet-card{
+  width:100%; max-width:var(--page-max); background:#fff;
+  border-radius:14px 14px 0 0; padding:.85rem 1rem calc(1.4rem + env(safe-area-inset-bottom,0));
+  animation:slideUp .25s ease-out;
+}
+@keyframes slideUp{from{transform:translateY(20px)}to{transform:translateY(0)}}
+.bn-sheet-grip{width:38px; height:4px; background:var(--border-2); border-radius:2px; margin:0 auto .9rem}
+.bn-sheet-link{
+  display:flex; align-items:center; gap:.7rem; padding:.85rem .35rem;
+  font-size:.92rem; color:var(--ink); text-decoration:none;
+  border:none; background:none; width:100%; text-align:left; cursor:pointer;
+  font-family:var(--sans); font-weight:500; border-radius:8px;
+}
+.bn-sheet-link:hover{background:var(--cream-2)}
+.bn-sheet-link svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; flex-shrink:0; opacity:.7; stroke-linecap:round; stroke-linejoin:round}
+.bn-sheet-link + .bn-sheet-link{border-top:1px solid var(--cream-2)}
+
+/* ── ANALYST CHAT OVERLAY (when user uses ask bar) ────────────────────── */
+.chat-overlay{
+  display:none; position:fixed; inset:0; z-index:80; background:rgba(20,32,26,.6);
+  align-items:flex-end; justify-content:center;
+}
+.chat-overlay.open{display:flex}
+.chat-card{
+  width:100%; max-width:var(--page-max); background:linear-gradient(180deg,#1d2420,#14201a); color:#fff;
+  border-radius:14px 14px 0 0;
+  max-height:85vh; display:flex; flex-direction:column;
+  animation:slideUp .25s ease-out;
+}
+.chat-head{
+  display:flex; align-items:center; gap:.55rem;
+  padding:1rem 1.1rem; border-bottom:1px solid rgba(255,255,255,.1);
+}
+.chat-mark{width:16px; height:16px; color:var(--sage); animation:markSpin 14s linear infinite; flex-shrink:0}
+.chat-mark svg{width:100%; height:100%; fill:currentColor; display:block}
+.chat-title{font-size:.78rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.9)}
+.chat-close{
+  margin-left:auto; background:none; border:none; color:rgba(255,255,255,.55);
+  cursor:pointer; font-size:1.4rem; line-height:1; padding:0 .25rem;
+}
+.chat-close:hover{color:#fff}
+.chat-msgs{
+  flex:1; overflow-y:auto; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:.7rem;
+}
+.chat-msg{
+  font-size:.92rem; line-height:1.6; padding:.85rem 1rem; border-radius:10px;
+  word-wrap:break-word; white-space:pre-wrap;
+}
+.chat-msg.user{background:rgba(122,170,143,.18); border:1px solid rgba(122,170,143,.3); color:#fff; align-self:flex-end; max-width:88%}
+.chat-msg.assistant{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.92)}
+.chat-msg.assistant.loading{color:rgba(255,255,255,.55); font-style:italic}
+.chat-msg.assistant.loading::after{content:''; display:inline-block; width:7px; height:7px; background:var(--sage); border-radius:50%; margin-left:6px; animation:aiPulse 1s infinite}
+@keyframes aiPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-form{
+  display:flex; gap:.5rem; padding:1rem 1.1rem;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-bottom:calc(1rem + env(safe-area-inset-bottom,0));
+}
+.chat-input{
+  flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.15);
+  color:#fff; border-radius:999px; padding:.7rem 1rem; font-size:.92rem;
+  font-family:var(--sans); outline:none; min-width:0;
+}
+.chat-input::placeholder{color:rgba(255,255,255,.4)}
+.chat-input:focus{border-color:var(--sage); background:rgba(255,255,255,.08)}
+.chat-send{
+  width:38px; height:38px; flex-shrink:0; border-radius:50%;
+  background:var(--sage); color:#1c1f1c; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.chat-send svg{width:16px; height:16px; stroke:#1c1f1c; fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round}
+
+/* ── DESKTOP TWEAKS ────────────────────────────────────────────────────── */
+@media(min-width:861px){
+  body{font-size:15.5px; padding-bottom:calc(var(--ask-h) + 1rem)}
+  .rh{padding:1.1rem 1.5rem}
+  .page{padding:0 1.5rem 2rem}
+  .brief-greeting{font-size:2.15rem}
+  .brief-body{font-size:1.12rem}
+  .bnav{display:none}
+}
+
+/* ── MOBILE TWEAKS ─────────────────────────────────────────────────────── */
+@media(max-width:860px){
+  body{padding-bottom:calc(var(--ask-h) + var(--bnav-h))}
+  .rh-nav{display:none}
+  .bnav{display:block}
+}
 @media(max-width:540px){
-  .content{padding:1rem .9rem 5.5rem}
-  .topbar{padding:0 .9rem}
-  .topbar{display:none}
-  .main{padding-top:0}
-  .deal{padding:.85rem .85rem;gap:.7rem}
-  .ring{width:48px;height:48px}
-  .deal.sb .ring{width:52px;height:52px}
-  .rn{font-size:.88rem}
-  .daddr{font-size:.92rem;line-height:1.3}
-  .dmeta{font-size:.72rem;margin-bottom:6px}
-  .kp{font-size:.66rem;padding:2px 6px}
-  /* Mobile: drop DSCR + percentile chip to reduce density */
+  .rh{padding:.85rem .9rem .6rem}
+  .page{padding:0 .9rem 1rem}
+  .brief{padding:.25rem 0 1.25rem}
+  .brief-greeting{font-size:1.55rem}
+  .brief-body{font-size:1rem; line-height:1.6}
+  .deal{padding:.85rem .85rem; gap:.7rem}
+  .ring{width:46px; height:46px}
+  .deal.sb .ring{width:52px; height:52px}
+  .rn{font-size:.85rem}
+  .daddr{font-size:.9rem}
+  .dmeta{font-size:.7rem}
+  .kp{font-size:.62rem; padding:1px 5px}
   .kp[data-metric="dscr"]{display:none}
   .ddom[data-pct]{display:none}
-  .dprice{font-size:.88rem}
-  .sbadge{font-size:.6rem;padding:3px 7px}
-  .ddom{font-size:.68rem}
-  .dtake{font-size:.85rem;line-height:1.5;margin-top:.55rem}
-  .tb-left{flex-direction:column;align-items:flex-start;gap:.1rem}
-  .tb-sub{font-size:.62rem}
-  .btn-primary{font-size:.72rem;padding:.3rem .7rem}
-  .btn-ghost{font-size:.72rem;padding:.3rem .65rem}
-}
-
-@media(max-width:600px){
-  .ana-brief-card{padding:1.15rem 1.15rem;border-radius:10px;max-width:100%}
-  .ana-brief-body{font-size:.95rem}
-  .ana-brief-picks{margin:0 -1.15rem;padding-left:1.15rem;padding-right:1.15rem}
-  .ana-brief-pick{min-width:200px;max-width:240px}
-  .ana-brief-head{flex-wrap:wrap;gap:.4rem}
-  .ana-brief-live{font-size:.58rem}
-}
-
-@media(max-width:430px){
-  /* Deal cards — metric badges on one scrollable row */
-  .dkpis{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:.25rem;padding-bottom:2px}
-  .dkpis::-webkit-scrollbar{display:none}
-  .kp{flex-shrink:0;font-size:.65rem;padding:.18rem .45rem}
-  .daddr{font-size:.82rem}
-  .dmeta{font-size:.62rem}
-  .dprice{font-size:.8rem}
-  .sbadge{font-size:.58rem;padding:.18rem .4rem}
-
-  /* Market chips — scroll hint via fade */  
-
-  /* Feed header */
-  .tb{font-size:.85rem}
-  .tb-sub{font-size:.6rem}
-
-  /* Top bar buttons */
-  .btn-refresh{display:none}
+  .dprice{font-size:.82rem}
+  .sbadge{font-size:.55rem; padding:2px 5px}
+  .dtake{font-size:.8rem}
+  .section-head{margin:1.25rem 0 .75rem; padding-top:1.25rem}
+  .section-title{font-size:1.08rem}
+  .ask-bar{padding:.6rem .85rem}
+  .ask-input{font-size:.88rem; padding:.6rem .9rem}
 }
 </style>
-<script src="api.js"></script>
 </head>
 <body>
-<aside class="sidebar">
-  <a href="roofrank-landing.html" class="sb-top">
-    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
-    <span class="sb-name">RoofRank</span>
+
+<header class="rh">
+  <a href="roofrank-landing.html" class="rh-logo" title="RoofRank">
+    <svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span>RoofRank</span>
   </a>
-  <div class="sb-user">
-    <div class="sb-av" id="sbAv">?</div>
-    <div><div class="sb-uname" id="sbName">Loading…</div><span class="sb-plan" id="sbPlan">Starter</span></div>
+  <div class="rh-right">
+    <nav class="rh-nav">
+      <a href="roofrank-dashboard.html" class="active">Today</a>
+      <a href="roofrank-watchlist.html">Watching</a>
+      <a href="roofrank-analyzer.html">Analyze</a>
+      <a href="roofrank-reports.html">Reports</a>
+    </nav>
+    <button class="rh-avatar" id="rhAvatar" onclick="document.getElementById('bnSheet').classList.add('open')">A</button>
   </div>
-  <nav class="sb-nav">
-    <div class="sb-sect">Deals</div>
-    <a href="roofrank-dashboard.html" class="sb-link active">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Deal Feed<span class="sb-count" id="sbBadge">—</span>
-    </a>
-    <a href="roofrank-watchlist.html" class="sb-link">
-      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      Watchlist<span class="sb-count" id="wc" style="display:none">0</span>
-    </a>
-    <div class="sb-sect">Tools</div>
-    <a href="roofrank-analyzer.html" class="sb-link">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analyze a Deal
-    </a>
-    <a href="roofrank-reports.html" class="sb-link">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Reports
-    </a>
-    <div class="sb-sect">Account</div>
-    <a href="roofrank-pricing.html?v=2" class="sb-link"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
-    <button class="sb-link"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
-  </nav>
-  <div class="sb-foot">
-    <div style="display:flex;justify-content:space-between;font-size:.63rem;color:var(--muted);margin-bottom:4px"><span>Reports used</span><span class="sb-usage-val" id="sbUsage">—</span></div><div style="height:3px;background:var(--cream-3);border-radius:2px;overflow:hidden;margin-bottom:.65rem"><div id="sbFill" style="height:100%;background:var(--forest-3);border-radius:2px;width:0%;transition:width .5s"></div></div><a href="roofrank-pricing.html?v=2" class="sb-upgrade">↑ Upgrade Plan</a>
-  </div>
-</aside>
+</header>
 
-<div class="main">
-  <header class="topbar">
-    <div class="tb-left">
-      <span class="tb-title">Deal Feed</span>
-      <span class="tb-sub" id="topSub">Loading deals…</span>
+<main class="page">
+
+  <!-- ── BRIEF — editorial hero ─────────────────────────────────────── -->
+  <section class="brief" id="briefSection" style="display:none">
+    <div class="brief-eyebrow">
+      <div class="brief-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
+      <span class="brief-label">Analyst's Brief</span>
+      <span class="brief-sep">·</span>
+      <span class="brief-meta" id="briefDay">today</span>
+      <span class="brief-sep">·</span>
+      <span class="brief-live" id="briefLive">Live</span>
     </div>
-    <div class="tb-right">
-      <button class="btn-ghost" onclick="handleRefresh(this)">↻ Refresh</button>
-      <button class="btn-primary" onclick="location.href='roofrank-analyzer.html'">+ Analyze Deal</button>
-    </div>
-  </header>
-  <div class="content">
-    <section class="ana-brief" id="anaBriefSection" style="display:none">
-      <div class="ana-brief-card">
-        <div class="ana-brief-head">
-          <div class="ana-brief-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
-          </div>
-          <div class="ana-brief-title">Analyst's Brief</div>
-          <div class="ana-brief-day" id="anaBriefDay">today</div>
-          <span class="ana-brief-live" id="anaBriefLive">Live</span>
-          <div class="ana-brief-badge">AI</div>
-        </div>
-        <div class="ana-brief-body" id="anaBriefBody">—</div>
-        <div class="ana-brief-picks" id="anaBriefPicks"></div>
+    <h1 class="brief-greeting" id="briefGreeting">Good evening.</h1>
+    <p class="brief-body" id="briefBody">—</p>
+    <div class="followups" id="followups"></div>
+  </section>
+
+  <!-- ── PICKS / DEALS ──────────────────────────────────────────────── -->
+  <section class="picks-section">
+    <div class="section-head" id="picksHead" style="display:none">
+      <div style="flex:1">
+        <div class="section-eyebrow" id="picksEyebrow">Today's picks</div>
+        <div class="section-title" id="picksTitle">What I'd open first</div>
       </div>
-    </section>
-
-    <div class="lenses-wrap">
-      <div class="lens-row" id="lensRow"></div>
-      <div class="lens-voice" id="lensVoice"></div>
+      <div class="section-count" id="picksCount"></div>
     </div>
-    <div id="dealList"></div>
-  <div id="loadMoreWrap" style="display:none;justify-content:center;padding:1rem"><button style="background:none;border:1px solid var(--border-2);color:var(--muted);padding:.5rem 1.25rem;border-radius:var(--r);font-size:.78rem;cursor:pointer;font-family:var(--sans)" onclick="loadMore()">Load more deals</button></div>
-  </div>
-</div>
+    <div class="deals" id="dealList"></div>
+  </section>
 
-<!-- Mobile bottom-tab navigation (replaces sidebar below 860px) -->
-<nav class="bnav" aria-label="Primary navigation">
-  <div class="bnav-inner">
-    <a href="roofrank-dashboard.html" class="bn-tab active">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Feed</span>
-    </a>
-    <a href="roofrank-watchlist.html" class="bn-tab">
-      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      <span>Watching</span>
-      <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
-    </a>
-    <a href="roofrank-analyzer.html" class="bn-tab">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span>Analyze</span>
-    </a>
-    <button class="bn-tab" type="button" onclick="document.getElementById('bnSheet').classList.add('open')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
-      <span>More</span>
-    </button>
+  <!-- ── MORE (compact long-tail) ───────────────────────────────────── -->
+  <section class="more-section" id="moreSection" style="display:none">
+    <div class="section-head">
+      <div style="flex:1">
+        <div class="section-eyebrow">Long tail</div>
+        <div class="section-title" id="moreTitle">More deals worth knowing</div>
+      </div>
+      <div class="section-count" id="moreCount"></div>
+    </div>
+    <div class="compact-list" id="compactList"></div>
+  </section>
+
+</main>
+
+<!-- ── STICKY BOTTOM: ASK + BOTTOM NAV ──────────────────────────────── -->
+<div class="rr-bottom">
+  <div class="ask-bar">
+    <div class="ask-inner">
+      <div class="ask-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
+      <input class="ask-input" id="askInput" type="text" placeholder="Ask the analyst anything about your markets…" onkeydown="if(event.key==='Enter') openChatWithQuery()">
+      <button class="ask-send" type="button" onclick="openChatWithQuery()" aria-label="Ask">
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
   </div>
-</nav>
+  <nav class="bnav" aria-label="Primary navigation">
+    <div class="bnav-inner">
+      <a href="roofrank-dashboard.html" class="bn-tab active">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Today</span>
+      </a>
+      <a href="roofrank-watchlist.html" class="bn-tab">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span>Watching</span>
+        <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
+      </a>
+      <a href="roofrank-analyzer.html" class="bn-tab">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Analyze</span>
+      </a>
+      <button class="bn-tab" type="button" onclick="document.getElementById('bnSheet').classList.add('open')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+        <span>More</span>
+      </button>
+    </div>
+  </nav>
+</div>
 
 <!-- "More" overflow sheet -->
 <div class="bn-sheet" id="bnSheet" onclick="if(event.target===this) this.classList.remove('open')">
@@ -426,114 +538,261 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   </div>
 </div>
 
+<!-- Chat overlay (opens when user asks something) -->
+<div class="chat-overlay" id="chatOverlay" onclick="if(event.target===this) closeChat()">
+  <div class="chat-card">
+    <div class="chat-head">
+      <div class="chat-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
+      <div class="chat-title">Ask the Analyst</div>
+      <button class="chat-close" onclick="closeChat()" aria-label="Close">×</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <form class="chat-form" onsubmit="event.preventDefault(); sendChatMessage()">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Ask a follow-up…">
+      <button type="submit" class="chat-send" aria-label="Send">
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
 <script>
-let page=1, minScore=0, filterCity='', filterState='', allDeals=[];
-const circ=2*Math.PI*19;
-
-async function boot(){
-  // Load feed immediately — don't wait for sidebar calls
-  loadFeed();
-  syncWC();
-
-  // Load sidebar info in background (non-blocking)
-  AuthAPI.me().then(({user}={})=>{
-    if(!user) return;
-    document.getElementById('sbAv').textContent=(user.name||user.email||'?')[0].toUpperCase();
-    document.getElementById('sbName').textContent=user.name||user.email;
-  }).catch(()=>{});
-
-  BillingAPI.getSubscription().then(sub=>{
-    if(!sub) return;
-    document.getElementById('sbPlan').textContent=(sub.plan||'starter').replace(/^./,c=>c.toUpperCase());
-    const used=sub.reportsUsed||0, lim=sub.reportLimit||10;
-    document.getElementById('sbUsage').textContent=`${used}/${lim}`;
-    document.getElementById('sbFill').style.width=Math.min(100,used/lim*100)+'%';
-  }).catch(()=>{});
-
-  WatchlistAPI.loadIds().then(()=>syncWC()).catch(()=>{});
-}
-
-// ── LENSES — AI-curated views replacing traditional filter chrome ──────
-// Each lens is the analyst's framing: a filter+sort with a one-line voice subtitle.
-const LENSES = [
-  {
-    id:'curated', label:'Picked for you',
-    iconSvg:'<path d="M12 2 L13.6 9.4 L21 11 L13.6 12.6 L12 20 L10.4 12.6 L3 11 L10.4 9.4 Z"/>',
-    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 10),
-    voice: (n, deals) => n === 0 ? `Nothing exceptional today. Try Move fast or come back tomorrow.`
-      : `Showing the <b>${n}</b> deal${n!==1?'s':''} I'd open first.`
-  },
-  {
-    id:'standouts', label:'Standouts',
-    iconSvg:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
-    apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
-    voice: (n) => n === 0 ? `No Strong Buys in your markets right now. Hold the line.`
-      : `<b>${n}</b> Strong Buy${n!==1?'s':''} — the cream of the feed.`
-  },
-  {
-    id:'earners', label:'Top earners',
-    iconSvg:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
-    apply: deals => [...deals].sort((a,b) => (b.reportData?.financials?.monthlyCashFlow||0) - (a.reportData?.financials?.monthlyCashFlow||0)),
-    voice: (n, deals) => {
-      const top = deals[0]; const cf = top?.reportData?.financials?.monthlyCashFlow;
-      return cf ? `Sorted by monthly cash flow. <b>${top.address?.split(',')[0]}</b> leads at <b>$${Math.round(cf).toLocaleString()}/mo</b>.`
-        : `Sorted by monthly cash flow.`;
-    }
-  },
-  {
-    id:'fresh', label:'Move fast',
-    iconSvg:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-    apply: deals => deals.filter(d => (d.rankScore||0)>=65 && (d.daysOnMarket||999)<=14),
-    voice: (n) => n === 0 ? `Nothing fresh and worth the urgency right now.`
-      : `<b>${n}</b> listing${n!==1?'s':''} fresh under two weeks and scoring well — first-mover window.`
-  },
-  {
-    id:'negotiation', label:'Negotiation plays',
-    iconSvg:'<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
-    apply: deals => deals.filter(d => (d.rankScore||0)>=50 && (d.daysOnMarket||0)>=60),
-    voice: (n) => n === 0 ? `No tired sellers today. Patience.`
-      : `<b>${n}</b> seller${n!==1?'s have':' has'} sat 60+ days — real room on price.`
-  },
-];
+const circ = 2*Math.PI*19;
+let allDeals = [];
 let activeLens = 'curated';
 let currentLensDeals = [];
 
-function renderLensRow(){
-  const row = document.getElementById('lensRow');
-  if(!row || !allDeals) return;
-  row.innerHTML = LENSES.map(l => {
-    const count = l.apply(allDeals).length;
-    return `<button class="lens${l.id===activeLens?' on':''}" data-lens="${l.id}" onclick="applyLens('${l.id}')">
-      <svg viewBox="0 0 24 24">${l.iconSvg}</svg>
-      <span>${l.label}</span>
-      <span class="lens-count">${count}</span>
-    </button>`;
-  }).join('');
+// ── LENSES ────────────────────────────────────────────────────────────────
+const LENSES = [
+  { id:'curated',     label:'the picks I\'d open first',
+    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 5),
+    sectionEyebrow:'Today\'s picks', sectionTitle:'What I\'d open first' },
+  { id:'standouts',   label:'the standouts',
+    apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
+    sectionEyebrow:'Standouts', sectionTitle:'Strong Buys only' },
+  { id:'fresh',       label:'the ones to move fast on',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=65 && (d.daysOnMarket||999)<=14),
+    sectionEyebrow:'Move fast', sectionTitle:'Fresh listings worth chasing' },
+  { id:'negotiation', label:'where sellers are negotiating',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=50 && (d.daysOnMarket||0)>=60),
+    sectionEyebrow:'Negotiation plays', sectionTitle:'Sellers who have waited' },
+  { id:'earners',     label:'the top earners',
+    apply: deals => [...deals].sort((a,b) => (b.reportData?.financials?.monthlyCashFlow||0) - (a.reportData?.financials?.monthlyCashFlow||0)),
+    sectionEyebrow:'Top earners', sectionTitle:'Sorted by monthly cash flow' },
+];
+
+// ── BOOT ──────────────────────────────────────────────────────────────────
+async function boot(){
+  loadFeed();
+  syncWatchBadge();
+  AuthAPI.me().then(({user}={}) => {
+    if(!user) return;
+    document.getElementById('rhAvatar').textContent = (user.name || user.email || '?')[0].toUpperCase();
+    // Personalize the greeting
+    const first = (user.name || '').split(' ')[0];
+    if(first) personalizedFirstName = first;
+    renderBriefHead();
+  }).catch(()=>{});
+  WatchlistAPI.loadIds().then(syncWatchBadge).catch(()=>{});
 }
 
+let personalizedFirstName = '';
+
+async function loadFeed(){
+  const list = document.getElementById('dealList');
+  list.innerHTML = renderSkeletons(3);
+  try {
+    const data = await FeedAPI.list({ page:1, limit:30, sort:'score' });
+    allDeals = data.deals || [];
+    renderBriefHead();
+    renderBriefBody();
+    renderFollowups();
+    applyLens(activeLens);
+  } catch(e) {
+    console.error('loadFeed error:', e);
+    list.innerHTML = `<div class="empty"><div class="empty-t">Could not load deals</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="loadFeed()">Try again</button></div>`;
+  }
+}
+
+function renderSkeletons(n){
+  return Array.from({length:n}).map(()=>`<div class="skel-card"><div class="skel" style="width:48px;height:48px;border-radius:50%"></div><div style="flex:1;display:flex;flex-direction:column;gap:7px"><div class="skel" style="height:13px;width:55%"></div><div class="skel" style="height:11px;width:38%"></div><div style="display:flex;gap:5px"><div class="skel" style="height:18px;width:62px"></div><div class="skel" style="height:18px;width:54px"></div></div></div></div>`).join('');
+}
+
+// ── BRIEF HEAD (greeting, dateline, live timestamp) ─────────────────────
+function renderBriefHead(){
+  const section = document.getElementById('briefSection');
+  if(section) section.style.display = '';
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 5 ? 'Late night' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Evening';
+  const tod      = hour < 12 ? 'morning'     : hour < 17 ? 'afternoon'     : 'evening';
+  const day      = now.toLocaleDateString('en-US', { weekday: 'long' });
+
+  const greetText = personalizedFirstName ? `${greeting}, ${personalizedFirstName}.` : `${greeting}.`;
+  document.getElementById('briefGreeting').textContent = greetText;
+  document.getElementById('briefDay').textContent = day + ' ' + tod;
+
+  // "Live · Xh ago" — relative to nightly 2am refresh
+  const lastRun = new Date(now);
+  if(hour < 2) lastRun.setDate(lastRun.getDate() - 1);
+  lastRun.setHours(2, 0, 0, 0);
+  const hoursAgo = Math.max(1, Math.round((now - lastRun) / 3600000));
+  document.getElementById('briefLive').textContent = hoursAgo < 2 ? 'Live · just now' : `Live · ${hoursAgo}h ago`;
+}
+
+// ── BRIEF BODY (the analyst's voice) ────────────────────────────────────
+function renderBriefBody(){
+  if(!allDeals.length) return;
+  const strongCount = allDeals.filter(d => (d.rankScore||0) >= 75).length;
+  const buyCount    = allDeals.filter(d => (d.rankScore||0) >= 60).length;
+  const freshCount  = allDeals.filter(d => (d.daysOnMarket||999) <= 7).length;
+  const motivatedCount = allDeals.filter(d => (d.daysOnMarket||0) >= 60).length;
+
+  const cityCounts = {};
+  allDeals.forEach(d => { if(d.city) cityCounts[d.city] = (cityCounts[d.city]||0)+1; });
+  const cities = Object.entries(cityCounts).sort((a,b)=>b[1]-a[1]).map(c=>c[0]);
+  const cityCtx = cities.length === 0 ? 'your markets'
+                : cities.length === 1 ? cities[0]
+                : cities.length === 2 ? cities.join(' and ')
+                : 'your markets';
+
+  const top = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
+  const topAddr = top?.address?.split(',')[0] || 'one of the top-scored deals';
+  const topCity = top?.city || cityCtx;
+  const fin = top?.reportData?.financials || {};
+
+  let body = '';
+  if(strongCount > 0){
+    body = `I'm watching <b>${strongCount} Strong Buy${strongCount>1?'s':''}</b> in ${cityCtx} right now. `;
+    body += `The standout's <b>${topAddr}</b> in ${topCity}`;
+    if(fin.cashOnCashReturn != null && fin.monthlyCashFlow > 0){
+      body += ` — <b>${fin.cashOnCashReturn.toFixed(1)}%</b> cash-on-cash, <b>$${Math.round(fin.monthlyCashFlow).toLocaleString()}/mo</b> coming in. `;
+    } else { body += `. `; }
+    if(freshCount > 0)     body += `${freshCount === 1 ? "There's one fresh listing" : `${freshCount} fresh listings`} this week worth a quick look. `;
+    if(motivatedCount > 0) body += `${motivatedCount} seller${motivatedCount>1?'s have':' has'} sat 60+ days — real pricing leverage if you act on it.`;
+  } else if(buyCount > 0){
+    body = `<b>${buyCount}</b> deal${buyCount>1?'s scoring':' scoring'} Buy in ${cityCtx} — solid but nothing exceptional today. `;
+    body += `I'd open the top one or two before they go stale. `;
+    if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} on the board.`;
+  } else {
+    body = `Thin pickings in ${cityCtx} today — <b>${allDeals.length}</b> deal${allDeals.length>1?'s':''} but none scoring strong. `;
+    body += `Days like this favor patient buyers. Fresh inventory after the nightly refresh.`;
+  }
+  document.getElementById('briefBody').innerHTML = body;
+}
+
+// ── FOLLOW-UPS (inline conversational lens picks) ───────────────────────
+function renderFollowups(){
+  const el = document.getElementById('followups');
+  if(!el) return;
+  const inner = LENSES.filter(l => l.id !== activeLens).map(l => {
+    const count = l.apply(allDeals).length;
+    return `<button class="followup" type="button" onclick="applyLens('${l.id}')">${l.label}${count ? `<span class="followup-count">${count}</span>` : ''}</button>`;
+  }).join('');
+  el.innerHTML = `<span class="followups-prefix">Want me to show you</span>${inner}`;
+}
+
+// ── LENS APPLICATION ────────────────────────────────────────────────────
 function applyLens(id){
   const lens = LENSES.find(l => l.id === id);
   if(!lens) return;
   activeLens = id;
-  document.querySelectorAll('.lens').forEach(b => b.classList.toggle('on', b.dataset.lens === id));
   currentLensDeals = lens.apply(allDeals);
-  const voiceEl = document.getElementById('lensVoice');
-  if(voiceEl) voiceEl.innerHTML = lens.voice(currentLensDeals.length, currentLensDeals);
-  renderDeals(currentLensDeals, true);
+  // Update section header
+  const picksHead = document.getElementById('picksHead');
+  if(picksHead) picksHead.style.display = currentLensDeals.length ? 'flex' : 'none';
+  document.getElementById('picksEyebrow').textContent = lens.sectionEyebrow;
+  document.getElementById('picksTitle').textContent = lens.sectionTitle;
+  document.getElementById('picksCount').textContent = currentLensDeals.length
+    ? `${Math.min(currentLensDeals.length, 5)}${currentLensDeals.length > 5 ? ' of ' + currentLensDeals.length : ''}`
+    : '';
+  renderDeals(currentLensDeals);
+  renderFollowups(); // re-render so the active lens drops out of the follow-up list
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// One-line analyst voice per deal card. Returns '' for middle-of-the-road deals
-// so the feed isn't dotted with identical italic lines — the rule is: only speak
-// when there's something the badges and score ring don't already say.
+// ── DEAL RENDER ─────────────────────────────────────────────────────────
+function renderDeals(deals){
+  const list = document.getElementById('dealList');
+  const more = document.getElementById('moreSection');
+  const moreList = document.getElementById('compactList');
+  if(!deals.length){
+    list.innerHTML = `<div class="empty"><div class="empty-t">Nothing matches that view right now</div><div class="empty-s">Try a different angle, or come back after the nightly refresh.</div><button class="empty-btn" onclick="applyLens('curated')">See today's picks</button></div>`;
+    more.style.display = 'none';
+    return;
+  }
+  const TOP = 5;
+  const top = deals.slice(0, TOP);
+  const rest = deals.slice(TOP);
+  list.innerHTML = top.map((d, i) => richCard(d, i)).join('');
+  if(rest.length){
+    moreList.innerHTML = rest.map(d => compactRow(d)).join('');
+    document.getElementById('moreCount').textContent = rest.length;
+    more.style.display = '';
+  } else {
+    more.style.display = 'none';
+  }
+}
+
+function richCard(d, i){
+  const score = d.rankScore || 0;
+  const fin = (d.reportData||{}).financials || {};
+  const sig = scoreSignal(score), cl = scoreClass(score), c = scoreColor(score);
+  const dash = (score/100) * circ;
+  const on = WatchlistAPI.has(d.id);
+  const pct = getPercentile(score, allDeals);
+  const take = dealTake(d, fin, score);
+  const isPick = i < 3 && score >= 60;
+  const pickBadge = isPick
+    ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
+    : '';
+  return `<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
+    <div class="ring"><svg viewBox="0 0 42 42"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
+    <div class="dbody">
+      <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
+      <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
+      <div class="dkpis">
+        ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
+        ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
+        ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}" data-metric="dscr">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
+        ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
+      </div>
+      ${take ? `<div class="dtake">${take}</div>` : ''}
+    </div>
+    <div class="dright">
+      <span class="sbadge ${cl}">${sig}</span>
+      <div class="dprice">${fmtPrice(d.askingPrice)}</div>
+      ${pct?`<div class="ddom" data-pct="1" style="color:var(--forest);font-weight:500">${pct}</div>`:''}
+      ${d.daysOnMarket!=null?`<div class="ddom">${d.daysOnMarket<=2?'<span class="fresh-dot"></span>':d.daysOnMarket<=5?'<span class="fresh-dot hot"></span>':''}${d.daysOnMarket}d listed</div>`:''}
+      <button class="wbtn ${on?'on':''}" onclick="toggleW('${d.id}',event)" aria-label="Save"><svg viewBox="0 0 24 24" fill="${on?c:'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+    </div>
+  </div>`;
+}
+
+function compactRow(d){
+  const score = d.rankScore || 0;
+  const fin = (d.reportData||{}).financials || {};
+  const cl = scoreClass(score), c = scoreColor(score);
+  const cf = fin.monthlyCashFlow;
+  return `<div class="compact ${cl}" onclick="openDeal('${d.id}',event)">
+    <div class="c-ring" style="border-color:${c};color:${c}">${score||'—'}</div>
+    <div class="c-body">
+      <div class="c-addr">${d.address||'Unknown'}</div>
+      <div class="c-meta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units</div>
+    </div>
+    <div class="c-right">
+      ${cf!=null?`<div class="c-cf ${cf>=0?'g':'r'}">${cf>=0?'+':'−'}$${Math.round(Math.abs(cf)).toLocaleString()}/mo</div>`:''}
+      <div class="c-price">${fmtPrice(d.askingPrice)}</div>
+    </div>
+  </div>`;
+}
+
 function dealTake(d, fin, score){
   const cf  = fin.monthlyCashFlow;
   const dscr= fin.dscr;
   const coc = fin.cashOnCashReturn;
   const dom = d.daysOnMarket;
-
-  // Relative position across the current feed — picks up "top earner" / "top scored"
-  // language that no individual badge can express
-  const universe = (typeof allDeals !== 'undefined' && allDeals) ? allDeals : [];
+  const universe = currentLensDeals.length ? currentLensDeals : allDeals;
   let isTopCf = false, isTopScore = false;
   if(universe.length > 1){
     const cfs = universe.map(x => x.reportData?.financials?.monthlyCashFlow).filter(v => v != null);
@@ -544,331 +803,174 @@ function dealTake(d, fin, score){
     const maxScore = Math.max(...universe.map(x => x.rankScore || 0));
     isTopScore = score === maxScore && score >= 75;
   }
-
-  // Concerns first — always loud
   if(cf != null && cf < -200) return `Loses $${Math.round(Math.abs(cf)).toLocaleString()}/mo — pass unless seller cuts hard`;
   if(cf != null && cf < 0)    return `Slight monthly loss — only pencils at lower rates`;
   if(dscr != null && dscr < 1.0) return `DSCR of ${dscr.toFixed(2)} — most lenders won't fund this`;
   if(dscr != null && dscr < 1.15 && score < 70) return `Tight DSCR at ${dscr.toFixed(2)} — confirm financing first`;
-
-  // Relative standouts in this feed
-  if(isTopCf && isTopScore) return `Top score and top cash flow on this page`;
-  if(isTopCf)               return `Highest cash flow in your feed`;
+  if(isTopCf && isTopScore) return `Top score and top cash flow in this view`;
+  if(isTopCf)               return `Highest cash flow you'll see today`;
   if(isTopScore)            return `Highest-scored deal in your markets right now`;
-
-  // Time-based — uses specific numbers, distinct from the DOM line below
   if(dom != null && dom >= 90 && score >= 60) return `Sat ${dom}d — seller is likely tired`;
   if(dom != null && dom >= 60 && score >= 60) return `Stale at ${dom}d, real pricing leverage`;
   if(dom != null && dom <= 3  && score >= 70) return `Listed ${dom}d ago — first-mover window`;
   if(dom != null && dom <= 7  && score >= 75) return `Fresh listing, strong fundamentals`;
-
-  // Extremes — say something when score is unusually high or low.
-  // Vary the phrasing based on which dimension is most distinctive so
-  // adjacent cards with similar profiles don't echo each other.
   if(score >= 82 && coc != null && coc >= 15) return `${coc.toFixed(1)}% return is rare territory`;
   if(score >= 82 && coc != null && coc >= 12) return `${coc.toFixed(1)}% cash-on-cash, clean DSCR`;
-  if(score >= 82 && cf != null && cf > 1800)  return `Earns $${Math.round(cf).toLocaleString()}/mo — top-tier deal`;
+  if(score >= 82 && cf != null && cf > 1800)  return `Earns $${Math.round(cf).toLocaleString()}/mo — top tier`;
   if(score >= 82)                              return `${score}/100 — top-tier scoring`;
-  if(score < 45)                               return `${score}/100 — below investment thresholds`;
-  if(score < 60 && dom != null && dom >= 60)   return `Weak deal sitting ${dom}d — sellers will eventually fold`;
+  if(score < 45)                               return `${score}/100 — below thresholds`;
+  if(score < 60 && dom != null && dom >= 60)   return `Weak deal sitting ${dom}d — seller will fold eventually`;
   if(score < 60)                               return `Marginal — only works with material negotiation`;
-
-  // Middle-of-the-road — let the badges and signal carry the load
   return '';
 }
 
-// Analyst's Brief — editorial summary across the loaded feed (first-person voice)
-function renderAnalystBrief(deals){
-  const section = document.getElementById('anaBriefSection');
-  if(!section || !deals || !deals.length) return;
-  section.style.display = '';
-
-  const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Evening';
-  const tod      = hour < 12 ? 'morning'      : hour < 17 ? 'afternoon'      : 'evening';
-
-  // Day-of-week + time-of-day in the dateline
-  const dayEl = document.getElementById('anaBriefDay');
-  if(dayEl) dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' }) + ' ' + tod;
-
-  // "Live · Updated X ago" relative timestamp (sells a sense of the brief being a living document)
-  const liveEl = document.getElementById('anaBriefLive');
-  if(liveEl){
-    const lastRun = new Date(now);
-    if(hour < 2) lastRun.setDate(lastRun.getDate() - 1);
-    lastRun.setHours(2, 0, 0, 0);
-    const hoursAgo = Math.max(1, Math.round((now - lastRun) / 3600000));
-    liveEl.textContent = hoursAgo < 2 ? 'Live · just now' : `Live · ${hoursAgo}h ago`;
-  }
-
-  // Stats over the loaded feed
-  const strongCount    = deals.filter(d => (d.rankScore || 0) >= 75).length;
-  const buyCount       = deals.filter(d => (d.rankScore || 0) >= 60).length;
-  const freshCount     = deals.filter(d => (d.daysOnMarket || 999) <= 7).length;
-  const motivatedCount = deals.filter(d => (d.daysOnMarket || 0) >= 60).length;
-
-  // City context — collapse to a readable phrase
-  const cityCounts = {};
-  deals.forEach(d => { if(d.city) cityCounts[d.city] = (cityCounts[d.city]||0)+1; });
-  const sortedCities = Object.entries(cityCounts).sort((a,b)=>b[1]-a[1]).map(c=>c[0]);
-  const cityCtx = sortedCities.length === 0 ? 'your markets'
-                : sortedCities.length === 1 ? sortedCities[0]
-                : sortedCities.length === 2 ? sortedCities.join(' and ')
-                : 'your markets';
-
-  // Picks — top 1-3 by score
-  const picks = [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 3);
-  const top = picks[0];
-  const topShortAddr = top?.address?.split(',')[0] || 'one of your top-scored deals';
-  const topCity = top?.city || cityCtx;
-  const topFin = top?.reportData?.financials || {};
-
-  // Compose the body in first-person voice
-  let body = '';
-  if(strongCount > 0){
-    body = `${greeting}. I'm watching <b>${strongCount} Strong Buy${strongCount>1?'s':''}</b> in ${cityCtx} right now. `;
-    body += `The standout's <b>${topShortAddr}</b> in ${topCity}`;
-    if(topFin.cashOnCashReturn != null && topFin.monthlyCashFlow > 0){
-      body += ` — <b>${topFin.cashOnCashReturn.toFixed(1)}%</b> cash-on-cash, <b>$${Math.round(topFin.monthlyCashFlow).toLocaleString()}/mo</b> coming in. `;
-    } else if(top?.rankScore) {
-      body += ` — scoring <b>${top.rankScore}/100</b>. `;
-    } else { body += '. '; }
-    if(freshCount > 0)      body += `${freshCount === 1 ? "There's one fresh listing" : `${freshCount} fresh listings`} this week worth a quick look. `;
-    if(motivatedCount > 0)  body += `${motivatedCount} seller${motivatedCount>1?'s have':' has'} sat 60+ days — that's real pricing leverage if you act on it.`;
-  } else if(buyCount > 0){
-    body = `${greeting}. <b>${buyCount}</b> deal${buyCount>1?'s scoring':' scoring'} Buy in ${cityCtx} — solid but nothing exceptional today. `;
-    body += `I'd look at the top one or two before they go stale. `;
-    if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} on the board if you want negotiation leverage.`;
-  } else {
-    body = `${greeting}. Thin pickings in ${cityCtx} today — <b>${deals.length}</b> deal${deals.length>1?'s':''} but none scoring strong. `;
-    body += `Days like this favor patient buyers. I'll have fresh inventory after the nightly refresh.`;
-  }
-
-  // First-load type-out on the leading clause (rest is instant) — sells the "AI is generating this" feel
-  const bodyEl = document.getElementById('anaBriefBody');
-  const briefTypedKey = 'rr_brief_typed';
-  if(bodyEl){
-    if(!sessionStorage.getItem(briefTypedKey)){
-      sessionStorage.setItem(briefTypedKey, '1');
-      typeOutLead(bodyEl, body, 22);
-    } else {
-      bodyEl.innerHTML = body;
-    }
-  }
-
-  // Picks carousel
-  const picksEl = document.getElementById('anaBriefPicks');
-  if(picksEl){
-    picksEl.innerHTML = picks.map(p => {
-      const fin = p.reportData?.financials || {};
-      const cf = fin.monthlyCashFlow;
-      const sig = scoreSignal(p.rankScore || 0);
-      const cfHtml = cf != null
-        ? `<div class="ana-brief-pick-cf${cf<0?' r':''}">${cf>=0?'+':'−'}$${Math.round(Math.abs(cf)).toLocaleString()}/mo</div>`
-        : '';
-      return `<div class="ana-brief-pick" onclick="openDeal('${p.id}',event)">
-        <div class="ana-brief-pick-head">
-          <div class="ana-brief-pick-score">${p.rankScore || '—'}</div>
-          <div class="ana-brief-pick-sig">${sig}</div>
-        </div>
-        <div class="ana-brief-pick-addr">${(p.address || 'Unknown').split(',')[0]}</div>
-        <div class="ana-brief-pick-meta">${[p.city, p.state].filter(Boolean).join(', ')} · ${p.units || '?'} units${p.daysOnMarket != null ? ' · ' + p.daysOnMarket + 'd' : ''}</div>
-        ${cfHtml}
-      </div>`;
-    }).join('');
-  }
-}
-
-function setHTML(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
-
-// Type out HTML content character-by-character up to the end of the first sentence,
-// then reveal the rest instantly. Tags are emitted atomically so markup isn't visible mid-type.
-function typeOutLead(el, html, speedMs){
-  // Tokenize: HTML tags are single tokens; characters in text are individual tokens
-  const tokens = [];
-  let i = 0;
-  while(i < html.length){
-    if(html[i] === '<'){
-      const j = html.indexOf('>', i);
-      tokens.push(html.slice(i, j === -1 ? html.length : j+1));
-      i = (j === -1) ? html.length : j+1;
-    } else { tokens.push(html[i]); i++; }
-  }
-  // Find the end-of-first-sentence token index (after '.' '!' or '?')
-  let breakIdx = tokens.length;
-  for(let k = 0; k < tokens.length; k++){
-    if(tokens[k] === '.' || tokens[k] === '!' || tokens[k] === '?'){ breakIdx = k + 1; break; }
-  }
-  el.innerHTML = '';
-  let cursor = 0;
-  const tick = () => {
-    if(cursor >= tokens.length) return;
-    if(cursor >= breakIdx){ el.innerHTML = html; return; } // reveal the rest instantly
-    el.innerHTML += tokens[cursor++];
-    // Tags are emitted with no delay; only visible characters slow down
-    const last = tokens[cursor-1];
-    if(last[0] === '<') tick();
-    else setTimeout(tick, speedMs);
-  };
-  tick();
-}
-
-async function loadFeed(reset=true){
-  if(reset){page=1;allDeals=[];}
-  const list=document.getElementById('dealList');
-  if(reset) list.innerHTML=skels(6);
-  const sort=(document.getElementById('sortSel')||{}).value||'score';
-  try{
-    const data = await FeedAPI.list({page,limit:20,minScore,...(filterCity&&{city:filterCity,state:filterState}),sort});
-    const deals = data.deals || [];
-    allDeals = reset ? deals : [...allDeals, ...deals];
-    // Render lens row first so counts are based on the full feed,
-    // then apply the active lens to filter/sort for the visible deals.
-    renderLensRow();
-    applyLens(activeLens);
-
-    // Track visit timestamp for "new since" divider in the feed list
-    const prevVisit = localStorage.getItem('rr_last_visit');
-    if(prevVisit) localStorage.setItem('rr_last_visit_prev', prevVisit);
-    localStorage.setItem('rr_last_visit', new Date().toISOString());
-
-    const _sb=document.getElementById('sbBadge'); if(_sb) _sb.textContent=allDeals.length;
-    const _ts=document.getElementById('topSub');
-    if(_ts){
-      const now=new Date();
-      const hour=now.getHours();
-      const lastRun=new Date(now);
-      if(hour<2) lastRun.setDate(lastRun.getDate()-1);
-      lastRun.setHours(2,0,0,0);
-      const hoursAgo=Math.round((now-lastRun)/3600000);
-      const timeStr=hoursAgo<1?'just now':hoursAgo===1?'1 hour ago':hoursAgo+' hours ago';
-      _ts.textContent=allDeals.length+' ranked deal'+(allDeals.length!==1?'s':'')+' · Updated '+timeStr;
-    }
-    const lmw=document.getElementById('loadMoreWrap'); if(lmw) lmw.style.display=deals.length===20?'flex':'none';
-
-    // Analyst's brief — runs after deals are populated so it can synthesize over the feed
-    renderAnalystBrief(allDeals);
-  } catch(e) {
-    console.error('loadFeed error:', e);
-    if(reset) list.innerHTML = '<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">Could not load deals</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="loadFeed()">Try Again</button></div>';
-  }
-}
-function renderDeals(deals, reset=true){
-  const list=document.getElementById('dealList');
-  if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">No deals match</div><div class="empty-s">Try removing filters or check back tomorrow after the nightly refresh.</div><button class="empty-btn" onclick="resetFilters()">Clear Filters</button></div>`;return;}
-  // Track last visit for "new since" divider
-  const lastVisit = localStorage.getItem('rr_last_visit');
-  const lastVisitDate = lastVisit ? new Date(lastVisit) : null;
-  const newCount = lastVisitDate
-    ? deals.filter(d => new Date(d.createdAt) > lastVisitDate).length
-    : 0;
-  localStorage.setItem('rr_last_visit', new Date().toISOString());
-
-  const TOP_N = 5; // top deals get rich treatment; everything else is compact
-  let dividerInjected = false;
-  list.innerHTML=deals.map((d,i)=>{
-    const isNew = lastVisitDate && new Date(d.createdAt) > lastVisitDate;
-    const isFirstOld = !dividerInjected && !isNew && newCount > 0 && i > 0;
-    if(isFirstOld) dividerInjected = true;
-    let dividers = '';
-    if(isFirstOld){
-      dividers += `<div class="new-divider"><div class="new-divider-line"></div><div class="new-divider-label">↑ ${newCount} new since your last visit</div><div class="new-divider-line right"></div></div>`;
-    }
-    // After the top N rich cards, switch to compact rows with a divider
-    if(i === TOP_N && deals.length > TOP_N){
-      dividers += `<div class="feed-divider"><div class="feed-divider-line"></div><div class="feed-divider-label">More opportunities · ${deals.length - TOP_N}</div><div class="feed-divider-line"></div></div>`;
-    }
-    return dividers + dealCardHtml(d, i, i >= TOP_N);
-  }).join('');
-}
-
-function getPercentile(score, allDeals){
-  if(!allDeals || !allDeals.length) return null;
-  const below = allDeals.filter(d => (d.rankScore||0) < score).length;
-  const pct = Math.round((below / allDeals.length) * 100);
+function getPercentile(score, deals){
+  if(!deals || !deals.length) return null;
+  const below = deals.filter(d => (d.rankScore||0) < score).length;
+  const pct = Math.round((below / deals.length) * 100);
   if(pct >= 90) return 'Top 10%';
   if(pct >= 80) return 'Top 20%';
   if(pct >= 70) return 'Top 30%';
-  return null; // only show for top 30%
+  return null;
 }
 
-function dealCardHtml(d,i,compact=false){
-    const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
-    const sig=scoreSignal(score), cl=scoreClass(score), c=scoreColor(score);
-    const dash=(score/100)*circ;
-    const on=WatchlistAPI.has(d.id);
-    const pct=getPercentile(score,allDeals);
-    const take=dealTake(d,fin,score);
-    const isPick = !compact && i < 3 && score >= 60; // Top 3 rich cards with decent scores get the AI pick badge
-    const pickBadge = isPick
-      ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
-      : '';
-    return`<div class="deal ${cl}${compact?' compact':''}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
-      <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
-      <div class="dbody">
-        <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
-        <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
-        <div class="dkpis">
-          ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
-          ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
-          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}" data-metric="dscr">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
-          ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
-        </div>
-        ${take ? `<div class="dtake">${take}</div>` : ''}
-      </div>
-      <div class="dright">
-        <span class="sbadge ${cl}">${sig}</span>
-        <div class="dprice">${fmtPrice(d.askingPrice)}</div>
-        ${pct?`<div class="ddom" data-pct="1" style="color:var(--forest);font-weight:500">${pct}</div>`:''}
-        ${d.daysOnMarket!=null?`<div class="ddom">${d.daysOnMarket<=2?'<span class="fresh-dot"></span>':d.daysOnMarket<=5?'<span class="fresh-dot hot"></span>':''}${d.daysOnMarket}d listed</div>`:''}
-        <button class="wbtn ${on?'on':''}" onclick="toggleW('${d.id}',event)"><svg viewBox="0 0 24 24" fill="${on?c:'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
-      </div>
-    </div>`;
-}
-
-function openDeal(id,e){
-  if(e.target.closest('.wbtn')) return;
-  const deal = allDeals.find(d=>d.id===id);
+function openDeal(id, e){
+  if(e && e.target.closest('.wbtn')) return;
+  const deal = allDeals.find(d => d.id === id);
   if(deal) sessionStorage.setItem('rr_deal_'+id, JSON.stringify(deal));
-  location.href=`roofrank-deal-detail.html?fid=${id}`;
+  location.href = `roofrank-deal-detail.html?fid=${id}`;
 }
-async function toggleW(id,e){
+
+async function toggleW(id, e){
   e.stopPropagation();
   const btn = e.currentTarget;
   const on = await WatchlistAPI.toggle(id);
-  if(btn) {
+  if(btn){
     btn.className = 'wbtn' + (on ? ' on' : '');
     const svg = btn.querySelector('svg');
     if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
   }
-  syncWC();
-}
-function syncWC(){
-  const n=WatchlistAPI.count();
-  const b=document.getElementById('wc'); if(b){b.textContent=n;b.style.display=n?'':'none';}
-  const m=document.getElementById('bnWatchBadge'); if(m){m.textContent=n;m.style.display=n?'':'none';}
+  syncWatchBadge();
 }
 
-// "Clear filters" in empty state now resets to the default lens
-function resetFilters(){ activeLens = 'curated'; applyLens('curated'); }
-async function loadMore(){page++;await loadFeed(false);}
-async function handleRefresh(btn){
-  btn.disabled=true;
-  btn.innerHTML='<span style="display:inline-block;width:12px;height:12px;border:2px solid var(--border-2);border-top-color:var(--forest);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px"></span>Refreshing…';
-  try{
-    await FeedAPI.triggerRefresh();
-    btn.disabled=false;btn.textContent='↻ Refresh';
-    document.querySelector('.tb-sub').textContent='38 ranked deals · Updated just now';
-    showToast('✓ Feed refresh queued — new deals appear within minutes');
-  }catch{
-    btn.disabled=false;btn.textContent='↻ Refresh';
-    showToast('Could not trigger refresh.','error');
+function syncWatchBadge(){
+  const n = WatchlistAPI.count();
+  const m = document.getElementById('bnWatchBadge');
+  if(m){ m.textContent = n; m.style.display = n ? '' : 'none'; }
+}
+
+// ── ANALYST CHAT (overlay launched from the ask-bar) ──────────────────
+const chatMsgs = [];
+function openChatWithQuery(){
+  const input = document.getElementById('askInput');
+  const q = input.value.trim();
+  if(!q){ openChat(); return; }
+  input.value = '';
+  openChat();
+  document.getElementById('chatInput').value = q;
+  sendChatMessage();
+}
+function openChat(){
+  document.getElementById('chatOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('chatInput').focus(), 100);
+}
+function closeChat(){
+  document.getElementById('chatOverlay').classList.remove('open');
+}
+function addChatMsg(role, text, isLoading=false){
+  const wrap = document.getElementById('chatMsgs');
+  if(!wrap) return null;
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role + (isLoading ? ' loading' : '');
+  div.textContent = text;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+async function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  if(!input) return;
+  const message = input.value.trim();
+  if(!message) return;
+  input.value = '';
+  addChatMsg('user', message);
+  const loadingEl = addChatMsg('assistant', 'Analyzing…', true);
+  try {
+    const aiFetch = () => {
+      const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
+      return fetch(window.ROOFRANK_API_URL + '/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
+        body: JSON.stringify({ message, history: chatMsgs })
+      });
+    };
+    let res = await aiFetch();
+    if(res.status === 401 && typeof Auth !== 'undefined' && Auth.getRefresh && Auth.getRefresh()){
+      try {
+        const refreshed = await apiFetch('/auth/refresh', { method:'POST', body: JSON.stringify({ refreshToken: Auth.getRefresh() }) }, false);
+        if(refreshed?.accessToken){ Auth.setToken(refreshed.accessToken); res = await aiFetch(); }
+      } catch(e){}
+    }
+    if(!res.ok){
+      loadingEl.textContent = `Sorry, the AI is unavailable (status ${res.status}).`;
+      loadingEl.classList.remove('loading');
+      return;
+    }
+    let fullText = '';
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    if(ct.includes('text/event-stream')){
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let firstChunk = true, buffer = '';
+      while(true){
+        const { done, value } = await reader.read();
+        if(done) break;
+        buffer += decoder.decode(value, { stream:true });
+        let nl;
+        while((nl = buffer.indexOf('\n')) !== -1){
+          const line = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 1);
+          if(line.startsWith('data: ')){
+            const data = line.slice(6).trim();
+            if(data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              const piece = parsed.text || parsed.delta || parsed.content || '';
+              if(piece){
+                if(firstChunk){ loadingEl.textContent=''; loadingEl.classList.remove('loading'); firstChunk=false; }
+                fullText += piece;
+                loadingEl.textContent = fullText;
+              }
+            } catch(e){}
+          }
+        }
+      }
+    } else {
+      const raw = await res.text();
+      if(ct.includes('application/json')){
+        try {
+          const j = JSON.parse(raw);
+          fullText = j.response || j.message || j.text || j.content || j.answer || j.reply || raw;
+        } catch(e){ fullText = raw; }
+      } else fullText = raw;
+      loadingEl.textContent = fullText;
+      loadingEl.classList.remove('loading');
+    }
+    if(!fullText){
+      loadingEl.textContent = 'No response received. Try again.';
+      loadingEl.classList.remove('loading');
+    } else {
+      chatMsgs.push({ role:'user', content: message });
+      chatMsgs.push({ role:'assistant', content: fullText });
+      if(chatMsgs.length > 10) chatMsgs.splice(0, chatMsgs.length - 10);
+    }
+  } catch(e){
+    loadingEl.textContent = 'Something went wrong. Try again.';
+    loadingEl.classList.remove('loading');
   }
 }
-function skels(n){return Array.from({length:n}).map((_,i)=>`<div class="skel-card" style="opacity:${1-i*.1}"><div class="sk" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="sk" style="height:13px;width:52%"></div><div class="sk" style="height:10px;width:35%"></div><div style="display:flex;gap:5px"><div class="sk" style="height:18px;width:58px;border-radius:3px"></div><div class="sk" style="height:18px;width:52px;border-radius:3px"></div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><div class="sk" style="height:16px;width:62px;border-radius:3px"></div><div class="sk" style="height:12px;width:48px"></div></div></div>`).join('');}
 
-document.addEventListener("DOMContentLoaded", boot);
+document.addEventListener('DOMContentLoaded', boot);
 </script>
 </body>
 </html>
