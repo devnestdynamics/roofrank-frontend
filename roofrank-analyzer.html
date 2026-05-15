@@ -162,6 +162,54 @@ input[type=range]{width:100%;accent-color:var(--forest)}
   .ar-kpis{grid-template-columns:repeat(2,1fr)}
   .ar-top{flex-direction:column;text-align:center;gap:1rem}
 }
+
+/* ── SHARED TOP NAV + BOTTOM NAV (matches dashboard / analyst) ── */
+nav{background:initial;border:none;padding:0;height:auto;position:static}  /* override legacy .analyzer nav */
+.rh{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;background:rgba(247,244,239,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:90}
+.rh-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--ink)}
+.rh-logo svg{width:28px;height:28px;flex-shrink:0}
+.rh-logo span{font-family:var(--serif);font-size:1rem;font-weight:500}
+.rh-right{display:flex;align-items:center;gap:1rem}
+.rh-nav{display:flex;align-items:center;gap:1.25rem}
+.rh-nav a{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .15s}
+.rh-nav a.active{color:var(--forest)}
+.rh-nav a:hover{color:var(--ink)}
+.rh-nav-mark{width:16px;height:16px;flex-shrink:0;display:inline-block}
+.rh-nav-mark svg{width:100%;height:100%;display:block}
+.rh-add{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s;flex-shrink:0}
+.rh-add.active-add{box-shadow:0 0 0 3px var(--sage-dim)}
+.rh-add:hover{background:var(--forest-2)}
+.rh-add svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+.rh-pro{position:relative;display:inline-flex;align-items:center;gap:.32rem;padding:.3rem .65rem;border:1px solid var(--sage-border);background:var(--sage-dim);color:var(--forest);font-size:.66rem;font-weight:600;letter-spacing:.04em;border-radius:14px;cursor:default}
+.rh-pro svg{width:9px;height:9px;fill:currentColor}
+.rh-pro-pop{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;box-shadow:0 8px 28px rgba(28,31,28,.1);font-size:.76rem;color:var(--ink);min-width:260px;font-weight:400;letter-spacing:normal;display:none;z-index:120;text-align:left;line-height:1.5}
+.rh-pro:hover .rh-pro-pop,.rh-pro:focus-within .rh-pro-pop{display:block}
+.rh-pro-pop h4{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--forest);margin-bottom:.4rem}
+.rh-pro-pop ul{list-style:none;margin:0;padding:0}
+.rh-pro-pop li{padding:.18rem 0;color:var(--muted);font-size:.74rem;display:flex;align-items:flex-start;gap:.4rem}
+.rh-pro-pop li::before{content:'✦';color:var(--forest);font-size:.62rem;margin-top:2px;flex-shrink:0}
+.rh-avatar{width:32px;height:32px;border-radius:50%;background:var(--forest);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:500;cursor:pointer;border:none}
+
+/* bottom nav */
+.bnav{display:none;background:rgba(247,244,239,.97);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.45rem 0 calc(.55rem + env(safe-area-inset-bottom));position:fixed;bottom:0;left:0;right:0;z-index:75}
+.bnav-inner{display:grid;grid-template-columns:repeat(5,1fr);max-width:560px;margin:0 auto;align-items:center}
+.bn-tab{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--muted);text-decoration:none;font-family:var(--sans);font-size:.62rem;padding:.4rem .25rem;cursor:pointer}
+.bn-tab.active{color:var(--forest)}
+.bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bn-tab .bn-mark{width:22px;height:22px;display:block}
+.bn-tab .bn-mark svg{width:100%;height:100%;stroke:none;stroke-width:0;fill:currentColor}
+.bn-add-fab{background:var(--forest)!important;color:#fff!important;width:44px;height:44px;border-radius:50%;align-self:center;justify-self:center;margin-top:-4px;display:flex!important;align-items:center;justify-content:center;flex-direction:row!important;gap:0!important;box-shadow:0 4px 14px rgba(28,74,53,.25)}
+.bn-add-fab svg{width:20px;height:20px;stroke:#fff;stroke-width:2.6;fill:none;stroke-linecap:round}
+.bn-badge{font-size:.55rem;font-weight:700;background:var(--forest);color:#fff;border-radius:9px;padding:1px 5px;position:absolute;top:.2rem;left:50%;margin-left:6px}
+
+@media(max-width:860px){
+  .rh-nav,.rh-add{display:none}
+  .rh-pro{font-size:.6rem;padding:.25rem .5rem;border-radius:11px}
+  .rh-pro svg{width:8px;height:8px}
+  .rh-pro-pop{right:-40px;min-width:240px;max-width:calc(100vw - 32px)}
+  .bnav{display:block}
+  body{padding-bottom:75px}
+}
 </style>
 <script src="api.js"></script>
 <link rel="manifest" href="/manifest.json">
@@ -173,13 +221,43 @@ input[type=range]{width:100%;accent-color:var(--forest)}
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
 <body>
-<nav>
-  <div class="nav-left">
-    <button class="back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
-    <span style="color:var(--border-2);">/</span>
-    <span class="nav-brand">Add a deal</span>
+<!-- ── SHARED TOP NAV ─────────────────────────────────────── -->
+<header class="rh">
+  <a href="roofrank-landing.html" class="rh-logo" title="RoofRank">
+    <svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span>RoofRank</span>
+  </a>
+  <div class="rh-right">
+    <nav class="rh-nav">
+      <a href="roofrank-dashboard.html">
+        <span class="rh-nav-mark"><svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="currentColor"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg></span>
+        Today
+      </a>
+      <a href="roofrank-watchlist.html">Watching <span id="navWatchBadge" style="display:none;font-size:.65rem;font-weight:600;color:var(--forest);margin-left:.15rem"></span></a>
+      <a href="roofrank-analyst.html">Analyst</a>
+    </nav>
+    <a href="roofrank-analyzer.html" class="rh-add active-add" title="Add a deal" aria-label="Add a deal">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </a>
+    <div class="rh-pro" id="rhPro" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+      Pro
+      <div class="rh-pro-pop">
+        <h4>What's in Pro</h4>
+        <ul>
+          <li>Every deal in your markets, not just the top 5</li>
+          <li>All 5 analyst lenses</li>
+          <li>Strong Buy push + email alerts</li>
+          <li>AI deal narratives on every listing</li>
+          <li>Unlimited Ask the Analyst</li>
+          <li>Full 8-metric breakdown</li>
+          <li>Daily morning brief via email</li>
+        </ul>
+      </div>
+    </div>
+    <button class="rh-avatar" id="rhAvatar">A</button>
   </div>
-</nav>
+</header>
 
 <!-- ── ADD A DEAL — quick path ── -->
 <section class="ad-hero">
@@ -811,6 +889,58 @@ document.getElementById('dp').addEventListener('input',function(){
   const amt=p*(parseInt(this.value)/100);
   document.getElementById('dpAmt').textContent='$'+(amt/1000).toFixed(0)+'K';
 });
+</script>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bnav" aria-label="Primary navigation">
+  <div class="bnav-inner">
+    <a href="roofrank-dashboard.html" class="bn-tab">
+      <span class="bn-mark"><svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="currentColor"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg></span>
+      <span>Today</span>
+    </a>
+    <a href="roofrank-watchlist.html" class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span>Watching</span>
+    </a>
+    <a href="roofrank-analyzer.html" class="bn-tab bn-add-fab active" aria-label="Add a deal">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </a>
+    <a href="roofrank-analyst.html" class="bn-tab">
+      <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+      <span>Analyst</span>
+    </a>
+    <button class="bn-tab" type="button" onclick="window.location.href='roofrank-pricing.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+      <span>More</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+// Shared nav wiring — Pro badge + watch badge + avatar
+(function(){
+  function syncWatch(){
+    let n = 0;
+    try { n = (JSON.parse(localStorage.getItem('rr_watchlist') || '[]') || []).length; } catch {}
+    const top = document.getElementById('navWatchBadge');
+    if(top){ top.textContent = n ? '(' + n + ')' : ''; top.style.display = n ? 'inline' : 'none'; }
+  }
+  syncWatch();
+  if(typeof AuthAPI !== 'undefined' && AuthAPI.me){
+    AuthAPI.me().then(({user}={}) => {
+      const av = document.getElementById('rhAvatar');
+      if(av && user) av.textContent = (user.name || user.email || '?')[0].toUpperCase();
+    }).catch(() => {});
+  }
+  if(typeof BillingAPI !== 'undefined' && BillingAPI.getSubscription){
+    BillingAPI.getSubscription().then(sub => {
+      const plan = (sub?.plan || '').toLowerCase();
+      const isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+      const el = document.getElementById('rhPro');
+      if(el) el.style.display = isPro ? '' : 'none';
+    }).catch(() => {});
+  }
+})();
 </script>
 
 <!-- Legal footer strip -->
