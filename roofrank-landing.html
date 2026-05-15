@@ -458,10 +458,18 @@ section{padding:6rem 0}
 .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:3rem}
 .metric-cell{
   background:var(--white);padding:1.6rem 1.4rem;
+  border-top:2px solid transparent;
   opacity:0;transition:opacity .4s
 }
 .metric-cell.visible{opacity:1}
-.metric-cell-num{font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-bottom:.6rem}
+.metric-cell[data-cat="return"]{border-top-color:var(--forest)}
+.metric-cell[data-cat="risk"]{border-top-color:var(--amber)}
+.metric-cell[data-cat="market"]{border-top-color:var(--sage)}
+.metric-cell-num{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-bottom:.6rem}
+.metric-cell-cat{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.6rem}
+.metric-cell[data-cat="return"] .metric-cell-cat{color:var(--forest)}
+.metric-cell[data-cat="risk"] .metric-cell-cat{color:var(--amber)}
+.metric-cell[data-cat="market"] .metric-cell-cat{color:var(--forest-3)}
 .metric-cell-name{font-size:.92rem;font-weight:500;color:var(--ink);margin-bottom:.35rem}
 .metric-cell-desc{font-size:.78rem;color:var(--muted);line-height:1.65;margin-bottom:.65rem}
 .metric-cell-target{
@@ -623,8 +631,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .product-card{max-width:100%}
   .floating-alert{right:2rem;bottom:1.5rem}
   .stat-bar{grid-template-columns:repeat(2,1fr)}
-  .ps-grid{grid-template-columns:1fr}
-  .score-visual{transform:none}
   .hiw-steps{grid-template-columns:1fr}
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
   .pricing-grid{grid-template-columns:1fr}
@@ -653,10 +659,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 
 @media(max-width:768px){
   .hero{padding-top:2.5rem !important}
-  .nav-logo-mark{width:34px !important;height:34px !important}
-  .nav-logo-name{font-size:1.15rem !important}
-}
-
   .nav-logo-mark{width:34px !important;height:34px !important}
   .nav-logo-name{font-size:1.15rem !important}
 }
@@ -1231,8 +1233,8 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <div class="stat-cell-label">Deals analyzed in beta</div>
   </div>
   <div class="stat-cell">
-    <div class="stat-cell-val">Early</div>
-    <div class="stat-cell-label">Access — join now</div>
+    <div class="stat-cell-val">30 sec</div>
+    <div class="stat-cell-label">Per deal · vs 3 hours in Excel</div>
   </div>
   <div class="stat-cell">
     <div class="stat-cell-val">2–6 units</div>
@@ -1321,7 +1323,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       </div>
     </div>
 
-    <p class="brief-showcase-caption">A new briefing every morning. Personalized to your markets. Yours with Pro.</p>
+    <p class="brief-showcase-caption">A new briefing every morning · Real-time alerts when a Strong Buy hits your market · Yours with Pro.</p>
   </div>
 </section>
 
@@ -1360,50 +1362,50 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <h2 class="section-h2 fade-up">8 metrics. One score.<br><em>Complete clarity.</em></h2>
     <p class="section-sub fade-up">Every metric a seasoned investor looks at — calculated, weighted, and combined into a single score so you spend 30 seconds on a deal instead of 3 hours.</p>
     <div class="metrics-grid">
-      <div class="metric-cell">
-        <div class="metric-cell-num">01</div>
+      <div class="metric-cell" data-cat="return">
+        <div class="metric-cell-num">01 · <span class="metric-cell-cat">Return</span></div>
         <div class="metric-cell-name">Cash-on-Cash Return</div>
         <div class="metric-cell-desc">Annual pre-tax cash flow ÷ total cash invested. The number that tells you how hard your money is working.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 8%</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">02</div>
+      <div class="metric-cell" data-cat="return">
+        <div class="metric-cell-num">02 · <span class="metric-cell-cat">Return</span></div>
         <div class="metric-cell-name">Cap Rate</div>
         <div class="metric-cell-desc">NOI ÷ purchase price. Measures yield independent of financing — essential for comparing across markets.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 6.5%</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">03</div>
+      <div class="metric-cell" data-cat="risk">
+        <div class="metric-cell-num">03 · <span class="metric-cell-cat">Risk</span></div>
         <div class="metric-cell-name">DSCR</div>
         <div class="metric-cell-desc">Debt Service Coverage Ratio. NOI ÷ annual debt payments. Lenders require ≥ 1.25 — we surface this before you waste time on financing.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 1.25</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">04</div>
+      <div class="metric-cell" data-cat="market">
+        <div class="metric-cell-num">04 · <span class="metric-cell-cat">Market</span></div>
         <div class="metric-cell-name">Gross Rent Multiplier</div>
         <div class="metric-cell-desc">Purchase price ÷ annual gross rent. A quick check for overpaying. A GRM above 12× usually doesn't pencil out.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≤ 10×</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">05</div>
+      <div class="metric-cell" data-cat="market">
+        <div class="metric-cell-num">05 · <span class="metric-cell-cat">Market</span></div>
         <div class="metric-cell-name">Price per Unit</div>
         <div class="metric-cell-desc">Total acquisition cost ÷ number of units. Calibrated to each market's actual comps — not national averages that miss the local reality.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Market-calibrated</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">06</div>
+      <div class="metric-cell" data-cat="return">
+        <div class="metric-cell-num">06 · <span class="metric-cell-cat">Return</span></div>
         <div class="metric-cell-name">Net Operating Income</div>
         <div class="metric-cell-desc">Effective gross income minus all operating expenses. The foundation of every professional valuation — we show you the real number, not an optimistic proforma.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Higher is better</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">07</div>
+      <div class="metric-cell" data-cat="risk">
+        <div class="metric-cell-num">07 · <span class="metric-cell-cat">Risk</span></div>
         <div class="metric-cell-name">CapEx Reserve Score</div>
         <div class="metric-cell-desc">Based on year built, roofing cycles, HVAC age, and expected major repairs over a 10-year hold. Old buildings aren't automatically bad — they just need to pencil with reserves.</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Age-adjusted</div>
       </div>
-      <div class="metric-cell">
-        <div class="metric-cell-num">08</div>
+      <div class="metric-cell" data-cat="market">
+        <div class="metric-cell-num">08 · <span class="metric-cell-cat">Market</span></div>
         <div class="metric-cell-name">Neighborhood Grade</div>
         <div class="metric-cell-desc">Walk score, school quality, crime index, and rent growth trajectory by ZIP. Tells you the story behind the numbers — is this location getting better or worse?</div>
         <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>A–D rating</div>
@@ -1537,7 +1539,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="inner" style="text-align:center">
     <div class="cta-eyebrow">Ready?</div>
     <h2 class="cta-h2">Stop guessing.<br><em>Start knowing.</em></h2>
-    <p class="cta-sub">Every morning, RoofRank reads every multifamily listing in your markets and tells you what's worth pursuing. Stop guessing. Start knowing.</p>
+    <p class="cta-sub">You've read the page. There's a multifamily deal in your market right now worth pursuing — we'll tell you which one. Free to start.</p>
     <div class="cta-actions">
       <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
       <button class="btn-cta-outline" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See All Plans →</button>
