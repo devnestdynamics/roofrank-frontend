@@ -66,69 +66,103 @@ body{
   padding:0 1.1rem 1rem;
 }
 
-/* ── BRIEF — editorial hero, no card, AI identity via typography ──────── */
-.brief{padding:.5rem 0 1.5rem}
+/* ── BRIEF — dark editorial hero with picks carousel inside ──────────── */
+.brief{padding:.5rem 0 1.25rem}
+.brief-card{
+  background:linear-gradient(180deg, #1d2420 0%, #14201a 100%);
+  color:#fff; border-radius:14px;
+  padding:1.4rem 1.4rem 1.5rem;
+  box-shadow:0 6px 24px rgba(20,32,26,.15);
+  position:relative; overflow:hidden;
+}
 .brief-eyebrow{
-  display:flex; align-items:center; gap:.5rem;
-  margin-bottom:1rem;
+  display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+  margin-bottom:1.1rem;
 }
 .brief-mark{
-  width:18px; height:18px; flex-shrink:0; color:var(--forest);
-  filter:drop-shadow(0 0 4px rgba(122,170,143,.4));
+  width:18px; height:18px; flex-shrink:0; color:var(--sage);
+  filter:drop-shadow(0 0 5px rgba(122,170,143,.45));
   animation:markSpin 14s linear infinite;
 }
 .brief-mark svg{width:100%; height:100%; fill:currentColor; display:block}
 @keyframes markSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .brief-label{
-  font-size:.66rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--forest);
+  font-size:.7rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(255,255,255,.92);
 }
-.brief-sep{color:var(--faint); font-size:.7rem; margin:0 .1rem}
-.brief-meta{font-size:.66rem; color:var(--faint); letter-spacing:.06em; text-transform:uppercase; font-weight:500}
+.brief-sep{color:rgba(255,255,255,.25); font-size:.7rem; margin:0 .1rem}
+.brief-meta{font-size:.66rem; color:rgba(255,255,255,.5); letter-spacing:.08em; text-transform:uppercase; font-weight:500}
 .brief-live{
   display:inline-flex; align-items:center; gap:.3rem;
   font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--forest-3);
+  color:var(--sage);
 }
 .brief-live::before{
-  content:''; width:5px; height:5px; border-radius:50%; background:var(--forest-3);
-  box-shadow:0 0 6px var(--forest-3); animation:liveBlink 1.8s ease-in-out infinite;
+  content:''; width:5px; height:5px; border-radius:50%; background:var(--sage);
+  box-shadow:0 0 8px var(--sage); animation:liveBlink 1.8s ease-in-out infinite;
 }
 @keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.3}}
 
 .brief-greeting{
   font-family:var(--serif); font-size:1.85rem; font-weight:500;
-  line-height:1.15; color:var(--ink); margin-bottom:.85rem;
+  line-height:1.15; color:#fff; margin-bottom:.85rem;
 }
 .brief-body{
   font-family:var(--serif); font-size:1.05rem; font-weight:400;
-  line-height:1.6; color:var(--ink); font-style:italic;
-  margin-bottom:1.25rem; max-width:62ch;
+  line-height:1.6; color:rgba(255,255,255,.92); font-style:italic;
+  margin-bottom:1.25rem; max-width:64ch;
   animation:briefFadeIn .9s cubic-bezier(.22,1,.36,1);
 }
 @keyframes briefFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.brief-body b{font-weight:600; font-style:normal; color:var(--ink)}
+.brief-body b{font-weight:600; font-style:normal; color:#fff}
+.brief-body::before{content:'"'; font-size:2.2rem; color:var(--sage); line-height:0; margin-right:.15rem; vertical-align:-.35em; font-style:normal; font-family:var(--serif)}
 
+/* Picks carousel — inside the dark card */
+.brief-picks{
+  display:flex; gap:.6rem;
+  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  margin:0 -1.4rem 1.25rem; padding:0 1.4rem 2px;
+}
+.brief-picks::-webkit-scrollbar{display:none}
+.brief-pick{
+  flex-shrink:0; min-width:230px; max-width:260px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:10px; padding:.85rem .9rem; cursor:pointer; transition:all .15s;
+}
+.brief-pick:hover{background:rgba(255,255,255,.08); border-color:rgba(122,170,143,.3); transform:translateY(-1px)}
+.brief-pick-head{display:flex; align-items:center; gap:.5rem; margin-bottom:.45rem}
+.brief-pick-score{
+  width:30px; height:30px; border-radius:50%; background:var(--sage); color:#1c1f1c;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:.78rem; font-weight:600; flex-shrink:0;
+}
+.brief-pick-sig{font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sage)}
+.brief-pick-addr{font-family:var(--serif); font-size:.88rem; font-weight:500; color:#fff; margin-bottom:.2rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.brief-pick-meta{font-size:.7rem; color:rgba(255,255,255,.5); margin-bottom:.35rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brief-pick-cf{font-family:var(--mono); font-size:.85rem; font-weight:500; color:var(--sage)}
+.brief-pick-cf.r{color:#ff9b9b}
+
+/* Follow-ups inside dark card */
 .followups{
   display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;
-  font-size:.85rem; color:var(--muted);
+  padding-top:1.15rem; border-top:1px solid rgba(255,255,255,.08);
+  font-size:.85rem; color:rgba(255,255,255,.75);
   line-height:1.7;
 }
-.followups-prefix{font-style:italic; font-family:var(--serif); margin-right:.2rem}
+.followups-prefix{font-style:italic; font-family:var(--serif); margin-right:.2rem; color:rgba(255,255,255,.7)}
 .followup{
   display:inline-flex; align-items:center; gap:.3rem;
-  background:var(--white); border:1px solid var(--border);
-  color:var(--ink); font-family:var(--sans); font-size:.82rem; font-weight:500;
-  padding:.32rem .7rem; border-radius:999px;
+  background:rgba(122,170,143,.12); border:1px solid rgba(122,170,143,.28);
+  color:var(--sage); font-family:var(--sans); font-size:.82rem; font-weight:500;
+  padding:.34rem .75rem; border-radius:999px;
   cursor:pointer; transition:all .15s; line-height:1;
 }
-.followup:hover{border-color:var(--forest); color:var(--forest); background:var(--sage-dim)}
-.followup.on{background:var(--forest); color:#fff; border-color:var(--forest)}
+.followup:hover{background:var(--sage); color:#1c1f1c; border-color:var(--sage)}
 .followup-count{
-  font-family:var(--mono); font-size:.65rem; color:var(--faint);
-  background:var(--cream-2); padding:1px 5px; border-radius:6px;
+  font-family:var(--mono); font-size:.65rem; color:rgba(255,255,255,.5);
+  background:rgba(255,255,255,.08); padding:1px 5px; border-radius:6px;
 }
-.followup.on .followup-count{background:rgba(255,255,255,.15); color:rgba(255,255,255,.85)}
+.followup:hover .followup-count{background:rgba(28,31,28,.15); color:rgba(28,31,28,.7)}
 
 /* ── PICKS / DEALS SECTION ────────────────────────────────────────────── */
 .section-head{
@@ -210,6 +244,29 @@ body{
 .fresh-dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--forest-3); animation:pulse 1.8s ease-in-out infinite; margin-right:4px; vertical-align:middle}
 .fresh-dot.hot{background:var(--amber)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+/* ── "Show more" toggle — discoverable reveal for the long tail ─────── */
+.show-more{
+  margin:1rem 0 .5rem; padding:.85rem 1.1rem; width:100%;
+  background:var(--white); border:1px solid var(--border); border-radius:var(--r);
+  cursor:pointer; transition:all .15s; font-family:var(--sans);
+  display:flex; align-items:center; justify-content:center; gap:.5rem;
+}
+.show-more:hover{border-color:var(--sage-border); background:var(--sage-dim)}
+.show-more-label{font-size:.88rem; font-weight:500; color:var(--ink)}
+.show-more-count{
+  font-family:var(--mono); font-size:.72rem; color:var(--muted);
+  background:var(--cream-2); padding:2px 7px; border-radius:8px;
+}
+.show-more-icon{
+  width:14px; height:14px; stroke:var(--muted); fill:none; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round;
+  transition:transform .25s;
+}
+.show-more.open .show-more-icon{transform:rotate(180deg)}
+.more-section{display:none}
+.more-section.open{display:block; animation:moreFadeIn .25s ease-out}
+@keyframes moreFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── COMPACT ROWS — long tail ──────────────────────────────────────────── */
 .compact-list{display:flex; flex-direction:column; gap:1px; margin-top:.5rem}
@@ -444,19 +501,22 @@ body{
 
 <main class="page">
 
-  <!-- ── BRIEF — editorial hero ─────────────────────────────────────── -->
+  <!-- ── BRIEF — dark editorial hero ─────────────────────────────────── -->
   <section class="brief" id="briefSection" style="display:none">
-    <div class="brief-eyebrow">
-      <div class="brief-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
-      <span class="brief-label">Analyst's Brief</span>
-      <span class="brief-sep">·</span>
-      <span class="brief-meta" id="briefDay">today</span>
-      <span class="brief-sep">·</span>
-      <span class="brief-live" id="briefLive">Live</span>
+    <div class="brief-card">
+      <div class="brief-eyebrow">
+        <div class="brief-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
+        <span class="brief-label">Analyst's Brief</span>
+        <span class="brief-sep">·</span>
+        <span class="brief-meta" id="briefDay">today</span>
+        <span class="brief-sep">·</span>
+        <span class="brief-live" id="briefLive">Live</span>
+      </div>
+      <h1 class="brief-greeting" id="briefGreeting">Good evening.</h1>
+      <p class="brief-body" id="briefBody">—</p>
+      <div class="brief-picks" id="briefPicks"></div>
+      <div class="followups" id="followups"></div>
     </div>
-    <h1 class="brief-greeting" id="briefGreeting">Good evening.</h1>
-    <p class="brief-body" id="briefBody">—</p>
-    <div class="followups" id="followups"></div>
   </section>
 
   <!-- ── PICKS / DEALS ──────────────────────────────────────────────── -->
@@ -471,15 +531,13 @@ body{
     <div class="deals" id="dealList"></div>
   </section>
 
-  <!-- ── MORE (compact long-tail) ───────────────────────────────────── -->
-  <section class="more-section" id="moreSection" style="display:none">
-    <div class="section-head">
-      <div style="flex:1">
-        <div class="section-eyebrow">Long tail</div>
-        <div class="section-title" id="moreTitle">More deals worth knowing</div>
-      </div>
-      <div class="section-count" id="moreCount"></div>
-    </div>
+  <!-- ── MORE (compact long-tail), revealed by button ──────────────── -->
+  <button class="show-more" id="showMoreBtn" type="button" onclick="toggleMore()" style="display:none">
+    <span class="show-more-label" id="showMoreLabel">Show more deals</span>
+    <span class="show-more-count" id="showMoreCount">0</span>
+    <svg class="show-more-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <section class="more-section" id="moreSection">
     <div class="compact-list" id="compactList"></div>
   </section>
 
@@ -606,6 +664,7 @@ async function loadFeed(){
     allDeals = data.deals || [];
     renderBriefHead();
     renderBriefBody();
+    renderBriefPicks();
     renderFollowups();
     applyLens(activeLens);
   } catch(e) {
@@ -681,6 +740,27 @@ function renderBriefBody(){
   document.getElementById('briefBody').innerHTML = body;
 }
 
+// ── BRIEF PICKS (3 horizontal mini-cards inside the dark card) ──────
+function renderBriefPicks(){
+  const el = document.getElementById('briefPicks');
+  if(!el || !allDeals.length){ if(el) el.innerHTML = ''; return; }
+  const picks = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 3);
+  el.innerHTML = picks.map(p => {
+    const fin = p.reportData?.financials || {};
+    const cf = fin.monthlyCashFlow;
+    const sig = scoreSignal(p.rankScore || 0);
+    return `<div class="brief-pick" onclick="openDeal('${p.id}',event)">
+      <div class="brief-pick-head">
+        <div class="brief-pick-score">${p.rankScore || '—'}</div>
+        <div class="brief-pick-sig">${sig}</div>
+      </div>
+      <div class="brief-pick-addr">${(p.address || 'Unknown').split(',')[0]}</div>
+      <div class="brief-pick-meta">${[p.city, p.state].filter(Boolean).join(', ')} · ${p.units || '?'} units${p.daysOnMarket != null ? ' · ' + p.daysOnMarket + 'd' : ''}</div>
+      ${cf != null ? `<div class="brief-pick-cf${cf < 0 ? ' r' : ''}">${cf >= 0 ? '+' : '−'}$${Math.round(Math.abs(cf)).toLocaleString()}/mo</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
 // ── FOLLOW-UPS (inline conversational lens picks) ───────────────────────
 function renderFollowups(){
   const el = document.getElementById('followups');
@@ -714,11 +794,13 @@ function applyLens(id){
 // ── DEAL RENDER ─────────────────────────────────────────────────────────
 function renderDeals(deals){
   const list = document.getElementById('dealList');
-  const more = document.getElementById('moreSection');
+  const moreBtn = document.getElementById('showMoreBtn');
+  const moreSection = document.getElementById('moreSection');
   const moreList = document.getElementById('compactList');
   if(!deals.length){
     list.innerHTML = `<div class="empty"><div class="empty-t">Nothing matches that view right now</div><div class="empty-s">Try a different angle, or come back after the nightly refresh.</div><button class="empty-btn" onclick="applyLens('curated')">See today's picks</button></div>`;
-    more.style.display = 'none';
+    moreBtn.style.display = 'none';
+    moreSection.classList.remove('open');
     return;
   }
   const TOP = 5;
@@ -727,10 +809,28 @@ function renderDeals(deals){
   list.innerHTML = top.map((d, i) => richCard(d, i)).join('');
   if(rest.length){
     moreList.innerHTML = rest.map(d => compactRow(d)).join('');
-    document.getElementById('moreCount').textContent = rest.length;
-    more.style.display = '';
+    document.getElementById('showMoreLabel').textContent = `Show ${rest.length} more deal${rest.length===1?'':'s'}`;
+    document.getElementById('showMoreCount').textContent = rest.length;
+    moreBtn.style.display = 'flex';
+    // Reset to collapsed when re-rendering (e.g., after lens change)
+    moreBtn.classList.remove('open');
+    moreSection.classList.remove('open');
   } else {
-    more.style.display = 'none';
+    moreBtn.style.display = 'none';
+    moreSection.classList.remove('open');
+  }
+}
+
+function toggleMore(){
+  const btn = document.getElementById('showMoreBtn');
+  const sect = document.getElementById('moreSection');
+  const label = document.getElementById('showMoreLabel');
+  const open = sect.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if(open){
+    label.textContent = label.textContent.replace('Show', 'Hide');
+  } else {
+    label.textContent = label.textContent.replace('Hide', 'Show');
   }
 }
 
@@ -896,12 +996,23 @@ async function sendChatMessage(){
   addChatMsg('user', message);
   const loadingEl = addChatMsg('assistant', 'Analyzing…', true);
   try {
+    // The /ai/chat endpoint expects a dealId. From the dashboard we don't have one,
+    // so anchor the request to the top-scored deal in the user's feed and prepend a
+    // brief framing note so the AI knows it's a feed-wide question, not deal-specific.
+    const topDeal = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
+    const anchorId = topDeal?.id || null;
+    const framedMessage = anchorId
+      ? `[Context: user is asking from the dashboard feed view across ${allDeals.length} deals; anchor deal: ${topDeal?.address || ''}]\n\n${message}`
+      : message;
     const aiFetch = () => {
       const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
+      const body = anchorId
+        ? { dealId: anchorId, message: framedMessage, history: chatMsgs }
+        : { message, history: chatMsgs };
       return fetch(window.ROOFRANK_API_URL + '/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
-        body: JSON.stringify({ message, history: chatMsgs })
+        body: JSON.stringify(body)
       });
     };
     let res = await aiFetch();
