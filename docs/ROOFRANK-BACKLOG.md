@@ -1752,3 +1752,17 @@ Show "N others watching this" or "Trending in Lynn" on deal cards + detail page 
 **Implementation:**
 - Backend: `GET /api/feed/:id/watch-count` returns `{ count, recentCount24h, trendingInMarket }`
 - Frontend: render on dashboard deal cards + deal-detail hero. Animated pulse on the dot when recent activity is non-zero.
+
+---
+
+### 140. House photos
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Product
+
+Eventually add property photos, but selectively. Default approach:
+- **Deal-detail hero only** — full-bleed at top, slightly desaturated so listing-agent gloss doesn't overpower our "honest analyst" voice
+- **No photos on dashboard cards** — keeps the feed metric-first, avoids Redfin-clone vibes
+- **No photos in chat/AI surfaces** — stays text-led
+
+Sourced from RentCast listing data; CDN-cached. Lazy-loaded.
+
+**Why selective:** Listing photos are marketing material. They make every deal look "good" because agents picked the best angles. Wholesale adoption would work against the data-driven brand position. Use sparingly, where the user has already chosen to engage.

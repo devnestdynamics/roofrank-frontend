@@ -82,6 +82,37 @@ body{
 
 /* ── BRIEF — dark editorial hero with picks carousel inside ──────────── */
 .brief{padding:.5rem 0 1.25rem}
+/* "What changed since yesterday" strip — above the brief */
+.changed-strip{
+  display:flex; align-items:center; gap:.65rem; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--sage-border); border-radius:10px;
+  padding:.7rem .85rem .7rem 1rem; margin:.5rem 0 .85rem;
+  font-size:.82rem; color:var(--ink);
+  box-shadow:0 1px 0 rgba(28,31,28,.02);
+  animation:changedFade .5s ease-out;
+}
+@keyframes changedFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.changed-eyebrow{
+  display:inline-flex; align-items:center; gap:.45rem;
+  font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--forest); flex-shrink:0;
+}
+.changed-eyebrow::before{
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--forest-3);
+  box-shadow:0 0 6px rgba(122,170,143,.5);
+}
+.changed-items{display:flex; flex-wrap:wrap; gap:.45rem 1rem; flex:1; min-width:0; align-items:center}
+.changed-item{display:inline-flex; align-items:center; gap:.35rem; font-size:.82rem; line-height:1.35}
+.changed-item b{color:var(--forest); font-weight:600; font-family:var(--mono); font-size:.85rem}
+.changed-item.up b{color:var(--forest-3)}
+.changed-item.down b{color:var(--rose)}
+.changed-dismiss{
+  background:none; border:none; color:var(--faint); cursor:pointer; padding:.2rem .35rem;
+  border-radius:6px; font-size:1.05rem; line-height:1; flex-shrink:0; transition:all .15s;
+}
+.changed-dismiss:hover{color:var(--ink); background:var(--cream-2)}
+
 .brief-card{
   background:linear-gradient(180deg, #1d2420 0%, #14201a 100%);
   color:#fff; border-radius:14px;
@@ -654,6 +685,13 @@ body{
 
 <main class="page">
 
+  <!-- ── "Since you were last here" strip ─────────────────────────────── -->
+  <section class="changed-strip" id="changedStrip" style="display:none">
+    <span class="changed-eyebrow">Since last visit</span>
+    <div class="changed-items" id="changedItems"></div>
+    <button class="changed-dismiss" type="button" onclick="dismissChanged()" aria-label="Dismiss">×</button>
+  </section>
+
   <!-- ── BRIEF — dark editorial hero ─────────────────────────────────── -->
   <section class="brief" id="briefSection" style="display:none">
     <div class="brief-card">
@@ -744,6 +782,11 @@ body{
       <span id="alertsLabel">Enable push alerts</span>
       <span id="alertsHint" style="margin-left:auto;font-size:.66rem;color:var(--muted);font-weight:400"></span>
     </button>
+    <button class="bn-sheet-link" type="button" id="testAlertBtn" onclick="sendTestAlert()" style="display:none">
+      <svg viewBox="0 0 24 24"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <span id="testAlertLabel">Send test alert</span>
+      <span id="testAlertHint" style="margin-left:auto;font-size:.66rem;color:var(--muted);font-weight:400">pings this device</span>
+    </button>
     <a href="roofrank-pricing.html?v=2" class="bn-sheet-link">
       <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
       Billing
@@ -763,13 +806,49 @@ async function refreshAlertsButton(){
   const btn = document.getElementById('alertsBtn');
   const lbl = document.getElementById('alertsLabel');
   const hint = document.getElementById('alertsHint');
+  const testBtn = document.getElementById('testAlertBtn');
   if(!btn || !window.Push) return;
   const status = await window.Push.status();
-  if(status === 'unsupported'){ btn.style.display = 'none'; return; }
+  if(status === 'unsupported'){ btn.style.display = 'none'; if(testBtn) testBtn.style.display = 'none'; return; }
   btn.style.display = '';
-  if(status === 'granted-subscribed'){ lbl.textContent = 'Push alerts on'; hint.textContent = 'tap to turn off'; }
-  else if(status === 'denied'){ lbl.textContent = 'Alerts blocked by browser'; hint.textContent = 'enable in settings'; btn.style.opacity = '.6'; }
-  else { lbl.textContent = 'Enable push alerts'; hint.textContent = 'free · device-only'; }
+  if(status === 'granted-subscribed'){
+    lbl.textContent = 'Push alerts on'; hint.textContent = 'tap to turn off';
+    if(testBtn) testBtn.style.display = '';
+  } else if(status === 'denied'){
+    lbl.textContent = 'Alerts blocked by browser'; hint.textContent = 'enable in settings'; btn.style.opacity = '.6';
+    if(testBtn) testBtn.style.display = 'none';
+  } else {
+    lbl.textContent = 'Enable push alerts'; hint.textContent = 'free · device-only';
+    if(testBtn) testBtn.style.display = 'none';
+  }
+}
+async function sendTestAlert(){
+  const lbl  = document.getElementById('testAlertLabel');
+  const hint = document.getElementById('testAlertHint');
+  const orig = lbl.textContent;
+  lbl.textContent = 'Sending…';
+  hint.textContent = '';
+  try {
+    const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
+    const res = await fetch((window.ROOFRANK_API_URL || 'https://api.roofrank.io/api') + '/notifications/test', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const out = await res.json().catch(() => ({}));
+    if(out.sent > 0){
+      lbl.textContent = '✓ Sent';
+      hint.textContent = out.sent + ' device' + (out.sent === 1 ? '' : 's');
+    } else {
+      lbl.textContent = 'No devices subscribed';
+      hint.textContent = 'enable push first';
+    }
+  } catch(err){
+    console.error('test alert failed', err);
+    lbl.textContent = 'Failed — try again';
+    hint.textContent = '';
+  }
+  setTimeout(() => { lbl.textContent = orig; hint.textContent = 'pings this device'; }, 3500);
 }
 async function toggleAlerts(){
   const lbl = document.getElementById('alertsLabel');
@@ -908,10 +987,139 @@ async function loadFeed(){
     renderBriefPicks();
     renderFollowups();
     applyLens(activeLens);
+    renderChangedSinceStrip();   // #133 — compute deltas vs last snapshot
   } catch(e) {
     console.error('loadFeed error:', e);
     list.innerHTML = `<div class="empty"><div class="empty-t">Could not load deals</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="loadFeed()">Try again</button></div>`;
   }
+}
+
+// ── "Since you were last here" — local snapshot diff (backlog #133) ─────
+// Snapshot shape: { ts, dismissedTs, deals: { [dealId]: { score, askingPrice } } }
+const RR_SNAPSHOT_KEY = 'rr_feed_snapshot_v1';
+
+function getWatchlistIds(){
+  try {
+    if(typeof WatchlistAPI !== 'undefined' && WatchlistAPI.getIds) return new Set(WatchlistAPI.getIds() || []);
+    return new Set(JSON.parse(localStorage.getItem('rr_watchlist') || '[]'));
+  } catch { return new Set(); }
+}
+
+function loadFeedSnapshot(){
+  try { return JSON.parse(localStorage.getItem(RR_SNAPSHOT_KEY) || 'null'); }
+  catch { return null; }
+}
+
+function saveFeedSnapshot(){
+  const snap = { ts: Date.now(), deals: {} };
+  for(const d of allDeals){
+    if(!d.id) continue;
+    snap.deals[d.id] = { score: d.rankScore || 0, askingPrice: d.askingPrice || 0 };
+  }
+  try { localStorage.setItem(RR_SNAPSHOT_KEY, JSON.stringify(snap)); } catch {}
+}
+
+function dismissChanged(){
+  const strip = document.getElementById('changedStrip');
+  if(strip) strip.style.display = 'none';
+  // Capture current state so we don't re-show same deltas tomorrow
+  saveFeedSnapshot();
+}
+
+function renderChangedSinceStrip(){
+  const strip = document.getElementById('changedStrip');
+  const wrap  = document.getElementById('changedItems');
+  if(!strip || !wrap) return;
+  const prev = loadFeedSnapshot();
+
+  // First visit ever — establish baseline, hide strip
+  if(!prev){
+    saveFeedSnapshot();
+    strip.style.display = 'none';
+    return;
+  }
+
+  // Suppress for visits within 6 hours — strip is for return-after-a-while signal
+  const elapsedHrs = (Date.now() - (prev.ts || 0)) / (1000 * 60 * 60);
+  if(elapsedHrs < 6){
+    strip.style.display = 'none';
+    return;
+  }
+
+  const watch = getWatchlistIds();
+  const items = [];
+
+  // 1. New deals scored at Strong Buy (>=75) since last visit
+  const newSBs = allDeals.filter(d =>
+    (d.rankScore || 0) >= 75 && !prev.deals[d.id]
+  );
+  if(newSBs.length > 0){
+    const word = newSBs.length === 1 ? 'Strong Buy' : 'Strong Buys';
+    items.push({cls:'up', html:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1c4a35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span><b>${newSBs.length} new ${word}</b> in your feed</span>`});
+  }
+
+  // 2. Score deltas on watchlist deals
+  const watchlistMoves = [];
+  for(const d of allDeals){
+    if(!watch.has(d.id)) continue;
+    const before = prev.deals[d.id];
+    if(!before) continue;
+    const delta = (d.rankScore || 0) - (before.score || 0);
+    if(Math.abs(delta) >= 3) watchlistMoves.push({d, delta});
+  }
+  if(watchlistMoves.length > 0){
+    const up = watchlistMoves.filter(x => x.delta > 0);
+    const down = watchlistMoves.filter(x => x.delta < 0);
+    if(up.length > 0){
+      const top = up.sort((a,b) => b.delta - a.delta)[0];
+      const addr = (top.d.address || '').split(',')[0];
+      items.push({cls:'up', html:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3e8160" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg><span><b>${addr}</b> up <b>+${top.delta} pts</b></span>`});
+    }
+    if(down.length > 0){
+      const worst = down.sort((a,b) => a.delta - b.delta)[0];
+      const addr = (worst.d.address || '').split(',')[0];
+      items.push({cls:'down', html:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b3a3a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg><span><b>${addr}</b> down <b>${worst.delta} pts</b></span>`});
+    }
+  }
+
+  // 3. Price drops on watchlist deals
+  const priceDrops = [];
+  for(const d of allDeals){
+    if(!watch.has(d.id)) continue;
+    const before = prev.deals[d.id];
+    if(!before || !before.askingPrice || !d.askingPrice) continue;
+    const dropAbs = before.askingPrice - d.askingPrice;
+    const dropPct = dropAbs / before.askingPrice;
+    if(dropAbs >= 1000 && dropPct >= 0.01){
+      priceDrops.push({d, dropAbs, dropPct});
+    }
+  }
+  if(priceDrops.length > 0){
+    const biggest = priceDrops.sort((a,b) => b.dropAbs - a.dropAbs)[0];
+    const addr = (biggest.d.address || '').split(',')[0];
+    const fmt = (n) => n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1000) + 'K';
+    items.push({cls:'up', html:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1c4a35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg><span><b>${addr}</b> dropped <b>${fmt(biggest.dropAbs)}</b></span>`});
+  }
+
+  // Nothing meaningful changed — hide strip but DON'T update snapshot
+  // (we want the next non-trivial change to fire)
+  if(items.length === 0){
+    strip.style.display = 'none';
+    return;
+  }
+
+  // Cap at 3 items so the strip stays single-line on most viewports
+  wrap.innerHTML = items.slice(0, 3).map(i =>
+    `<span class="changed-item ${i.cls}">${i.html}</span>`
+  ).join('');
+  strip.style.display = '';
+
+  // Don't auto-update the snapshot — user dismissal or next-day visit handles it.
+  // But re-arm: if user just looks and leaves, we should still update the timestamp
+  // so we're not showing the same strip every 5 min. Set a 30-min update timer.
+  setTimeout(() => {
+    if(strip.style.display !== 'none') saveFeedSnapshot();
+  }, 30 * 60 * 1000);
 }
 
 function renderSkeletons(n){
