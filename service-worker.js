@@ -2,7 +2,7 @@
 // Network-first for HTML (so users see fresh deals + scores), cache-first
 // for static assets (icons, manifest). Cache version bumps invalidate everything.
 
-const VERSION = 'v1-2026-05-15';
+const VERSION = 'v2-2026-05-15';
 const SHELL_CACHE = `rr-shell-${VERSION}`;
 const SHELL_ASSETS = [
   '/manifest.json',
@@ -10,6 +10,8 @@ const SHELL_ASSETS = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-180.png',
+  '/offline.html',
+  '/404.html',
 ];
 
 self.addEventListener('install', e => {
@@ -43,7 +45,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // HTML / JS: network-first, fall back to cache on offline.
+  // HTML / JS: network-first, fall back to cache, then offline.html for navigations.
   if (req.headers.get('accept')?.includes('text/html') || /\.(html|js|css)$/.test(url.pathname)) {
     e.respondWith(
       fetch(req).then(res => {
@@ -52,7 +54,16 @@ self.addEventListener('fetch', e => {
           caches.open(SHELL_CACHE).then(c => c.put(req, copy));
         }
         return res;
-      }).catch(() => caches.match(req))
+      }).catch(async () => {
+        const cached = await caches.match(req);
+        if (cached) return cached;
+        // True offline + no cached version → serve the offline shell for top-level nav,
+        // and 404 page for sub-resources so the user still sees something on-brand.
+        if (req.mode === 'navigate' || req.headers.get('accept')?.includes('text/html')) {
+          return caches.match('/offline.html');
+        }
+        return new Response('', { status: 504, statusText: 'Offline' });
+      })
     );
   }
 });

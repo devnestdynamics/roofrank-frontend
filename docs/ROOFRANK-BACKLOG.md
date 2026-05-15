@@ -26,8 +26,8 @@
 | 61 | Negotiation Coach (with comps) | 🔴 MVP — promoted from Phase 2 (May 15) |
 | 80 | Tax Benefits Panel (after-tax CF) | 🔴 MVP — promoted from Phase 2 (May 15) |
 | 81 | Payback Period Visual | 🔴 MVP — promoted from Phase 2 (May 15) |
-| 99 | Analyzer PITI Consistency Fix | 🔲 Todo |
-| 100 | Replace Fake Landing Page Data | 🔲 Todo |
+| 99 | Analyzer PITI Consistency Fix | ✅ Done May 15 — Option A quick form uses PITI baseline; 18-field form moved behind "tweak assumptions" expandable |
+| 100 | Replace Fake Landing Page Data | ✅ Done May 14 — removed Sarah T. testimonial; hero mockup now uses real Lynn/Worcester deal styling |
 | 101 | Onboarding Goal → Feed Personalization | 🔲 Todo |
 | 105 | Make it Work Offer Calculator | 🟡 In Progress — replaced max-offer card |
 | 116 | Deploy Script | 🔲 Todo |
@@ -55,6 +55,8 @@
 | 33 | Fix ATTOM API | May 2026 |
 | 56 | Open Graph Tags | May 2026 |
 | 71 | "Your Analyst" narrative across copy | May 13 |
+| 99 | Analyzer PITI consistency — default = PITI, advanced = opt-in | May 15 |
+| 100 | Removed fake landing data (testimonial + Freeman St) | May 14 |
 | — | ATTOM unit count fix (use RentCast) | May 2026 |
 | — | Real data Lynn (24 deals) | May 2026 |
 | — | Real data Worcester (15 deals) | May 2026 |
@@ -1719,3 +1721,27 @@ Old form-based analyzer pre-dates the AI-analyst pivot. Killing the 18-field for
 - Page renamed in nav: "Analyze" → "Add a deal"
 
 See `roofrank-analyzer.html` for the v1 iteration.
+
+---
+
+### 139. Social proof — watcher count / activity signal
+**Priority:** 🟡 Phase 2 candidate · **Effort:** S · **Category:** Conversion / Urgency
+
+Show "N others watching this" or "Trending in Lynn" on deal cards + detail page to create urgency. Must scale honestly from 0 users to 1000s.
+
+**Two-stage display:**
+1. **When watcher count >= 3 (threshold):** Show absolute — "3 investors watching this deal"
+2. **When count < 3:** Fall back to relative — "Trending in Lynn this week" (deal is in top 20% of activity for its market)
+
+**Layered with time-windowed activity:**
+- "Saved 4 times in the last 24h" — sudden activity creates more urgency than a stale cumulative count
+- Only show when delta in last window > 0
+
+**Layered with DOM-implied scarcity:**
+- "2 deals like this went under contract in Lynn last month" — works at any user scale, doesn't require crowd
+
+**Why the threshold matters:** Showing "0 watching" reverses the urgency signal. Showing "1 watching" is worse than not showing it. We need the absolute number to land as social proof, which requires a minimum of 3+ to read as crowd.
+
+**Implementation:**
+- Backend: `GET /api/feed/:id/watch-count` returns `{ count, recentCount24h, trendingInMarket }`
+- Frontend: render on dashboard deal cards + deal-detail hero. Animated pulse on the dot when recent activity is non-zero.
