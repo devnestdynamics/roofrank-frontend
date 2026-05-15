@@ -1619,3 +1619,94 @@ Captured here so future reviewers understand why specific items moved.
 | 127 | Wire `AWS_*` + `ECR_*` secrets in roofrank-infra repo so deploy.yml runs | 🔴 MVP — see #43 |
 | 128 | First push of roofrank-backend `.env.example` (not yet in repo) | 🟡 Phase 2 |
 | 129 | Mobile-test PWA install flow on iOS + Android once live | 🟡 Phase 2 |
+
+---
+
+## 🆕 New MVP Ideas for Review — May 15, 2026
+
+Surfaced during analyzer-direction conversation. All low–medium effort, high-impact. Decide which make MVP cut.
+
+### 130. Score the property you already own
+**Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Onboarding / Conversion
+
+During onboarding ask "Do you own multifamily? Score it." Hooks the user with personal stake before they look at strangers' deals. Becomes the first watchlist item. Drives immediate aha moment we currently lack.
+
+---
+
+### 131. Empty-state-as-conversion
+**Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Conversion
+
+Today empty states (no Strong Buys this week, zero deals in market) are blank. Replace with conversational upsell: "There aren't any Strong Buys in Worcester this week — Pro alerts you the minute one hits." Every empty state should sell something.
+
+---
+
+### 132. Pro trial triggered by friction
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Conversion
+
+Third time a free user hits a lens lock or long-tail blur, auto-grant 24 hours of Pro. Removes the upgrade-decision moment for the already-engaged user. Track conversion rate from auto-trial.
+
+---
+
+### 133. "What changed since yesterday" badge
+**Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Retention
+
+Top of dashboard on returning visit: "2 new Strong Buys, 1 price drop on your watchlist, your top-saved deal went up 4 pts." A reason to open the app every morning. Works without email/SMS.
+
+---
+
+### 134. Public shareable deal URLs
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Growth
+
+`/share/<deal-id>` shows score + 3 key metrics + a snippet of AI narrative, no login required. Login gates the full Pro analysis. Every Pro forwarding a deal becomes organic acquisition.
+
+---
+
+### 135. PWA push notifications
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Retention
+
+Now that PWA is wired, "🔔 New Strong Buy at 58 Laighton" push notifications work without Twilio. Free SMS-equivalent. Could replace #122 SMS Alerts entirely for installed users.
+
+---
+
+### 136. Score explainability sheet
+**Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Trust
+
+Tap any score → modal showing each metric's contribution to the final number. Today scoring is a black box. Glass-box version cuts "how is this scored?" support load and builds trust.
+
+---
+
+### 137. Confidence per estimate
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Trust
+
+"Very confident on Cap Rate (3 recent comp sales). Less confident on rent (HUD only, no recent local comps)." Honesty as a feature. Differentiates from black-box competitors.
+
+---
+
+### 138. 404 + offline pages
+**Priority:** 🟡 Phase 2 · **Effort:** S · **Category:** Polish
+
+Currently the default browser pages. Hand-craft both — 404 should be the analyst saying "I couldn't find that. Want me to check the feed?" Offline page works via service-worker fallback.
+
+---
+
+## 📦 Items Deferred from MVP — May 15
+
+- **#122 SMS Alerts** — defer. PWA push notifications (#135) cover the same job at $0/mo. Revisit if PWA install rate is low post-launch.
+- **roofrank-reports.html (standalone page)** — defer. Removed from nav. ReportsAPI still works server-side, surface as a tab in account settings later.
+- **roofrank-watchlist.html (standalone page)** — defer. Removed from nav. WatchlistAPI still works; saved deals can surface as a dashboard tab post-launch.
+
+## 🔄 Items Promoted from Phase 2
+
+- **#110 Investor Profile Builder** — was Phase 2, promote attention. Pairs with #133.
+- **#113 Due Diligence Checklist** — was 🔴 priority but not on MVP list. Promote into MVP discussion.
+
+## 🔁 Analyzer Direction Change
+
+Old form-based analyzer pre-dates the AI-analyst pivot. Killing the 18-field form as the default surface. New direction (Option A):
+- Default = "Score any address" single input (address + asking price)
+- Auto-fetch property data when possible
+- Fall back to 5-field short form when data missing
+- Existing 18-field form survives as an "advanced — tweak assumptions" expandable
+- Page renamed in nav: "Analyze" → "Add a deal"
+
+See `roofrank-analyzer.html` for the v1 iteration.
