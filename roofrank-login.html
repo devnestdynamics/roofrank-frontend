@@ -9,7 +9,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--cream:#f7f4ef;--cream-2:#f0ece4;--white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;--forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);--border:#e0d9cf;--border-2:#cbc3b6;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:10px}
 html{color-scheme:light}
-body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;font-size:14px;-webkit-font-smoothing:antialiased}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;font-size:14px;-webkit-font-smoothing:antialiased}
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;width:100%}
 /* subtle dot grid */
 body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle,rgba(28,74,53,.07) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
 .card{width:100%;max-width:400px;background:var(--white);border:1px solid var(--border-2);border-radius:14px;padding:2rem 2rem 1.75rem;box-shadow:0 6px 32px rgba(28,31,28,.09);position:relative;z-index:1}
@@ -50,6 +51,7 @@ input:focus{border-color:var(--forest)}
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
 <body>
+<div class="auth-wrap">
 <div class="card">
   <a href="roofrank-landing.html" class="brand">
     <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
@@ -65,7 +67,7 @@ input:focus{border-color:var(--forest)}
   <div class="panel on" id="signin">
     <label for="si-email">Email</label>
     <input type="email" id="si-email" placeholder="you@email.com" autocomplete="email">
-    <label for="si-pw">Password <a href="#" class="forgot">Forgot?</a></label>
+    <label for="si-pw">Password <a href="#" class="forgot" onclick="event.preventDefault(); showTab('forgot', null)">Forgot?</a></label>
     <input type="password" id="si-pw" placeholder="••••••••" autocomplete="current-password">
     <button class="submit" onclick="handleSignin()">Sign In →</button>
     <div class="divider">or</div>
@@ -94,10 +96,22 @@ input:focus{border-color:var(--forest)}
         Sign up with Google
       </button>
     </div>
-    <p class="terms">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+    <p class="terms">By creating an account you agree to our <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy Policy</a>.</p>
     <p class="foot-note">Already have an account? <a href="#" onclick="showTab('signin',document.querySelectorAll('.tab')[0])">Sign in →</a></p>
   </div>
+
+  <!-- FORGOT PASSWORD -->
+  <div class="panel" id="forgot">
+    <p style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:1rem">Enter your email and we'll send a reset link.</p>
+    <label for="fp-email">Email</label>
+    <input type="email" id="fp-email" placeholder="you@email.com" autocomplete="email">
+    <button class="submit" onclick="handleForgot()" id="fp-btn">Send Reset Link →</button>
+    <p class="foot-note" id="fp-done" style="display:none;background:rgba(28,74,53,.06);border:1px solid var(--sage-border,rgba(122,170,143,.28));color:var(--forest);padding:.65rem .85rem;border-radius:8px;text-align:left">Check your email — a reset link is on its way. It expires in 1 hour.</p>
+    <p class="foot-note"><a href="#" onclick="showTab('signin',document.querySelectorAll('.tab')[0])">← Back to sign in</a></p>
+  </div>
 </div>
+</div>
+<!-- end .auth-wrap -->
 
 <script>
 const p=new URLSearchParams(location.search);
@@ -109,7 +123,28 @@ function showTab(id,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.getElementById(id).classList.add('on');
-  btn.classList.add('on');
+  if(btn) btn.classList.add('on');
+  // The forgot panel isn't a primary tab — keep the Sign In tab highlighted underneath
+  if(id === 'forgot'){
+    const signinTab = document.querySelectorAll('.tab')[0];
+    if(signinTab) signinTab.classList.add('on');
+  }
+}
+async function handleForgot(){
+  const email = document.getElementById('fp-email').value.trim();
+  if(!email){ showToast('Enter your email.','warning'); return; }
+  const btn = document.getElementById('fp-btn');
+  btn.textContent = 'Sending…'; btn.disabled = true;
+  try {
+    await AuthAPI.forgotPassword(email);
+    btn.style.display = 'none';
+    document.getElementById('fp-done').style.display = 'block';
+  } catch(e){
+    btn.textContent = 'Send Reset Link →'; btn.disabled = false;
+    // Don't reveal whether the email exists — always succeed-looking
+    document.getElementById('fp-done').style.display = 'block';
+    btn.style.display = 'none';
+  }
 }
 async function handleSignin(){
   const email=document.getElementById('si-email').value.trim();

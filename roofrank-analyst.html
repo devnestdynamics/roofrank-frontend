@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Analyst</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c4a35">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RoofRank">
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
+<script src="api.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#efeae0;--cream-3:#e3dccf;
+  --ink:#1c1f1c;--muted:#6a6e68;--faint:#9a9d96;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);
+  --border:#e0d9cf;--border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden;height:100%}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* shared nav (matches dashboard) */
+.rh{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;background:rgba(247,244,239,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:90}
+.rh-logo{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--ink)}
+.rh-logo svg{width:30px;height:30px;flex-shrink:0}
+.rh-logo span{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.rh-right{display:flex;align-items:center;gap:1.5rem}
+.rh-nav{display:flex;align-items:center;gap:1.5rem}
+.rh-nav a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;display:inline-flex;align-items:center;gap:.4rem;transition:color .15s;position:relative}
+.rh-nav a.active{color:var(--forest)}
+.rh-nav a:hover{color:var(--ink)}
+.rh-nav-mark{width:18px;height:18px;flex-shrink:0}
+.rh-nav-mark svg{width:100%;height:100%}
+.rh-add{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s}
+.rh-add:hover{background:var(--forest-2)}
+.rh-add svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+.rh-pro{display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .7rem;border:1px solid var(--sage-border);background:var(--sage-dim);color:var(--forest);font-size:.7rem;font-weight:600;letter-spacing:.04em;border-radius:14px;cursor:default;position:relative}
+.rh-pro svg{width:10px;height:10px;fill:currentColor}
+.rh-pro-pop{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;box-shadow:0 8px 28px rgba(28,31,28,.1);font-size:.78rem;color:var(--ink);min-width:240px;font-weight:400;letter-spacing:normal;display:none;z-index:120;text-align:left;line-height:1.5}
+.rh-pro:hover .rh-pro-pop{display:block}
+.rh-pro-pop h4{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--forest);margin-bottom:.4rem}
+.rh-pro-pop ul{list-style:none;margin:0;padding:0}
+.rh-pro-pop li{padding:.18rem 0;color:var(--muted);font-size:.75rem;display:flex;align-items:flex-start;gap:.4rem}
+.rh-pro-pop li::before{content:'✦';color:var(--forest);font-size:.65rem;margin-top:2px}
+.rh-avatar{width:32px;height:32px;border-radius:50%;background:var(--forest);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:500;cursor:pointer;border:none}
+
+@media(max-width:860px){
+  .rh-right .rh-nav, .rh-right .rh-add, .rh-right .rh-pro { display:none }
+}
+
+/* hero */
+.page{flex:1;display:flex;flex-direction:column;max-width:760px;margin:0 auto;width:100%;padding:2rem 1.25rem 6rem}
+.hero{text-align:center;margin-bottom:2rem}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:var(--forest);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.75rem}
+.hero-mark{width:14px;height:14px;color:var(--forest);animation:markSpin 14s linear infinite;display:inline-block}
+.hero-mark svg{width:100%;height:100%;fill:currentColor;display:block}
+@keyframes markSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.hero-h1{font-family:var(--serif);font-size:2rem;font-weight:500;letter-spacing:-.01em;line-height:1.15;margin-bottom:.5rem;color:var(--ink)}
+.hero-h1 em{font-style:italic;color:var(--forest)}
+.hero-sub{color:var(--muted);font-size:.92rem;max-width:480px;margin:0 auto;line-height:1.6}
+
+/* example questions */
+.examples{margin:1.5rem 0 2.5rem}
+.examples-label{font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-align:center;margin-bottom:.85rem}
+.examples-grid{display:grid;grid-template-columns:1fr;gap:.55rem;max-width:520px;margin:0 auto}
+.example-chip{display:flex;align-items:center;gap:.65rem;background:#fff;border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:var(--ink);text-align:left;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.example-chip:hover{border-color:var(--forest);background:#fdfcfa}
+.example-chip-arrow{color:var(--sage);width:14px;text-align:center;flex-shrink:0;opacity:.7}
+
+/* chat messages */
+.msgs{display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem}
+.msg{max-width:88%;padding:.85rem 1rem;border-radius:14px;font-size:.92rem;line-height:1.6;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:var(--forest);color:#fff;border-bottom-right-radius:4px}
+.msg.assistant{align-self:flex-start;background:#fff;color:var(--ink);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.loading{color:var(--muted);font-style:italic}
+.msg.error{border-color:rgba(160,48,48,.3);background:rgba(160,48,48,.05);color:#7a2020}
+.msg-mark{display:inline-block;width:11px;height:11px;color:var(--forest);margin-right:.4rem;vertical-align:-1px}
+.msg-mark svg{width:100%;height:100%;fill:currentColor}
+
+/* sticky input */
+.input-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(247,244,239,.96);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.8rem 1.25rem calc(.8rem + env(safe-area-inset-bottom));z-index:80}
+.input-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:.55rem;background:#fff;border:1px solid var(--border-2);border-radius:14px;padding:.4rem .5rem .4rem 1rem}
+.input-inner:focus-within{border-color:var(--forest)}
+.input-inner input{flex:1;border:none;outline:none;font-family:var(--sans);font-size:.95rem;color:var(--ink);background:none;padding:.5rem 0}
+.input-send{background:var(--forest);color:#fff;border:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s}
+.input-send:hover{background:var(--forest-2)}
+.input-send svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* bottom nav (mobile) — matches dashboard */
+.bnav{display:none;background:rgba(247,244,239,.97);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.45rem 0 calc(.55rem + env(safe-area-inset-bottom));position:fixed;bottom:0;left:0;right:0;z-index:75}
+.bnav-inner{display:grid;grid-template-columns:repeat(5,1fr);max-width:560px;margin:0 auto}
+.bn-tab{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--muted);text-decoration:none;font-family:var(--sans);font-size:.62rem;padding:.4rem .25rem;position:relative;cursor:pointer}
+.bn-tab.active{color:var(--forest)}
+.bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bn-tab .bn-mark{width:22px;height:22px}
+.bn-tab .bn-mark svg{stroke:none;fill:currentColor;stroke-width:0}
+.bn-add{background:var(--forest)!important;color:#fff!important;width:42px;height:42px;border-radius:50%;align-self:center;justify-self:center;margin-top:-6px;display:flex;align-items:center;justify-content:center}
+.bn-add svg{width:18px;height:18px;stroke:#fff;stroke-width:2.5}
+@media(max-width:860px){
+  .bnav{display:block}
+  .page{padding-bottom:5rem}
+  .input-bar{bottom:60px}
+}
+@media(max-width:540px){
+  .hero-h1{font-size:1.65rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="rh">
+  <a href="roofrank-landing.html" class="rh-logo" title="RoofRank">
+    <svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span>RoofRank</span>
+  </a>
+  <div class="rh-right">
+    <nav class="rh-nav">
+      <a href="roofrank-dashboard.html">
+        <span class="rh-nav-mark"><svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="currentColor"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg></span>
+        Today
+      </a>
+      <a href="roofrank-watchlist.html">Watching <span id="navWatchBadge" style="display:none;font-size:.65rem;font-weight:600;color:var(--forest);margin-left:.15rem"></span></a>
+      <a href="roofrank-analyst.html" class="active">Analyst</a>
+    </nav>
+    <a href="roofrank-analyzer.html" class="rh-add" title="Add a deal">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </a>
+    <div class="rh-pro">
+      <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+      Pro
+      <div class="rh-pro-pop">
+        <h4>What's in Pro</h4>
+        <ul>
+          <li>Every deal in your markets, not just the top 5</li>
+          <li>All 5 analyst lenses (Move fast, Negotiation, Top earners…)</li>
+          <li>Strong Buy push + email alerts the moment they hit</li>
+          <li>AI deal narratives on every listing</li>
+          <li>Unlimited Ask the Analyst conversations</li>
+          <li>Full 8-metric breakdown on every deal</li>
+          <li>Daily morning brief via email</li>
+        </ul>
+      </div>
+    </div>
+    <button class="rh-avatar" id="rhAvatar">A</button>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="hero" id="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></span>
+      <span>The Analyst</span>
+    </div>
+    <h1 class="hero-h1">How can I help today?</h1>
+    <p class="hero-sub">Ask me anything — market conditions, deal evaluation, financing strategy, the math behind a metric. I know your markets and your saved deals.</p>
+  </div>
+
+  <div class="examples" id="examples">
+    <div class="examples-label">Or start with one of these</div>
+    <div class="examples-grid">
+      <button class="example-chip" onclick="seedQuestion(this.dataset.q)" data-q="What's the Lynn market like right now?">
+        <span class="example-chip-arrow">→</span>
+        What's the Lynn market like right now?
+      </button>
+      <button class="example-chip" onclick="seedQuestion(this.dataset.q)" data-q="Is a 1.05 DSCR acceptable for a first deal?">
+        <span class="example-chip-arrow">→</span>
+        Is a 1.05 DSCR acceptable for a first deal?
+      </button>
+      <button class="example-chip" onclick="seedQuestion(this.dataset.q)" data-q="Explain cap rate like I'm a beginner">
+        <span class="example-chip-arrow">→</span>
+        Explain cap rate like I'm a beginner
+      </button>
+      <button class="example-chip" onclick="seedQuestion(this.dataset.q)" data-q="Should I be buying in this rate environment?">
+        <span class="example-chip-arrow">→</span>
+        Should I be buying in this rate environment?
+      </button>
+    </div>
+  </div>
+
+  <div class="msgs" id="msgs"></div>
+
+</main>
+
+<!-- INPUT BAR -->
+<div class="input-bar">
+  <form class="input-inner" onsubmit="event.preventDefault(); sendMessage()">
+    <input id="msgInput" type="text" placeholder="Ask the analyst…" autocomplete="off">
+    <button type="submit" class="input-send" aria-label="Send">
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </form>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bnav" aria-label="Primary navigation">
+  <div class="bnav-inner">
+    <a href="roofrank-dashboard.html" class="bn-tab">
+      <span class="bn-mark"><svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="currentColor"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg></span>
+      <span>Today</span>
+    </a>
+    <a href="roofrank-watchlist.html" class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span>Watching</span>
+    </a>
+    <a href="roofrank-analyzer.html" class="bn-tab bn-add">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </a>
+    <a href="roofrank-analyst.html" class="bn-tab active">
+      <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z" stroke="none" fill="currentColor"/></svg>
+      <span>Analyst</span>
+    </a>
+    <button class="bn-tab" type="button" onclick="window.location.href='roofrank-pricing.html'">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+      <span>More</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+const STORAGE_KEY = 'rr_analyst_chat';
+let history = [];
+
+function loadHistory(){
+  try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { history = []; }
+  if(history.length){
+    document.getElementById('hero').style.display = 'none';
+    document.getElementById('examples').style.display = 'none';
+    history.forEach(m => renderMsg(m.role, m.content));
+  }
+}
+function saveHistory(){
+  // Cap at last 20 to keep storage sane
+  const trimmed = history.slice(-20);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed)); } catch {}
+}
+
+function renderMsg(role, content, opts={}){
+  const el = document.createElement('div');
+  el.className = 'msg ' + role + (opts.loading ? ' loading' : '') + (opts.error ? ' error' : '');
+  el.textContent = content;
+  document.getElementById('msgs').appendChild(el);
+  // scroll into view
+  window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'});
+  return el;
+}
+
+function seedQuestion(q){
+  document.getElementById('msgInput').value = q;
+  sendMessage();
+}
+
+async function sendMessage(){
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('examples').style.display = 'none';
+
+  history.push({ role:'user', content:text });
+  renderMsg('user', text);
+  saveHistory();
+
+  const loadingEl = renderMsg('assistant', 'Thinking…', { loading:true });
+
+  try {
+    const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
+    const body = { message: text, history: history.slice(0, -1) };
+    const url = (window.ROOFRANK_API_URL || 'https://api.roofrank.io/api') + '/ai/analyst';
+
+    let res = await fetch(url, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', ...(tok ? {'Authorization':'Bearer '+tok} : {}) },
+      body: JSON.stringify(body),
+    });
+
+    // Refresh on 401
+    if(res.status === 401 && typeof Auth !== 'undefined' && Auth.getRefresh && Auth.getRefresh()){
+      try {
+        const refreshed = await apiFetch('/auth/refresh', { method:'POST', body: JSON.stringify({ refreshToken: Auth.getRefresh() }) }, false);
+        if(refreshed?.accessToken){
+          Auth.setToken(refreshed.accessToken);
+          res = await fetch(url, {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+refreshed.accessToken },
+            body: JSON.stringify(body),
+          });
+        }
+      } catch(e){}
+    }
+
+    if(!res.ok){
+      loadingEl.classList.remove('loading');
+      loadingEl.classList.add('error');
+      if(res.status === 404){
+        loadingEl.textContent = "I'm not online yet — backend endpoint /ai/analyst isn't wired. Your message is saved; I'll respond once we ship it.";
+      } else if(res.status === 401){
+        loadingEl.textContent = "Sign in to chat with the analyst. (Tip: use Today first if you don't have an account yet.)";
+      } else {
+        loadingEl.textContent = `Something went wrong (status ${res.status}). Try again in a moment.`;
+      }
+      return;
+    }
+
+    // Stream
+    let fullText = '';
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    if(ct.includes('text/event-stream')){
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let firstChunk = true, buffer = '';
+      while(true){
+        const { done, value } = await reader.read();
+        if(done) break;
+        buffer += decoder.decode(value, { stream:true });
+        let nl;
+        while((nl = buffer.indexOf('\n')) !== -1){
+          const line = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 1);
+          if(line.startsWith('data: ')){
+            const data = line.slice(6).trim();
+            if(data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              const piece = parsed.text || parsed.delta || parsed.content || '';
+              if(piece){
+                if(firstChunk){ loadingEl.textContent = ''; loadingEl.classList.remove('loading'); firstChunk = false; }
+                fullText += piece;
+                loadingEl.textContent = fullText;
+                window.scrollTo({top: document.body.scrollHeight});
+              }
+            } catch(e){}
+          }
+        }
+      }
+    } else {
+      // JSON response
+      const json = await res.json().catch(() => ({}));
+      fullText = json.text || json.message || json.content || '(empty response)';
+      loadingEl.textContent = fullText;
+      loadingEl.classList.remove('loading');
+    }
+
+    if(fullText){
+      history.push({ role:'assistant', content: fullText });
+      saveHistory();
+    }
+  } catch(err){
+    loadingEl.classList.remove('loading');
+    loadingEl.classList.add('error');
+    loadingEl.textContent = "Network hiccup. Try again?";
+    console.error('analyst error', err);
+  }
+}
+
+// Boot
+loadHistory();
+AuthAPI?.me?.()?.then?.(({user}={}) => {
+  if(user){
+    const av = document.getElementById('rhAvatar');
+    if(av) av.textContent = (user.name || user.email || '?')[0].toUpperCase();
+  }
+})?.catch(() => {});
+
+// Watch badge from localStorage (set by dashboard)
+try {
+  const wl = JSON.parse(localStorage.getItem('rr_watchlist') || '[]');
+  if(wl.length){
+    const b = document.getElementById('navWatchBadge');
+    if(b){ b.textContent = '(' + wl.length + ')'; b.style.display='inline'; }
+  }
+} catch {}
+
+// "More" button on bottom nav (sign out / billing) — keep it minimal here
+</script>
+
+<!-- Legal footer strip -->
+<div style="border-top:1px solid #e0d9cf;background:#f7f4ef;padding:1.5rem 1.5rem 2rem;text-align:center;font-size:.75rem;color:#6a6e68;line-height:1.7;font-family:'DM Sans',system-ui,sans-serif;position:relative;z-index:5">
+  <div style="max-width:680px;margin:0 auto">
+    <div style="margin-bottom:.55rem">
+      &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
+      <a href="/privacy.html" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Privacy</a> &middot;
+      <a href="/terms.html" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Terms</a> &middot;
+      <a href="mailto:hello@roofrank.io" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Contact</a>
+    </div>
+    <div style="opacity:.78;max-width:520px;margin:0 auto;font-size:.7rem">
+      RoofRank scores are informational, not financial advice. Verify all figures with your CPA, lender, and agent before making investment decisions. Property data from RentCast, ATTOM, and HUD.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
