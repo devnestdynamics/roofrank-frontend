@@ -1076,18 +1076,24 @@ function renderDeal(d){
   setText('navAddr', d.address);
   setText('heroAddr', d.address);
   const unitLabel = d.units===1?'Unit':'Units';
-  const cityBase = [d.city,d.state,d.zipCode].filter(Boolean).join(', ') + (d.units?` · ${d.units} ${unitLabel}`:'') + (d.propertyType?` · ${d.propertyType}`:'') + (d.yearBuilt?` · Built ${d.yearBuilt}`:'');
-  // Fold market signal into the city line as a colored suffix
+  // Property-summary line: facts + market-position tag (city/state/zip removed — they live in the address)
+  const facts = [
+    d.units?`${d.units} ${unitLabel}`:'',
+    d.propertyType||'',
+    d.yearBuilt?`Built ${d.yearBuilt}`:'',
+  ].filter(Boolean).join(' · ');
   let marketTag = '';
   if(d.city && score>0){
-    if(score>=80) marketTag = `Top ${Math.max(5,100-score)}% in ${d.city}`;
+    if(score>=80) marketTag = `Top ${Math.max(5,100-score)}% deals in ${d.city}`;
     else if(score>=65) marketTag = `Beats ${score}% of ${d.city} listings`;
     else if(score>=45) marketTag = `Middle of pack in ${d.city}`;
     else marketTag = `Bottom ${100-score}% in ${d.city}`;
+  } else if(d.city){
+    marketTag = d.city + (d.state?', '+d.state:'');
   }
   const heroCityEl = document.getElementById('heroCity');
   if(heroCityEl){
-    heroCityEl.innerHTML = cityBase + (marketTag ? ` <span style="color:var(--forest);font-weight:500">· ${marketTag}</span>` : '');
+    heroCityEl.innerHTML = facts + (marketTag ? ` <span style="color:var(--forest);font-weight:500">· ${marketTag}</span>` : '');
   }
 
   // ── Score ring
@@ -1103,12 +1109,11 @@ function renderDeal(d){
   const sigEl=document.getElementById('heroSignal');
   if(sigEl){ sigEl.textContent=String(signal||'').toUpperCase(); sigEl.className='hero-signal '+cls; }
 
-  // ── Hero badges (context only — no signal/score/price; those are elsewhere)
+  // ── Hero badges — just time-on-market (location/ZIP already in address; price elsewhere)
   const _hb=document.getElementById('heroBadges');
-  if(_hb) _hb.innerHTML=[
-    d.daysOnMarket!=null?`<span class="badge">${d.daysOnMarket}d on market</span>`:'',
-    d.zipCode?`<span class="badge">ZIP ${d.zipCode}</span>`:'',
-  ].filter(Boolean).join('');
+  if(_hb) _hb.innerHTML = d.daysOnMarket!=null
+    ? `<span class="badge">${d.daysOnMarket}d on market</span>`
+    : '';
 
   // ── Score breakdown
   const bars=[
@@ -1249,31 +1254,47 @@ async function sendAiMessage(){
       body: JSON.stringify({ dealId: aiDealId, message, history: aiHistory })
     });
     if(!res.ok){
-      if(loadingEl){ loadingEl.textContent='Sorry, the AI is unavailable right now.'; loadingEl.classList.remove('loading'); }
+      if(loadingEl){ loadingEl.textContent='Sorry, the AI is unavailable right now (status '+res.status+'). Try again in a moment.'; loadingEl.classList.remove('loading'); }
       send.disabled = false; return;
     }
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let fullText = '';
-    if(loadingEl){ loadingEl.textContent=''; loadingEl.classList.remove('loading'); }
+    let firstChunk = true;
+    let buffer = '';
     while(true){
       const {done, value} = await reader.read();
       if(done) break;
-      const chunk = decoder.decode(value);
-      for(const line of chunk.split('\n')){
+      buffer += decoder.decode(value, {stream:true});
+      // Process complete lines; keep any partial line for next iteration
+      let nl;
+      while((nl = buffer.indexOf('\n')) !== -1){
+        const line = buffer.slice(0, nl);
+        buffer = buffer.slice(nl + 1);
         if(line.startsWith('data: ')){
-          const data = line.slice(6);
-          if(data === '[DONE]') break;
+          const data = line.slice(6).trim();
+          if(data === '[DONE]') continue;
           try{
             const parsed = JSON.parse(data);
-            if(parsed.text){ fullText += parsed.text; if(loadingEl) loadingEl.textContent = fullText; }
+            const piece = parsed.text || parsed.delta || parsed.content || '';
+            if(piece){
+              if(firstChunk && loadingEl){ loadingEl.textContent=''; loadingEl.classList.remove('loading'); firstChunk=false; }
+              fullText += piece;
+              if(loadingEl) loadingEl.textContent = fullText;
+            }
           } catch(e){}
         }
       }
     }
+    if(!fullText && loadingEl){
+      loadingEl.textContent = 'No response received. The AI service may be offline — please try again.';
+      loadingEl.classList.remove('loading');
+    }
     aiHistory.push({ role:'user', content: message });
-    aiHistory.push({ role:'assistant', content: fullText });
-    if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
+    if(fullText){
+      aiHistory.push({ role:'assistant', content: fullText });
+      if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
+    }
   } catch(err){
     if(loadingEl){ loadingEl.textContent='Something went wrong. Please try again.'; loadingEl.classList.remove('loading'); }
   }
