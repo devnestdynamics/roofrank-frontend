@@ -58,6 +58,8 @@ nav.top{
 }
 .nav-btn svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round}
 .nav-btn:hover{border-color:var(--forest); color:var(--forest)}
+.nav-btn.on{color:var(--forest); border-color:var(--forest); background:var(--sage-dim)}
+.nav-btn.on svg{fill:var(--forest); stroke:var(--forest)}
 .nav-btn.primary{
   background:var(--forest); color:#fff; border-color:var(--forest);
   padding:.45rem .9rem; font-size:.8rem; font-weight:500;
@@ -1122,11 +1124,16 @@ async function toggleWatch(){
   if(!fid) return;
   const on = await WatchlistAPI.toggle(fid);
   const b = document.getElementById('wbtn');
-  if(!b) return;
-  b.style.color = on ? 'var(--forest)' : '';
-  const svg = b.querySelector('svg');
-  if(svg) svg.setAttribute('fill', on ? 'var(--forest)' : 'none');
+  if(b) b.classList.toggle('on', on);
   showToast(on ? 'Added to watchlist' : 'Removed from watchlist');
+}
+
+// Sync the heart's visual state to whether this deal is currently in the watchlist.
+function syncWatchButton(){
+  if(!fid) return;
+  const b = document.getElementById('wbtn');
+  if(!b) return;
+  b.classList.toggle('on', WatchlistAPI.has(fid));
 }
 
 function handleExport(){
@@ -1135,13 +1142,15 @@ function handleExport(){
 
 async function boot(){
   if(!fid){ document.getElementById('loading').textContent='No deal selected — go back and click a deal.'; return; }
+  // Pre-load watchlist so the heart's initial state is correct on first paint
+  await WatchlistAPI.loadIds().catch(()=>{});
   try{
     const cached = sessionStorage.getItem('rr_deal_'+fid);
-    if(cached){ renderDeal(JSON.parse(cached)); WatchlistAPI.loadIds().catch(()=>{}); return; }
+    if(cached){ renderDeal(JSON.parse(cached)); syncWatchButton(); loadChatHistory(); return; }
   } catch(e){}
   try{
     const deal = await FeedAPI.get(fid);
-    if(deal) renderDeal(deal);
+    if(deal){ renderDeal(deal); syncWatchButton(); loadChatHistory(); }
     else document.getElementById('loading').textContent='Deal not found.';
   } catch(e){ document.getElementById('loading').textContent='Could not load deal: '+e.message; }
 }
@@ -1166,6 +1175,35 @@ function openInAnalyzer(){
 // ── AI chat ───────────────────────────────────────────────────────────────
 let aiHistory = [];
 let aiDealId = null;
+
+// Persist chat across refreshes — keyed by deal fid so each deal has its own thread
+function chatStorageKey(){ return fid ? 'rr_chat_'+fid : null; }
+function loadChatHistory(){
+  const key = chatStorageKey();
+  if(!key) return;
+  try {
+    const raw = sessionStorage.getItem(key);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(!Array.isArray(parsed)) return;
+    aiHistory = parsed.slice(-10);
+    const msgs = document.getElementById('aiMessages');
+    if(!msgs) return;
+    msgs.innerHTML = '';
+    aiHistory.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'ai-msg ' + (m.role === 'user' ? 'user' : 'assistant');
+      div.textContent = m.content;
+      msgs.appendChild(div);
+    });
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch(e){ console.error('loadChatHistory failed:', e); }
+}
+function saveChatHistory(){
+  const key = chatStorageKey();
+  if(!key) return;
+  try { sessionStorage.setItem(key, JSON.stringify(aiHistory.slice(-10))); } catch(e){}
+}
 
 function askSuggestion(el){
   const input = document.getElementById('aiInput');
@@ -1301,6 +1339,7 @@ async function sendAiMessage(){
       aiHistory.push({ role:'assistant', content: fullText });
       if(aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
     }
+    saveChatHistory();
   } catch(err){
     if(loadingEl){ loadingEl.textContent='Something went wrong. Please try again.'; loadingEl.classList.remove('loading'); }
   }

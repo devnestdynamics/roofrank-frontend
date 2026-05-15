@@ -147,9 +147,12 @@ body{
   display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;
   padding-top:1.15rem; border-top:1px solid rgba(255,255,255,.08);
   font-size:.85rem; color:rgba(255,255,255,.75);
-  line-height:1.7;
 }
-.followups-prefix{font-style:italic; font-family:var(--serif); margin-right:.2rem; color:rgba(255,255,255,.7)}
+.followups-prefix{
+  flex-basis:100%; margin:0 0 .55rem;
+  font-style:italic; font-family:var(--serif);
+  color:rgba(255,255,255,.7); font-size:.92rem;
+}
 .followup{
   display:inline-flex; align-items:center; gap:.3rem;
   background:rgba(122,170,143,.12); border:1px solid rgba(122,170,143,.28);
@@ -325,9 +328,11 @@ body{
 .ask-inner{max-width:var(--page-max); margin:0 auto; display:flex; gap:.5rem; align-items:center}
 .ask-mark{
   width:18px; height:18px; flex-shrink:0; color:var(--forest);
-  animation:markSpin 14s linear infinite;
+  filter:drop-shadow(0 0 4px rgba(28,74,53,.2));
+  animation:markSpinTilt 14s linear infinite;
 }
 .ask-mark svg{width:100%; height:100%; fill:currentColor; display:block}
+@keyframes markSpinTilt{from{transform:rotate(45deg)}to{transform:rotate(405deg)}}
 .ask-input{
   flex:1; background:var(--cream-2); border:1px solid var(--border);
   border-radius:999px; padding:.65rem 1rem; font-size:.92rem;
@@ -623,7 +628,7 @@ let currentLensDeals = [];
 // ── LENSES ────────────────────────────────────────────────────────────────
 const LENSES = [
   { id:'curated',     label:'the picks I\'d open first',
-    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 5),
+    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)),
     sectionEyebrow:'Today\'s picks', sectionTitle:'What I\'d open first' },
   { id:'standouts',   label:'the standouts',
     apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
@@ -960,7 +965,30 @@ function syncWatchBadge(){
 }
 
 // ── ANALYST CHAT (overlay launched from the ask-bar) ──────────────────
-const chatMsgs = [];
+let chatMsgs = [];
+const DASH_CHAT_KEY = 'rr_dash_chat';
+try {
+  const raw = sessionStorage.getItem(DASH_CHAT_KEY);
+  if(raw){
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed)) chatMsgs = parsed.slice(-10);
+  }
+} catch(e){}
+function saveDashChat(){
+  try { sessionStorage.setItem(DASH_CHAT_KEY, JSON.stringify(chatMsgs.slice(-10))); } catch(e){}
+}
+function restoreDashChatMessages(){
+  const wrap = document.getElementById('chatMsgs');
+  if(!wrap || !chatMsgs.length) return;
+  wrap.innerHTML = '';
+  chatMsgs.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + (m.role === 'user' ? 'user' : 'assistant');
+    div.textContent = m.content;
+    wrap.appendChild(div);
+  });
+  wrap.scrollTop = wrap.scrollHeight;
+}
 function openChatWithQuery(){
   const input = document.getElementById('askInput');
   const q = input.value.trim();
@@ -971,6 +999,7 @@ function openChatWithQuery(){
   sendChatMessage();
 }
 function openChat(){
+  restoreDashChatMessages();
   document.getElementById('chatOverlay').classList.add('open');
   setTimeout(() => document.getElementById('chatInput').focus(), 100);
 }
@@ -1074,6 +1103,7 @@ async function sendChatMessage(){
       chatMsgs.push({ role:'user', content: message });
       chatMsgs.push({ role:'assistant', content: fullText });
       if(chatMsgs.length > 10) chatMsgs.splice(0, chatMsgs.length - 10);
+      saveDashChat();
     }
   } catch(e){
     loadingEl.textContent = 'Something went wrong. Try again.';
