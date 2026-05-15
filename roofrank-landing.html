@@ -344,8 +344,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   .bm-body{font-size:.98rem}
   .bm-picks{grid-template-columns:1fr;gap:.5rem}
 }
-.ai-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:.3rem .75rem;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:1rem}
-.ai-badge-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+/* Eyebrow in the AI section needs special color for the dark surface */
+.ai-section .eyebrow{color:var(--sage);margin-bottom:1rem}
 @media(max-width:768px){.ai-grid{grid-template-columns:1fr}}
 
 /* Inline score badge */
@@ -1165,27 +1165,27 @@ footer{background:var(--ink);padding:4rem 0 2rem}
             <span class="deal-signal sig-sb">Strong Buy</span>
           </div>
           <div class="deal-row-item" style="animation-delay:0.00s;animation-delay:0.12s">
-            <div class="score-badge-sm buy">74</div>
+            <div class="score-badge-sm buy">82</div>
             <div class="deal-info">
-              <div class="deal-address">48 Rosseter St</div>
-              <div class="deal-city">Boston, MA · 3 Units · Triple Decker</div>
+              <div class="deal-address">1842 Maple Ave</div>
+              <div class="deal-city">Phoenix, AZ · 4 Units · Multifamily</div>
               <div class="deal-kpis">
-                <span class="deal-kpi g">CoC 7.6%</span>
-                <span class="deal-kpi">Cap 7.9%</span>
-                <span class="deal-kpi">$825K</span>
+                <span class="deal-kpi g">CoC 9.2%</span>
+                <span class="deal-kpi">Cap 8.1%</span>
+                <span class="deal-kpi">$685K</span>
               </div>
             </div>
             <span class="deal-signal sig-sb">Strong Buy</span>
           </div>
           <div class="deal-row-item" style="animation-delay:0.12s;animation-delay:0.24s">
-            <div class="score-badge-sm buy">71</div>
+            <div class="score-badge-sm buy">74</div>
             <div class="deal-info">
-              <div class="deal-address">112 Savin Hill Ave</div>
-              <div class="deal-city">Providence, RI · 4 Units · Quad</div>
+              <div class="deal-address">605 N 14th St</div>
+              <div class="deal-city">Tampa, FL · 6 Units · Multifamily</div>
               <div class="deal-kpis">
-                <span class="deal-kpi">CoC 7.0%</span>
-                <span class="deal-kpi">Cap 6.8%</span>
-                <span class="deal-kpi">$1.1M</span>
+                <span class="deal-kpi g">CoC 8.6%</span>
+                <span class="deal-kpi">Cap 7.4%</span>
+                <span class="deal-kpi">$920K</span>
               </div>
             </div>
             <span class="deal-signal sig-buy">Buy</span>
@@ -1193,12 +1193,12 @@ footer{background:var(--ink);padding:4rem 0 2rem}
           <div class="deal-row-item" style="opacity:.5;animation-delay:0.36s">
             <div class="score-badge-sm watch">51</div>
             <div class="deal-info">
-              <div class="deal-address">77 Centre St</div>
-              <div class="deal-city">Worcester, MA · 6 Units</div>
+              <div class="deal-address">9 Beechwood Pl</div>
+              <div class="deal-city">Austin, TX · 4 Units</div>
               <div class="deal-kpis">
                 <span class="deal-kpi">CoC 6.2%</span>
                 <span class="deal-kpi">Cap 5.8%</span>
-                <span class="deal-kpi">$1.85M</span>
+                <span class="deal-kpi">$1.1M</span>
               </div>
             </div>
             <span class="deal-signal sig-watch">Watch</span>
@@ -1212,9 +1212,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 
       <!-- Floating alert -->
       <div class="floating-alert" style="animation:dealSlideIn .5s ease .8s both">
-        <div class="fa-head"><div class="fa-dot"></div><span class="fa-label">New Alert</span></div>
-        <div class="fa-title">Strong Buy just listed</div>
-        <div class="fa-sub">241 Broad St, Providence · Score 75</div>
+        <div class="fa-head"><div class="fa-dot"></div><span class="fa-label">Just listed</span></div>
+        <div class="fa-title">Strong Buy in your market</div>
+        <div class="fa-sub">241 Broad St, Tampa · Score 78</div>
       </div>
     </div>
   </div>
@@ -1243,9 +1243,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 <!-- AI FEATURES -->
 <section id="features" class="ai-section">
   <div class="inner">
-    <div class="ai-badge"><span class="ai-badge-dot"></span>Powered by AI</div>
-    <h2 class="section-h2" style="max-width:560px">Not just data.<br><em>Intelligence.</em></h2>
-    <p class="section-sub" style="color:rgba(255,255,255,.6);max-width:540px">A real analyst would score every listing, read every detail, and tell you which deals to pursue and what to offer. RoofRank does that — in seconds, at scale, every day.</p>
+    <div class="eyebrow" style="color:var(--sage)">What your analyst does</div>
+    <h2 class="section-h2" style="max-width:580px">Score it.<br>Read it.<br><em>Negotiate it.</em></h2>
+    <p class="section-sub" style="color:rgba(255,255,255,.6);max-width:540px">A real analyst would score every listing, read every detail, and tell you which deals to pursue and what to offer. RoofRank does it — every day, in seconds.</p>
     <div class="ai-grid">
       <div class="ai-card">
         <div class="ai-card-icon">
