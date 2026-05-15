@@ -20,8 +20,8 @@
   --mono:'DM Mono',monospace;
   --sw:240px;--r:10px
 }
-html{color-scheme:light}
-body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+html{color-scheme:light;overflow-x:hidden}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw}
 .sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
 .sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
 .sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
@@ -40,7 +40,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .sb-foot{padding:.75rem 1.3rem;border-top:1px solid var(--border);flex-shrink:0}
 .sb-upgrade{display:block;width:100%;text-align:center;background:var(--forest);color:#fff;border:none;padding:.5rem;border-radius:var(--r);font-family:var(--sans);font-size:.76rem;font-weight:500;cursor:pointer;text-decoration:none}
 .sb-upgrade:hover{background:var(--forest-2)}
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;max-width:100%}
 .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
 .tb-left{display:flex;align-items:baseline;gap:.55rem}
 .tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
@@ -226,8 +226,9 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .rt{fill:none;stroke:var(--cream-3);stroke-width:4}
 .rf{fill:none;stroke-width:4;stroke-linecap:round}
 .rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:500}
-.dbody{flex:1;min-width:0}
-.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.dbody{flex:1;min-width:0;overflow:hidden}
+.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:.4rem;min-width:0;margin-bottom:1px}
+.daddr-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dmeta{font-size:.68rem;color:var(--muted);margin-bottom:4px}
 .dkpis{display:flex;gap:.28rem;flex-wrap:wrap}
 .kp{font-size:.62rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
@@ -280,10 +281,12 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 }
 
 @media(max-width:600px){
-  .ana-brief-card{padding:1.15rem 1.15rem;border-radius:10px}
+  .ana-brief-card{padding:1.15rem 1.15rem;border-radius:10px;max-width:100%}
   .ana-brief-body{font-size:.95rem}
   .ana-brief-picks{margin:0 -1.15rem;padding-left:1.15rem;padding-right:1.15rem}
-  .ana-brief-pick{min-width:220px}
+  .ana-brief-pick{min-width:200px;max-width:240px}
+  .ana-brief-head{flex-wrap:wrap;gap:.4rem}
+  .ana-brief-live{font-size:.58rem}
 }
 
 @media(max-width:430px){
@@ -804,7 +807,7 @@ function dealCardHtml(d,i,compact=false){
     return`<div class="deal ${cl}${compact?' compact':''}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
       <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
       <div class="dbody">
-        <div class="daddr">${pickBadge}${d.address||'Unknown'}</div>
+        <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
         <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
         <div class="dkpis">
           ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
