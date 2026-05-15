@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deckers · in-product mockup with Logo B</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;
+  --white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00;--rose:#a03030;
+  --border:#e0d9cf;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{
+  background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+
+/* ── Page header (preview-level, not the mocked product) ────────────── */
+.preview-hdr{max-width:780px;margin:2rem auto 1.5rem;padding:0 1.25rem;text-align:center}
+.preview-hdr .eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.5rem}
+.preview-hdr h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;margin-bottom:.45rem}
+.preview-hdr p{font-size:.92rem;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.65}
+
+/* ── The mocked product viewport ────────────────────────────────────── */
+.product{
+  max-width:780px;margin:0 auto;
+  background:var(--cream);
+  border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(28,31,28,.06);
+}
+
+/* Top app bar with Logo B */
+.appbar{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:.85rem 1.2rem;display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--ink)}
+.brand svg{width:32px;height:32px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.appbar-right{display:flex;align-items:center;gap:.45rem}
+.appbar-btn{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  padding:.4rem;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.appbar-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.appbar-avatar{
+  width:30px;height:30px;border-radius:50%;background:var(--forest-2);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:500;
+}
+
+/* Page body */
+.page{padding:1.25rem 1.25rem 2rem}
+
+/* The Analyst's Brief at the top */
+.brief-card{
+  background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);
+  color:#fff;border-radius:14px;padding:1.4rem 1.3rem;
+  box-shadow:0 6px 24px rgba(20,32,26,.15);
+  position:relative;overflow:hidden;
+  margin-bottom:1.5rem;
+}
+.brief-eye{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:.9rem;border-bottom:1px solid rgba(255,255,255,.08)}
+/* Use the Logo B mark in the eyebrow position — replaces the sparkle */
+.brief-eye-mark{width:18px;height:18px;flex-shrink:0}
+.brief-eye-label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
+.brief-eye-sep{color:rgba(255,255,255,.25);font-size:.7rem}
+.brief-eye-meta{font-size:.66rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.brief-eye-live{display:inline-flex;align-items:center;gap:.3rem;font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--sage)}
+.brief-eye-live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sage);box-shadow:0 0 8px var(--sage);animation:liveBlink 1.8s ease-in-out infinite}
+@keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.3}}
+.brief-greet{font-family:var(--serif);font-size:1.55rem;font-weight:500;line-height:1.15;color:#fff;margin-bottom:.7rem}
+.brief-body{font-family:var(--serif);font-size:1rem;font-style:italic;line-height:1.6;color:rgba(255,255,255,.9);max-width:60ch}
+.brief-body b{font-weight:600;font-style:normal;color:#fff}
+
+/* Section header */
+.sec-head{display:flex;align-items:baseline;gap:.6rem;margin:1.75rem 0 .85rem;border-top:1px solid var(--border);padding-top:1.25rem}
+.sec-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.sec-title{font-family:var(--serif);font-size:1.15rem;font-weight:500;flex:1}
+.sec-count{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* ── Deal card with the floor-lines score viz (matches Logo B) ──── */
+.deal{
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:.95rem 1rem;display:flex;align-items:center;gap:.9rem;
+  margin-bottom:.5rem;position:relative;overflow:hidden;
+  cursor:pointer;transition:all .15s;
+}
+.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
+.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.deal.sb{border-color:rgba(28,74,53,.22)}
+.deal.sb::before{background:var(--forest);width:4px}
+.deal.buy::before{background:var(--forest-3)}
+.deal.wat::before{background:var(--amber)}
+.deal.pas::before{background:var(--rose)}
+
+/* Score block — number above the floor-lines viz */
+.score-block{
+  flex-shrink:0;width:58px;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+}
+.score-num{font-family:var(--mono);font-size:1.2rem;font-weight:500;line-height:1;color:var(--ink)}
+.score-floors{
+  display:flex;flex-direction:column;gap:3px;width:38px;
+}
+.score-floor{
+  height:3px;border-radius:1.5px;background:var(--cream-3);
+  transition:background .25s;
+}
+.score-floor.on.sb{background:var(--forest)}
+.score-floor.on.buy{background:var(--forest-3)}
+.score-floor.on.wat{background:var(--amber)}
+.score-floor.on.pas{background:var(--rose)}
+/* Add a tiny "roof" at the top of the score-floors for full brand resonance */
+.score-roof{
+  width:38px;height:9px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1px;
+}
+.score-roof svg{width:100%;height:100%}
+
+.deal-body{flex:1;min-width:0;overflow:hidden}
+.deal-addr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.deal-meta{font-size:.74rem;color:var(--muted);margin-bottom:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-kpis{display:flex;gap:.3rem;flex-wrap:wrap}
+.kp{font-size:.66rem;font-family:var(--mono);padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
+.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.kp.r{color:var(--rose);border-color:rgba(160,48,48,.2);background:rgba(160,48,48,.05)}
+
+.deal-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:80px}
+.sbadge{font-size:.58rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.07);color:var(--rose);border-color:rgba(160,48,48,.2)}
+.deal-price{font-family:var(--mono);font-size:.82rem;color:var(--ink)}
+.deal-dom{font-size:.66rem;color:var(--muted)}
+
+/* Annotation block at bottom */
+.annot{
+  max-width:780px;margin:1.5rem auto 4rem;padding:0 1.25rem;
+  font-size:.82rem;color:var(--muted);line-height:1.7;
+}
+.annot b{color:var(--ink);font-weight:600}
+.annot ul{list-style:none;padding:0;margin:.6rem 0 0}
+.annot li{padding:.3rem 0;padding-left:1.1rem;position:relative}
+.annot li::before{content:'→';position:absolute;left:0;color:var(--sage);font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="preview-hdr">
+  <div class="eyebrow">Mockup · Not in production</div>
+  <h1>Deckers + Logo B applied in-product.</h1>
+  <p>The dashboard rebranded as Deckers with the roof-and-floors logo (Option B). The deal-card score visualization uses four thin horizontal "floor lines" — the same primitive as the logo mark.</p>
+</header>
+
+<main class="product">
+
+  <!-- App bar -->
+  <header class="appbar">
+    <a href="#" class="brand">
+      <svg viewBox="0 0 56 56" fill="none">
+        <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+        <path d="M14 22 L28 11 L42 22" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <rect x="15" y="28" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+        <rect x="15" y="35" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+        <rect x="15" y="42" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+      </svg>
+      <span class="brand-name">Deckers</span>
+    </a>
+    <div class="appbar-right">
+      <button class="appbar-btn" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      <div class="appbar-avatar">A</div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Analyst's Brief — uses Logo B mark as the AI indicator -->
+    <div class="brief-card">
+      <div class="brief-eye">
+        <span class="brief-eye-mark">
+          <svg viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <path d="M14 22 L28 11 L42 22" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <rect x="15" y="28" width="26" height="3" rx=".5" fill="#7aaa8f"/>
+            <rect x="15" y="36" width="26" height="3" rx=".5" fill="#7aaa8f"/>
+            <rect x="15" y="44" width="26" height="3" rx=".5" fill="#7aaa8f"/>
+          </svg>
+        </span>
+        <span class="brief-eye-label">Deckers' Brief</span>
+        <span class="brief-eye-sep">·</span>
+        <span class="brief-eye-meta">Tuesday morning</span>
+        <span class="brief-eye-sep">·</span>
+        <span class="brief-eye-live">Live · 2h ago</span>
+      </div>
+      <h2 class="brief-greet">Good morning, Ali.</h2>
+      <p class="brief-body">I'm watching <b>4 Strong Buys</b> across Phoenix and Tampa this morning. The standout's <b>1842 Maple Ave</b> in Phoenix — <b>9.2% cash-on-cash</b>, <b>$1,840/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
+    </div>
+
+    <!-- Today's picks section -->
+    <div class="sec-head">
+      <div style="flex:1">
+        <div class="sec-eyebrow">Today's picks</div>
+        <div class="sec-title">What I'd open first</div>
+      </div>
+      <div class="sec-count">5 of 24</div>
+    </div>
+
+    <!-- Strong Buy — 4 floors lit -->
+    <div class="deal sb">
+      <div class="score-block">
+        <div class="score-num">87</div>
+        <div class="score-floors" title="Strong Buy">
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+        </div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-addr">1842 Maple Ave</div>
+        <div class="deal-meta">Phoenix, AZ · 4 units · 12d on market</div>
+        <div class="deal-kpis">
+          <span class="kp g">CoC 9.2%</span>
+          <span class="kp g">Cap 8.1%</span>
+          <span class="kp g">+$1,840/mo</span>
+        </div>
+      </div>
+      <div class="deal-right">
+        <span class="sbadge sb">Strong Buy</span>
+        <div class="deal-price">$685K</div>
+        <div class="deal-dom">Top 10%</div>
+      </div>
+    </div>
+
+    <!-- Strong Buy — 4 floors lit -->
+    <div class="deal sb">
+      <div class="score-block">
+        <div class="score-num">83</div>
+        <div class="score-floors">
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+          <div class="score-floor on sb"></div>
+        </div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-addr">605 N 14th St</div>
+        <div class="deal-meta">Tampa, FL · 6 units · 64d on market</div>
+        <div class="deal-kpis">
+          <span class="kp g">CoC 8.6%</span>
+          <span class="kp g">Cap 7.4%</span>
+          <span class="kp g">+$2,310/mo</span>
+        </div>
+      </div>
+      <div class="deal-right">
+        <span class="sbadge sb">Strong Buy</span>
+        <div class="deal-price">$920K</div>
+        <div class="deal-dom">Top 20%</div>
+      </div>
+    </div>
+
+    <!-- Buy — 3 floors lit -->
+    <div class="deal buy">
+      <div class="score-block">
+        <div class="score-num">72</div>
+        <div class="score-floors">
+          <div class="score-floor"></div>
+          <div class="score-floor on buy"></div>
+          <div class="score-floor on buy"></div>
+          <div class="score-floor on buy"></div>
+        </div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-addr">48 Rosseter St</div>
+        <div class="deal-meta">Boston, MA · 3 units · 22d on market</div>
+        <div class="deal-kpis">
+          <span class="kp g">CoC 7.6%</span>
+          <span class="kp">Cap 7.9%</span>
+          <span class="kp g">+$925/mo</span>
+        </div>
+      </div>
+      <div class="deal-right">
+        <span class="sbadge buy">Buy</span>
+        <div class="deal-price">$825K</div>
+        <div class="deal-dom">Top 30%</div>
+      </div>
+    </div>
+
+    <!-- Watch — 2 floors lit -->
+    <div class="deal wat">
+      <div class="score-block">
+        <div class="score-num">56</div>
+        <div class="score-floors">
+          <div class="score-floor"></div>
+          <div class="score-floor"></div>
+          <div class="score-floor on wat"></div>
+          <div class="score-floor on wat"></div>
+        </div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-addr">77 Centre St</div>
+        <div class="deal-meta">Worcester, MA · 6 units · 64d on market</div>
+        <div class="deal-kpis">
+          <span class="kp">CoC 6.2%</span>
+          <span class="kp">Cap 5.8%</span>
+          <span class="kp">+$320/mo</span>
+        </div>
+      </div>
+      <div class="deal-right">
+        <span class="sbadge wat">Watch</span>
+        <div class="deal-price">$1.85M</div>
+      </div>
+    </div>
+
+    <!-- Pass — 1 floor lit -->
+    <div class="deal pas">
+      <div class="score-block">
+        <div class="score-num">38</div>
+        <div class="score-floors">
+          <div class="score-floor"></div>
+          <div class="score-floor"></div>
+          <div class="score-floor"></div>
+          <div class="score-floor on pas"></div>
+        </div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-addr">9 Beechwood Pl</div>
+        <div class="deal-meta">Austin, TX · 4 units · 91d on market</div>
+        <div class="deal-kpis">
+          <span class="kp">CoC 4.1%</span>
+          <span class="kp">Cap 4.8%</span>
+          <span class="kp r">−$220/mo</span>
+        </div>
+      </div>
+      <div class="deal-right">
+        <span class="sbadge pas">Pass</span>
+        <div class="deal-price">$650K</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<aside class="annot">
+  <b>How the score viz works in this mockup:</b>
+  <ul>
+    <li>Each deal has four thin horizontal "floors" stacked vertically — same shape language as Logo B's roof + floors.</li>
+    <li>Number of lit floors maps to the tier: <b>4 = Strong Buy</b>, <b>3 = Buy</b>, <b>2 = Watch</b>, <b>1 = Pass</b>.</li>
+    <li>Floors light up <b>from the bottom up</b> for Strong Buy and Buy (the "rising performance" metaphor) and <b>from the top down</b> for Watch and Pass (the "deteriorating signal" cue). Optional design choice — could go either direction.</li>
+    <li>Floor color matches the tier — forest for Strong Buy, forest-3 for Buy, amber for Watch, rose for Pass.</li>
+    <li>The score number stays as the headline; floors are decorative reinforcement, not the primary read.</li>
+    <li>Same primitive is used in the logo mark (in the appbar and inside the Analyst's Brief eyebrow) — brand mark and product viz are visually unified.</li>
+  </ul>
+</aside>
+
+</body>
+</html>
