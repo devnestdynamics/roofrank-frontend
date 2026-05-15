@@ -178,16 +178,23 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 @media(max-width:540px){
   .content{padding:1rem .9rem 5.5rem}
   .topbar{padding:0 .9rem}
+  .topbar{display:none}
+  .main{padding-top:0}
   .ctrl-title{display:none}
-  .deal{padding:.7rem .8rem;gap:.6rem}
-  .ring{width:40px;height:40px}
-  .deal.sb .ring{width:44px;height:44px}
-  .rn{font-size:.75rem}
-  .daddr{font-size:.82rem}
-  .dmeta{font-size:.63rem}
-  .kp{font-size:.58rem;padding:1px 4px}
-  .dprice{font-size:.75rem}
-  .sbadge{font-size:.55rem;padding:2px 5px}
+  .deal{padding:.85rem .85rem;gap:.7rem}
+  .ring{width:48px;height:48px}
+  .deal.sb .ring{width:52px;height:52px}
+  .rn{font-size:.88rem}
+  .daddr{font-size:.92rem;line-height:1.3}
+  .dmeta{font-size:.72rem;margin-bottom:6px}
+  .kp{font-size:.66rem;padding:2px 6px}
+  /* Mobile: drop DSCR + percentile chip to reduce density */
+  .kp[data-metric="dscr"]{display:none}
+  .ddom[data-pct]{display:none}
+  .dprice{font-size:.88rem}
+  .sbadge{font-size:.6rem;padding:3px 7px}
+  .ddom{font-size:.68rem}
+  .dtake{font-size:.85rem;line-height:1.5;margin-top:.55rem}
   .controls{flex-direction:column;align-items:flex-start}
   .tb-left{flex-direction:column;align-items:flex-start;gap:.1rem}
   .tb-sub{font-size:.62rem}
@@ -418,8 +425,12 @@ function dealTake(d, fin, score){
   if(dom != null && dom <= 3  && score >= 70) return `Listed ${dom}d ago — first-mover window`;
   if(dom != null && dom <= 7  && score >= 75) return `Fresh listing, strong fundamentals`;
 
-  // Extremes — say something when score is unusually high or low
-  if(score >= 82 && coc != null && coc >= 12) return `${coc.toFixed(1)}% return — outsized for this market`;
+  // Extremes — say something when score is unusually high or low.
+  // Vary the phrasing based on which dimension is most distinctive so
+  // adjacent cards with similar profiles don't echo each other.
+  if(score >= 82 && coc != null && coc >= 15) return `${coc.toFixed(1)}% return is rare territory`;
+  if(score >= 82 && coc != null && coc >= 12) return `${coc.toFixed(1)}% cash-on-cash, clean DSCR`;
+  if(score >= 82 && cf != null && cf > 1800)  return `Earns $${Math.round(cf).toLocaleString()}/mo — top-tier deal`;
   if(score >= 82)                              return `${score}/100 — top-tier scoring`;
   if(score < 45)                               return `${score}/100 — below investment thresholds`;
   if(score < 60 && dom != null && dom >= 60)   return `Weak deal sitting ${dom}d — sellers will eventually fold`;
@@ -600,7 +611,7 @@ function dealCardHtml(d,i){
         <div class="dkpis">
           ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
           ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
-          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
+          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}" data-metric="dscr">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
           ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
         </div>
         ${take ? `<div class="dtake">${take}</div>` : ''}
@@ -608,7 +619,7 @@ function dealCardHtml(d,i){
       <div class="dright">
         <span class="sbadge ${cl}">${sig}</span>
         <div class="dprice">${fmtPrice(d.askingPrice)}</div>
-        ${pct?`<div class="ddom" style="color:var(--forest);font-weight:500">${pct}</div>`:''} 
+        ${pct?`<div class="ddom" data-pct="1" style="color:var(--forest);font-weight:500">${pct}</div>`:''}
         ${d.daysOnMarket!=null?`<div class="ddom">${d.daysOnMarket<=2?'<span class="fresh-dot"></span>':d.daysOnMarket<=5?'<span class="fresh-dot hot"></span>':''}${d.daysOnMarket}d listed</div>`:''}
         <button class="wbtn ${on?'on':''}" onclick="toggleW('${d.id}',event)"><svg viewBox="0 0 24 24" fill="${on?c:'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
       </div>
