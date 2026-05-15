@@ -403,19 +403,19 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 /* ── STAT BAR ── */
 .stat-bar{
   background:var(--forest);
-  display:grid;grid-template-columns:repeat(4,1fr);
+  display:grid;grid-template-columns:repeat(2,1fr);
   border-top:1px solid rgba(255,255,255,.08)
 }
 .stat-cell{
-  padding:2rem;text-align:center;
+  padding:2.25rem 2rem;text-align:center;
   border-right:1px solid rgba(255,255,255,.1)
 }
 .stat-cell:last-child{border-right:none}
 .stat-cell-val{
-  font-family:var(--serif);font-size:2.1rem;font-weight:400;
-  color:#fff;line-height:1;margin-bottom:.35rem
+  font-family:var(--serif);font-size:2.6rem;font-weight:400;
+  color:#fff;line-height:1;margin-bottom:.45rem
 }
-.stat-cell-label{font-size:.75rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em}
+.stat-cell-label{font-size:.8rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.1em}
 
 /* ── SECTIONS ── */
 section{padding:6rem 0}
@@ -630,7 +630,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .hero-right{padding:0 2rem 4rem;justify-content:flex-start}
   .product-card{max-width:100%}
   .floating-alert{right:2rem;bottom:1.5rem}
-  .stat-bar{grid-template-columns:repeat(2,1fr)}
   .hiw-steps{grid-template-columns:1fr}
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
   .pricing-grid{grid-template-columns:1fr}
@@ -640,7 +639,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .inner{padding:0 1.5rem}
 }
 @media(max-width:560px){
-  .stat-bar{grid-template-columns:1fr 1fr}
   .hero-left{padding:4.5rem 1.25rem 2rem}
   .hero-right{padding:0 1.25rem 3rem}
   .metrics-grid{grid-template-columns:1fr}
@@ -1225,20 +1223,12 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 <!-- STAT BAR -->
 <div class="stat-bar">
   <div class="stat-cell">
-    <div class="stat-cell-val">8</div>
-    <div class="stat-cell-label">Metrics per deal</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-cell-val">1,200+</div>
-    <div class="stat-cell-label">Deals analyzed in beta</div>
-  </div>
-  <div class="stat-cell">
     <div class="stat-cell-val">30 sec</div>
     <div class="stat-cell-label">Per deal · vs 3 hours in Excel</div>
   </div>
   <div class="stat-cell">
-    <div class="stat-cell-val">2–6 units</div>
-    <div class="stat-cell-label">The investor's sweet spot</div>
+    <div class="stat-cell-val">$0</div>
+    <div class="stat-cell-label">To start · No card required</div>
   </div>
 </div>
 
