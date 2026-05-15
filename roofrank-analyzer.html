@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RoofRank — Analyzer</title>
+<title>RoofRank — Add a deal</title>
 <link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -98,6 +98,70 @@ input[type=range]{width:100%;accent-color:var(--forest)}
 .stress-knob{width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .stress-toggle.on .stress-knob{left:19px}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.result-col{order:-1}}
+
+/* ── ADD-A-DEAL HERO (Option A) ── */
+.ad-hero{max-width:680px;margin:0 auto;padding:3rem 1.5rem 1rem;text-align:center}
+.ad-eyebrow{display:inline-flex;align-items:center;gap:.55rem;color:var(--forest);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1rem}
+.ad-mark{display:inline-block;width:14px;height:14px;color:var(--sage-border);animation:adSpin 14s linear infinite}
+.ad-mark svg{width:100%;height:100%;fill:var(--forest);display:block}
+@keyframes adSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.ad-title{font-family:var(--serif);font-size:2.4rem;font-weight:500;letter-spacing:-.012em;line-height:1.1;margin-bottom:.55rem;color:var(--ink)}
+.ad-title em{font-style:italic;color:var(--forest)}
+.ad-sub{color:var(--muted);font-size:.92rem;line-height:1.65;max-width:520px;margin:0 auto 2.25rem}
+.ad-form{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:left;box-shadow:0 6px 22px rgba(28,31,28,.04)}
+.ad-field-row{margin-bottom:1rem}
+.ad-field-row label{display:block;font-size:.66rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem}
+.ad-field-row input{width:100%;padding:.72rem .9rem;border:1px solid var(--border-2);border-radius:10px;font-size:.95rem;font-family:var(--sans);background:#fff;color:var(--ink);outline:none;transition:border-color .15s}
+.ad-field-row input:focus{border-color:var(--forest)}
+.ad-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1rem}
+.ad-grid2 .ad-field-row{margin-bottom:0}
+.ad-btn-primary{display:block;width:100%;background:var(--forest);color:#fff;border:none;padding:.85rem;border-radius:10px;font-family:var(--sans);font-size:.95rem;font-weight:500;cursor:pointer;transition:background .15s;margin-top:.4rem}
+.ad-btn-primary:hover{background:var(--forest-2)}
+.ad-btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.ad-form-foot{text-align:center;margin-top:.85rem;font-size:.7rem;color:var(--faint);font-family:var(--mono)}
+.ad-result{max-width:680px;margin:1.5rem auto 0;padding:0 1.5rem}
+.ar-loading{background:#fff;border:1px solid var(--border);border-radius:14px;padding:2rem;text-align:center;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:.9rem}
+.ar-mark{display:inline-block;width:16px;height:16px;animation:adSpin 1.4s linear infinite}
+.ar-mark svg{width:100%;height:100%;fill:var(--forest);display:block}
+.ar-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.5rem;display:none}
+.ar-card.show{display:block;animation:arFade .5s ease}
+@keyframes arFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ar-top{display:flex;gap:1.25rem;align-items:center;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
+.ar-ring{position:relative;width:96px;height:96px;flex-shrink:0}
+.ar-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ar-rt{fill:none;stroke:var(--cream-2);stroke-width:6}
+.ar-rf{fill:none;stroke-width:6;stroke-linecap:round;stroke-dasharray:282.74;stroke-dashoffset:282.74;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1)}
+.ar-ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ar-score-num{font-family:var(--mono);font-size:2.1rem;font-weight:500;line-height:1}
+.ar-score-sig{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.ar-info{flex:1;min-width:0}
+.ar-addr{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;line-height:1.3}
+.ar-narrative{font-size:.85rem;color:var(--muted);line-height:1.6}
+.ar-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:1.1rem}
+.ar-kpi{background:var(--cream);border:1px solid var(--border);border-radius:9px;padding:.65rem .5rem;text-align:center}
+.ar-kpi-v{font-family:var(--mono);font-size:.95rem;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.05}
+.ar-kpi-l{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.ar-assumptions{background:var(--cream);border:1px solid var(--border);border-radius:9px;padding:.7rem .85rem;font-size:.74rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+.ar-assumptions strong{color:var(--ink);font-weight:500}
+.ar-actions{display:flex;gap:.55rem;flex-wrap:wrap;justify-content:center}
+.ar-btn-ghost{background:none;border:1px solid var(--border-2);color:var(--muted);padding:.5rem .95rem;border-radius:8px;font-family:var(--sans);font-size:.78rem;cursor:pointer;transition:all .15s}
+.ar-btn-ghost:hover{border-color:var(--forest);color:var(--forest)}
+.ar-btn-ghost.primary{background:var(--forest);color:#fff;border-color:var(--forest)}
+.ar-btn-ghost.primary:hover{background:var(--forest-2)}
+
+.advanced-toggle{max-width:680px;margin:1.5rem auto;padding:0 1.5rem;text-align:center}
+.advanced-toggle button{background:none;border:none;color:var(--muted);font-family:var(--sans);font-size:.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1rem;border:1px dashed var(--border-2);border-radius:8px;transition:all .15s}
+.advanced-toggle button:hover{color:var(--forest);border-color:var(--forest)}
+.advanced-toggle svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.advanced-toggle.open svg{transform:rotate(180deg)}
+
+@media(max-width:560px){
+  .ad-hero{padding:2rem 1.25rem .5rem}
+  .ad-title{font-size:1.95rem}
+  .ad-grid2{grid-template-columns:1fr}
+  .ar-kpis{grid-template-columns:repeat(2,1fr)}
+  .ar-top{flex-direction:column;text-align:center;gap:1rem}
+}
 </style>
 <script src="api.js"></script>
 <link rel="manifest" href="/manifest.json">
@@ -113,10 +177,85 @@ input[type=range]{width:100%;accent-color:var(--forest)}
   <div class="nav-left">
     <button class="back" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
     <span style="color:var(--border-2);">/</span>
-    <span class="nav-brand">Deal Analyzer</span>
+    <span class="nav-brand">Add a deal</span>
   </div>
 </nav>
 
+<!-- ── ADD A DEAL — quick path ── -->
+<section class="ad-hero">
+  <div class="ad-eyebrow">
+    <span class="ad-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></span>
+    <span>Add a deal</span>
+  </div>
+  <h1 class="ad-title">Score any <em>address</em>.</h1>
+  <p class="ad-sub">Tell me about a deal you're considering — I'll score it on cash flow, cap rate, DSCR, and the other metrics I use for everything in your feed.</p>
+
+  <form class="ad-form" id="qForm" onsubmit="return quickAnalyze(event)">
+    <div class="ad-field-row">
+      <label>Address</label>
+      <input type="text" id="qAddr" placeholder="142 Main St, Lynn MA" autocomplete="street-address" required>
+    </div>
+    <div class="ad-grid2">
+      <div class="ad-field-row">
+        <label>Asking price</label>
+        <input type="text" id="qPrice" placeholder="$650,000" required inputmode="numeric">
+      </div>
+      <div class="ad-field-row">
+        <label>Gross monthly rent</label>
+        <input type="text" id="qRent" placeholder="$4,200" required inputmode="numeric">
+      </div>
+    </div>
+    <button class="ad-btn-primary" type="submit" id="qSubmit">Analyze this deal →</button>
+    <div class="ad-form-foot">Defaults: 25% down · 6.5% rate · 30yr · PITI baseline</div>
+  </form>
+</section>
+
+<div class="ad-result" id="adResult" style="display:none">
+  <div class="ar-loading" id="arLoading">
+    <span class="ar-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></span>
+    <span id="arLoadingText">Looking up the property…</span>
+  </div>
+  <div class="ar-card" id="arCard">
+    <div class="ar-top">
+      <div class="ar-ring">
+        <svg viewBox="0 0 100 100">
+          <circle class="ar-rt" cx="50" cy="50" r="45"/>
+          <circle class="ar-rf" id="arRingFill" cx="50" cy="50" r="45"/>
+        </svg>
+        <div class="ar-ring-inner">
+          <div class="ar-score-num" id="arScore">—</div>
+          <div class="ar-score-sig" id="arSig">—</div>
+        </div>
+      </div>
+      <div class="ar-info">
+        <div class="ar-addr" id="arAddr">—</div>
+        <div class="ar-narrative" id="arNarrative">—</div>
+      </div>
+    </div>
+    <div class="ar-kpis">
+      <div class="ar-kpi"><div class="ar-kpi-v" id="arCF">—</div><div class="ar-kpi-l">Monthly CF</div></div>
+      <div class="ar-kpi"><div class="ar-kpi-v" id="arCap">—</div><div class="ar-kpi-l">Cap rate</div></div>
+      <div class="ar-kpi"><div class="ar-kpi-v" id="arCoc">—</div><div class="ar-kpi-l">CoC</div></div>
+      <div class="ar-kpi"><div class="ar-kpi-v" id="arDscr">—</div><div class="ar-kpi-l">DSCR</div></div>
+    </div>
+    <div class="ar-assumptions">
+      <strong>Quick assumptions:</strong> 25% down, 6.5% rate, 30yr fixed, tax estimated at 1.5%/yr of price, insurance 0.4%/yr. No vacancy or maintenance reserves. Want to dial these in? Use the advanced form below.
+    </div>
+    <div class="ar-actions">
+      <button class="ar-btn-ghost primary" type="button" onclick="openAdvancedFromQuick()">Tweak assumptions ↓</button>
+      <button class="ar-btn-ghost" type="button" onclick="resetQuick()">Try another address</button>
+    </div>
+  </div>
+</div>
+
+<div class="advanced-toggle" id="advToggle">
+  <button type="button" onclick="toggleAdvanced()">
+    <span id="advToggleLabel">Use the advanced form instead</span>
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</div>
+
+<div id="advancedSection" style="display:none">
 <div class="layout">
   <div class="form-col">
     <div class="card open" id="c1">
@@ -265,6 +404,8 @@ input[type=range]{width:100%;accent-color:var(--forest)}
   </div>
   </div>
 </div>
+</div>
+<!-- end #advancedSection -->
 
 <script>
 
@@ -306,8 +447,16 @@ input[type=range]{width:100%;accent-color:var(--forest)}
     else document.body.insertBefore(banner, document.body.firstChild);
   }
 
-  // Trigger recalc after fields are set
-  setTimeout(() => { if(typeof analyze === 'function') analyze(); }, 200);
+  // Coming from deal detail — skip the quick form, show advanced + run
+  setTimeout(() => {
+    const hero = document.querySelector('.ad-hero');
+    const advT = document.getElementById('advToggle');
+    const adv = document.getElementById('advancedSection');
+    if(hero) hero.style.display='none';
+    if(advT) advT.style.display='none';
+    if(adv) adv.style.display='block';
+    if(typeof analyze === 'function') analyze();
+  }, 200);
 })();
 
 async function saveReport(){
@@ -418,8 +567,132 @@ document.querySelectorAll('input[type=number],input[type=range],select').forEach
   el.addEventListener('change', scheduleCalc);
 });
 
-// Auto-run on page load with defaults
-setTimeout(()=>{ analyze(); }, 400);
+// Auto-run on page load only if the advanced section is visible (URL params present)
+setTimeout(()=>{
+  const adv = document.getElementById('advancedSection');
+  if(adv && adv.style.display !== 'none') analyze();
+}, 400);
+
+// ── Quick analyze (Option A — 3-input flow) ─────────────────────────────
+function parseMoneyInput(v){return parseFloat(String(v||'').replace(/[^0-9.]/g,''))||0;}
+function tierColor(s){return s>=75?'#1c4a35':s>=60?'#3e8160':s>=45?'#a06a00':'#a03030';}
+function tierLabel(s){return s>=75?'Strong Buy':s>=60?'Buy':s>=45?'Watch':'Pass';}
+
+function quickNarrative(r, price){
+  const cf = r.cf;
+  const cfStr = (cf >= 0 ? '+$' : '−$') + Math.abs(cf).toLocaleString() + '/mo';
+  if(r.score >= 75) return `Strong fundamentals — ${cfStr} cash flow, DSCR ${r.dscr.toFixed(2)}, cap ${r.cap}%. These pencil cleanly at $${price.toLocaleString()}.`;
+  if(r.score >= 60) return `Workable at $${price.toLocaleString()}. ${cfStr} with DSCR ${r.dscr.toFixed(2)}. Tweak assumptions to stress-test.`;
+  if(r.score >= 45) return `Marginal — ${cfStr} cash flow, DSCR ${r.dscr.toFixed(2)}. Would need a price drop or higher rent to pencil.`;
+  return `Doesn't pencil at $${price.toLocaleString()}. ${cfStr}, DSCR ${r.dscr.toFixed(2)}. Walk unless there's a value-add play.`;
+}
+
+function quickAnalyze(e){
+  e.preventDefault();
+  const addr = document.getElementById('qAddr').value.trim();
+  const price = parseMoneyInput(document.getElementById('qPrice').value);
+  const rent  = parseMoneyInput(document.getElementById('qRent').value);
+  if(!addr || !price || !rent) return false;
+
+  const result = document.getElementById('adResult');
+  const loading = document.getElementById('arLoading');
+  const card = document.getElementById('arCard');
+  const loadingText = document.getElementById('arLoadingText');
+  result.style.display = 'block';
+  loading.style.display = 'flex';
+  card.classList.remove('show');
+  loadingText.textContent = 'Looking up ' + addr.split(',')[0] + '…';
+
+  // Mock the auto-fetch — backend hook lands later. Falls through to PITI-baseline math.
+  setTimeout(() => {
+    loadingText.textContent = 'Scoring…';
+    setTimeout(() => runQuickScore(addr, price, rent), 500);
+  }, 900);
+
+  return false;
+}
+
+function runQuickScore(addr, price, rent){
+  // PITI-baseline assumptions
+  const dp = 25, rate = 6.5, term = 30;
+  const vac = 0, mgmt = 0, maint = 0, util = 0, capex = 0;
+  const annualTax = price * 0.015;
+  const annualIns = price * 0.004;
+
+  const r = calcScenario(price, rent, dp, rate, term, vac, annualTax, annualIns, mgmt, maint, util, capex);
+  const c = tierColor(r.score);
+
+  document.getElementById('arLoading').style.display = 'none';
+  document.getElementById('arCard').classList.add('show');
+  document.getElementById('arAddr').textContent = addr;
+  document.getElementById('arScore').textContent = r.score;
+  document.getElementById('arScore').style.color = c;
+  document.getElementById('arSig').textContent = tierLabel(r.score);
+  document.getElementById('arSig').style.color = c;
+  document.getElementById('arNarrative').textContent = quickNarrative(r, price);
+
+  const cfSign = r.cf >= 0 ? '+' : '−';
+  document.getElementById('arCF').textContent = cfSign + '$' + Math.abs(r.cf).toLocaleString();
+  document.getElementById('arCF').style.color = r.cf >= 0 ? '#1c4a35' : '#a03030';
+  document.getElementById('arCap').textContent = r.cap + '%';
+  document.getElementById('arCoc').textContent = r.coc + '%';
+  document.getElementById('arDscr').textContent = r.dscr.toFixed(2);
+
+  const circ = 2 * Math.PI * 45;
+  const fill = document.getElementById('arRingFill');
+  fill.style.stroke = c;
+  // Force reflow then animate
+  fill.style.strokeDashoffset = circ;
+  requestAnimationFrame(() => {
+    fill.style.strokeDashoffset = circ - (r.score / 100) * circ;
+  });
+
+  // Pre-fill the advanced form so "tweak assumptions" has something to start from
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
+  set('addr', addr);
+  set('price', price);
+  set('purchase', price);
+  set('rent', rent);
+  set('tax', Math.round(annualTax));
+  set('ins', Math.round(annualIns));
+  set('units', '2');
+  set('closing', Math.round(price * 0.035));
+}
+
+function openAdvancedFromQuick(){
+  const adv = document.getElementById('advancedSection');
+  const advT = document.getElementById('advToggle');
+  adv.style.display = 'block';
+  advT.classList.add('open');
+  document.getElementById('advToggleLabel').textContent = 'Hide advanced form';
+  setTimeout(() => {
+    adv.scrollIntoView({behavior:'smooth', block:'start'});
+    if(typeof analyze === 'function') analyze();
+  }, 50);
+}
+
+function toggleAdvanced(){
+  const adv = document.getElementById('advancedSection');
+  const advT = document.getElementById('advToggle');
+  const lbl = document.getElementById('advToggleLabel');
+  if(adv.style.display === 'none'){
+    adv.style.display = 'block';
+    advT.classList.add('open');
+    lbl.textContent = 'Hide advanced form';
+    setTimeout(() => { if(typeof analyze === 'function') analyze(); }, 50);
+  } else {
+    adv.style.display = 'none';
+    advT.classList.remove('open');
+    lbl.textContent = 'Use the advanced form instead';
+  }
+}
+
+function resetQuick(){
+  document.getElementById('qForm').reset();
+  document.getElementById('adResult').style.display = 'none';
+  document.getElementById('arCard').classList.remove('show');
+  document.getElementById('qAddr').focus();
+}
 
 let scenarioOpen = false;
 let stressOn = false;
