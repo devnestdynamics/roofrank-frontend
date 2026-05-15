@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Deal Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;
+  --ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);
+  --amber:#a06a00;--rose:#a03030;
+  --border:#e0d9cf;--border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --sw:240px;--r:10px
+}
+html{color-scheme:light;overflow-x:hidden}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.sb-user{padding:.75rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.sb-av{width:26px;height:26px;border-radius:50%;background:var(--forest-2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;flex-shrink:0}
+.sb-uname{font-size:.78rem;font-weight:500;color:var(--ink)}
+.sb-plan{font-size:.55rem;font-weight:600;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:1px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;display:inline-block;margin-top:2px}
+.sb-nav{padding:.4rem 0;flex:1;overflow-y:auto}
+.sb-sect{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:.5rem 1.3rem .2rem}
+.sb-link{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.3rem;font-size:.8rem;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;transition:all .15s;font-family:var(--sans)}
+.sb-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6;stroke-linecap:round;stroke-linejoin:round}
+.sb-link:hover{color:var(--ink);background:var(--cream)}
+.sb-link.active{color:var(--forest);background:var(--sage-dim);border-left-color:var(--forest);font-weight:500}
+.sb-link.active svg{opacity:1;stroke:var(--forest)}
+.sb-count{margin-left:auto;background:var(--forest);color:#fff;font-size:.55rem;font-weight:600;font-family:var(--mono);padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
+.sb-foot{padding:.75rem 1.3rem;border-top:1px solid var(--border);flex-shrink:0}
+.sb-upgrade{display:block;width:100%;text-align:center;background:var(--forest);color:#fff;border:none;padding:.5rem;border-radius:var(--r);font-family:var(--sans);font-size:.76rem;font-weight:500;cursor:pointer;text-decoration:none}
+.sb-upgrade:hover{background:var(--forest-2)}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;max-width:100%}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-left{display:flex;align-items:baseline;gap:.55rem}
+.tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.tb-sub{font-size:.68rem;color:var(--muted)}
+.tb-right{display:flex;gap:.45rem}
+.btn-ghost{background:none;border:1px solid var(--border-2);color:var(--muted);padding:.32rem .75rem;border-radius:var(--r);font-size:.74rem;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.btn-ghost:hover{border-color:var(--forest);color:var(--forest)}
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.35rem .9rem;border-radius:var(--r);font-size:.76rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.btn-primary:hover{background:var(--forest-2)}
+.content{padding:1.3rem 1.4rem 4rem;flex:1}
+
+/* ── MOBILE BOTTOM NAV (replaces sidebar below 860px) ────────────────── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:60;box-shadow:0 -6px 20px rgba(28,31,28,.06);padding-bottom:env(safe-area-inset-bottom,0)}
+.bnav-inner{display:flex;align-items:stretch;max-width:520px;margin:0 auto}
+.bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:.55rem .4rem;color:var(--muted);text-decoration:none;font-family:var(--sans);font-size:.62rem;font-weight:500;background:none;border:none;cursor:pointer;transition:color .12s;position:relative;letter-spacing:.02em}
+.bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bn-tab.active{color:var(--forest)}
+.bn-tab.active::before{content:'';position:absolute;top:0;left:30%;right:30%;height:2px;background:var(--forest);border-radius:0 0 2px 2px}
+.bn-tab .bn-badge{position:absolute;top:4px;right:50%;transform:translateX(18px);background:var(--forest);color:#fff;font-size:.5rem;font-weight:700;font-family:var(--mono);padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2}
+.bn-sheet{display:none;position:fixed;inset:0;z-index:70;background:rgba(20,32,26,.5);align-items:flex-end;justify-content:center;animation:bnFadeIn .2s ease-out}
+.bn-sheet.open{display:flex}
+@keyframes bnFadeIn{from{opacity:0}to{opacity:1}}
+.bn-sheet-card{width:100%;max-width:520px;background:#fff;border-radius:14px 14px 0 0;padding:.85rem 1rem 1.4rem;animation:bnSlideUp .25s ease-out;padding-bottom:calc(1.4rem + env(safe-area-inset-bottom,0))}
+@keyframes bnSlideUp{from{transform:translateY(20px)}to{transform:translateY(0)}}
+.bn-sheet-grip{width:38px;height:4px;background:var(--border-2);border-radius:2px;margin:0 auto .9rem}
+.bn-sheet-link{display:flex;align-items:center;gap:.7rem;padding:.85rem .35rem;font-size:.9rem;color:var(--ink);text-decoration:none;border:none;background:none;width:100%;text-align:left;cursor:pointer;font-family:var(--sans);font-weight:500;border-radius:8px}
+.bn-sheet-link:hover{background:var(--cream-2)}
+.bn-sheet-link svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.7;stroke-linecap:round;stroke-linejoin:round}
+.bn-sheet-link + .bn-sheet-link{border-top:1px solid var(--cream-2)}
+@media(max-width:860px){.bnav{display:block}}
+
+/* ── ANALYST'S BRIEF — dashboard AI moment, matches detail page Analyst ── */
+.ana-brief{margin-bottom:1.2rem}
+.ana-brief-card{
+  background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);
+  color:#fff;border-radius:12px;padding:1.4rem 1.4rem;
+  box-shadow:0 4px 22px rgba(20,32,26,.15);position:relative;overflow:hidden;
+}
+.ana-brief-head{display:flex;align-items:center;gap:.55rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+/* Animated sparkle mark — more distinctly "AI" than the old pulse dot */
+.ana-brief-mark{
+  width:18px;height:18px;flex-shrink:0;color:var(--sage);
+  filter:drop-shadow(0 0 6px rgba(122,170,143,.45));
+  animation:markSpin 14s linear infinite;
+}
+.ana-brief-mark svg{width:100%;height:100%;fill:currentColor;display:block}
+@keyframes markSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ana-brief-title{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
+.ana-brief-day{font-size:.72rem;color:rgba(255,255,255,.4);font-style:italic;margin-left:.15rem}
+.ana-brief-live{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(122,170,143,.7);margin-left:.2rem;
+}
+.ana-brief-live::before{
+  content:'';width:6px;height:6px;border-radius:50%;background:var(--sage);
+  box-shadow:0 0 8px var(--sage);animation:liveBlink 1.8s ease-in-out infinite;
+}
+@keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.35}}
+.ana-brief-badge{font-size:.6rem;font-weight:700;letter-spacing:.1em;background:rgba(122,170,143,.2);color:var(--sage);padding:.2rem .5rem;border-radius:4px;margin-left:auto}
+.ana-brief-body{
+  font-family:var(--serif);font-size:1.02rem;line-height:1.65;
+  color:rgba(255,255,255,.92);font-style:italic;font-weight:400;
+  margin-bottom:1.1rem;
+  animation:briefFadeIn .9s cubic-bezier(.22,1,.36,1);
+}
+@keyframes briefFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ana-brief-body b{color:#fff;font-weight:600;font-style:normal}
+.ana-brief-body::before{content:'"';font-size:2.2rem;color:var(--sage);line-height:0;margin-right:.15rem;vertical-align:-.35em;font-style:normal;font-family:var(--serif)}
+.ana-brief-picks{display:flex;gap:.6rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin:0 -1.4rem;padding-left:1.4rem;padding-right:1.4rem}
+.ana-brief-picks::-webkit-scrollbar{display:none}
+.ana-brief-pick{flex-shrink:0;min-width:240px;max-width:260px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.85rem .9rem;cursor:pointer;transition:all .15s}
+.ana-brief-pick:hover{background:rgba(255,255,255,.08);border-color:rgba(122,170,143,.3);transform:translateY(-1px)}
+.ana-brief-pick-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
+.ana-brief-pick-score{width:30px;height:30px;border-radius:50%;background:var(--sage);color:#1c1f1c;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:600;flex-shrink:0}
+.ana-brief-pick-sig{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage)}
+.ana-brief-pick-addr{font-family:var(--serif);font-size:.88rem;font-weight:500;color:#fff;margin-bottom:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ana-brief-pick-meta{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:.35rem}
+.ana-brief-pick-cf{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--sage)}
+.ana-brief-pick-cf.r{color:#ff9b9b}
+
+/* ── DEAL CARD micro-take (one-line italic analyst voice per card) ────── */
+.dtake{font-family:var(--serif);font-style:italic;font-size:.78rem;color:var(--muted);margin-top:.45rem;line-height:1.4}
+.dtake::before{content:'"';color:var(--sage);font-style:normal;margin-right:2px}
+.dtake::after{content:'"';color:var(--sage);font-style:normal;margin-left:1px}
+
+/* ── LENSES — AI-curated views, replace filter chrome ──────────────────── */
+.lenses-wrap{margin:0 0 .55rem}
+.lens-row{
+  display:flex;gap:.45rem;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:.4rem;
+}
+.lens-row::-webkit-scrollbar{display:none}
+.lens{
+  display:inline-flex;align-items:center;gap:.4rem;
+  flex-shrink:0;white-space:nowrap;
+  background:var(--white);border:1px solid var(--border);
+  color:var(--ink);font-family:var(--sans);font-size:.78rem;font-weight:500;
+  padding:.4rem .75rem .4rem .6rem;border-radius:999px;
+  cursor:pointer;transition:all .15s;
+}
+.lens svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:stroke .15s}
+.lens .lens-count{
+  display:inline-block;background:var(--cream-2);color:var(--muted);
+  font-family:var(--mono);font-size:.65rem;font-weight:500;
+  padding:1px 6px;border-radius:8px;margin-left:.15rem;
+}
+.lens:hover{border-color:var(--sage-border);color:var(--forest)}
+.lens:hover svg{stroke:var(--forest)}
+.lens.on{
+  background:var(--forest);color:#fff;border-color:var(--forest);
+  box-shadow:0 2px 12px rgba(28,74,53,.18);
+}
+.lens.on svg{stroke:var(--sage)}
+.lens.on .lens-count{background:rgba(122,170,143,.2);color:var(--sage)}
+.lens-voice{
+  font-family:var(--serif);font-style:italic;font-size:.88rem;
+  color:var(--muted);padding:.4rem .1rem 1rem;line-height:1.5;
+}
+.lens-voice b{color:var(--ink);font-weight:600;font-style:normal}
+
+/* ── Analyst's Pick sparkle badge on top-of-feed deal cards ────────── */
+.dpick{
+  display:inline-flex;align-items:center;gap:.25rem;
+  font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:.15rem .4rem .15rem .3rem;border-radius:4px;
+  margin-right:.4rem;vertical-align:middle;line-height:1;
+}
+.dpick svg{width:10px;height:10px;fill:var(--forest);animation:markSpin 14s linear infinite;flex-shrink:0}
+
+/* ── FEED DIVIDER between curated picks and long-tail compact rows ─── */
+.feed-divider{
+  display:flex;align-items:center;gap:.75rem;margin:1.1rem 0 .55rem;
+}
+.feed-divider-line{flex:1;height:1px;background:var(--border)}
+.feed-divider-label{
+  font-size:.64rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap;
+}
+
+/* Compact card variant — for cards beyond the top 5 */
+.deal.compact{padding:.6rem .85rem;gap:.7rem;margin-bottom:.3rem;background:var(--cream);border-color:var(--cream-3)}
+.deal.compact:hover{background:var(--white);border-color:var(--sage-border)}
+.deal.compact .ring{width:36px;height:36px}
+.deal.compact .rn{font-size:.72rem}
+.deal.compact .daddr{font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0}
+.deal.compact .dmeta{font-size:.66rem;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal.compact .dkpis{display:none}
+.deal.compact .dtake{display:none}
+.deal.compact .dright{min-width:auto;gap:1px}
+.deal.compact .dprice{font-size:.78rem}
+.deal.compact .sbadge{font-size:.55rem;padding:1px 5px}
+.deal.compact .ddom{display:none}
+.deal.compact .wbtn{display:none}
+.deal.compact::before{display:none}
+
+.deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden;opacity:0;animation:fu .28s ease forwards}
+@keyframes fu{to{opacity:1;transform:none}from{opacity:0;transform:translateY(5px)}}
+.new-divider{display:flex;align-items:center;gap:.75rem;margin:.6rem 0 .5rem;opacity:0;animation:fu .3s ease .2s forwards}
+.new-divider-line{flex:1;height:1px;background:linear-gradient(90deg,var(--forest-3),transparent)}
+.new-divider-label{font-size:.64rem;font-weight:600;color:var(--forest);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;background:var(--sage-dim);border:1px solid var(--sage-border);padding:2px 8px;border-radius:4px;flex-shrink:0}
+.new-divider-line.right{background:linear-gradient(270deg,var(--forest-3),transparent)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.fresh-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--forest-3);animation:pulse 1.8s ease-in-out infinite;margin-right:4px;vertical-align:middle;flex-shrink:0}
+.fresh-dot.hot{background:var(--amber)}
+.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
+.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.deal.sb{
+  padding:.95rem 1rem;
+  border-color:rgba(28,74,53,.22);
+  box-shadow:0 2px 0 0 var(--forest), 0 4px 20px rgba(28,74,53,.1);
+}
+.deal.sb::before{background:var(--forest);width:4px}
+.deal.sb .ring{width:56px;height:56px}
+.deal.sb .daddr{font-size:.94rem}
+.deal.buy::before{background:var(--forest-3)}
+.deal.wat::before{background:var(--amber)}
+.deal.pas::before{background:var(--rose)}
+.ring{width:48px;height:48px;flex-shrink:0;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rt{fill:none;stroke:var(--cream-3);stroke-width:4}
+.rf{fill:none;stroke-width:4;stroke-linecap:round}
+.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:500}
+.dbody{flex:1;min-width:0;overflow:hidden}
+.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:.4rem;min-width:0;margin-bottom:1px}
+.daddr-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dmeta{font-size:.68rem;color:var(--muted);margin-bottom:4px}
+.dkpis{display:flex;gap:.28rem;flex-wrap:wrap}
+.kp{font-size:.62rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
+.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.dright{text-align:right;flex-shrink:0;min-width:80px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.sbadge{font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.07);color:var(--rose);border-color:rgba(160,48,48,.2)}
+.dprice{font-family:var(--mono);font-size:.8rem;color:var(--ink)}
+.ddom{font-size:.62rem;color:var(--muted)}
+.wbtn{background:none;border:none;cursor:pointer;color:var(--faint);line-height:0;padding:4px;transition:color .14s;flex-shrink:0}
+.wbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.wbtn:hover,.wbtn.on{color:var(--forest)}
+.wbtn.on svg{fill:var(--forest);stroke:var(--forest)}
+.empty{text-align:center;padding:3.5rem 1.5rem}
+.empty-ic{width:44px;height:44px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem}
+.empty-ic svg{width:18px;height:18px;stroke:var(--forest);fill:none;stroke-width:1.8}
+.empty-t{font-family:var(--serif);font-size:.95rem;color:var(--ink);margin-bottom:.3rem}
+.empty-s{font-size:.78rem;color:var(--muted);max-width:260px;margin:0 auto .9rem;line-height:1.6}
+.empty-btn{background:var(--forest);color:#fff;border:none;padding:.48rem 1.1rem;border-radius:var(--r);font-size:.76rem;cursor:pointer;font-family:var(--sans)}
+.skel-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
+.sk{background:linear-gradient(90deg,var(--cream-2) 25%,var(--cream-3) 50%,var(--cream-2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;border-radius:5px}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+@media(max-width:860px){.sidebar{display:none}.main{margin-left:0;padding:.75rem}.tb-right{display:none}}
+@media(max-width:540px){
+  .content{padding:1rem .9rem 5.5rem}
+  .topbar{padding:0 .9rem}
+  .topbar{display:none}
+  .main{padding-top:0}
+  .deal{padding:.85rem .85rem;gap:.7rem}
+  .ring{width:48px;height:48px}
+  .deal.sb .ring{width:52px;height:52px}
+  .rn{font-size:.88rem}
+  .daddr{font-size:.92rem;line-height:1.3}
+  .dmeta{font-size:.72rem;margin-bottom:6px}
+  .kp{font-size:.66rem;padding:2px 6px}
+  /* Mobile: drop DSCR + percentile chip to reduce density */
+  .kp[data-metric="dscr"]{display:none}
+  .ddom[data-pct]{display:none}
+  .dprice{font-size:.88rem}
+  .sbadge{font-size:.6rem;padding:3px 7px}
+  .ddom{font-size:.68rem}
+  .dtake{font-size:.85rem;line-height:1.5;margin-top:.55rem}
+  .tb-left{flex-direction:column;align-items:flex-start;gap:.1rem}
+  .tb-sub{font-size:.62rem}
+  .btn-primary{font-size:.72rem;padding:.3rem .7rem}
+  .btn-ghost{font-size:.72rem;padding:.3rem .65rem}
+}
+
+@media(max-width:600px){
+  .ana-brief-card{padding:1.15rem 1.15rem;border-radius:10px;max-width:100%}
+  .ana-brief-body{font-size:.95rem}
+  .ana-brief-picks{margin:0 -1.15rem;padding-left:1.15rem;padding-right:1.15rem}
+  .ana-brief-pick{min-width:200px;max-width:240px}
+  .ana-brief-head{flex-wrap:wrap;gap:.4rem}
+  .ana-brief-live{font-size:.58rem}
+}
+
+@media(max-width:430px){
+  /* Deal cards — metric badges on one scrollable row */
+  .dkpis{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:.25rem;padding-bottom:2px}
+  .dkpis::-webkit-scrollbar{display:none}
+  .kp{flex-shrink:0;font-size:.65rem;padding:.18rem .45rem}
+  .daddr{font-size:.82rem}
+  .dmeta{font-size:.62rem}
+  .dprice{font-size:.8rem}
+  .sbadge{font-size:.58rem;padding:.18rem .4rem}
+
+  /* Market chips — scroll hint via fade */  
+
+  /* Feed header */
+  .tb{font-size:.85rem}
+  .tb-sub{font-size:.6rem}
+
+  /* Top bar buttons */
+  .btn-refresh{display:none}
+}
+</style>
+<script src="api.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a href="roofrank-landing.html" class="sb-top">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 17L15 7L25 17" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="22" width="4" height="6" rx="1" fill="#7aaa8f" opacity=".35"/><rect x="13" y="17" width="4" height="11" rx="1" fill="#7aaa8f" opacity=".6"/><rect x="20" y="12" width="4" height="16" rx="1" fill="#7aaa8f"/></svg>
+    <span class="sb-name">RoofRank</span>
+  </a>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">?</div>
+    <div><div class="sb-uname" id="sbName">Loading…</div><span class="sb-plan" id="sbPlan">Starter</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sect">Deals</div>
+    <a href="roofrank-dashboard.html" class="sb-link active">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Deal Feed<span class="sb-count" id="sbBadge">—</span>
+    </a>
+    <a href="roofrank-watchlist.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Watchlist<span class="sb-count" id="wc" style="display:none">0</span>
+    </a>
+    <div class="sb-sect">Tools</div>
+    <a href="roofrank-analyzer.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analyze a Deal
+    </a>
+    <a href="roofrank-reports.html" class="sb-link">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Reports
+    </a>
+    <div class="sb-sect">Account</div>
+    <a href="roofrank-pricing.html?v=2" class="sb-link"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+    <button class="sb-link"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+  </nav>
+  <div class="sb-foot">
+    <div style="display:flex;justify-content:space-between;font-size:.63rem;color:var(--muted);margin-bottom:4px"><span>Reports used</span><span class="sb-usage-val" id="sbUsage">—</span></div><div style="height:3px;background:var(--cream-3);border-radius:2px;overflow:hidden;margin-bottom:.65rem"><div id="sbFill" style="height:100%;background:var(--forest-3);border-radius:2px;width:0%;transition:width .5s"></div></div><a href="roofrank-pricing.html?v=2" class="sb-upgrade">↑ Upgrade Plan</a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title">Deal Feed</span>
+      <span class="tb-sub" id="topSub">Loading deals…</span>
+    </div>
+    <div class="tb-right">
+      <button class="btn-ghost" onclick="handleRefresh(this)">↻ Refresh</button>
+      <button class="btn-primary" onclick="location.href='roofrank-analyzer.html'">+ Analyze Deal</button>
+    </div>
+  </header>
+  <div class="content">
+    <section class="ana-brief" id="anaBriefSection" style="display:none">
+      <div class="ana-brief-card">
+        <div class="ana-brief-head">
+          <div class="ana-brief-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+          </div>
+          <div class="ana-brief-title">Analyst's Brief</div>
+          <div class="ana-brief-day" id="anaBriefDay">today</div>
+          <span class="ana-brief-live" id="anaBriefLive">Live</span>
+          <div class="ana-brief-badge">AI</div>
+        </div>
+        <div class="ana-brief-body" id="anaBriefBody">—</div>
+        <div class="ana-brief-picks" id="anaBriefPicks"></div>
+      </div>
+    </section>
+
+    <div class="lenses-wrap">
+      <div class="lens-row" id="lensRow"></div>
+      <div class="lens-voice" id="lensVoice"></div>
+    </div>
+    <div id="dealList"></div>
+  <div id="loadMoreWrap" style="display:none;justify-content:center;padding:1rem"><button style="background:none;border:1px solid var(--border-2);color:var(--muted);padding:.5rem 1.25rem;border-radius:var(--r);font-size:.78rem;cursor:pointer;font-family:var(--sans)" onclick="loadMore()">Load more deals</button></div>
+  </div>
+</div>
+
+<!-- Mobile bottom-tab navigation (replaces sidebar below 860px) -->
+<nav class="bnav" aria-label="Primary navigation">
+  <div class="bnav-inner">
+    <a href="roofrank-dashboard.html" class="bn-tab active">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Feed</span>
+    </a>
+    <a href="roofrank-watchlist.html" class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span>Watching</span>
+      <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
+    </a>
+    <a href="roofrank-analyzer.html" class="bn-tab">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Analyze</span>
+    </a>
+    <button class="bn-tab" type="button" onclick="document.getElementById('bnSheet').classList.add('open')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+      <span>More</span>
+    </button>
+  </div>
+</nav>
+
+<!-- "More" overflow sheet -->
+<div class="bn-sheet" id="bnSheet" onclick="if(event.target===this) this.classList.remove('open')">
+  <div class="bn-sheet-card">
+    <div class="bn-sheet-grip"></div>
+    <a href="roofrank-reports.html" class="bn-sheet-link">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      My Reports
+    </a>
+    <a href="roofrank-pricing.html?v=2" class="bn-sheet-link">
+      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Billing
+    </a>
+    <button class="bn-sheet-link" type="button" onclick="AuthAPI.logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</div>
+
+<script>
+let page=1, minScore=0, filterCity='', filterState='', allDeals=[];
+const circ=2*Math.PI*19;
+
+async function boot(){
+  // Load feed immediately — don't wait for sidebar calls
+  loadFeed();
+  syncWC();
+
+  // Load sidebar info in background (non-blocking)
+  AuthAPI.me().then(({user}={})=>{
+    if(!user) return;
+    document.getElementById('sbAv').textContent=(user.name||user.email||'?')[0].toUpperCase();
+    document.getElementById('sbName').textContent=user.name||user.email;
+  }).catch(()=>{});
+
+  BillingAPI.getSubscription().then(sub=>{
+    if(!sub) return;
+    document.getElementById('sbPlan').textContent=(sub.plan||'starter').replace(/^./,c=>c.toUpperCase());
+    const used=sub.reportsUsed||0, lim=sub.reportLimit||10;
+    document.getElementById('sbUsage').textContent=`${used}/${lim}`;
+    document.getElementById('sbFill').style.width=Math.min(100,used/lim*100)+'%';
+  }).catch(()=>{});
+
+  WatchlistAPI.loadIds().then(()=>syncWC()).catch(()=>{});
+}
+
+// ── LENSES — AI-curated views replacing traditional filter chrome ──────
+// Each lens is the analyst's framing: a filter+sort with a one-line voice subtitle.
+const LENSES = [
+  {
+    id:'curated', label:'Picked for you',
+    iconSvg:'<path d="M12 2 L13.6 9.4 L21 11 L13.6 12.6 L12 20 L10.4 12.6 L3 11 L10.4 9.4 Z"/>',
+    apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 10),
+    voice: (n, deals) => n === 0 ? `Nothing exceptional today. Try Move fast or come back tomorrow.`
+      : `Showing the <b>${n}</b> deal${n!==1?'s':''} I'd open first.`
+  },
+  {
+    id:'standouts', label:'Standouts',
+    iconSvg:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
+    voice: (n) => n === 0 ? `No Strong Buys in your markets right now. Hold the line.`
+      : `<b>${n}</b> Strong Buy${n!==1?'s':''} — the cream of the feed.`
+  },
+  {
+    id:'earners', label:'Top earners',
+    iconSvg:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    apply: deals => [...deals].sort((a,b) => (b.reportData?.financials?.monthlyCashFlow||0) - (a.reportData?.financials?.monthlyCashFlow||0)),
+    voice: (n, deals) => {
+      const top = deals[0]; const cf = top?.reportData?.financials?.monthlyCashFlow;
+      return cf ? `Sorted by monthly cash flow. <b>${top.address?.split(',')[0]}</b> leads at <b>$${Math.round(cf).toLocaleString()}/mo</b>.`
+        : `Sorted by monthly cash flow.`;
+    }
+  },
+  {
+    id:'fresh', label:'Move fast',
+    iconSvg:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=65 && (d.daysOnMarket||999)<=14),
+    voice: (n) => n === 0 ? `Nothing fresh and worth the urgency right now.`
+      : `<b>${n}</b> listing${n!==1?'s':''} fresh under two weeks and scoring well — first-mover window.`
+  },
+  {
+    id:'negotiation', label:'Negotiation plays',
+    iconSvg:'<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
+    apply: deals => deals.filter(d => (d.rankScore||0)>=50 && (d.daysOnMarket||0)>=60),
+    voice: (n) => n === 0 ? `No tired sellers today. Patience.`
+      : `<b>${n}</b> seller${n!==1?'s have':' has'} sat 60+ days — real room on price.`
+  },
+];
+let activeLens = 'curated';
+let currentLensDeals = [];
+
+function renderLensRow(){
+  const row = document.getElementById('lensRow');
+  if(!row || !allDeals) return;
+  row.innerHTML = LENSES.map(l => {
+    const count = l.apply(allDeals).length;
+    return `<button class="lens${l.id===activeLens?' on':''}" data-lens="${l.id}" onclick="applyLens('${l.id}')">
+      <svg viewBox="0 0 24 24">${l.iconSvg}</svg>
+      <span>${l.label}</span>
+      <span class="lens-count">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function applyLens(id){
+  const lens = LENSES.find(l => l.id === id);
+  if(!lens) return;
+  activeLens = id;
+  document.querySelectorAll('.lens').forEach(b => b.classList.toggle('on', b.dataset.lens === id));
+  currentLensDeals = lens.apply(allDeals);
+  const voiceEl = document.getElementById('lensVoice');
+  if(voiceEl) voiceEl.innerHTML = lens.voice(currentLensDeals.length, currentLensDeals);
+  renderDeals(currentLensDeals, true);
+}
+
+// One-line analyst voice per deal card. Returns '' for middle-of-the-road deals
+// so the feed isn't dotted with identical italic lines — the rule is: only speak
+// when there's something the badges and score ring don't already say.
+function dealTake(d, fin, score){
+  const cf  = fin.monthlyCashFlow;
+  const dscr= fin.dscr;
+  const coc = fin.cashOnCashReturn;
+  const dom = d.daysOnMarket;
+
+  // Relative position across the current feed — picks up "top earner" / "top scored"
+  // language that no individual badge can express
+  const universe = (typeof allDeals !== 'undefined' && allDeals) ? allDeals : [];
+  let isTopCf = false, isTopScore = false;
+  if(universe.length > 1){
+    const cfs = universe.map(x => x.reportData?.financials?.monthlyCashFlow).filter(v => v != null);
+    if(cfs.length){
+      const maxCf = Math.max(...cfs);
+      isTopCf = cf != null && Math.abs(cf - maxCf) < 1 && cf > 0;
+    }
+    const maxScore = Math.max(...universe.map(x => x.rankScore || 0));
+    isTopScore = score === maxScore && score >= 75;
+  }
+
+  // Concerns first — always loud
+  if(cf != null && cf < -200) return `Loses $${Math.round(Math.abs(cf)).toLocaleString()}/mo — pass unless seller cuts hard`;
+  if(cf != null && cf < 0)    return `Slight monthly loss — only pencils at lower rates`;
+  if(dscr != null && dscr < 1.0) return `DSCR of ${dscr.toFixed(2)} — most lenders won't fund this`;
+  if(dscr != null && dscr < 1.15 && score < 70) return `Tight DSCR at ${dscr.toFixed(2)} — confirm financing first`;
+
+  // Relative standouts in this feed
+  if(isTopCf && isTopScore) return `Top score and top cash flow on this page`;
+  if(isTopCf)               return `Highest cash flow in your feed`;
+  if(isTopScore)            return `Highest-scored deal in your markets right now`;
+
+  // Time-based — uses specific numbers, distinct from the DOM line below
+  if(dom != null && dom >= 90 && score >= 60) return `Sat ${dom}d — seller is likely tired`;
+  if(dom != null && dom >= 60 && score >= 60) return `Stale at ${dom}d, real pricing leverage`;
+  if(dom != null && dom <= 3  && score >= 70) return `Listed ${dom}d ago — first-mover window`;
+  if(dom != null && dom <= 7  && score >= 75) return `Fresh listing, strong fundamentals`;
+
+  // Extremes — say something when score is unusually high or low.
+  // Vary the phrasing based on which dimension is most distinctive so
+  // adjacent cards with similar profiles don't echo each other.
+  if(score >= 82 && coc != null && coc >= 15) return `${coc.toFixed(1)}% return is rare territory`;
+  if(score >= 82 && coc != null && coc >= 12) return `${coc.toFixed(1)}% cash-on-cash, clean DSCR`;
+  if(score >= 82 && cf != null && cf > 1800)  return `Earns $${Math.round(cf).toLocaleString()}/mo — top-tier deal`;
+  if(score >= 82)                              return `${score}/100 — top-tier scoring`;
+  if(score < 45)                               return `${score}/100 — below investment thresholds`;
+  if(score < 60 && dom != null && dom >= 60)   return `Weak deal sitting ${dom}d — sellers will eventually fold`;
+  if(score < 60)                               return `Marginal — only works with material negotiation`;
+
+  // Middle-of-the-road — let the badges and signal carry the load
+  return '';
+}
+
+// Analyst's Brief — editorial summary across the loaded feed (first-person voice)
+function renderAnalystBrief(deals){
+  const section = document.getElementById('anaBriefSection');
+  if(!section || !deals || !deals.length) return;
+  section.style.display = '';
+
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Evening';
+  const tod      = hour < 12 ? 'morning'      : hour < 17 ? 'afternoon'      : 'evening';
+
+  // Day-of-week + time-of-day in the dateline
+  const dayEl = document.getElementById('anaBriefDay');
+  if(dayEl) dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' }) + ' ' + tod;
+
+  // "Live · Updated X ago" relative timestamp (sells a sense of the brief being a living document)
+  const liveEl = document.getElementById('anaBriefLive');
+  if(liveEl){
+    const lastRun = new Date(now);
+    if(hour < 2) lastRun.setDate(lastRun.getDate() - 1);
+    lastRun.setHours(2, 0, 0, 0);
+    const hoursAgo = Math.max(1, Math.round((now - lastRun) / 3600000));
+    liveEl.textContent = hoursAgo < 2 ? 'Live · just now' : `Live · ${hoursAgo}h ago`;
+  }
+
+  // Stats over the loaded feed
+  const strongCount    = deals.filter(d => (d.rankScore || 0) >= 75).length;
+  const buyCount       = deals.filter(d => (d.rankScore || 0) >= 60).length;
+  const freshCount     = deals.filter(d => (d.daysOnMarket || 999) <= 7).length;
+  const motivatedCount = deals.filter(d => (d.daysOnMarket || 0) >= 60).length;
+
+  // City context — collapse to a readable phrase
+  const cityCounts = {};
+  deals.forEach(d => { if(d.city) cityCounts[d.city] = (cityCounts[d.city]||0)+1; });
+  const sortedCities = Object.entries(cityCounts).sort((a,b)=>b[1]-a[1]).map(c=>c[0]);
+  const cityCtx = sortedCities.length === 0 ? 'your markets'
+                : sortedCities.length === 1 ? sortedCities[0]
+                : sortedCities.length === 2 ? sortedCities.join(' and ')
+                : 'your markets';
+
+  // Picks — top 1-3 by score
+  const picks = [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 3);
+  const top = picks[0];
+  const topShortAddr = top?.address?.split(',')[0] || 'one of your top-scored deals';
+  const topCity = top?.city || cityCtx;
+  const topFin = top?.reportData?.financials || {};
+
+  // Compose the body in first-person voice
+  let body = '';
+  if(strongCount > 0){
+    body = `${greeting}. I'm watching <b>${strongCount} Strong Buy${strongCount>1?'s':''}</b> in ${cityCtx} right now. `;
+    body += `The standout's <b>${topShortAddr}</b> in ${topCity}`;
+    if(topFin.cashOnCashReturn != null && topFin.monthlyCashFlow > 0){
+      body += ` — <b>${topFin.cashOnCashReturn.toFixed(1)}%</b> cash-on-cash, <b>$${Math.round(topFin.monthlyCashFlow).toLocaleString()}/mo</b> coming in. `;
+    } else if(top?.rankScore) {
+      body += ` — scoring <b>${top.rankScore}/100</b>. `;
+    } else { body += '. '; }
+    if(freshCount > 0)      body += `${freshCount === 1 ? "There's one fresh listing" : `${freshCount} fresh listings`} this week worth a quick look. `;
+    if(motivatedCount > 0)  body += `${motivatedCount} seller${motivatedCount>1?'s have':' has'} sat 60+ days — that's real pricing leverage if you act on it.`;
+  } else if(buyCount > 0){
+    body = `${greeting}. <b>${buyCount}</b> deal${buyCount>1?'s scoring':' scoring'} Buy in ${cityCtx} — solid but nothing exceptional today. `;
+    body += `I'd look at the top one or two before they go stale. `;
+    if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} on the board if you want negotiation leverage.`;
+  } else {
+    body = `${greeting}. Thin pickings in ${cityCtx} today — <b>${deals.length}</b> deal${deals.length>1?'s':''} but none scoring strong. `;
+    body += `Days like this favor patient buyers. I'll have fresh inventory after the nightly refresh.`;
+  }
+
+  // First-load type-out on the leading clause (rest is instant) — sells the "AI is generating this" feel
+  const bodyEl = document.getElementById('anaBriefBody');
+  const briefTypedKey = 'rr_brief_typed';
+  if(bodyEl){
+    if(!sessionStorage.getItem(briefTypedKey)){
+      sessionStorage.setItem(briefTypedKey, '1');
+      typeOutLead(bodyEl, body, 22);
+    } else {
+      bodyEl.innerHTML = body;
+    }
+  }
+
+  // Picks carousel
+  const picksEl = document.getElementById('anaBriefPicks');
+  if(picksEl){
+    picksEl.innerHTML = picks.map(p => {
+      const fin = p.reportData?.financials || {};
+      const cf = fin.monthlyCashFlow;
+      const sig = scoreSignal(p.rankScore || 0);
+      const cfHtml = cf != null
+        ? `<div class="ana-brief-pick-cf${cf<0?' r':''}">${cf>=0?'+':'−'}$${Math.round(Math.abs(cf)).toLocaleString()}/mo</div>`
+        : '';
+      return `<div class="ana-brief-pick" onclick="openDeal('${p.id}',event)">
+        <div class="ana-brief-pick-head">
+          <div class="ana-brief-pick-score">${p.rankScore || '—'}</div>
+          <div class="ana-brief-pick-sig">${sig}</div>
+        </div>
+        <div class="ana-brief-pick-addr">${(p.address || 'Unknown').split(',')[0]}</div>
+        <div class="ana-brief-pick-meta">${[p.city, p.state].filter(Boolean).join(', ')} · ${p.units || '?'} units${p.daysOnMarket != null ? ' · ' + p.daysOnMarket + 'd' : ''}</div>
+        ${cfHtml}
+      </div>`;
+    }).join('');
+  }
+}
+
+function setHTML(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
+
+// Type out HTML content character-by-character up to the end of the first sentence,
+// then reveal the rest instantly. Tags are emitted atomically so markup isn't visible mid-type.
+function typeOutLead(el, html, speedMs){
+  // Tokenize: HTML tags are single tokens; characters in text are individual tokens
+  const tokens = [];
+  let i = 0;
+  while(i < html.length){
+    if(html[i] === '<'){
+      const j = html.indexOf('>', i);
+      tokens.push(html.slice(i, j === -1 ? html.length : j+1));
+      i = (j === -1) ? html.length : j+1;
+    } else { tokens.push(html[i]); i++; }
+  }
+  // Find the end-of-first-sentence token index (after '.' '!' or '?')
+  let breakIdx = tokens.length;
+  for(let k = 0; k < tokens.length; k++){
+    if(tokens[k] === '.' || tokens[k] === '!' || tokens[k] === '?'){ breakIdx = k + 1; break; }
+  }
+  el.innerHTML = '';
+  let cursor = 0;
+  const tick = () => {
+    if(cursor >= tokens.length) return;
+    if(cursor >= breakIdx){ el.innerHTML = html; return; } // reveal the rest instantly
+    el.innerHTML += tokens[cursor++];
+    // Tags are emitted with no delay; only visible characters slow down
+    const last = tokens[cursor-1];
+    if(last[0] === '<') tick();
+    else setTimeout(tick, speedMs);
+  };
+  tick();
+}
+
+async function loadFeed(reset=true){
+  if(reset){page=1;allDeals=[];}
+  const list=document.getElementById('dealList');
+  if(reset) list.innerHTML=skels(6);
+  const sort=(document.getElementById('sortSel')||{}).value||'score';
+  try{
+    const data = await FeedAPI.list({page,limit:20,minScore,...(filterCity&&{city:filterCity,state:filterState}),sort});
+    const deals = data.deals || [];
+    allDeals = reset ? deals : [...allDeals, ...deals];
+    // Render lens row first so counts are based on the full feed,
+    // then apply the active lens to filter/sort for the visible deals.
+    renderLensRow();
+    applyLens(activeLens);
+
+    // Track visit timestamp for "new since" divider in the feed list
+    const prevVisit = localStorage.getItem('rr_last_visit');
+    if(prevVisit) localStorage.setItem('rr_last_visit_prev', prevVisit);
+    localStorage.setItem('rr_last_visit', new Date().toISOString());
+
+    const _sb=document.getElementById('sbBadge'); if(_sb) _sb.textContent=allDeals.length;
+    const _ts=document.getElementById('topSub');
+    if(_ts){
+      const now=new Date();
+      const hour=now.getHours();
+      const lastRun=new Date(now);
+      if(hour<2) lastRun.setDate(lastRun.getDate()-1);
+      lastRun.setHours(2,0,0,0);
+      const hoursAgo=Math.round((now-lastRun)/3600000);
+      const timeStr=hoursAgo<1?'just now':hoursAgo===1?'1 hour ago':hoursAgo+' hours ago';
+      _ts.textContent=allDeals.length+' ranked deal'+(allDeals.length!==1?'s':'')+' · Updated '+timeStr;
+    }
+    const lmw=document.getElementById('loadMoreWrap'); if(lmw) lmw.style.display=deals.length===20?'flex':'none';
+
+    // Analyst's brief — runs after deals are populated so it can synthesize over the feed
+    renderAnalystBrief(allDeals);
+  } catch(e) {
+    console.error('loadFeed error:', e);
+    if(reset) list.innerHTML = '<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">Could not load deals</div><div class="empty-s">Check your connection and try again.</div><button class="empty-btn" onclick="loadFeed()">Try Again</button></div>';
+  }
+}
+function renderDeals(deals, reset=true){
+  const list=document.getElementById('dealList');
+  if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-t">No deals match</div><div class="empty-s">Try removing filters or check back tomorrow after the nightly refresh.</div><button class="empty-btn" onclick="resetFilters()">Clear Filters</button></div>`;return;}
+  // Track last visit for "new since" divider
+  const lastVisit = localStorage.getItem('rr_last_visit');
+  const lastVisitDate = lastVisit ? new Date(lastVisit) : null;
+  const newCount = lastVisitDate
+    ? deals.filter(d => new Date(d.createdAt) > lastVisitDate).length
+    : 0;
+  localStorage.setItem('rr_last_visit', new Date().toISOString());
+
+  const TOP_N = 5; // top deals get rich treatment; everything else is compact
+  let dividerInjected = false;
+  list.innerHTML=deals.map((d,i)=>{
+    const isNew = lastVisitDate && new Date(d.createdAt) > lastVisitDate;
+    const isFirstOld = !dividerInjected && !isNew && newCount > 0 && i > 0;
+    if(isFirstOld) dividerInjected = true;
+    let dividers = '';
+    if(isFirstOld){
+      dividers += `<div class="new-divider"><div class="new-divider-line"></div><div class="new-divider-label">↑ ${newCount} new since your last visit</div><div class="new-divider-line right"></div></div>`;
+    }
+    // After the top N rich cards, switch to compact rows with a divider
+    if(i === TOP_N && deals.length > TOP_N){
+      dividers += `<div class="feed-divider"><div class="feed-divider-line"></div><div class="feed-divider-label">More opportunities · ${deals.length - TOP_N}</div><div class="feed-divider-line"></div></div>`;
+    }
+    return dividers + dealCardHtml(d, i, i >= TOP_N);
+  }).join('');
+}
+
+function getPercentile(score, allDeals){
+  if(!allDeals || !allDeals.length) return null;
+  const below = allDeals.filter(d => (d.rankScore||0) < score).length;
+  const pct = Math.round((below / allDeals.length) * 100);
+  if(pct >= 90) return 'Top 10%';
+  if(pct >= 80) return 'Top 20%';
+  if(pct >= 70) return 'Top 30%';
+  return null; // only show for top 30%
+}
+
+function dealCardHtml(d,i,compact=false){
+    const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
+    const sig=scoreSignal(score), cl=scoreClass(score), c=scoreColor(score);
+    const dash=(score/100)*circ;
+    const on=WatchlistAPI.has(d.id);
+    const pct=getPercentile(score,allDeals);
+    const take=dealTake(d,fin,score);
+    const isPick = !compact && i < 3 && score >= 60; // Top 3 rich cards with decent scores get the AI pick badge
+    const pickBadge = isPick
+      ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
+      : '';
+    return`<div class="deal ${cl}${compact?' compact':''}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
+      <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
+      <div class="dbody">
+        <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
+        <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
+        <div class="dkpis">
+          ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
+          ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
+          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}" data-metric="dscr">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
+          ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
+        </div>
+        ${take ? `<div class="dtake">${take}</div>` : ''}
+      </div>
+      <div class="dright">
+        <span class="sbadge ${cl}">${sig}</span>
+        <div class="dprice">${fmtPrice(d.askingPrice)}</div>
+        ${pct?`<div class="ddom" data-pct="1" style="color:var(--forest);font-weight:500">${pct}</div>`:''}
+        ${d.daysOnMarket!=null?`<div class="ddom">${d.daysOnMarket<=2?'<span class="fresh-dot"></span>':d.daysOnMarket<=5?'<span class="fresh-dot hot"></span>':''}${d.daysOnMarket}d listed</div>`:''}
+        <button class="wbtn ${on?'on':''}" onclick="toggleW('${d.id}',event)"><svg viewBox="0 0 24 24" fill="${on?c:'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      </div>
+    </div>`;
+}
+
+function openDeal(id,e){
+  if(e.target.closest('.wbtn')) return;
+  const deal = allDeals.find(d=>d.id===id);
+  if(deal) sessionStorage.setItem('rr_deal_'+id, JSON.stringify(deal));
+  location.href=`roofrank-deal-detail.html?fid=${id}`;
+}
+async function toggleW(id,e){
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  const on = await WatchlistAPI.toggle(id);
+  if(btn) {
+    btn.className = 'wbtn' + (on ? ' on' : '');
+    const svg = btn.querySelector('svg');
+    if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+  }
+  syncWC();
+}
+function syncWC(){
+  const n=WatchlistAPI.count();
+  const b=document.getElementById('wc'); if(b){b.textContent=n;b.style.display=n?'':'none';}
+  const m=document.getElementById('bnWatchBadge'); if(m){m.textContent=n;m.style.display=n?'':'none';}
+}
+
+// "Clear filters" in empty state now resets to the default lens
+function resetFilters(){ activeLens = 'curated'; applyLens('curated'); }
+async function loadMore(){page++;await loadFeed(false);}
+async function handleRefresh(btn){
+  btn.disabled=true;
+  btn.innerHTML='<span style="display:inline-block;width:12px;height:12px;border:2px solid var(--border-2);border-top-color:var(--forest);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px"></span>Refreshing…';
+  try{
+    await FeedAPI.triggerRefresh();
+    btn.disabled=false;btn.textContent='↻ Refresh';
+    document.querySelector('.tb-sub').textContent='38 ranked deals · Updated just now';
+    showToast('✓ Feed refresh queued — new deals appear within minutes');
+  }catch{
+    btn.disabled=false;btn.textContent='↻ Refresh';
+    showToast('Could not trigger refresh.','error');
+  }
+}
+function skels(n){return Array.from({length:n}).map((_,i)=>`<div class="skel-card" style="opacity:${1-i*.1}"><div class="sk" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div class="sk" style="height:13px;width:52%"></div><div class="sk" style="height:10px;width:35%"></div><div style="display:flex;gap:5px"><div class="sk" style="height:18px;width:58px;border-radius:3px"></div><div class="sk" style="height:18px;width:52px;border-radius:3px"></div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><div class="sk" style="height:16px;width:62px;border-radius:3px"></div><div class="sk" style="height:12px;width:48px"></div></div></div>`).join('');}
+
+document.addEventListener("DOMContentLoaded", boot);
+</script>
+</body>
+</html>
