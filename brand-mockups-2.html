@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brand mockups round 2 — Joists · Quoins · Treads · Trims</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#efeae0;--cream-3:#e3dccf;
+  --ink:#1c1f1c;--muted:#6a6e68;--faint:#9a9d96;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-lite:#a8c9b4;--sage-pale:#cfe0d7;
+  --amber:#a06a00;--rose:#9b3a3a;
+  --border:#e0d9cf;--border-2:#cbc3b6;
+}
+html,body{background:var(--cream);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding:4rem 1.5rem 5rem}
+header.page-head{text-align:center;margin-bottom:3.5rem}
+.page-head .eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.75rem}
+.page-head h1{font-family:'Playfair Display',Georgia,serif;font-size:2.3rem;font-weight:500;letter-spacing:-.012em;margin-bottom:.6rem}
+.page-head p{color:var(--muted);max-width:580px;margin:0 auto}
+.page-head a{color:var(--forest);text-decoration:underline;text-underline-offset:3px}
+
+.brand-panel{background:#fff;border:1px solid var(--border);border-radius:18px;padding:2.25rem;margin-bottom:2rem;overflow:hidden}
+.brand-head{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.brand-id{flex:1;min-width:240px}
+.brand-name-lg{font-size:2.8rem;font-weight:500;letter-spacing:-.02em;line-height:1;margin-bottom:.45rem;color:var(--ink)}
+.brand-tag{color:var(--muted);font-size:.95rem;line-height:1.5;max-width:440px}
+.brand-meta{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--faint);letter-spacing:.04em;text-align:right;line-height:1.7;flex-shrink:0}
+.brand-meta .label{color:var(--muted);font-weight:500}
+.brand-meta .ok{color:var(--forest);font-weight:600}
+.brand-meta .warn{color:var(--amber);font-weight:600}
+
+.section-row{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:1.5rem;align-items:start}
+@media(max-width:760px){.section-row{grid-template-columns:1fr}}
+.section{display:flex;flex-direction:column;gap:.85rem}
+.section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:.2rem}
+.palette{display:flex;gap:.4rem;align-items:center}
+.swatch{width:36px;height:36px;border-radius:8px;border:1px solid rgba(0,0,0,.06)}
+.swatch-label{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.25rem;text-align:center}
+.swatch-wrap{text-align:center}
+.lockup{display:flex;align-items:center;gap:.6rem;padding:1rem 1.25rem;background:var(--cream);border-radius:10px;border:1px solid var(--border)}
+.lockup.dark{background:#1d2420;border-color:rgba(255,255,255,.08)}
+.lockup-row{display:flex;flex-direction:column;gap:.7rem}
+.lockup-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;padding:1.25rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--cream);margin:0 -2.25rem 1.25rem;padding-left:2.25rem;padding-right:2.25rem}
+.tier{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center}
+.tier-mark-slot{height:64px;display:flex;align-items:flex-end;justify-content:center}
+.tier-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tier-score{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500}
+.tier-score.sb{color:var(--forest)}
+.tier-score.buy{color:var(--forest-3)}
+.tier-score.wat{color:var(--amber)}
+.tier-score.pas{color:var(--muted)}
+
+.sample-card{display:flex;align-items:center;gap:1rem;padding:1rem 1.15rem;background:var(--cream);border:1px solid var(--border);border-radius:12px}
+.sample-info{flex:1;min-width:0}
+.sample-addr{font-size:.9rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.sample-meta{font-size:.7rem;color:var(--muted)}
+.sample-cf{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--forest);font-weight:500;flex-shrink:0}
+
+/* ─────────── JOISTS — horizontal load-bearing beams ─────────── */
+.brand-joists .brand-name-lg{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-.025em;color:#0f2c20}
+.brand-joists .lockup .l-name{font-family:'Space Grotesk',sans-serif;font-size:1.45rem;font-weight:600;color:#0f2c20;letter-spacing:-.02em}
+.brand-joists .lockup.dark .l-name{color:#fff}
+
+.js-mark{display:block}
+.js-mark .js-end-left,.js-mark .js-end-right{fill:#0f2c20;transition:fill .2s,opacity .2s}
+.js-mark .js-beam{transition:fill .2s,opacity .2s}
+.js-mark.sb .js-b1,.js-mark.sb .js-b2,.js-mark.sb .js-b3{fill:#1c4a35;opacity:1}
+.js-mark.buy .js-b1,.js-mark.buy .js-b2{fill:#3e8160;opacity:1}
+.js-mark.buy .js-b3{fill:#cfe0d7;opacity:1}
+.js-mark.wat .js-b1{fill:#a06a00;opacity:1}
+.js-mark.wat .js-b2,.js-mark.wat .js-b3{fill:#cfe0d7;opacity:1}
+.js-mark.pas .js-b1,.js-mark.pas .js-b2,.js-mark.pas .js-b3{fill:#d4ccbf;opacity:.85}
+.js-mark.pas .js-end-left,.js-mark.pas .js-end-right{opacity:.5}
+.js-mark.lockup-light .js-end-left,.js-mark.lockup-light .js-end-right{fill:#fff}
+.js-mark.lockup-light .js-b1,.js-mark.lockup-light .js-b2,.js-mark.lockup-light .js-b3{fill:#7aaa8f;opacity:.95}
+
+/* ─────────── QUOINS — corner stones ─────────── */
+.brand-quoins{background:linear-gradient(180deg,#fdfbf6 0%,#f5f1e8 100%)}
+.brand-quoins .brand-name-lg{font-family:'Crimson Pro',Georgia,serif;font-weight:600;letter-spacing:-.01em;color:#2e1a0e}
+.brand-quoins .lockup .l-name{font-family:'Crimson Pro',Georgia,serif;font-size:1.5rem;font-weight:600;color:#2e1a0e}
+.brand-quoins .lockup.dark .l-name{color:#f5e6c8}
+.brand-quoins .tiers{background:rgba(255,255,255,.55)}
+.brand-quoins .sample-card{background:#fff;border-color:#ddd3bf}
+
+.qn-mark{display:block}
+.qn-mark .qn-corner{fill:#2e1a0e;transition:fill .2s,opacity .2s}
+.qn-mark .qn-stone{transition:fill .2s,opacity .2s;stroke:#2e1a0e;stroke-width:.6}
+.qn-mark.sb .qn-stone{fill:#1c4a35}
+.qn-mark.buy .qn-stone{fill:#7aaa8f}
+.qn-mark.buy .qn-s3{fill:#cfe0d7}
+.qn-mark.wat .qn-s1{fill:#a06a00}
+.qn-mark.wat .qn-s2,.qn-mark.wat .qn-s3{fill:#e8dbc0}
+.qn-mark.pas .qn-stone{fill:#e8dbc0;opacity:.85}
+.qn-mark.pas .qn-corner{opacity:.5}
+.qn-mark.lockup-light .qn-corner{fill:#f5e6c8}
+.qn-mark.lockup-light .qn-stone{fill:#7aaa8f;stroke:#f5e6c8}
+
+/* ─────────── TREADS — stair steps ─────────── */
+.brand-treads{background:linear-gradient(180deg,#f4f7f5 0%,#e8efeb 100%)}
+.brand-treads .brand-name-lg{font-family:'Inter',sans-serif;font-weight:700;letter-spacing:-.025em;color:#0a2a1c}
+.brand-treads .lockup .l-name{font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:700;color:#0a2a1c;letter-spacing:-.02em}
+.brand-treads .lockup.dark .l-name{color:#fff}
+.brand-treads .tiers{background:rgba(255,255,255,.55)}
+
+.tr-mark{display:block}
+.tr-mark .tr-step{transition:fill .2s,opacity .2s;stroke:#0a2a1c;stroke-width:.4}
+.tr-mark .tr-stringer{fill:#0a2a1c;transition:fill .2s}
+.tr-mark.sb .tr-step{fill:#1c4a35}
+.tr-mark.buy .tr-s3{fill:#cfe0d7}
+.tr-mark.buy .tr-s2,.tr-mark.buy .tr-s1{fill:#3e8160}
+.tr-mark.wat .tr-s1{fill:#a06a00}
+.tr-mark.wat .tr-s2,.tr-mark.wat .tr-s3,.tr-mark.wat .tr-s4{fill:#e3dccf}
+.tr-mark.pas .tr-step{fill:#dcd5c8;opacity:.85}
+.tr-mark.pas .tr-stringer{opacity:.5}
+.tr-mark.lockup-light .tr-stringer{fill:#fff}
+.tr-mark.lockup-light .tr-step{fill:#7aaa8f;stroke:#fff}
+
+/* ─────────── TRIMS — finish work ─────────── */
+.brand-trims{background:#fafafa}
+.brand-trims .brand-name-lg{font-family:'DM Sans',system-ui,sans-serif;font-weight:500;letter-spacing:-.04em;color:#1a1a1a;font-size:3rem}
+.brand-trims .lockup .l-name{font-family:'DM Sans',system-ui,sans-serif;font-size:1.5rem;font-weight:500;color:#1a1a1a;letter-spacing:-.03em}
+.brand-trims .lockup.dark .l-name{color:#fff}
+.brand-trims .tiers{background:rgba(255,255,255,.65)}
+
+.tm-mark{display:block}
+.tm-mark .tm-rect{fill:#fff;stroke:#1a1a1a;stroke-width:1.8;transition:fill .2s,stroke .2s,opacity .2s}
+.tm-mark .tm-inner{fill:none;stroke:#1a1a1a;stroke-width:1;transition:stroke .2s,opacity .2s}
+.tm-mark .tm-detail{transition:fill .2s,opacity .2s}
+.tm-mark.sb .tm-detail{fill:#1c4a35;opacity:1}
+.tm-mark.buy .tm-detail{fill:#7aaa8f;opacity:.95}
+.tm-mark.wat .tm-detail{fill:#cb9555;opacity:.8}
+.tm-mark.pas .tm-detail{fill:#c8c8c8;opacity:.7}
+.tm-mark.pas .tm-rect{opacity:.6}
+.tm-mark.lockup-light .tm-rect{fill:transparent;stroke:#fff}
+.tm-mark.lockup-light .tm-inner{stroke:#fff}
+.tm-mark.lockup-light .tm-detail{fill:#7aaa8f}
+
+/* matrix at top */
+.matrix{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:2.5rem}
+.matrix h3{font-family:'Playfair Display',Georgia,serif;font-size:1.05rem;font-weight:500;margin-bottom:.85rem}
+.matrix table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.75rem}
+.matrix th{text-align:left;color:var(--muted);font-weight:500;padding:.45rem .5rem;border-bottom:1px solid var(--border);font-size:.65rem;letter-spacing:.06em;text-transform:uppercase}
+.matrix td{padding:.4rem .5rem;border-bottom:1px solid var(--cream-2)}
+.matrix .ok{color:var(--forest);font-weight:600}
+.matrix .no{color:var(--muted)}
+.matrix .name{font-family:'DM Sans',system-ui,sans-serif;font-weight:500;color:var(--ink);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="page-head">
+  <div class="eyebrow">Round 2 · May 15</div>
+  <h1>Joists. Quoins. Treads. Trims.</h1>
+  <p>Same brand exercise — logo, palette, mark across the 4 tier levels, sample deal card. Domain availability shown in each brand's meta column. <a href="brand-mockups.html">Round 1 (Deckers · Jambs · Mantels · Brackets)</a> still on the previous page.</p>
+</header>
+
+<!-- top-line availability summary -->
+<div class="matrix">
+  <h3>Domain availability — quick reference</h3>
+  <table>
+    <thead><tr><th>Name</th><th>.com</th><th>.ai</th><th>.io</th><th>.app</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Joists</td><td class="no">✗</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td>3 TLDs free — best of the round</td></tr>
+      <tr><td class="name">Quoins</td><td class="no">✗</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">✗</td><td>quoin.ai is a live company; plural reframe + .co also free</td></tr>
+      <tr><td class="name">Treads</td><td class="no">✗</td><td class="no">✗</td><td class="ok">✓</td><td class="no">✗</td><td>only .io — strong metaphor</td></tr>
+      <tr><td class="name">Trims</td><td class="no">✗</td><td class="no">✗</td><td class="ok">✓</td><td class="no">✗</td><td>only .io — weakest metaphor of the four</td></tr>
+      <tr><td class="name">Sills · Risers · Lattice · Levels · Anchors · Plinth · Quoin (singular)</td><td colspan="5" class="no">— all taken across .com/.ai/.io/.app</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════ JOISTS ════════ -->
+<section class="brand-panel brand-joists">
+  <div class="brand-head">
+    <div class="brand-id">
+      <div class="brand-name-lg">Joists</div>
+      <div class="brand-tag">The load-bearing beams under every floor. What actually holds the deal up — read the joists, judge the building.</div>
+    </div>
+    <div class="brand-meta">
+      <div><span class="label">domain:</span> <span class="ok">joists.ai</span> · ~$15</div>
+      <div><span class="label">backup:</span> joists.io · joists.app</div>
+      <div><span class="label">metaphor:</span> structural beams</div>
+      <div><span class="label">voice:</span> sharp, structural</div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <div class="section">
+      <div class="lockup-row">
+        <div class="lockup-label">Logo — Light</div>
+        <div class="lockup">
+          <svg class="js-mark sb" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+            <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+            <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+            <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+            <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+          </svg>
+          <span class="l-name">Joists</span>
+        </div>
+        <div class="lockup-label">Logo — Dark</div>
+        <div class="lockup dark">
+          <svg class="js-mark sb lockup-light" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+            <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+            <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+            <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+            <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+          </svg>
+          <span class="l-name">Joists</span>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Palette</div>
+      <div class="palette">
+        <div class="swatch-wrap"><div class="swatch" style="background:#0f2c20"></div><div class="swatch-label">deep</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#1c4a35"></div><div class="swatch-label">forest</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#3e8160"></div><div class="swatch-label">sage</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#a06a00"></div><div class="swatch-label">amber</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#cfe0d7"></div><div class="swatch-label">pale</div></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6">The mark IS the score bars. Three joists, lit by tier. Same physical primitive in the logo and on every deal card — maximum cohesion.</div>
+    </div>
+  </div>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="js-mark sb" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="tier-label">Strong Buy</div><div class="tier-score sb">87</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="js-mark buy" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="tier-label">Buy</div><div class="tier-score buy">68</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="js-mark wat" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="tier-label">Watch</div><div class="tier-score wat">52</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="js-mark pas" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+          <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+          <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="tier-label">Pass</div><div class="tier-score pas">31</div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <svg class="js-mark sb" viewBox="0 0 40 40" width="40" height="40">
+      <rect class="js-end-left"  x="5"  y="8" width="3" height="24" rx=".5"/>
+      <rect class="js-end-right" x="32" y="8" width="3" height="24" rx=".5"/>
+      <rect class="js-beam js-b3" x="8"  y="9"  width="24" height="4" rx="1"/>
+      <rect class="js-beam js-b2" x="8"  y="17" width="24" height="4" rx="1"/>
+      <rect class="js-beam js-b1" x="8"  y="25" width="24" height="4" rx="1"/>
+    </svg>
+    <div class="sample-info"><div class="sample-addr" style="color:#0f2c20">58 Laighton St</div><div class="sample-meta">Lynn, MA · 3 of 3 joists lit · 87</div></div>
+    <div class="sample-cf">+$2,384/mo</div>
+  </div>
+</section>
+
+<!-- ════════ QUOINS ════════ -->
+<section class="brand-panel brand-quoins">
+  <div class="brand-head">
+    <div class="brand-id">
+      <div class="brand-name-lg">Quoins</div>
+      <div class="brand-tag">The cornerstones of a building. The blocks that lock the structure together — read the corners, judge the deal. Plural reframe since quoin.ai is taken; carries a "coin" pun.</div>
+    </div>
+    <div class="brand-meta">
+      <div><span class="label">domain:</span> <span class="ok">quoins.ai</span> · ~$15</div>
+      <div><span class="label">backup:</span> quoins.io · quoin.co</div>
+      <div><span class="label">metaphor:</span> corner stones</div>
+      <div><span class="label">voice:</span> classical, weighty</div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <div class="section">
+      <div class="lockup-row">
+        <div class="lockup-label">Logo — Light</div>
+        <div class="lockup">
+          <svg class="qn-mark sb" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+            <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+            <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+            <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+            <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+          </svg>
+          <span class="l-name">Quoins</span>
+        </div>
+        <div class="lockup-label">Logo — Dark</div>
+        <div class="lockup dark">
+          <svg class="qn-mark sb lockup-light" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+            <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+            <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+            <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+            <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+          </svg>
+          <span class="l-name">Quoins</span>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Palette</div>
+      <div class="palette">
+        <div class="swatch-wrap"><div class="swatch" style="background:#2e1a0e"></div><div class="swatch-label">stone</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#1c4a35"></div><div class="swatch-label">forest</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#7aaa8f"></div><div class="swatch-label">sage</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#f5e6c8"></div><div class="swatch-label">limestone</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#fdfbf6"></div><div class="swatch-label">paper</div></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6">Stacked-stone metaphor. Three stones at the corner = three lit floors. The mark works as a logo AND as a per-deal indicator. Heritage-tone palette.</div>
+    </div>
+  </div>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="qn-mark sb" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+          <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+          <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+        </svg>
+      </div>
+      <div class="tier-label">Strong Buy</div><div class="tier-score sb">87</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="qn-mark buy" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+          <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+          <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+        </svg>
+      </div>
+      <div class="tier-label">Buy</div><div class="tier-score buy">68</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="qn-mark wat" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+          <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+          <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+        </svg>
+      </div>
+      <div class="tier-label">Watch</div><div class="tier-score wat">52</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="qn-mark pas" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+          <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+          <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+          <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+        </svg>
+      </div>
+      <div class="tier-label">Pass</div><div class="tier-score pas">31</div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <svg class="qn-mark sb" viewBox="0 0 40 40" width="40" height="40">
+      <rect class="qn-corner" x="6" y="6" width="3" height="28" rx=".5"/>
+      <rect class="qn-corner" x="6" y="31" width="28" height="3" rx=".5"/>
+      <rect class="qn-stone qn-s3" x="9.5" y="6"    width="7" height="7" rx=".7"/>
+      <rect class="qn-stone qn-s2" x="9.5" y="13.5" width="7" height="7" rx=".7"/>
+      <rect class="qn-stone qn-s1" x="9.5" y="21"   width="7" height="7" rx=".7"/>
+    </svg>
+    <div class="sample-info"><div class="sample-addr" style="color:#2e1a0e">58 Laighton St</div><div class="sample-meta">Lynn, MA · All three stones lit · 87</div></div>
+    <div class="sample-cf">+$2,384/mo</div>
+  </div>
+</section>
+
+<!-- ════════ TREADS ════════ -->
+<section class="brand-panel brand-treads">
+  <div class="brand-head">
+    <div class="brand-id">
+      <div class="brand-name-lg">Treads</div>
+      <div class="brand-tag">The horizontal of every step. Reads as upward movement — each deal climbs the stairs by tier. Built-in "up and to the right" energy.</div>
+    </div>
+    <div class="brand-meta">
+      <div><span class="label">domain:</span> <span class="warn">treads.io</span> · only TLD free · ~$30</div>
+      <div><span class="label">metaphor:</span> stair steps</div>
+      <div><span class="label">voice:</span> progressive, momentum</div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <div class="section">
+      <div class="lockup-row">
+        <div class="lockup-label">Logo — Light</div>
+        <div class="lockup">
+          <svg class="tr-mark sb" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="tr-stringer" x="5"  y="30" width="2" height="6" rx=".5"/>
+            <rect class="tr-stringer" x="33" y="6"  width="2" height="6" rx=".5"/>
+            <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s3" x="19" y="18" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s4" x="26" y="12" width="9"  height="3" rx=".5"/>
+          </svg>
+          <span class="l-name">Treads</span>
+        </div>
+        <div class="lockup-label">Logo — Dark</div>
+        <div class="lockup dark">
+          <svg class="tr-mark sb lockup-light" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="tr-stringer" x="5"  y="30" width="2" height="6" rx=".5"/>
+            <rect class="tr-stringer" x="33" y="6"  width="2" height="6" rx=".5"/>
+            <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s3" x="19" y="18" width="9"  height="3" rx=".5"/>
+            <rect class="tr-step tr-s4" x="26" y="12" width="9"  height="3" rx=".5"/>
+          </svg>
+          <span class="l-name">Treads</span>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Palette</div>
+      <div class="palette">
+        <div class="swatch-wrap"><div class="swatch" style="background:#0a2a1c"></div><div class="swatch-label">deep</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#1c4a35"></div><div class="swatch-label">forest</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#7aaa8f"></div><div class="swatch-label">sage</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#f4f7f5"></div><div class="swatch-label">mist</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#1c1f1c"></div><div class="swatch-label">ink</div></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6">4 steps = 4 metrics rising. Visually most "growth-oriented" of the round — pitches well to an investor as a chart-like upward gesture.</div>
+    </div>
+  </div>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tr-mark sb" viewBox="0 0 40 40" width="52" height="52">
+          <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s3" x="19" y="18" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s4" x="26" y="12" width="9"  height="3" rx=".5"/>
+        </svg>
+      </div>
+      <div class="tier-label">Strong Buy</div><div class="tier-score sb">87</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tr-mark buy" viewBox="0 0 40 40" width="52" height="52">
+          <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s3" x="19" y="18" width="9"  height="3" rx=".5"/>
+        </svg>
+      </div>
+      <div class="tier-label">Buy</div><div class="tier-score buy">68</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tr-mark wat" viewBox="0 0 40 40" width="52" height="52">
+          <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+          <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+        </svg>
+      </div>
+      <div class="tier-label">Watch</div><div class="tier-score wat">52</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tr-mark pas" viewBox="0 0 40 40" width="52" height="52">
+          <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+        </svg>
+      </div>
+      <div class="tier-label">Pass</div><div class="tier-score pas">31</div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <svg class="tr-mark sb" viewBox="0 0 40 40" width="40" height="40">
+      <rect class="tr-step tr-s1" x="5"  y="30" width="9"  height="3" rx=".5"/>
+      <rect class="tr-step tr-s2" x="12" y="24" width="9"  height="3" rx=".5"/>
+      <rect class="tr-step tr-s3" x="19" y="18" width="9"  height="3" rx=".5"/>
+      <rect class="tr-step tr-s4" x="26" y="12" width="9"  height="3" rx=".5"/>
+    </svg>
+    <div class="sample-info"><div class="sample-addr" style="color:#0a2a1c">58 Laighton St</div><div class="sample-meta">Lynn, MA · 4 of 4 treads · 87</div></div>
+    <div class="sample-cf">+$2,384/mo</div>
+  </div>
+</section>
+
+<!-- ════════ TRIMS ════════ -->
+<section class="brand-panel brand-trims">
+  <div class="brand-head">
+    <div class="brand-id">
+      <div class="brand-name-lg">Trims</div>
+      <div class="brand-tag">Finish work — the molding and detail that signals craft. Reads more "interior design" than "deal analysis." Including for completeness.</div>
+    </div>
+    <div class="brand-meta">
+      <div><span class="label">domain:</span> <span class="warn">trims.io</span> · only TLD free · ~$30</div>
+      <div><span class="label">metaphor:</span> finish work / molding</div>
+      <div><span class="label">voice:</span> minimal, refined</div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <div class="section">
+      <div class="lockup-row">
+        <div class="lockup-label">Logo — Light</div>
+        <div class="lockup">
+          <svg class="tm-mark sb" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+            <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+            <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+            <rect class="tm-detail" x="13" y="19" width="14" height="2" rx=".4"/>
+            <rect class="tm-detail" x="13" y="25" width="14" height="2" rx=".4"/>
+          </svg>
+          <span class="l-name">Trims</span>
+        </div>
+        <div class="lockup-label">Logo — Dark</div>
+        <div class="lockup dark">
+          <svg class="tm-mark sb lockup-light" viewBox="0 0 40 40" width="34" height="34">
+            <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+            <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+            <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+            <rect class="tm-detail" x="13" y="19" width="14" height="2" rx=".4"/>
+            <rect class="tm-detail" x="13" y="25" width="14" height="2" rx=".4"/>
+          </svg>
+          <span class="l-name">Trims</span>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Palette</div>
+      <div class="palette">
+        <div class="swatch-wrap"><div class="swatch" style="background:#1a1a1a"></div><div class="swatch-label">ink</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#1c4a35"></div><div class="swatch-label">forest</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#cb9555"></div><div class="swatch-label">brass</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#fafafa"></div><div class="swatch-label">paper</div></div>
+        <div class="swatch-wrap"><div class="swatch" style="background:#e0e0e0"></div><div class="swatch-label">stone</div></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6">Window-trim framed mark, lines inside = score. Honest take: the metaphor is weakest of the round. Trim work doesn't naturally read as "evaluating a deal."</div>
+    </div>
+  </div>
+
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tm-mark sb" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+          <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+          <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+          <rect class="tm-detail" x="13" y="19" width="14" height="2" rx=".4"/>
+          <rect class="tm-detail" x="13" y="25" width="14" height="2" rx=".4"/>
+        </svg>
+      </div>
+      <div class="tier-label">Strong Buy</div><div class="tier-score sb">87</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tm-mark buy" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+          <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+          <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+          <rect class="tm-detail" x="13" y="19" width="14" height="2" rx=".4"/>
+        </svg>
+      </div>
+      <div class="tier-label">Buy</div><div class="tier-score buy">68</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tm-mark wat" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+          <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+          <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+        </svg>
+      </div>
+      <div class="tier-label">Watch</div><div class="tier-score wat">52</div>
+    </div>
+    <div class="tier">
+      <div class="tier-mark-slot">
+        <svg class="tm-mark pas" viewBox="0 0 40 40" width="48" height="48">
+          <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+          <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+        </svg>
+      </div>
+      <div class="tier-label">Pass</div><div class="tier-score pas">31</div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <svg class="tm-mark sb" viewBox="0 0 40 40" width="40" height="40">
+      <rect class="tm-rect" x="6" y="6" width="28" height="28" rx="2"/>
+      <rect class="tm-inner" x="10" y="10" width="20" height="20" rx="1"/>
+      <rect class="tm-detail" x="13" y="13" width="14" height="2" rx=".4"/>
+      <rect class="tm-detail" x="13" y="19" width="14" height="2" rx=".4"/>
+      <rect class="tm-detail" x="13" y="25" width="14" height="2" rx=".4"/>
+    </svg>
+    <div class="sample-info"><div class="sample-addr">58 Laighton St</div><div class="sample-meta">Lynn, MA · 3 of 3 trims · 87</div></div>
+    <div class="sample-cf">+$2,384/mo</div>
+  </div>
+</section>
+
+<section style="margin-top:3rem;text-align:center;color:var(--muted);font-size:.85rem;line-height:1.7">
+  <div style="font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;color:var(--ink);margin-bottom:.5rem">Live finalists across both rounds</div>
+  <div style="max-width:640px;margin:0 auto">
+    <strong>Deckers</strong> · <strong>Jambs</strong> · <strong>Joists</strong> · <strong>Quoins</strong> · <strong>Treads</strong>
+    <br>All grab-able for under $50. Six months from now you'll wonder what you were debating.
+  </div>
+</section>
+
+</div>
+</body>
+</html>
