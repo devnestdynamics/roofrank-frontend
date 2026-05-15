@@ -61,6 +61,26 @@ Never committed. Live at `~/Code/roofrank-secrets/` outside the repo:
 
 Anything matching `*_secret*.json`, `*_accessKeys.csv`, `.env*`, `*.pem`, `*.key` is gitignored as a backstop.
 
+## Push notifications
+
+Frontend is wired (`service-worker.js` + `push.js`) but needs two things from you/backend before it works in prod:
+
+1. **Generate VAPID keys** (once):
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+   Save both keys in `~/Code/roofrank-secrets/` and Secrets Manager. Set `window.ROOFRANK_VAPID_PUBLIC_KEY = '<public>'` before `push.js` loads — easiest place is an inline `<script>` in each page that uses push, or a small `config.js` shipped with the site.
+
+2. **Backend endpoints** (in roofrank-backend):
+   - `POST /api/notifications/subscribe` — receives `{ endpoint, keys: { p256dh, auth } }`, stores against the user
+   - `POST /api/notifications/unsubscribe` — receives `{ endpoint }`, deletes the subscription
+   - `POST /api/notifications/resubscribe` — handles `pushsubscriptionchange` (browser rotates the endpoint)
+   - Send a push: backend uses `web-push` npm lib with the VAPID private key, POSTs `{ title, body, url?, tag?, priority? }` to the stored endpoint
+
+UI: "Enable push alerts" lives in the dashboard's More sheet (only renders when supported, hides on unsupported devices). Tapping triggers permission flow → subscription → backend POST.
+
+iOS caveat: push only works when the user has done "Add to Home Screen" (iOS 16.4+). Pure Safari tab doesn't get push.
+
 ## Sibling repos
 
 Everything under the [`devnestdynamics`](https://github.com/devnestdynamics) GitHub account (the RoofRank LLC):

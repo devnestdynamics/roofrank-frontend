@@ -56,3 +56,55 @@ self.addEventListener('fetch', e => {
     );
   }
 });
+
+// ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
+// Backend sends payload: { title, body, url?, tag?, priority?: 'high'|'normal' }
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch { data = { title: 'RoofRank', body: e.data ? e.data.text() : 'New alert' }; }
+
+  const title = data.title || 'RoofRank';
+  const opts = {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    data: { url: data.url || '/roofrank-dashboard.html' },
+    tag: data.tag,           // dedupes; new push with same tag replaces previous
+    renotify: !!data.tag,    // re-alert even on dedupe
+    requireInteraction: data.priority === 'high',
+    vibrate: data.priority === 'high' ? [120, 60, 120] : undefined,
+  };
+  e.waitUntil(self.registration.showNotification(title, opts));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = e.notification.data?.url || '/roofrank-dashboard.html';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      // Focus an existing tab if it matches; otherwise open new
+      for (const c of clients) {
+        const cu = new URL(c.url);
+        if (cu.pathname === url || cu.pathname + cu.search === url) {
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
+});
+
+self.addEventListener('pushsubscriptionchange', e => {
+  // Browser rotated the subscription. Re-subscribe + tell the backend.
+  // Backend endpoint: POST /api/notifications/resubscribe { oldEndpoint, newSub }
+  e.waitUntil((async () => {
+    try {
+      const newSub = await self.registration.pushManager.subscribe(e.oldSubscription.options);
+      await fetch('/api/notifications/resubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldEndpoint: e.oldSubscription?.endpoint, newSub: newSub.toJSON() }),
+      });
+    } catch (err) { /* best-effort; user can re-enable in the More sheet */ }
+  })());
+});

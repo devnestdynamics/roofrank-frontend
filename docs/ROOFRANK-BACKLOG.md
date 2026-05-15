@@ -1662,9 +1662,18 @@ Top of dashboard on returning visit: "2 new Strong Buys, 1 price drop on your wa
 ---
 
 ### 135. PWA push notifications
-**Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Retention
+**Priority:** 🔴 MVP candidate · **Effort:** M · **Category:** Retention · **Status:** Frontend done — awaits VAPID keys + backend
 
-Now that PWA is wired, "🔔 New Strong Buy at 58 Laighton" push notifications work without Twilio. Free SMS-equivalent. Could replace #122 SMS Alerts entirely for installed users.
+"🔔 New Strong Buy at 58 Laighton" push notifications, free, replace #122 SMS for installed users.
+
+**Frontend shipped May 15:** `service-worker.js` has push + notificationclick + pushsubscriptionchange handlers; `push.js` exposes `window.Push.{status,subscribe,unsubscribe}`; "Enable push alerts" button wired in dashboard More sheet.
+
+**Open dependencies:**
+1. Generate VAPID keys (`npx web-push generate-vapid-keys`), save private to Secrets Manager, plug public into `window.ROOFRANK_VAPID_PUBLIC_KEY` before `push.js` loads.
+2. Backend endpoints (in roofrank-backend): `POST /api/notifications/{subscribe,unsubscribe,resubscribe}` + a `pushAll(userId, payload)` helper using `web-push` npm.
+3. Wire triggers: ingestion sees a Strong Buy → push to all matching subscribers; nightly watchlist diff → push price drops to owners.
+
+iOS caveat: only fires for installed PWAs (Add to Home Screen).
 
 ---
 

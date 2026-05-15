@@ -685,6 +685,11 @@ body{
 <div class="bn-sheet" id="bnSheet" onclick="if(event.target===this) this.classList.remove('open')">
   <div class="bn-sheet-card">
     <div class="bn-sheet-grip"></div>
+    <button class="bn-sheet-link" type="button" id="alertsBtn" onclick="toggleAlerts()" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span id="alertsLabel">Enable push alerts</span>
+      <span id="alertsHint" style="margin-left:auto;font-size:.66rem;color:var(--muted);font-weight:400"></span>
+    </button>
     <a href="roofrank-pricing.html?v=2" class="bn-sheet-link">
       <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
       Billing
@@ -695,6 +700,44 @@ body{
     </button>
   </div>
 </div>
+
+<script src="push.js"></script>
+<script>
+// ── Push notifications wiring ──────────────────────────────────────────
+async function refreshAlertsButton(){
+  const btn = document.getElementById('alertsBtn');
+  const lbl = document.getElementById('alertsLabel');
+  const hint = document.getElementById('alertsHint');
+  if(!btn || !window.Push) return;
+  const status = await window.Push.status();
+  if(status === 'unsupported'){ btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  if(status === 'granted-subscribed'){ lbl.textContent = 'Push alerts on'; hint.textContent = 'tap to turn off'; }
+  else if(status === 'denied'){ lbl.textContent = 'Alerts blocked by browser'; hint.textContent = 'enable in settings'; btn.style.opacity = '.6'; }
+  else { lbl.textContent = 'Enable push alerts'; hint.textContent = 'free · device-only'; }
+}
+async function toggleAlerts(){
+  const lbl = document.getElementById('alertsLabel');
+  const status = await window.Push.status();
+  try {
+    if(status === 'granted-subscribed'){
+      lbl.textContent = 'Turning off…';
+      await window.Push.unsubscribe();
+    } else if(status === 'denied'){
+      // Can't programmatically re-prompt — user must change in browser settings
+      alert('Notifications are blocked. Enable them in your browser/iOS settings, then come back.');
+    } else {
+      lbl.textContent = 'Asking permission…';
+      await window.Push.subscribe();
+    }
+  } catch(e){
+    console.error('Push toggle failed:', e);
+    lbl.textContent = 'Couldn’t enable — try again';
+  }
+  setTimeout(refreshAlertsButton, 300);
+}
+refreshAlertsButton();
+</script>
 
 <!-- Pro upgrade modal -->
 <div class="pro-modal" id="proModal" onclick="if(event.target===this) closeProModal()">
