@@ -732,6 +732,9 @@ let currentLensDeals = [];
 
 // ── PRO STATE ─────────────────────────────────────────────────────────────
 // Free by default; flipped to true when BillingAPI confirms a paid plan.
+// Append ?free=1 to the URL to force the free-tier preview (for testing locks
+// while logged in as a Pro user).
+const _forcedFree = new URLSearchParams(window.location.search).get('free') === '1';
 let isPro = false;
 
 // ── LENSES ────────────────────────────────────────────────────────────────
@@ -767,15 +770,20 @@ async function boot(){
     renderBriefHead();
   }).catch(()=>{});
   // Pro state — flips locked UI to unlocked when the user has a paid plan
-  BillingAPI.getSubscription().then(sub => {
-    const plan = (sub?.plan || '').toLowerCase();
-    isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
-    if(isPro){
-      // Re-render lens row and feed without Pro locks
-      renderFollowups();
-      if(currentLensDeals.length) renderDeals(currentLensDeals);
-    }
-  }).catch(()=>{});
+  if(_forcedFree){
+    console.log('[RoofRank] ?free=1 override active — forcing free-tier UI');
+  } else {
+    BillingAPI.getSubscription().then(sub => {
+      const plan = (sub?.plan || '').toLowerCase();
+      console.log('[RoofRank] subscription plan:', plan || '(none)');
+      isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+      if(isPro){
+        // Re-render lens row and feed without Pro locks
+        renderFollowups();
+        if(currentLensDeals.length) renderDeals(currentLensDeals);
+      }
+    }).catch(e => console.warn('[RoofRank] could not load subscription:', e?.message));
+  }
   WatchlistAPI.loadIds().then(syncWatchBadge).catch(()=>{});
 }
 
