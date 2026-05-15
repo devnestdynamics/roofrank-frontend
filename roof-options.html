@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roof Silhouette — Options A · B · C</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#efeae0; --cream-3:#e3dccf;
+  --ink:#1c1f1c; --muted:#6a6e68; --faint:#9a9d96;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-lite:#a8c9b4; --sage-pale:#cfe0d7;
+  --amber:#a06a00; --rose:#9b3a3a;
+  --border:#e0d9cf;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding:4rem 2rem 6rem}
+header{margin-bottom:3.5rem;text-align:center}
+header h1{font-family:var(--serif);font-size:2.4rem;font-weight:500;letter-spacing:-.01em;margin-bottom:.65rem}
+header p{color:var(--muted);max-width:560px;margin:0 auto;font-size:.95rem}
+header .pre{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--forest);margin-bottom:.65rem}
+
+/* ── shared mark primitive ── */
+.mark{display:block;width:44px;height:44px}
+.mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.mk-floor{transition:fill .2s,opacity .2s}
+
+/* OPTION A — neutral silhouette: count + opacity only, no tier color in mark */
+.mark.a .mk-roof{stroke:var(--ink)}
+.mark.a .mk-floor{fill:var(--ink);opacity:.16}
+.mark.a.sb .mk-floor-1,.mark.a.sb .mk-floor-2,.mark.a.sb .mk-floor-3{opacity:1}
+.mark.a.buy .mk-floor-1,.mark.a.buy .mk-floor-2{opacity:1}
+.mark.a.wat .mk-floor-1{opacity:1}
+.mark.a.pas .mk-floor-1{opacity:.55}
+
+/* OPTION B — monochrome sage ramp: same family, saturation drops with tier */
+.mark.b .mk-roof{stroke:var(--ink)}
+.mark.b .mk-floor{fill:var(--cream-3)}
+.mark.b.sb .mk-floor-1,.mark.b.sb .mk-floor-2,.mark.b.sb .mk-floor-3{fill:var(--forest)}
+.mark.b.buy .mk-floor-1,.mark.b.buy .mk-floor-2{fill:var(--sage)}
+.mark.b.wat .mk-floor-1{fill:var(--sage-lite)}
+.mark.b.pas .mk-floor-1{fill:var(--sage-pale)}
+
+/* OPTION C — foundation stripe: silhouette neutral, color bar under */
+.mark.c .mk-roof{stroke:var(--ink)}
+.mark.c .mk-floor{fill:var(--ink);opacity:.18}
+.mark.c.sb .mk-floor-1,.mark.c.sb .mk-floor-2,.mark.c.sb .mk-floor-3{opacity:.9}
+.mark.c.buy .mk-floor-1,.mark.c.buy .mk-floor-2{opacity:.9}
+.mark.c.wat .mk-floor-1{opacity:.9}
+.mark.c.pas .mk-floor-1{opacity:.55}
+.mark-foundation{height:3px;margin:4px auto 0;border-radius:1.5px;width:32px}
+.fdn-sb{background:var(--forest)}
+.fdn-buy{background:var(--forest-3)}
+.fdn-wat{background:var(--amber)}
+.fdn-pas{background:var(--rose)}
+
+/* layout cards */
+.opts{display:grid;grid-template-columns:1fr;gap:2rem}
+@media(min-width:960px){.opts{grid-template-columns:1fr 1fr 1fr}}
+.opt{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.75rem;position:relative}
+.opt.recommend{box-shadow:0 0 0 2px var(--forest), 0 8px 28px rgba(28,74,53,.12)}
+.opt-badge{position:absolute;top:-11px;left:1.4rem;background:var(--forest);color:#fff;font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .65rem;border-radius:20px}
+.opt-letter{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
+.opt-name{font-family:var(--serif);font-size:1.3rem;font-weight:500;margin-bottom:.4rem}
+.opt-desc{font-size:.82rem;color:var(--muted);line-height:1.6;min-height:3.6rem;margin-bottom:1.5rem}
+
+.tier-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;padding:1.25rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fafaf7,#f7f4ef);margin:0 -1.75rem 1.25rem;padding-left:1.5rem;padding-right:1.5rem}
+.tier{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.tier-label{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tier-score{font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--ink)}
+.tier-score.sb{color:var(--forest)}
+.tier-score.buy{color:var(--forest-3)}
+.tier-score.wat{color:var(--amber)}
+.tier-score.pas{color:var(--muted)}
+
+/* dark variant preview */
+.dark-strip{background:linear-gradient(180deg,#1d2420,#14201a);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-around;margin-top:.5rem}
+.dark-strip .mark{width:36px;height:36px}
+.dark-strip .mark .mk-roof{stroke:#fff}
+.dark-strip .mark.a .mk-floor{fill:#fff;opacity:.18}
+.dark-strip .mark.a.sb .mk-floor-1,.dark-strip .mark.a.sb .mk-floor-2,.dark-strip .mark.a.sb .mk-floor-3{opacity:1}
+.dark-strip .mark.a.buy .mk-floor-1,.dark-strip .mark.a.buy .mk-floor-2{opacity:1}
+.dark-strip .mark.a.wat .mk-floor-1{opacity:1}
+.dark-strip .mark.a.pas .mk-floor-1{opacity:.55}
+.dark-strip .mark.b .mk-floor{fill:rgba(255,255,255,.18)}
+.dark-strip .mark.b.sb .mk-floor-1,.dark-strip .mark.b.sb .mk-floor-2,.dark-strip .mark.b.sb .mk-floor-3{fill:var(--sage)}
+.dark-strip .mark.b.buy .mk-floor-1,.dark-strip .mark.b.buy .mk-floor-2{fill:var(--sage-lite)}
+.dark-strip .mark.b.wat .mk-floor-1{fill:var(--sage-pale)}
+.dark-strip .mark.b.pas .mk-floor-1{fill:rgba(255,255,255,.32)}
+.dark-strip .mark.c .mk-floor{fill:#fff;opacity:.2}
+.dark-strip .mark.c.sb .mk-floor-1,.dark-strip .mark.c.sb .mk-floor-2,.dark-strip .mark.c.sb .mk-floor-3{opacity:.95}
+.dark-strip .mark.c.buy .mk-floor-1,.dark-strip .mark.c.buy .mk-floor-2{opacity:.95}
+.dark-strip .mark.c.wat .mk-floor-1{opacity:.95}
+.dark-strip .mark.c.pas .mk-floor-1{opacity:.55}
+
+.dark-label{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.55rem;text-align:center}
+.pros{margin-top:1.25rem;font-size:.8rem;color:var(--ink);line-height:1.6}
+.pros b{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);font-weight:600;display:block;margin-bottom:.3rem}
+.cons b{color:var(--muted)}
+.pros + .cons{margin-top:.85rem;color:var(--muted)}
+
+/* in-context preview row */
+.context{margin-top:4rem;background:#fff;border:1px solid var(--border);border-radius:14px;padding:2rem}
+.context h3{font-family:var(--serif);font-size:1.3rem;font-weight:500;margin-bottom:.4rem}
+.context p{font-size:.82rem;color:var(--muted);margin-bottom:1.5rem}
+.deals{display:grid;grid-template-columns:1fr;gap:.8rem}
+@media(min-width:720px){.deals{grid-template-columns:1fr 1fr}}
+.deal-card{display:flex;align-items:center;gap:.85rem;padding:.85rem 1rem;background:var(--cream);border:1px solid var(--border);border-radius:10px}
+.deal-info{flex:1;min-width:0}
+.deal-addr{font-size:.85rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-city{font-size:.68rem;color:var(--muted);margin-top:1px}
+.deal-cf{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--forest);text-align:right;flex-shrink:0}
+.deal-tag{font-size:.55rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:.2rem}
+.tag-sb{background:rgba(28,74,53,.09);color:var(--forest)}
+.tag-buy{background:rgba(62,129,96,.08);color:var(--forest-3)}
+.tag-wat{background:rgba(160,106,0,.08);color:var(--amber)}
+.tag-pas{background:rgba(155,58,58,.08);color:var(--rose)}
+.context-pick{margin-bottom:2rem;display:flex;gap:.6rem;flex-wrap:wrap}
+.context-pick button{background:#fff;border:1px solid var(--border);color:var(--ink);padding:.4rem .9rem;border-radius:8px;font-family:var(--sans);font-size:.78rem;cursor:pointer;transition:all .15s}
+.context-pick button:hover{border-color:var(--forest)}
+.context-pick button.on{background:var(--forest);color:#fff;border-color:var(--forest)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="pre">Roof Silhouette · Tier Treatment</div>
+  <h1>Three ways to handle the colors</h1>
+  <p>Roof always white on dark, ink on light. The question is what happens with the floors — and whether we keep red for Pass at all.</p>
+</header>
+
+<div class="opts">
+
+  <!-- OPTION A -->
+  <div class="opt">
+    <div class="opt-letter">Option A</div>
+    <div class="opt-name">Neutral silhouette</div>
+    <div class="opt-desc">Mark is always the same color (ink on light, white on dark). Tier comes from how many floors are lit and the signal pill — never from the mark itself.</div>
+
+    <div class="tier-row">
+      <div class="tier">
+        <svg class="mark a sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">SB</div>
+        <div class="tier-score sb">87</div>
+      </div>
+      <div class="tier">
+        <svg class="mark a buy" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Buy</div>
+        <div class="tier-score buy">68</div>
+      </div>
+      <div class="tier">
+        <svg class="mark a wat" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Watch</div>
+        <div class="tier-score wat">52</div>
+      </div>
+      <div class="tier">
+        <svg class="mark a pas" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Pass</div>
+        <div class="tier-score pas">31</div>
+      </div>
+    </div>
+
+    <div class="dark-label">On dark surface</div>
+    <div class="dark-strip">
+      <svg class="mark a sb" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark a buy" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark a wat" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark a pas" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+    </div>
+
+    <div class="pros"><b>Strengths</b>Mark is brand-pure — never competes with the score number or signal pill. Identical primitive everywhere.</div>
+    <div class="cons"><b>Tradeoff</b>Mark alone doesn't tell you the tier — you must read the score or pill alongside it.</div>
+  </div>
+
+  <!-- OPTION B — RECOMMENDED -->
+  <div class="opt recommend">
+    <div class="opt-badge">Recommended</div>
+    <div class="opt-letter">Option B</div>
+    <div class="opt-name">Monochrome sage ramp</div>
+    <div class="opt-desc">One color family for floors. Conviction = saturation. SB is most saturated, Pass is a barely-lit ghost. No red, no clash.</div>
+
+    <div class="tier-row">
+      <div class="tier">
+        <svg class="mark b sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">SB</div>
+        <div class="tier-score sb">87</div>
+      </div>
+      <div class="tier">
+        <svg class="mark b buy" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Buy</div>
+        <div class="tier-score buy">68</div>
+      </div>
+      <div class="tier">
+        <svg class="mark b wat" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Watch</div>
+        <div class="tier-score wat">52</div>
+      </div>
+      <div class="tier">
+        <svg class="mark b pas" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="tier-label">Pass</div>
+        <div class="tier-score pas">31</div>
+      </div>
+    </div>
+
+    <div class="dark-label">On dark surface</div>
+    <div class="dark-strip">
+      <svg class="mark b sb" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark b buy" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark b wat" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <svg class="mark b pas" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+    </div>
+
+    <div class="pros"><b>Strengths</b>Mark is the data — no decoder needed. Calm Pass treatment honest, not punitive. One color family, one identity.</div>
+    <div class="cons"><b>Tradeoff</b>Watch vs Pass distinction is subtle. Relies on saturation differences holding up on cheap screens.</div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="opt">
+    <div class="opt-letter">Option C</div>
+    <div class="opt-name">Foundation stripe</div>
+    <div class="opt-desc">Silhouette is neutral and identical across tiers. A thin colored bar at the base — the "foundation" — carries the tier signal.</div>
+
+    <div class="tier-row">
+      <div class="tier">
+        <svg class="mark c sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="mark-foundation fdn-sb"></div>
+        <div class="tier-label">SB</div>
+        <div class="tier-score sb">87</div>
+      </div>
+      <div class="tier">
+        <svg class="mark c buy" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="mark-foundation fdn-buy"></div>
+        <div class="tier-label">Buy</div>
+        <div class="tier-score buy">68</div>
+      </div>
+      <div class="tier">
+        <svg class="mark c wat" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="mark-foundation fdn-wat"></div>
+        <div class="tier-label">Watch</div>
+        <div class="tier-score wat">52</div>
+      </div>
+      <div class="tier">
+        <svg class="mark c pas" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="mark-foundation fdn-pas"></div>
+        <div class="tier-label">Pass</div>
+        <div class="tier-score pas">31</div>
+      </div>
+    </div>
+
+    <div class="dark-label">On dark surface</div>
+    <div class="dark-strip">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><svg class="mark c sb" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg><div class="mark-foundation fdn-sb" style="width:26px"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><svg class="mark c buy" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg><div class="mark-foundation fdn-buy" style="width:26px"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><svg class="mark c wat" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg><div class="mark-foundation fdn-wat" style="width:26px"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><svg class="mark c pas" viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg><div class="mark-foundation fdn-pas" style="width:26px"></div></div>
+    </div>
+
+    <div class="pros"><b>Strengths</b>Tier color exists but never inside the silhouette. Like a status LED — easy to scan at any size.</div>
+    <div class="cons"><b>Tradeoff</b>Adds a second element to the mark — slightly more complex primitive, and the stripe could feel decorative.</div>
+  </div>
+
+</div>
+
+<!-- in-context preview -->
+<div class="context">
+  <h3>In context — deal list</h3>
+  <p>Same four deals styled with each option. Click to switch.</p>
+
+  <div class="context-pick">
+    <button class="ctx-btn on" data-opt="a">Option A — Neutral</button>
+    <button class="ctx-btn" data-opt="b">Option B — Sage ramp</button>
+    <button class="ctx-btn" data-opt="c">Option C — Foundation</button>
+  </div>
+
+  <div class="deals" id="ctx-deals">
+    <div class="deal-card">
+      <svg class="ctx-mark sb" viewBox="0 0 40 40" width="40" height="40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <div class="ctx-foundation-wrap"><div class="mark-foundation fdn-sb" style="display:none"></div></div>
+      <div class="deal-info">
+        <div class="deal-addr">58 Laighton St</div>
+        <div class="deal-city">Lynn, MA · <span class="deal-tag tag-sb">Strong Buy · 87</span></div>
+      </div>
+      <div class="deal-cf">+$2,384/mo</div>
+    </div>
+
+    <div class="deal-card">
+      <svg class="ctx-mark buy" viewBox="0 0 40 40" width="40" height="40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <div class="deal-info">
+        <div class="deal-addr">82 Linwood St</div>
+        <div class="deal-city">Lynn, MA · <span class="deal-tag tag-buy">Buy · 68</span></div>
+      </div>
+      <div class="deal-cf">+$1,438/mo</div>
+    </div>
+
+    <div class="deal-card">
+      <svg class="ctx-mark wat" viewBox="0 0 40 40" width="40" height="40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <div class="deal-info">
+        <div class="deal-addr">48 Saratoga St</div>
+        <div class="deal-city">Lynn, MA · <span class="deal-tag tag-wat">Watch · 52</span></div>
+      </div>
+      <div class="deal-cf" style="color:var(--amber)">+$420/mo</div>
+    </div>
+
+    <div class="deal-card">
+      <svg class="ctx-mark pas" viewBox="0 0 40 40" width="40" height="40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="26" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="31" width="28" height="3" rx=".5"/></svg>
+      <div class="deal-info">
+        <div class="deal-addr">141 Eastern Ave</div>
+        <div class="deal-city">Lynn, MA · <span class="deal-tag tag-pas">Pass · 31</span></div>
+      </div>
+      <div class="deal-cf" style="color:var(--muted)">−$210/mo</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const btns = document.querySelectorAll('.ctx-btn');
+const marks = document.querySelectorAll('.ctx-mark');
+btns.forEach(b => b.addEventListener('click', () => {
+  btns.forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  const opt = b.dataset.opt;
+  marks.forEach(m => {
+    m.classList.remove('a','b','c');
+    m.classList.add(opt);
+  });
+  // toggle foundation stripes for option C
+  document.querySelectorAll('.deal-card').forEach((card, i) => {
+    const tiers = ['sb','buy','wat','pas'];
+    let fdn = card.querySelector('.deal-foundation');
+    if (opt === 'c') {
+      if (!fdn) {
+        const wrap = document.createElement('div');
+        wrap.className = 'deal-foundation';
+        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center';
+        const mark = card.querySelector('.ctx-mark');
+        const bar = document.createElement('div');
+        bar.className = 'mark-foundation fdn-' + tiers[i];
+        bar.style.cssText = 'width:30px;margin-top:2px';
+        // insert bar right after the mark
+        mark.parentNode.insertBefore(bar, mark.nextSibling);
+      }
+    } else {
+      const bars = card.querySelectorAll('.mark-foundation');
+      bars.forEach(x => x.remove());
+    }
+  });
+}));
+// initial render — option A
+marks.forEach(m => m.classList.add('a'));
+</script>
+
+</body>
+</html>

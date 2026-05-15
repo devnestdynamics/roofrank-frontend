@@ -61,6 +61,16 @@ Never committed. Live at `~/Code/roofrank-secrets/` outside the repo:
 
 Anything matching `*_secret*.json`, `*_accessKeys.csv`, `.env*`, `*.pem`, `*.key` is gitignored as a backstop.
 
+## Sibling repos
+
+```
+~/Code/roofrank-frontend/   ← this repo (HTML/CSS/JS, public on GitHub)
+~/Code/roofrank-backend/    ← Node/TS API + drizzle migrations + nested infra (terraform/nginx).
+                              Local-only — devnestdynamics/roofrank-backend has not been pushed yet.
+~/Code/roofrank-secrets/    ← OAuth client secret + AWS access keys (chmod 700/600, never in any repo)
+~/Code/roofrank-archive/    ← old zips, doorrank-starter, stale html snapshots
+```
+
 ## See also
 
 - [docs/ROOFRANK-BACKLOG.md](docs/ROOFRANK-BACKLOG.md) — product backlog (120+ items, MVP scope at top)
