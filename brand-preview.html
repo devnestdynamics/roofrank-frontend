@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand prototype — RoofRank vs Deckers</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;
+  --white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00;--rose:#a03030;
+  --border:#e0d9cf;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{
+  background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  padding:2rem 1.5rem 4rem;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────── */
+.hdr{max-width:1200px;margin:0 auto 2.5rem;text-align:center}
+.hdr .eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.6rem}
+.hdr h1{font-family:var(--serif);font-size:2rem;font-weight:500;color:var(--ink);margin-bottom:.6rem}
+.hdr p{font-size:.95rem;color:var(--muted);max-width:640px;margin:0 auto;line-height:1.65}
+
+/* ── Side-by-side comparison grid ─────────────────────────────────────── */
+.compare{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:880px){.compare{grid-template-columns:1fr}}
+
+.col{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:14px;padding:2rem 1.8rem;
+  box-shadow:0 2px 14px rgba(28,31,28,.04);
+}
+.col-eyebrow{
+  font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.4rem;
+}
+.col-title{
+  font-family:var(--serif);font-size:1.5rem;font-weight:500;
+  margin-bottom:1.5rem;letter-spacing:-.01em;
+}
+.col-tag{
+  display:inline-block;font-size:.6rem;font-weight:600;
+  background:var(--sage-dim);color:var(--forest);border:1px solid var(--sage-border);
+  padding:2px 8px;border-radius:4px;margin-left:.4rem;letter-spacing:.05em;text-transform:uppercase;
+}
+
+/* ── Section block inside each column ─────────────────────────────────── */
+.block{padding:1.2rem 0;border-top:1px solid var(--cream-2)}
+.block:first-of-type{border-top:none;padding-top:0}
+.block-title{
+  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.9rem;
+}
+
+/* ── RoofRank logo (refined) ──────────────────────────────────────────── */
+.rr-logo-lg, .rr-logo-md, .rr-logo-sm{display:inline-flex;align-items:center;gap:.6rem}
+.rr-logo-lg{gap:.85rem}
+.rr-logo-sm{gap:.45rem}
+.rr-mark-lg{width:56px;height:56px}
+.rr-mark-md{width:36px;height:36px}
+.rr-mark-sm{width:24px;height:24px}
+.rr-name-lg{font-family:var(--serif);font-size:1.65rem;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.rr-name-md{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink)}
+.rr-name-sm{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--ink)}
+
+/* ── Deckers logo ─────────────────────────────────────────────────────── */
+.dk-logo-lg, .dk-logo-md, .dk-logo-sm{display:inline-flex;align-items:center;gap:.6rem}
+.dk-logo-lg{gap:.85rem}
+.dk-logo-sm{gap:.45rem}
+.dk-mark-lg{width:56px;height:56px}
+.dk-mark-md{width:36px;height:36px}
+.dk-mark-sm{width:24px;height:24px}
+.dk-name-lg{font-family:var(--serif);font-size:1.65rem;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+.dk-name-md{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink)}
+.dk-name-sm{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--ink)}
+
+.logo-row{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:.6rem}
+
+/* ── Voice / tagline ──────────────────────────────────────────────────── */
+.tagline{
+  font-family:var(--serif);font-style:italic;font-size:1.05rem;
+  color:var(--ink);line-height:1.55;
+}
+.tagline-sub{font-size:.85rem;color:var(--muted);margin-top:.45rem;line-height:1.6}
+
+/* ── Color palette swatches ───────────────────────────────────────────── */
+.swatch-row{display:flex;gap:.5rem}
+.swatch{
+  flex:1;border-radius:8px;padding:.65rem .5rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.04em;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:64px;
+}
+.sw-name{font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.sw-hex{opacity:.7;font-size:.55rem}
+
+/* ── Bar-based score system (the in-product viz) ──────────────────────── */
+.bar-row{display:flex;align-items:flex-end;gap:3px;height:36px}
+.bar{width:7px;border-radius:1.5px;background:var(--cream-3);transition:height .3s}
+.bar.on.sb{background:var(--forest)}
+.bar.on.buy{background:var(--forest-3)}
+.bar.on.wat{background:var(--amber)}
+.bar.on.pas{background:var(--rose)}
+
+/* Sample deal card */
+.deal-card{
+  background:var(--cream);border:1px solid var(--border);border-radius:10px;
+  padding:.9rem 1rem;display:flex;align-items:center;gap:.85rem;
+  margin-bottom:.5rem;
+}
+.deal-card.sb{border-left:3px solid var(--forest)}
+.deal-card.buy{border-left:3px solid var(--forest-3)}
+.deal-card.wat{border-left:3px solid var(--amber)}
+.deal-card.pas{border-left:3px solid var(--rose)}
+.deal-score{display:flex;flex-direction:column;align-items:center;flex-shrink:0;gap:.25rem;min-width:52px}
+.deal-score-num{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1}
+.deal-info{flex:1;min-width:0;overflow:hidden}
+.deal-addr{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-meta{font-size:.7rem;color:var(--muted);margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-cf{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--forest)}
+.deal-cf.r{color:var(--rose)}
+.deal-right{flex-shrink:0;text-align:right}
+.deal-sig{
+  font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:3px;
+}
+.deal-sig.sb{background:rgba(28,74,53,.1);color:var(--forest);border:1px solid rgba(28,74,53,.2)}
+.deal-sig.buy{background:rgba(62,129,96,.1);color:var(--forest-3);border:1px solid rgba(62,129,96,.2)}
+.deal-sig.wat{background:rgba(160,106,0,.1);color:var(--amber);border:1px solid rgba(160,106,0,.2)}
+.deal-sig.pas{background:rgba(160,48,48,.1);color:var(--rose);border:1px solid rgba(160,48,48,.2)}
+.deal-price{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:3px}
+
+.note{
+  background:var(--cream-2);border-left:3px solid var(--sage);
+  padding:.85rem 1rem;border-radius:0 8px 8px 0;
+  font-size:.82rem;color:var(--ink-2,#3a3e39);line-height:1.65;
+}
+.note b{font-weight:600}
+
+/* Use side-by-side bars in the row */
+.score-mini{display:flex;align-items:flex-end;gap:2.5px;height:20px}
+.score-mini-bar{width:4px;border-radius:1px;background:var(--cream-3)}
+.score-mini-bar.on.sb{background:var(--forest)}
+.score-mini-bar.on.buy{background:var(--forest-3)}
+.score-mini-bar.on.wat{background:var(--amber)}
+.score-mini-bar.on.pas{background:var(--rose)}
+
+.footer{max-width:1200px;margin:2rem auto 0;text-align:center;font-size:.78rem;color:var(--muted)}
+.footer code{font-family:var(--mono);background:var(--cream-2);padding:1px 5px;border-radius:3px;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="eyebrow">Brand Prototype Comparison</div>
+  <h1>RoofRank, refined — and Deckers, applied.</h1>
+  <p>Both brands share a common scoring primitive: ascending bars that double as both a logo mark and an in-product score visualization. Compare side-by-side and pick.</p>
+</header>
+
+<main class="compare">
+
+  <!-- ── ROOFRANK refined ───────────────────────────────────────────── -->
+  <section class="col">
+    <div class="col-eyebrow">Option A</div>
+    <div class="col-title">RoofRank<span class="col-tag">current name, refined</span></div>
+
+    <!-- Logo lockups -->
+    <div class="block">
+      <div class="block-title">Logo Lockup</div>
+      <div class="logo-row">
+        <span class="rr-logo-lg">
+          <svg class="rr-mark-lg" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="14" y="34" width="6" height="10" rx="1" fill="#7aaa8f"/>
+            <rect x="25" y="26" width="6" height="18" rx="1" fill="#7aaa8f"/>
+            <rect x="36" y="16" width="6" height="28" rx="1" fill="#fff"/>
+          </svg>
+          <span class="rr-name-lg">RoofRank</span>
+        </span>
+        <span class="rr-logo-md">
+          <svg class="rr-mark-md" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="14" y="34" width="6" height="10" rx="1" fill="#7aaa8f"/>
+            <rect x="25" y="26" width="6" height="18" rx="1" fill="#7aaa8f"/>
+            <rect x="36" y="16" width="6" height="28" rx="1" fill="#fff"/>
+          </svg>
+          <span class="rr-name-md">RoofRank</span>
+        </span>
+        <span class="rr-logo-sm">
+          <svg class="rr-mark-sm" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="14" y="34" width="6" height="10" rx="1" fill="#7aaa8f"/>
+            <rect x="25" y="26" width="6" height="18" rx="1" fill="#7aaa8f"/>
+            <rect x="36" y="16" width="6" height="28" rx="1" fill="#fff"/>
+          </svg>
+          <span class="rr-name-sm">RoofRank</span>
+        </span>
+      </div>
+      <div class="tagline-sub">Three ascending bars — solid, no opacity gradient. Tallest bar in cream-white to indicate <i>the standout</i>. Roof shape implied by the rising line of bar tops; no separate roof stroke. Cleaner and more confident than the existing mark.</div>
+    </div>
+
+    <!-- Tagline / voice -->
+    <div class="block">
+      <div class="block-title">Voice + Tagline</div>
+      <div class="tagline">"An AI analyst for every multifamily deal."</div>
+      <div class="tagline-sub">Brand voice stays serious, structural, analyst-tone. "RoofRank" already names the function (ranking roofs) — the brand carries some descriptive weight, so the marketing leans more analyst, less hype.</div>
+    </div>
+
+    <!-- Color palette -->
+    <div class="block">
+      <div class="block-title">Palette</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:var(--forest);color:#fff"><span class="sw-name">Forest</span><span class="sw-hex">#1C4A35</span></div>
+        <div class="swatch" style="background:var(--sage);color:#1c1f1c"><span class="sw-name">Sage</span><span class="sw-hex">#7AAA8F</span></div>
+        <div class="swatch" style="background:var(--cream);color:var(--ink);border:1px solid var(--border)"><span class="sw-name">Cream</span><span class="sw-hex">#F7F4EF</span></div>
+        <div class="swatch" style="background:var(--ink);color:#fff"><span class="sw-name">Ink</span><span class="sw-hex">#1C1F1C</span></div>
+      </div>
+    </div>
+
+    <!-- Bar score in product -->
+    <div class="block">
+      <div class="block-title">Score System (replaces ring)</div>
+      <div class="deal-card sb">
+        <div class="deal-score">
+          <div class="deal-score-num">87</div>
+          <div class="bar-row" style="height:24px">
+            <div class="bar on sb" style="height:35%"></div>
+            <div class="bar on sb" style="height:60%"></div>
+            <div class="bar on sb" style="height:85%"></div>
+            <div class="bar on sb" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">37–39 Freeman St</div>
+          <div class="deal-meta">Boston, MA · 5 units · 12d</div>
+          <div class="deal-cf">+$1,840/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig sb">Strong Buy</div>
+          <div class="deal-price">$1.575M</div>
+        </div>
+      </div>
+      <div class="deal-card buy">
+        <div class="deal-score">
+          <div class="deal-score-num">74</div>
+          <div class="bar-row" style="height:24px">
+            <div class="bar on buy" style="height:35%"></div>
+            <div class="bar on buy" style="height:60%"></div>
+            <div class="bar on buy" style="height:85%"></div>
+            <div class="bar" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">48 Rosseter St</div>
+          <div class="deal-meta">Boston, MA · 3 units · 22d</div>
+          <div class="deal-cf">+$925/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig buy">Buy</div>
+          <div class="deal-price">$825K</div>
+        </div>
+      </div>
+      <div class="deal-card wat">
+        <div class="deal-score">
+          <div class="deal-score-num">56</div>
+          <div class="bar-row" style="height:24px">
+            <div class="bar on wat" style="height:35%"></div>
+            <div class="bar on wat" style="height:60%"></div>
+            <div class="bar" style="height:85%"></div>
+            <div class="bar" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">77 Centre St</div>
+          <div class="deal-meta">Worcester, MA · 6 units · 64d</div>
+          <div class="deal-cf">+$320/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig wat">Watch</div>
+          <div class="deal-price">$1.85M</div>
+        </div>
+      </div>
+      <div class="deal-card pas" style="margin-bottom:0">
+        <div class="deal-score">
+          <div class="deal-score-num">38</div>
+          <div class="bar-row" style="height:24px">
+            <div class="bar on pas" style="height:35%"></div>
+            <div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:85%"></div>
+            <div class="bar" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">9 Beechwood Pl</div>
+          <div class="deal-meta">Lynn, MA · 4 units · 91d</div>
+          <div class="deal-cf r">−$220/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig pas">Pass</div>
+          <div class="deal-price">$650K</div>
+        </div>
+      </div>
+      <div class="tagline-sub" style="margin-top:.85rem">The number stays as the headline. Four bars below it — how many "light up" (and what color) shows the deal tier at a glance. The brand mark (3 bars) and the score viz (4 bars) are the same primitive.</div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Pros / cons of staying</div>
+      <div class="note">
+        <b>Pros:</b> No domain/legal cost. SEO equity preserved. Recognizable already. Name describes what the product does — easier to explain.<br><br>
+        <b>Cons:</b> "RoofRank" reads as descriptive (we rank roofs), not as a brand. Caps you somewhat — if you ever broaden to commercial or non-residential, "roof" becomes limiting. The mark, even refined, isn't as ownable as a brand-name mark could be.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DECKERS ─────────────────────────────────────────────────────── -->
+  <section class="col">
+    <div class="col-eyebrow">Option B</div>
+    <div class="col-title">Deckers<span class="col-tag" style="background:#1c4a35;color:#fff;border-color:#1c4a35">new brand</span></div>
+
+    <!-- Logo lockups -->
+    <div class="block">
+      <div class="block-title">Logo Lockup</div>
+      <div class="logo-row">
+        <span class="dk-logo-lg">
+          <svg class="dk-mark-lg" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <!-- Three stacked floors of a decker -->
+            <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
+            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+          </svg>
+          <span class="dk-name-lg">Deckers</span>
+        </span>
+        <span class="dk-logo-md">
+          <svg class="dk-mark-md" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
+            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+          </svg>
+          <span class="dk-name-md">Deckers</span>
+        </span>
+        <span class="dk-logo-sm">
+          <svg class="dk-mark-sm" viewBox="0 0 56 56" fill="none">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
+            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+          </svg>
+          <span class="dk-name-sm">Deckers</span>
+        </span>
+      </div>
+      <div class="tagline-sub">Three stacked floors of a multifamily building. The top "floor" is the bright accent — the deal worth your time today. Mark is more distinctive than RoofRank's because the silhouette is unique (vs three vertical bars, which are common). Also extends naturally to score viz.</div>
+    </div>
+
+    <!-- Tagline / voice -->
+    <div class="block">
+      <div class="block-title">Voice + Tagline</div>
+      <div class="tagline">"Every multi-deck building, examined."</div>
+      <div class="tagline-sub">"Deckers" is multifamily-native vocabulary — it tells you the audience without explaining. Voice can be more familiar/insider ("the deckers in your market"), less formal than RoofRank.</div>
+    </div>
+
+    <!-- Color palette -->
+    <div class="block">
+      <div class="block-title">Palette</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:var(--forest);color:#fff"><span class="sw-name">Forest</span><span class="sw-hex">#1C4A35</span></div>
+        <div class="swatch" style="background:var(--sage);color:#1c1f1c"><span class="sw-name">Sage</span><span class="sw-hex">#7AAA8F</span></div>
+        <div class="swatch" style="background:var(--cream);color:var(--ink);border:1px solid var(--border)"><span class="sw-name">Cream</span><span class="sw-hex">#F7F4EF</span></div>
+        <div class="swatch" style="background:var(--ink);color:#fff"><span class="sw-name">Ink</span><span class="sw-hex">#1C1F1C</span></div>
+      </div>
+    </div>
+
+    <!-- Bar score in product (horizontal floors style) -->
+    <div class="block">
+      <div class="block-title">Score System (horizontal floors)</div>
+      <div class="deal-card sb">
+        <div class="deal-score">
+          <div class="deal-score-num">87</div>
+          <svg width="38" height="24" viewBox="0 0 38 24" style="margin-top:2px">
+            <rect x="0" y="18" width="38" height="4" rx=".5" fill="#1c4a35"/>
+            <rect x="0" y="12" width="38" height="4" rx=".5" fill="#1c4a35"/>
+            <rect x="0" y="6"  width="38" height="4" rx=".5" fill="#1c4a35"/>
+            <rect x="0" y="0"  width="38" height="4" rx=".5" fill="#1c4a35"/>
+          </svg>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">37–39 Freeman St</div>
+          <div class="deal-meta">Boston, MA · 5 units · 12d</div>
+          <div class="deal-cf">+$1,840/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig sb">Strong Buy</div>
+          <div class="deal-price">$1.575M</div>
+        </div>
+      </div>
+      <div class="deal-card buy">
+        <div class="deal-score">
+          <div class="deal-score-num">74</div>
+          <svg width="38" height="24" viewBox="0 0 38 24" style="margin-top:2px">
+            <rect x="0" y="18" width="38" height="4" rx=".5" fill="#3e8160"/>
+            <rect x="0" y="12" width="38" height="4" rx=".5" fill="#3e8160"/>
+            <rect x="0" y="6"  width="38" height="4" rx=".5" fill="#3e8160"/>
+            <rect x="0" y="0"  width="38" height="4" rx=".5" fill="#e6e0d5"/>
+          </svg>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">48 Rosseter St</div>
+          <div class="deal-meta">Boston, MA · 3 units · 22d</div>
+          <div class="deal-cf">+$925/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig buy">Buy</div>
+          <div class="deal-price">$825K</div>
+        </div>
+      </div>
+      <div class="deal-card wat">
+        <div class="deal-score">
+          <div class="deal-score-num">56</div>
+          <svg width="38" height="24" viewBox="0 0 38 24" style="margin-top:2px">
+            <rect x="0" y="18" width="38" height="4" rx=".5" fill="#a06a00"/>
+            <rect x="0" y="12" width="38" height="4" rx=".5" fill="#a06a00"/>
+            <rect x="0" y="6"  width="38" height="4" rx=".5" fill="#e6e0d5"/>
+            <rect x="0" y="0"  width="38" height="4" rx=".5" fill="#e6e0d5"/>
+          </svg>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">77 Centre St</div>
+          <div class="deal-meta">Worcester, MA · 6 units · 64d</div>
+          <div class="deal-cf">+$320/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig wat">Watch</div>
+          <div class="deal-price">$1.85M</div>
+        </div>
+      </div>
+      <div class="deal-card pas" style="margin-bottom:0">
+        <div class="deal-score">
+          <div class="deal-score-num">38</div>
+          <svg width="38" height="24" viewBox="0 0 38 24" style="margin-top:2px">
+            <rect x="0" y="18" width="38" height="4" rx=".5" fill="#a03030"/>
+            <rect x="0" y="12" width="38" height="4" rx=".5" fill="#e6e0d5"/>
+            <rect x="0" y="6"  width="38" height="4" rx=".5" fill="#e6e0d5"/>
+            <rect x="0" y="0"  width="38" height="4" rx=".5" fill="#e6e0d5"/>
+          </svg>
+        </div>
+        <div class="deal-info">
+          <div class="deal-addr">9 Beechwood Pl</div>
+          <div class="deal-meta">Lynn, MA · 4 units · 91d</div>
+          <div class="deal-cf r">−$220/mo</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-sig pas">Pass</div>
+          <div class="deal-price">$650K</div>
+        </div>
+      </div>
+      <div class="tagline-sub" style="margin-top:.85rem">Horizontal "floors" instead of vertical bars — directly echoes the Deckers logo. Each "floor" lights up by tier. The number stays as the headline.</div>
+    </div>
+
+    <div class="block">
+      <div class="block-title">Pros / cons of switching</div>
+      <div class="note">
+        <b>Pros:</b> Multifamily-native vocabulary (instant audience recognition). More distinctive as a brand mark (silhouette is unique). Plural form gives community feel ("the Deckers brief"). Domain available on .ai for $100.<br><br>
+        <b>Cons:</b> $100 domain. Boston/NE association is real — name leans "triple-decker" by default. Deckers Brands (footwear) holds the trademark for "Deckers" in apparel — possible (small) trademark friction. Loss of any existing SEO equity from RoofRank.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<p class="footer">Saved at <code>/frontend/brand-preview.html</code> — open this file in a browser to compare both side-by-side. Not linked from production.</p>
+
+</body>
+</html>
