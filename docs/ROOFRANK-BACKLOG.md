@@ -8,7 +8,7 @@
 
 | Status | Count |
 |---|---|
-| ✅ Done | 22 |
+| ✅ Done | 30 |
 | 🔴 MVP Scope | 16 |
 | 🟡 Phase 2 | 55 |
 | 🟢 Phase 3 / Backlog | 32 |
@@ -57,6 +57,11 @@
 | 71 | "Your Analyst" narrative across copy | May 13 |
 | 99 | Analyzer PITI consistency — default = PITI, advanced = opt-in | May 15 |
 | 100 | Removed fake landing data (testimonial + Freeman St) | May 14 |
+| 2 | "Live · Xh ago" timestamp on dashboard Brief | May 14 |
+| 4 | Deal-detail browser title shows address | (existing) |
+| 6 | Legal footer + privacy/terms on all pages | May 15 |
+| 8 | Custom rate input on deal detail | (existing) |
+| 26 | ANTHROPIC_API_KEY in Secrets Manager | (existing) |
 | — | ATTOM unit count fix (use RentCast) | May 2026 |
 | — | Real data Lynn (24 deals) | May 2026 |
 | — | Real data Worcester (15 deals) | May 2026 |
@@ -104,10 +109,10 @@ Address search input + filter chips for City, Signal, Units. Critical once you h
 
 ---
 
-### 2. "Last Updated" Timestamp on Dashboard
+### ~~2. "Last Updated" Timestamp on Dashboard~~ ✅ DONE May 14
 **Priority:** 🔴 · **Effort:** S
 
-Show "Updated X hours ago" below the feed header. Critical trust signal — investors need to know data is fresh.
+Shipped — "Live · Xh ago" badge in the Brief eyebrow on the dashboard, computed relative to the nightly 2am refresh. Updates on every page load.
 
 ---
 
@@ -118,10 +123,10 @@ Analyzer pre-fills Freeman St data. New users see someone else's deal. Default t
 
 ---
 
-### 4. Deal Detail Page Title Shows Address
+### ~~4. Deal Detail Page Title Shows Address~~ ✅ DONE
 **Priority:** 🔴 · **Effort:** S
 
-Browser tab shows "RoofRank — Deal Detail" for every deal. Should say "RoofRank — 88 Park Ave" so bookmarks are meaningful.
+Shipped — `document.title = 'RoofRank — ' + d.address;` lands on every deal-detail load.
 
 ---
 
@@ -132,8 +137,10 @@ No toast, no catch block, no feedback if Stripe call fails. Add error handling a
 
 ---
 
-### 6. Footer on All Pages
+### ~~6. Footer on All Pages~~ ✅ DONE May 15
 **Priority:** 🔴 · **Effort:** M
+
+Shipped — legal footer strip injected into all 9 user-facing pages with copyright, Privacy/Terms/Contact links, and financial-advice disclaimer.
 
 Every page is missing a footer. No privacy policy, terms of service, contact, or support. Legal exposure without it. Minimum: Privacy Policy, Terms, Contact, copyright line.
 
@@ -146,10 +153,10 @@ Current scoring uses vacancy + management + maintenance which makes most deals s
 
 ---
 
-### 8. Custom Rate Input on Deal Detail
+### ~~8. Custom Rate Input on Deal Detail~~ ✅ DONE
 **Priority:** 🟡 · **Effort:** S
 
-Let investors input their actual rate. "My lender quoted 6.5%" — recalculate everything instantly. Already built in Analyzer — surface on deal detail.
+Shipped — rate chip + slider on the cash-flow card (5%–9%, 0.125 step). Edits trigger live recalc of CF, scores, and metrics.
 
 ---
 
@@ -275,10 +282,10 @@ Hero mockup shows Freeman St at 85 (Strong Buy) but real product shows 63 (Buy).
 
 ## 🤖 AI Features
 
-### 26. Claude API Key — Add to Secrets Manager
+### ~~26. Claude API Key — Add to Secrets Manager~~ ✅ DONE
 **Priority:** 🔴 · **Effort:** S
 
-Required before any AI feature. console.anthropic.com → API Keys → add to AWS Secrets Manager as `ANTHROPIC_API_KEY`.
+Shipped — ANTHROPIC_API_KEY present in roofrank/prod/env (verified via aws secretsmanager list-secrets May 15). AI chat + narrative features running on it.
 
 ---
 
