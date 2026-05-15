@@ -389,22 +389,55 @@ async function boot(){
   WatchlistAPI.loadIds().then(()=>syncWC()).catch(()=>{});
 }
 
-// One-line analyst voice per deal card — keyed off score / cash flow / DOM / DSCR
+// One-line analyst voice per deal card. Returns '' for middle-of-the-road deals
+// so the feed isn't dotted with identical italic lines — the rule is: only speak
+// when there's something the badges and score ring don't already say.
 function dealTake(d, fin, score){
-  const cf = fin.monthlyCashFlow;
-  const dscr = fin.dscr;
+  const cf  = fin.monthlyCashFlow;
+  const dscr= fin.dscr;
+  const coc = fin.cashOnCashReturn;
   const dom = d.daysOnMarket;
-  if(cf != null && cf < 0) return 'Cash flow goes negative — pass unless seller drops price';
-  if(score >= 75 && dom != null && dom <= 7) return 'Fresh listing — move fast at this score';
-  if(score >= 75 && cf != null && cf > 1500) return 'Strong fundamentals, real cash flow';
-  if(score >= 75) return 'Strong fundamentals across the board';
-  if(score >= 60 && dom != null && dom >= 60) return `${dom}d on market — seller fatigue, push hard on price`;
-  if(score >= 60 && cf != null && cf > 500) return 'Solid numbers, worth a deeper look';
-  if(score >= 60) return 'Decent score, run your own assumptions';
-  if(dscr != null && dscr < 1.1) return 'DSCR is thin — financing will be tough';
-  if(score >= 45 && dom != null && dom >= 90) return `Marginal, but seller has been waiting ${dom}d`;
-  if(score >= 45) return 'Marginal — only works with negotiation';
-  return 'Below investment thresholds — likely a pass';
+
+  // Relative position across the current feed — picks up "top earner" / "top scored"
+  // language that no individual badge can express
+  const universe = (typeof allDeals !== 'undefined' && allDeals) ? allDeals : [];
+  let isTopCf = false, isTopScore = false;
+  if(universe.length > 1){
+    const cfs = universe.map(x => x.reportData?.financials?.monthlyCashFlow).filter(v => v != null);
+    if(cfs.length){
+      const maxCf = Math.max(...cfs);
+      isTopCf = cf != null && Math.abs(cf - maxCf) < 1 && cf > 0;
+    }
+    const maxScore = Math.max(...universe.map(x => x.rankScore || 0));
+    isTopScore = score === maxScore && score >= 75;
+  }
+
+  // Concerns first — always loud
+  if(cf != null && cf < -200) return `Loses $${Math.round(Math.abs(cf)).toLocaleString()}/mo — pass unless seller cuts hard`;
+  if(cf != null && cf < 0)    return `Slight monthly loss — only pencils at lower rates`;
+  if(dscr != null && dscr < 1.0) return `DSCR of ${dscr.toFixed(2)} — most lenders won't fund this`;
+  if(dscr != null && dscr < 1.15 && score < 70) return `Tight DSCR at ${dscr.toFixed(2)} — confirm financing first`;
+
+  // Relative standouts in this feed
+  if(isTopCf && isTopScore) return `Top score and top cash flow on this page`;
+  if(isTopCf)               return `Highest cash flow in your feed`;
+  if(isTopScore)            return `Highest-scored deal in your markets right now`;
+
+  // Time-based — uses specific numbers, distinct from the DOM line below
+  if(dom != null && dom >= 90 && score >= 60) return `Sat ${dom}d — seller is likely tired`;
+  if(dom != null && dom >= 60 && score >= 60) return `Stale at ${dom}d, real pricing leverage`;
+  if(dom != null && dom <= 3  && score >= 70) return `Listed ${dom}d ago — first-mover window`;
+  if(dom != null && dom <= 7  && score >= 75) return `Fresh listing, strong fundamentals`;
+
+  // Extremes — say something when score is unusually high or low
+  if(score >= 82 && coc != null && coc >= 12) return `${coc.toFixed(1)}% return — outsized for this market`;
+  if(score >= 82)                              return `${score}/100 — top-tier scoring`;
+  if(score < 45)                               return `${score}/100 — below investment thresholds`;
+  if(score < 60 && dom != null && dom >= 60)   return `Weak deal sitting ${dom}d — sellers will eventually fold`;
+  if(score < 60)                               return `Marginal — only works with material negotiation`;
+
+  // Middle-of-the-road — let the badges and signal carry the load
+  return '';
 }
 
 // Analyst's Brief — editorial summary across the loaded feed
@@ -638,6 +671,7 @@ function dealCardHtml(d,i){
     const dash=(score/100)*circ;
     const on=WatchlistAPI.has(d.id);
     const pct=getPercentile(score,allDeals);
+    const take=dealTake(d,fin,score);
     return`<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
       <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
       <div class="dbody">
@@ -649,7 +683,7 @@ function dealCardHtml(d,i){
           ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
           ${fin.monthlyCashFlow!=null?`<span class="kp ${fin.monthlyCashFlow>=0?'g':'r'}">${fin.monthlyCashFlow>=0?'+':''}$${Math.round(Math.abs(fin.monthlyCashFlow)).toLocaleString()}/mo</span>`:''}
         </div>
-        <div class="dtake">${dealTake(d, fin, score)}</div>
+        ${take ? `<div class="dtake">${take}</div>` : ''}
       </div>
       <div class="dright">
         <span class="sbadge ${cl}">${sig}</span>
