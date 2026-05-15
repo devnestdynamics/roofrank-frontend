@@ -1200,17 +1200,18 @@ function openInAnalyzer(){
 let aiHistory = [];
 let aiDealId = null;
 
-// Persist chat across refreshes — keyed by deal fid so each deal has its own thread
+// Persist chat across refreshes — keyed by deal fid so each deal has its own
+// thread. Stored in localStorage so it survives tab close + browser restart.
 function chatStorageKey(){ return fid ? 'rr_chat_'+fid : null; }
 function loadChatHistory(){
   const key = chatStorageKey();
   if(!key) return;
   try {
-    const raw = sessionStorage.getItem(key);
+    const raw = localStorage.getItem(key);
     if(!raw) return;
     const parsed = JSON.parse(raw);
     if(!Array.isArray(parsed)) return;
-    aiHistory = parsed.slice(-10);
+    aiHistory = parsed.slice(-20);
     const msgs = document.getElementById('aiMessages');
     if(!msgs) return;
     msgs.innerHTML = '';
@@ -1226,7 +1227,7 @@ function loadChatHistory(){
 function saveChatHistory(){
   const key = chatStorageKey();
   if(!key) return;
-  try { sessionStorage.setItem(key, JSON.stringify(aiHistory.slice(-10))); } catch(e){}
+  try { localStorage.setItem(key, JSON.stringify(aiHistory.slice(-20))); } catch(e){}
 }
 
 function askSuggestion(el){

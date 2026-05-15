@@ -432,11 +432,12 @@ body{
 .ask-input{
   flex:1; background:var(--cream-2); border:1px solid var(--border);
   border-radius:999px; padding:.65rem 1rem; font-size:.92rem;
-  font-family:var(--sans); color:var(--ink); outline:none; min-width:0;
-  transition:all .15s;
+  font-family:var(--sans); color:var(--muted); outline:none; min-width:0;
+  transition:all .15s; cursor:pointer; text-align:left;
+  /* button-as-input: no native button chrome */
+  -webkit-appearance:none; appearance:none;
 }
-.ask-input::placeholder{color:var(--muted)}
-.ask-input:focus{border-color:var(--forest); background:#fff}
+.ask-input:hover{border-color:var(--forest); color:var(--ink)}
 .ask-send{
   width:38px; height:38px; flex-shrink:0; border-radius:50%;
   background:var(--forest); color:#fff; border:none; cursor:pointer;
@@ -651,8 +652,8 @@ body{
   <div class="ask-bar">
     <div class="ask-inner">
       <div class="ask-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
-      <input class="ask-input" id="askInput" type="text" placeholder="Ask the analyst anything about your markets…" onkeydown="if(event.key==='Enter') openChatWithQuery()">
-      <button class="ask-send" type="button" onclick="openChatWithQuery()" aria-label="Ask">
+      <button class="ask-input" id="askTrigger" type="button" onclick="openChat()">Ask the analyst anything about your markets…</button>
+      <button class="ask-send" type="button" onclick="openChat()" aria-label="Open chat">
         <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
@@ -1168,17 +1169,19 @@ function closeProModal(){
 }
 
 // ── ANALYST CHAT (overlay launched from the ask-bar) ──────────────────
+// Persisted to localStorage so the conversation survives tab close + reload.
+// Capped at 20 messages so storage doesn't grow unbounded.
 let chatMsgs = [];
 const DASH_CHAT_KEY = 'rr_dash_chat';
 try {
-  const raw = sessionStorage.getItem(DASH_CHAT_KEY);
+  const raw = localStorage.getItem(DASH_CHAT_KEY);
   if(raw){
     const parsed = JSON.parse(raw);
-    if(Array.isArray(parsed)) chatMsgs = parsed.slice(-10);
+    if(Array.isArray(parsed)) chatMsgs = parsed.slice(-20);
   }
 } catch(e){}
 function saveDashChat(){
-  try { sessionStorage.setItem(DASH_CHAT_KEY, JSON.stringify(chatMsgs.slice(-10))); } catch(e){}
+  try { localStorage.setItem(DASH_CHAT_KEY, JSON.stringify(chatMsgs.slice(-20))); } catch(e){}
 }
 function restoreDashChatMessages(){
   const wrap = document.getElementById('chatMsgs');
@@ -1191,15 +1194,6 @@ function restoreDashChatMessages(){
     wrap.appendChild(div);
   });
   wrap.scrollTop = wrap.scrollHeight;
-}
-function openChatWithQuery(){
-  const input = document.getElementById('askInput');
-  const q = input.value.trim();
-  if(!q){ openChat(); return; }
-  input.value = '';
-  openChat();
-  document.getElementById('chatInput').value = q;
-  sendChatMessage();
 }
 function openChat(){
   restoreDashChatMessages();
@@ -1228,13 +1222,26 @@ async function sendChatMessage(){
   addChatMsg('user', message);
   const loadingEl = addChatMsg('assistant', 'Analyzing…', true);
   try {
-    // The /ai/chat endpoint expects a dealId. From the dashboard we don't have one,
-    // so anchor the request to the top-scored deal in the user's feed and prepend a
-    // brief framing note so the AI knows it's a feed-wide question, not deal-specific.
+    // The /ai/chat endpoint expects a dealId (it's deal-scoped on the backend).
+    // From the dashboard we want the AI to see the WHOLE feed, not one deal, so:
+    //   1) Anchor to the top-scored deal (satisfies the endpoint requirement)
+    //   2) Inject a compact summary of every deal in the user's feed into the
+    //      message itself so the AI has the data it needs to answer feed-level
+    //      questions like "best deal in Lynn" or "any deals under 500K?"
     const topDeal = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
     const anchorId = topDeal?.id || null;
+    const feedSummary = allDeals.slice(0, 40).map((d, i) => {
+      const f = d.reportData?.financials || {};
+      const cf = f.monthlyCashFlow != null ? `$${Math.round(f.monthlyCashFlow)}/mo` : 'n/a';
+      const price = d.askingPrice ? `$${Math.round(d.askingPrice/1000)}K` : 'n/a';
+      const cap = f.capRate != null ? `${f.capRate.toFixed(1)}%` : 'n/a';
+      const coc = f.cashOnCashReturn != null ? `${f.cashOnCashReturn.toFixed(1)}%` : 'n/a';
+      const dscr = f.dscr != null ? f.dscr.toFixed(2) : 'n/a';
+      const sig = scoreSignal(d.rankScore || 0);
+      return `${i+1}. ${(d.address||'Unknown').split(',')[0]} · ${d.city||''}, ${d.state||''} · ${d.units||'?'} units · ${d.propertyType||'?'} · score ${d.rankScore||'-'} (${sig}) · price ${price} · cash flow ${cf} · cap ${cap} · CoC ${coc} · DSCR ${dscr} · ${d.daysOnMarket||0}d listed`;
+    }).join('\n');
     const framedMessage = anchorId
-      ? `[Context: user is asking from the dashboard feed view across ${allDeals.length} deals; anchor deal: ${topDeal?.address || ''}]\n\n${message}`
+      ? `[Dashboard context — user is viewing a feed of ${allDeals.length} deals across their markets. Full feed below, sorted by score.]\n\nFEED:\n${feedSummary}\n\n---\n\nUser question: ${message}\n\n(Answer using the FEED data above. The user can see this whole list, so you can reference any deal by address or position.)`
       : message;
     const aiFetch = () => {
       const tok = (typeof Auth !== 'undefined' && Auth.getToken) ? Auth.getToken() : null;
