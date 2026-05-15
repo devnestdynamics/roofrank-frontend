@@ -281,20 +281,6 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 .deal-row-item:last-child{border-bottom:none}
 
 
-/* ── AI Features Section ─────────────────────────────────────────────────── */
-.ai-section{background:var(--forest);padding:6rem 0}
-.ai-section .eyebrow{color:rgba(255,255,255,.45)}
-.ai-section .section-h2{color:#111110;color:#fff}
-.ai-section .section-h2 em{color:var(--sage-border)}
-.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
-.ai-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.75rem;transition:background .2s}
-.ai-card:hover{background:rgba(255,255,255,.1)}
-.ai-card-icon{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
-.ai-card-icon svg{width:20px;height:20px;stroke:rgba(255,255,255,.8);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ai-card-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:#fff;margin-bottom:.5rem}
-.ai-card-sub{font-size:.86rem;color:rgba(255,255,255,.62);line-height:1.7}
-.ai-card-meta{margin-top:1.1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.08);font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sage)}
-
 /* ── MORNING BRIEF SHOWCASE — the dark Analyst card embedded as a mockup ── */
 .brief-showcase{background:var(--cream);padding:6rem 0}
 .brief-showcase .inner{max-width:880px}
@@ -344,9 +330,6 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   .bm-body{font-size:.98rem}
   .bm-picks{grid-template-columns:1fr;gap:.5rem}
 }
-/* Eyebrow in the AI section needs special color for the dark surface */
-.ai-section .eyebrow{color:var(--sage);margin-bottom:1rem}
-@media(max-width:768px){.ai-grid{grid-template-columns:1fr}}
 
 /* Inline score badge */
 .score-badge-sm{
@@ -432,27 +415,6 @@ section{padding:6rem 0}
 }
 .section-h2 em{font-style:italic;color:var(--forest)}
 .section-sub{font-size:.95rem;color:var(--muted);line-height:1.75;max-width:520px}
-
-/* ── HOW IT WORKS ── */
-.hiw-section{background:var(--cream-2)}
-.hiw-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3.5rem}
-.hiw-step{
-  opacity:0;transform:translateY(20px);
-  transition:opacity .5s,transform .5s
-}
-.hiw-step.visible{opacity:1;transform:none}
-.hiw-step-num{
-  font-family:var(--mono);font-size:.7rem;font-weight:500;
-  color:var(--forest);letter-spacing:.1em;margin-bottom:.9rem
-}
-.hiw-step-icon{
-  width:48px;height:48px;border-radius:10px;
-  background:var(--sage-dim);border:1px solid var(--sage-border);
-  display:flex;align-items:center;justify-content:center;margin-bottom:1rem
-}
-.hiw-step-icon svg{width:22px;height:22px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.hiw-step h3{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink);margin-bottom:.55rem}
-.hiw-step p{font-size:.85rem;color:var(--muted);line-height:1.75}
 
 /* ── METRICS SECTION ── */
 .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:3rem}
@@ -630,7 +592,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .hero-right{padding:0 2rem 4rem;justify-content:flex-start}
   .product-card{max-width:100%}
   .floating-alert{right:2rem;bottom:1.5rem}
-  .hiw-steps{grid-template-columns:1fr}
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
   .pricing-grid{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr 1fr}
@@ -689,8 +650,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <span class="nav-logo-name">RoofRank</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#features">The Brief</a></li>
     <li><a href="#metrics">Scoring</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
@@ -1112,9 +1072,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <p class="hero-sub">RoofRank reads every active 2–6 unit listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing. Skip the Excel models. Move on the right deals first.</p>
     <div class="hero-actions">
       <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
-      <button class="btn-hero-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+      <button class="btn-hero-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16" fill="currentColor" stroke="none"/></svg>
-        See How It Works
+        See the daily brief
       </button>
     </div>
 
@@ -1232,43 +1192,8 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   </div>
 </div>
 
-<!-- AI FEATURES -->
-<section id="features" class="ai-section">
-  <div class="inner">
-    <div class="eyebrow" style="color:var(--sage)">What your analyst does</div>
-    <h2 class="section-h2" style="max-width:580px">Score it.<br>Read it.<br><em>Negotiate it.</em></h2>
-    <p class="section-sub" style="color:rgba(255,255,255,.6);max-width:540px">A real analyst would score every listing, read every detail, and tell you which deals to pursue and what to offer. RoofRank does it — every day, in seconds.</p>
-    <div class="ai-grid">
-      <div class="ai-card">
-        <div class="ai-card-icon">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="ai-card-title">Score every deal in seconds</div>
-        <div class="ai-card-sub">8 financial metrics — Cap Rate, Cash-on-Cash, DSCR, GRM, Price/Unit, NOI, CapEx Reserve, Neighborhood Grade — computed and weighted automatically. Plus AI risk-surfacing on what the numbers don't say: DSCR fragility, deferred maintenance signals, relisting history, seller motivation.</div>
-        <div class="ai-card-meta">Scoring engine · Risk surfacing</div>
-      </div>
-      <div class="ai-card">
-        <div class="ai-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </div>
-        <div class="ai-card-title">Read every deal in 30 seconds</div>
-        <div class="ai-card-sub">A morning brief written every day by your AI analyst — the standouts, the stale sellers, the fresh listings worth chasing. A first-person verdict on every deal you open. And a chat input where you can ask "what's the biggest risk?" or "compare this to my last buy?" — real answers in real time.</div>
-        <div class="ai-card-meta">Morning brief · Deal verdicts · Ask the Analyst</div>
-      </div>
-      <div class="ai-card">
-        <div class="ai-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-        </div>
-        <div class="ai-card-title">Negotiate every deal smarter</div>
-        <div class="ai-card-sub">When you're ready to make an offer, the AI tells you exactly what to put on paper — based on days on market, price history, and the score gap. Then it drafts your Letter of Intent in one click, terms pre-filled and ready to send.</div>
-        <div class="ai-card-meta">Negotiation coach · Offer package · LOI drafts</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MORNING BRIEF SHOWCASE -->
-<section class="brief-showcase">
+<!-- MORNING BRIEF SHOWCASE — now also the page's primary "Features" anchor since the standalone AI features section was dropped -->
+<section id="features" class="brief-showcase">
   <div class="inner">
     <div class="eyebrow fade-up" style="text-align:center">Wake up to this</div>
     <h2 class="section-h2 fade-up">A daily brief.<br><em>Written by your analyst.</em></h2>
@@ -1314,34 +1239,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     </div>
 
     <p class="brief-showcase-caption">A new briefing every morning · Real-time alerts when a Strong Buy hits your market · Yours with Pro.</p>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how-it-works" class="hiw-section">
-  <div class="inner">
-    <div class="eyebrow fade-up">How It Works</div>
-    <h2 class="section-h2 fade-up">From listing to deal score<br>in under a minute.</h2>
-    <div class="hiw-steps">
-      <div class="hiw-step">
-        <div class="hiw-step-num">01 — Find</div>
-        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <h3>Pick your markets</h3>
-        <p>Tell RoofRank where you're investing. We pull every active 2–6 unit listing in those markets daily from MLS, public records, and listing feeds — you never need to refresh Zillow again.</p>
-      </div>
-      <div class="hiw-step">
-        <div class="hiw-step-num">02 — Score</div>
-        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <h3>Every deal, automatically scored</h3>
-        <p>8 financial metrics, computed and weighted automatically using real rent estimates, tax records, and your local market benchmarks. Score 0–100. No guessing, no spreadsheets.</p>
-      </div>
-      <div class="hiw-step">
-        <div class="hiw-step-num">03 — Act</div>
-        <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <h3>Know exactly which deals to pursue</h3>
-        <p>Strong Buy means pull the trigger. Buy means dig deeper. Watch means keep an eye on it. Pass means move on. Every morning, we tell you where to focus — so you can stop wondering and start negotiating.</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1557,8 +1454,8 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <div class="footer-col">
         <h5>Product</h5>
         <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#features">The Brief</a></li>
+          <li><a href="#metrics">Scoring</a></li>
           <li><a href="roofrank-pricing.html">Pricing</a></li>
           <li><a href="roofrank-dashboard.html">Deal Feed</a></li>
         </ul>
@@ -1605,7 +1502,7 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.12 });
 
-document.querySelectorAll('.fade-up, .ps-card, .hiw-step, .metric-cell, .plan').forEach((el, i) => {
+document.querySelectorAll('.fade-up, .metric-cell, .plan').forEach((el, i) => {
   el.style.transitionDelay = (i % 4) * 0.08 + 's';
   io.observe(el);
 });
@@ -1625,15 +1522,6 @@ const svIo = new IntersectionObserver(entries => {
     svIo.unobserve(e.target);
   });
 }, { threshold: 0.3 });
-const sv = document.getElementById('scoreVisual');
-if (sv) svIo.observe(sv);
-
-// How it works steps
-document.querySelectorAll('.hiw-step').forEach((el, i) => {
-  el.style.transitionDelay = i * 0.15 + 's';
-  io.observe(el);
-});
-
 let lpAnnual=false;
 function lpToggleBilling(){
   lpAnnual=!lpAnnual;
