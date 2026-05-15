@@ -267,9 +267,93 @@ body{
   transition:transform .25s;
 }
 .show-more.open .show-more-icon{transform:rotate(180deg)}
+.show-more.pro-locked .show-more-lock{
+  width:13px; height:13px; stroke:var(--forest); fill:none; stroke-width:2;
+}
+.show-more.pro-locked .show-more-label{color:var(--forest)}
+.show-more.pro-locked{border-color:var(--sage-border); background:var(--sage-dim)}
 .more-section{display:none}
 .more-section.open{display:block; animation:moreFadeIn .25s ease-out}
 @keyframes moreFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Pro-locked long-tail (blurred compact rows + overlay CTA) ────── */
+.pro-locked-wrap{position:relative; margin-top:.5rem; min-height:280px}
+.pro-locked-wrap .compact-list{filter:blur(5px); user-select:none; pointer-events:none}
+.pro-lock-overlay{
+  position:absolute; inset:0; padding:1.5rem 1rem;
+  background:linear-gradient(180deg, rgba(247,244,239,.2) 0%, rgba(247,244,239,.92) 35%, var(--cream) 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  text-align:center;
+}
+.pro-lock-icon-wrap{
+  width:40px; height:40px; background:var(--forest); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; margin-bottom:.75rem;
+  box-shadow:0 4px 14px rgba(28,74,53,.25);
+}
+.pro-lock-icon-wrap svg{width:19px; height:19px; stroke:#fff; fill:none; stroke-width:2}
+.pro-lock-title{font-family:var(--serif); font-size:1.15rem; font-weight:500; margin-bottom:.35rem; max-width:340px}
+.pro-lock-sub{font-size:.9rem; color:var(--muted); max-width:340px; margin-bottom:1.1rem; line-height:1.55}
+.pro-lock-btn{
+  background:var(--forest); color:#fff; text-decoration:none; border:none;
+  border-radius:999px; padding:.7rem 1.6rem; font-size:.88rem; font-weight:500;
+  font-family:var(--sans); cursor:pointer; display:inline-block;
+}
+.pro-lock-btn:hover{background:var(--forest-2)}
+.pro-lock-meta{font-size:.72rem; color:var(--faint); margin-top:.5rem; letter-spacing:.05em}
+
+/* ── Pro-locked lens follow-up (lock icon + special hover) ────────── */
+.followup.pro-locked-lens{
+  background:transparent; border:1px dashed rgba(122,170,143,.4); color:rgba(255,255,255,.6);
+}
+.followup.pro-locked-lens:hover{background:rgba(122,170,143,.1); border-style:solid; color:var(--sage)}
+.followup-lock{width:11px; height:11px; stroke:var(--sage); fill:none; stroke-width:2; opacity:.85; margin-right:-.1rem}
+
+/* ── Pro upgrade modal (opens when free user taps a Pro feature) ──── */
+.pro-modal{
+  display:none; position:fixed; inset:0; z-index:90;
+  background:rgba(20,32,26,.55); backdrop-filter:blur(2px);
+  align-items:center; justify-content:center; padding:1rem;
+}
+.pro-modal.open{display:flex; animation:modalFade .2s ease-out}
+@keyframes modalFade{from{opacity:0}to{opacity:1}}
+.pro-modal-card{
+  background:#fff; max-width:420px; width:100%;
+  border-radius:16px; padding:1.75rem 1.5rem 1.5rem;
+  text-align:center;
+  box-shadow:0 20px 50px rgba(20,32,26,.3);
+  animation:modalUp .25s cubic-bezier(.22,1,.36,1);
+}
+@keyframes modalUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.pro-modal-mark{
+  width:42px; height:42px; background:var(--forest); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; margin:0 auto .9rem;
+  box-shadow:0 4px 14px rgba(28,74,53,.25);
+}
+.pro-modal-mark svg{width:20px; height:20px; fill:var(--sage)}
+.pro-modal-eyebrow{
+  font-size:.65rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--forest); margin-bottom:.5rem;
+}
+.pro-modal-title{font-family:var(--serif); font-size:1.35rem; font-weight:500; margin-bottom:.45rem; line-height:1.25}
+.pro-modal-sub{font-size:.92rem; color:var(--muted); line-height:1.6; margin-bottom:1.25rem}
+.pro-modal-features{
+  display:flex; flex-direction:column; gap:.55rem; text-align:left;
+  margin:0 auto 1.5rem; max-width:300px;
+}
+.pro-modal-feat{display:flex; align-items:center; gap:.55rem; font-size:.88rem; color:var(--ink)}
+.pro-modal-feat svg{width:14px; height:14px; stroke:var(--forest); fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0}
+.pro-modal-cta{
+  display:block; background:var(--forest); color:#fff; text-decoration:none;
+  border:none; border-radius:999px; padding:.85rem 1.75rem;
+  font-size:.95rem; font-weight:600; font-family:var(--sans); cursor:pointer;
+  margin-bottom:.5rem;
+}
+.pro-modal-cta:hover{background:var(--forest-2)}
+.pro-modal-skip{
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  font-size:.82rem; font-family:var(--sans); padding:.45rem;
+}
+.pro-modal-skip:hover{color:var(--ink)}
 
 /* ── COMPACT ROWS — long tail ──────────────────────────────────────────── */
 .compact-list{display:flex; flex-direction:column; gap:1px; margin-top:.5rem}
@@ -537,13 +621,15 @@ body{
   </section>
 
   <!-- ── MORE (compact long-tail), revealed by button ──────────────── -->
-  <button class="show-more" id="showMoreBtn" type="button" onclick="toggleMore()" style="display:none">
+  <button class="show-more" id="showMoreBtn" type="button" onclick="handleShowMore()" style="display:none">
+    <svg class="show-more-lock" viewBox="0 0 24 24" id="showMoreLockIcon" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     <span class="show-more-label" id="showMoreLabel">Show more deals</span>
     <span class="show-more-count" id="showMoreCount">0</span>
-    <svg class="show-more-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    <svg class="show-more-icon" viewBox="0 0 24 24" id="showMoreCaret"><polyline points="6 9 12 15 18 9"/></svg>
   </button>
   <section class="more-section" id="moreSection">
-    <div class="compact-list" id="compactList"></div>
+    <!-- Wrap renders either the bare list (Pro) or a blurred list + overlay (free) -->
+    <div id="moreWrap"></div>
   </section>
 
 </main>
@@ -601,6 +687,25 @@ body{
   </div>
 </div>
 
+<!-- Pro upgrade modal -->
+<div class="pro-modal" id="proModal" onclick="if(event.target===this) closeProModal()">
+  <div class="pro-modal-card">
+    <div class="pro-modal-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
+    <div class="pro-modal-eyebrow" id="proModalEyebrow">RoofRank Pro</div>
+    <h2 class="pro-modal-title" id="proModalTitle">Unlock the analyst's full toolbox</h2>
+    <p class="pro-modal-sub" id="proModalSub">You're seeing today's top picks. Pro members see every deal in their markets — plus the analyst's deeper views and unlimited follow-up questions.</p>
+    <div class="pro-modal-features" id="proModalFeatures">
+      <div class="pro-modal-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Every deal in your markets, not just the top 5</div>
+      <div class="pro-modal-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> All 5 analyst lenses (Move fast, Negotiation plays, Top earners…)</div>
+      <div class="pro-modal-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full score breakdown on every deal</div>
+      <div class="pro-modal-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI analyst conversations</div>
+      <div class="pro-modal-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PDF exports + comparable deals</div>
+    </div>
+    <a href="roofrank-pricing.html" class="pro-modal-cta">Start a 7-day free trial →</a>
+    <button class="pro-modal-skip" onclick="closeProModal()">Maybe later</button>
+  </div>
+</div>
+
 <!-- Chat overlay (opens when user asks something) -->
 <div class="chat-overlay" id="chatOverlay" onclick="if(event.target===this) closeChat()">
   <div class="chat-card">
@@ -625,21 +730,26 @@ let allDeals = [];
 let activeLens = 'curated';
 let currentLensDeals = [];
 
+// ── PRO STATE ─────────────────────────────────────────────────────────────
+// Free by default; flipped to true when BillingAPI confirms a paid plan.
+let isPro = false;
+
 // ── LENSES ────────────────────────────────────────────────────────────────
+// `pro:true` means the lens is gated behind Pro for free users.
 const LENSES = [
-  { id:'curated',     label:'the picks I\'d open first',
+  { id:'curated',     label:'the picks I\'d open first', pro:false,
     apply: deals => [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)),
     sectionEyebrow:'Today\'s picks', sectionTitle:'What I\'d open first' },
-  { id:'standouts',   label:'the standouts',
+  { id:'standouts',   label:'the standouts', pro:false,
     apply: deals => deals.filter(d=>(d.rankScore||0)>=75),
     sectionEyebrow:'Standouts', sectionTitle:'Strong Buys only' },
-  { id:'fresh',       label:'the ones to move fast on',
+  { id:'fresh',       label:'the ones to move fast on', pro:true,
     apply: deals => deals.filter(d => (d.rankScore||0)>=65 && (d.daysOnMarket||999)<=14),
     sectionEyebrow:'Move fast', sectionTitle:'Fresh listings worth chasing' },
-  { id:'negotiation', label:'where sellers are negotiating',
+  { id:'negotiation', label:'where sellers are negotiating', pro:true,
     apply: deals => deals.filter(d => (d.rankScore||0)>=50 && (d.daysOnMarket||0)>=60),
     sectionEyebrow:'Negotiation plays', sectionTitle:'Sellers who have waited' },
-  { id:'earners',     label:'the top earners',
+  { id:'earners',     label:'the top earners', pro:true,
     apply: deals => [...deals].sort((a,b) => (b.reportData?.financials?.monthlyCashFlow||0) - (a.reportData?.financials?.monthlyCashFlow||0)),
     sectionEyebrow:'Top earners', sectionTitle:'Sorted by monthly cash flow' },
 ];
@@ -655,6 +765,16 @@ async function boot(){
     const first = (user.name || '').split(' ')[0];
     if(first) personalizedFirstName = first;
     renderBriefHead();
+  }).catch(()=>{});
+  // Pro state — flips locked UI to unlocked when the user has a paid plan
+  BillingAPI.getSubscription().then(sub => {
+    const plan = (sub?.plan || '').toLowerCase();
+    isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+    if(isPro){
+      // Re-render lens row and feed without Pro locks
+      renderFollowups();
+      if(currentLensDeals.length) renderDeals(currentLensDeals);
+    }
   }).catch(()=>{});
   WatchlistAPI.loadIds().then(syncWatchBadge).catch(()=>{});
 }
@@ -772,7 +892,11 @@ function renderFollowups(){
   if(!el) return;
   const inner = LENSES.filter(l => l.id !== activeLens).map(l => {
     const count = l.apply(allDeals).length;
-    return `<button class="followup" type="button" onclick="applyLens('${l.id}')">${l.label}${count ? `<span class="followup-count">${count}</span>` : ''}</button>`;
+    const locked = l.pro && !isPro;
+    const lockIcon = locked
+      ? `<svg class="followup-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
+      : '';
+    return `<button class="followup${locked ? ' pro-locked-lens' : ''}" type="button" onclick="applyLens('${l.id}')">${lockIcon}${l.label}${count ? `<span class="followup-count">${count}</span>` : ''}</button>`;
   }).join('');
   el.innerHTML = `<span class="followups-prefix">Want me to show you</span>${inner}`;
 }
@@ -781,6 +905,14 @@ function renderFollowups(){
 function applyLens(id){
   const lens = LENSES.find(l => l.id === id);
   if(!lens) return;
+  // Free user tapping a Pro lens → upgrade modal, don't actually switch
+  if(lens.pro && !isPro){
+    openProModal({
+      title: `Unlock "${lens.sectionEyebrow}"`,
+      sub: `Pro members get all 5 analyst lenses — including ${lens.sectionEyebrow.toLowerCase()}, which surfaces ${lens.apply(allDeals).length} deal${lens.apply(allDeals).length===1?'':'s'} matching this view right now.`,
+    });
+    return;
+  }
   activeLens = id;
   currentLensDeals = lens.apply(allDeals);
   // Update section header
@@ -801,7 +933,9 @@ function renderDeals(deals){
   const list = document.getElementById('dealList');
   const moreBtn = document.getElementById('showMoreBtn');
   const moreSection = document.getElementById('moreSection');
-  const moreList = document.getElementById('compactList');
+  const moreWrap = document.getElementById('moreWrap');
+  const lockIcon = document.getElementById('showMoreLockIcon');
+  const caretIcon = document.getElementById('showMoreCaret');
   if(!deals.length){
     list.innerHTML = `<div class="empty"><div class="empty-t">Nothing matches that view right now</div><div class="empty-s">Try a different angle, or come back after the nightly refresh.</div><button class="empty-btn" onclick="applyLens('curated')">See today's picks</button></div>`;
     moreBtn.style.display = 'none';
@@ -813,29 +947,61 @@ function renderDeals(deals){
   const rest = deals.slice(TOP);
   list.innerHTML = top.map((d, i) => richCard(d, i)).join('');
   if(rest.length){
-    moreList.innerHTML = rest.map(d => compactRow(d)).join('');
-    document.getElementById('showMoreLabel').textContent = `Show ${rest.length} more deal${rest.length===1?'':'s'}`;
-    document.getElementById('showMoreCount').textContent = rest.length;
     moreBtn.style.display = 'flex';
-    // Reset to collapsed when re-rendering (e.g., after lens change)
     moreBtn.classList.remove('open');
     moreSection.classList.remove('open');
+    if(isPro){
+      // Pro user — render the list normally inside the wrap
+      moreWrap.innerHTML = `<div class="compact-list">${rest.map(d => compactRow(d)).join('')}</div>`;
+      moreBtn.classList.remove('pro-locked');
+      if(lockIcon) lockIcon.style.display = 'none';
+      if(caretIcon) caretIcon.style.display = '';
+      document.getElementById('showMoreLabel').textContent = `Show ${rest.length} more deal${rest.length===1?'':'s'}`;
+    } else {
+      // Free user — blurred preview + Pro overlay when expanded
+      moreWrap.innerHTML = `
+        <div class="pro-locked-wrap">
+          <div class="compact-list">${rest.slice(0, 6).map(d => compactRow(d)).join('')}</div>
+          <div class="pro-lock-overlay">
+            <div class="pro-lock-icon-wrap">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="pro-lock-title">See every deal, not just today's top 5</div>
+            <div class="pro-lock-sub">Pro unlocks the full ${rest.length}-deal long tail in your markets — plus all 5 analyst lenses and unlimited follow-up questions.</div>
+            <a href="roofrank-pricing.html" class="pro-lock-btn">Start a 7-day free trial →</a>
+            <div class="pro-lock-meta">7 days free · cancel anytime</div>
+          </div>
+        </div>`;
+      moreBtn.classList.add('pro-locked');
+      if(lockIcon) lockIcon.style.display = '';
+      if(caretIcon) caretIcon.style.display = 'none';
+      document.getElementById('showMoreLabel').textContent = `Unlock ${rest.length} more deals with Pro`;
+    }
+    document.getElementById('showMoreCount').textContent = rest.length;
   } else {
     moreBtn.style.display = 'none';
     moreSection.classList.remove('open');
   }
 }
 
-function toggleMore(){
+function handleShowMore(){
+  // Free users: expand the locked preview AND surface the upgrade modal
+  // Pro users: simple toggle of the compact list
   const btn = document.getElementById('showMoreBtn');
   const sect = document.getElementById('moreSection');
-  const label = document.getElementById('showMoreLabel');
   const open = sect.classList.toggle('open');
   btn.classList.toggle('open', open);
-  if(open){
-    label.textContent = label.textContent.replace('Show', 'Hide');
-  } else {
-    label.textContent = label.textContent.replace('Hide', 'Show');
+  if(isPro){
+    const label = document.getElementById('showMoreLabel');
+    if(open) label.textContent = label.textContent.replace('Show', 'Hide');
+    else label.textContent = label.textContent.replace('Hide', 'Show');
+  } else if(open){
+    // Free user expanded the locked preview — gentle nudge into the modal
+    // after a brief delay so they see the blurred content first
+    setTimeout(() => openProModal({
+      title: 'See every deal in your markets',
+      sub: `You're seeing today's top 5. Pro members see the full feed plus the analyst's other views — including the deals that take more digging to find.`,
+    }), 400);
   }
 }
 
@@ -962,6 +1128,18 @@ function syncWatchBadge(){
   const n = WatchlistAPI.count();
   const m = document.getElementById('bnWatchBadge');
   if(m){ m.textContent = n; m.style.display = n ? '' : 'none'; }
+}
+
+// ── PRO UPGRADE MODAL ──────────────────────────────────────────────────
+function openProModal(opts){
+  const modal = document.getElementById('proModal');
+  if(!modal) return;
+  if(opts?.title) document.getElementById('proModalTitle').textContent = opts.title;
+  if(opts?.sub)   document.getElementById('proModalSub').textContent   = opts.sub;
+  modal.classList.add('open');
+}
+function closeProModal(){
+  document.getElementById('proModal')?.classList.remove('open');
 }
 
 // ── ANALYST CHAT (overlay launched from the ask-bar) ──────────────────
