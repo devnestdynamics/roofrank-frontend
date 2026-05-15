@@ -112,6 +112,17 @@ nav.top{
 .hero-signal.pas{background:var(--rose); color:#fff}
 .hero-addr{font-family:var(--serif); font-size:1.85rem; font-weight:500; line-height:1.18; margin-bottom:.35rem}
 .hero-city{font-size:.95rem; color:var(--muted); margin-bottom:.9rem}
+
+/* Asking price — the missing primary fact */
+.hero-price-row{display:flex; align-items:baseline; justify-content:center; gap:.55rem; margin-bottom:.9rem; flex-wrap:wrap}
+.hero-price-label{font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.hero-price-val{font-family:var(--mono); font-size:1.55rem; font-weight:500; color:var(--ink); letter-spacing:-.01em}
+.hero-price-meta{font-size:.78rem; color:var(--muted)}
+.hero-price-meta b{color:var(--ink); font-weight:500}
+
+/* Per-unit + DOM trailing pills */
+.hero-price-pill{display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; color:var(--muted); padding:.18rem .55rem; background:var(--cream-2); border:1px solid var(--border); border-radius:6px}
+
 .hero-badges{display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; margin-bottom:1.5rem}
 .badge{
   font-size:.72rem; padding:.3rem .65rem; border-radius:6px;
@@ -581,6 +592,13 @@ nav.top{
     <span class="hero-signal" id="heroSignal">—</span>
     <h1 class="hero-addr" id="heroAddr">—</h1>
     <p class="hero-city" id="heroCity">—</p>
+
+    <div class="hero-price-row" id="heroPriceRow">
+      <span class="hero-price-label">Asking</span>
+      <span class="hero-price-val" id="heroPriceVal">—</span>
+      <span class="hero-price-meta" id="heroPricePerUnit"></span>
+    </div>
+
     <div class="hero-badges" id="heroBadges"></div>
 
     <div class="hero-cf" id="heroCf">
@@ -1055,6 +1073,26 @@ function renderDeal(d){
   // ── Nav + hero text
   setText('navAddr', d.address);
   setText('heroAddr', d.address);
+
+  // ── Asking price block — the primary fact the page was missing
+  const priceVal = document.getElementById('heroPriceVal');
+  const pricePer = document.getElementById('heroPricePerUnit');
+  const priceRow = document.getElementById('heroPriceRow');
+  if(priceVal && d.askingPrice){
+    const p = d.askingPrice;
+    const priceStr = p >= 1e6
+      ? '$' + (p/1e6).toFixed(2).replace(/\.?0+$/,'') + 'M'
+      : '$' + Math.round(p/1000).toLocaleString() + 'K';
+    priceVal.textContent = priceStr;
+    if(pricePer && d.units && d.units > 0){
+      pricePer.textContent = '· $' + Math.round(p/d.units/1000) + 'K / unit';
+    } else if(pricePer){
+      pricePer.textContent = '';
+    }
+  } else if(priceRow){
+    priceRow.style.display = 'none';
+  }
+
   const unitLabel = d.units===1?'Unit':'Units';
   // Property-summary line: facts + market-position tag (city/state/zip removed — they live in the address)
   const facts = [
