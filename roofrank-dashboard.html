@@ -80,12 +80,34 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   box-shadow:0 4px 22px rgba(20,32,26,.15);position:relative;overflow:hidden;
 }
 .ana-brief-head{display:flex;align-items:center;gap:.55rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.ana-brief-dot{width:8px;height:8px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 4px rgba(122,170,143,.16);animation:abPulse 2.4s ease-in-out infinite;flex-shrink:0}
-@keyframes abPulse{0%,100%{box-shadow:0 0 0 4px rgba(122,170,143,.16)}50%{box-shadow:0 0 0 7px rgba(122,170,143,.05)}}
+/* Animated sparkle mark — more distinctly "AI" than the old pulse dot */
+.ana-brief-mark{
+  width:18px;height:18px;flex-shrink:0;color:var(--sage);
+  filter:drop-shadow(0 0 6px rgba(122,170,143,.45));
+  animation:markSpin 14s linear infinite;
+}
+.ana-brief-mark svg{width:100%;height:100%;fill:currentColor;display:block}
+@keyframes markSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .ana-brief-title{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
 .ana-brief-day{font-size:.72rem;color:rgba(255,255,255,.4);font-style:italic;margin-left:.15rem}
+.ana-brief-live{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(122,170,143,.7);margin-left:.2rem;
+}
+.ana-brief-live::before{
+  content:'';width:6px;height:6px;border-radius:50%;background:var(--sage);
+  box-shadow:0 0 8px var(--sage);animation:liveBlink 1.8s ease-in-out infinite;
+}
+@keyframes liveBlink{0%,100%{opacity:1}50%{opacity:.35}}
 .ana-brief-badge{font-size:.6rem;font-weight:700;letter-spacing:.1em;background:rgba(122,170,143,.2);color:var(--sage);padding:.2rem .5rem;border-radius:4px;margin-left:auto}
-.ana-brief-body{font-family:var(--serif);font-size:1.02rem;line-height:1.65;color:rgba(255,255,255,.9);font-style:italic;font-weight:400;margin-bottom:1.1rem}
+.ana-brief-body{
+  font-family:var(--serif);font-size:1.02rem;line-height:1.65;
+  color:rgba(255,255,255,.92);font-style:italic;font-weight:400;
+  margin-bottom:1.1rem;
+  animation:briefFadeIn .9s cubic-bezier(.22,1,.36,1);
+}
+@keyframes briefFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .ana-brief-body b{color:#fff;font-weight:600;font-style:normal}
 .ana-brief-body::before{content:'"';font-size:2.2rem;color:var(--sage);line-height:0;margin-right:.15rem;vertical-align:-.35em;font-style:normal;font-family:var(--serif)}
 .ana-brief-picks{display:flex;gap:.6rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin:0 -1.4rem;padding-left:1.4rem;padding-right:1.4rem}
@@ -104,6 +126,32 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .dtake{font-family:var(--serif);font-style:italic;font-size:.78rem;color:var(--muted);margin-top:.45rem;line-height:1.4}
 .dtake::before{content:'"';color:var(--sage);font-style:normal;margin-right:2px}
 .dtake::after{content:'"';color:var(--sage);font-style:normal;margin-left:1px}
+
+/* ── FEED DIVIDER between curated picks and long-tail compact rows ─── */
+.feed-divider{
+  display:flex;align-items:center;gap:.75rem;margin:1.1rem 0 .55rem;
+}
+.feed-divider-line{flex:1;height:1px;background:var(--border)}
+.feed-divider-label{
+  font-size:.64rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap;
+}
+
+/* Compact card variant — for cards beyond the top 5 */
+.deal.compact{padding:.6rem .85rem;gap:.7rem;margin-bottom:.3rem;background:var(--cream);border-color:var(--cream-3)}
+.deal.compact:hover{background:var(--white);border-color:var(--sage-border)}
+.deal.compact .ring{width:36px;height:36px}
+.deal.compact .rn{font-size:.72rem}
+.deal.compact .daddr{font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0}
+.deal.compact .dmeta{font-size:.66rem;margin-bottom:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal.compact .dkpis{display:none}
+.deal.compact .dtake{display:none}
+.deal.compact .dright{min-width:auto;gap:1px}
+.deal.compact .dprice{font-size:.78rem}
+.deal.compact .sbadge{font-size:.55rem;padding:1px 5px}
+.deal.compact .ddom{display:none}
+.deal.compact .wbtn{display:none}
+.deal.compact::before{display:none}
 
 .mkt-strip{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:1.1rem;padding-bottom:.25rem;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-right:.75rem}
 .mkt-strip::-webkit-scrollbar{display:none}
@@ -283,9 +331,12 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
     <section class="ana-brief" id="anaBriefSection" style="display:none">
       <div class="ana-brief-card">
         <div class="ana-brief-head">
-          <div class="ana-brief-dot"></div>
+          <div class="ana-brief-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+          </div>
           <div class="ana-brief-title">Analyst's Brief</div>
           <div class="ana-brief-day" id="anaBriefDay">today</div>
+          <span class="ana-brief-live" id="anaBriefLive">Live</span>
           <div class="ana-brief-badge">AI</div>
         </div>
         <div class="ana-brief-body" id="anaBriefBody">—</div>
@@ -440,26 +491,35 @@ function dealTake(d, fin, score){
   return '';
 }
 
-// Analyst's Brief — editorial summary across the loaded feed
+// Analyst's Brief — editorial summary across the loaded feed (first-person voice)
 function renderAnalystBrief(deals){
   const section = document.getElementById('anaBriefSection');
   if(!section || !deals || !deals.length) return;
   section.style.display = '';
 
-  // Day-of-week + time-of-day phrase
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Evening';
+  const tod      = hour < 12 ? 'morning'      : hour < 17 ? 'afternoon'      : 'evening';
+
+  // Day-of-week + time-of-day in the dateline
   const dayEl = document.getElementById('anaBriefDay');
-  if(dayEl){
-    const now = new Date();
-    const day = now.toLocaleDateString('en-US', { weekday: 'long' });
-    const hour = now.getHours();
-    const tod = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-    dayEl.textContent = day + ' ' + tod;
+  if(dayEl) dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' }) + ' ' + tod;
+
+  // "Live · Updated X ago" relative timestamp (sells a sense of the brief being a living document)
+  const liveEl = document.getElementById('anaBriefLive');
+  if(liveEl){
+    const lastRun = new Date(now);
+    if(hour < 2) lastRun.setDate(lastRun.getDate() - 1);
+    lastRun.setHours(2, 0, 0, 0);
+    const hoursAgo = Math.max(1, Math.round((now - lastRun) / 3600000));
+    liveEl.textContent = hoursAgo < 2 ? 'Live · just now' : `Live · ${hoursAgo}h ago`;
   }
 
   // Stats over the loaded feed
-  const strongCount = deals.filter(d => (d.rankScore || 0) >= 75).length;
-  const buyCount    = deals.filter(d => (d.rankScore || 0) >= 60).length;
-  const freshCount  = deals.filter(d => (d.daysOnMarket || 999) <= 7).length;
+  const strongCount    = deals.filter(d => (d.rankScore || 0) >= 75).length;
+  const buyCount       = deals.filter(d => (d.rankScore || 0) >= 60).length;
+  const freshCount     = deals.filter(d => (d.daysOnMarket || 999) <= 7).length;
   const motivatedCount = deals.filter(d => (d.daysOnMarket || 0) >= 60).length;
 
   // City context — collapse to a readable phrase
@@ -474,29 +534,29 @@ function renderAnalystBrief(deals){
   // Picks — top 1-3 by score
   const picks = [...deals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).slice(0, 3);
   const top = picks[0];
-  const topShortAddr = top?.address?.split(',')[0] || 'a top-scored deal';
+  const topShortAddr = top?.address?.split(',')[0] || 'one of your top-scored deals';
   const topCity = top?.city || cityCtx;
   const topFin = top?.reportData?.financials || {};
 
-  // Compose the body
+  // Compose the body in first-person voice
   let body = '';
   if(strongCount > 0){
-    body = `<b>${strongCount} Strong Buy${strongCount>1?'s':''}</b> on the board in ${cityCtx} ${dayEl?.textContent ? 'this '+(new Date().getHours()<12?'morning':'afternoon') : 'today'}. `;
-    body += `Standout: <b>${topShortAddr}</b> in ${topCity}`;
+    body = `${greeting}. I'm watching <b>${strongCount} Strong Buy${strongCount>1?'s':''}</b> in ${cityCtx} right now. `;
+    body += `The standout's <b>${topShortAddr}</b> in ${topCity}`;
     if(topFin.cashOnCashReturn != null && topFin.monthlyCashFlow > 0){
-      body += ` — <b>${topFin.cashOnCashReturn.toFixed(1)}%</b> cash-on-cash with <b>$${Math.round(topFin.monthlyCashFlow).toLocaleString()}/mo</b> coming in. `;
+      body += ` — <b>${topFin.cashOnCashReturn.toFixed(1)}%</b> cash-on-cash, <b>$${Math.round(topFin.monthlyCashFlow).toLocaleString()}/mo</b> coming in. `;
     } else if(top?.rankScore) {
       body += ` — scoring <b>${top.rankScore}/100</b>. `;
     } else { body += '. '; }
-    if(freshCount > 0) body += `${freshCount} fresh listing${freshCount>1?'s':''} this week. `;
-    if(motivatedCount > 0) body += `${motivatedCount} seller${motivatedCount>1?'s have':' has'} sat 60+ days — pricing leverage there.`;
+    if(freshCount > 0)      body += `${freshCount === 1 ? "There's one fresh listing" : `${freshCount} fresh listings`} this week worth a quick look. `;
+    if(motivatedCount > 0)  body += `${motivatedCount} seller${motivatedCount>1?'s have':' has'} sat 60+ days — that's real pricing leverage if you act on it.`;
   } else if(buyCount > 0){
-    body = `<b>${buyCount}</b> deal${buyCount>1?'s':''} scoring Buy in ${cityCtx} — solid but nothing exceptional. `;
-    body += `Worth analyzing the top one or two before they go stale. `;
-    if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} sitting on the market.`;
+    body = `${greeting}. <b>${buyCount}</b> deal${buyCount>1?'s scoring':' scoring'} Buy in ${cityCtx} — solid but nothing exceptional today. `;
+    body += `I'd look at the top one or two before they go stale. `;
+    if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} on the board if you want negotiation leverage.`;
   } else {
-    body = `Thin pickings in ${cityCtx} today — <b>${deals.length}</b> deal${deals.length>1?'s':''} but nothing scoring strong. `;
-    body += `Markets like this favor patient buyers; check back tomorrow after the nightly refresh.`;
+    body = `${greeting}. Thin pickings in ${cityCtx} today — <b>${deals.length}</b> deal${deals.length>1?'s':''} but none scoring strong. `;
+    body += `Days like this favor patient buyers. I'll have fresh inventory after the nightly refresh.`;
   }
 
   setHTML('anaBriefBody', body);
@@ -574,15 +634,21 @@ function renderDeals(deals, reset=true){
     : 0;
   localStorage.setItem('rr_last_visit', new Date().toISOString());
 
+  const TOP_N = 5; // top deals get rich treatment; everything else is compact
   let dividerInjected = false;
   list.innerHTML=deals.map((d,i)=>{
     const isNew = lastVisitDate && new Date(d.createdAt) > lastVisitDate;
     const isFirstOld = !dividerInjected && !isNew && newCount > 0 && i > 0;
     if(isFirstOld) dividerInjected = true;
-    const dividerHtml = isFirstOld
-      ? `<div class="new-divider"><div class="new-divider-line"></div><div class="new-divider-label">↑ ${newCount} new since your last visit</div><div class="new-divider-line right"></div></div>`
-      : '';
-    return dividerHtml + dealCardHtml(d, i);
+    let dividers = '';
+    if(isFirstOld){
+      dividers += `<div class="new-divider"><div class="new-divider-line"></div><div class="new-divider-label">↑ ${newCount} new since your last visit</div><div class="new-divider-line right"></div></div>`;
+    }
+    // After the top N rich cards, switch to compact rows with a divider
+    if(i === TOP_N && deals.length > TOP_N){
+      dividers += `<div class="feed-divider"><div class="feed-divider-line"></div><div class="feed-divider-label">More opportunities · ${deals.length - TOP_N}</div><div class="feed-divider-line"></div></div>`;
+    }
+    return dividers + dealCardHtml(d, i, i >= TOP_N);
   }).join('');
 }
 
@@ -596,14 +662,14 @@ function getPercentile(score, allDeals){
   return null; // only show for top 30%
 }
 
-function dealCardHtml(d,i){
+function dealCardHtml(d,i,compact=false){
     const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
     const sig=scoreSignal(score), cl=scoreClass(score), c=scoreColor(score);
     const dash=(score/100)*circ;
     const on=WatchlistAPI.has(d.id);
     const pct=getPercentile(score,allDeals);
     const take=dealTake(d,fin,score);
-    return`<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
+    return`<div class="deal ${cl}${compact?' compact':''}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
       <div class="ring" title="${pct?pct+' in this feed':''}"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
       <div class="dbody">
         <div class="daddr">${d.address||'Unknown'}</div>
