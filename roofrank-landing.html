@@ -26,8 +26,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — An AI Analyst for Every Multifamily Deal</title>
 <meta name="description" content="RoofRank reads every active multifamily listing in your markets, scores it on 8 financial metrics, and writes you a morning brief — so you spend minutes on the right deals, not hours on the wrong ones.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -70,8 +70,8 @@
   --radius: 12px;
 }
 
-html{scroll-behavior:smooth;color-scheme:light}
-body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{scroll-behavior:smooth;color-scheme:light;overflow-x:hidden;max-width:100%}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100%;width:100%}
 
 /* ── NAV ── */
 nav{
@@ -632,6 +632,21 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .hero-tag{font-size:.6rem;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .nav-logo-mark{width:34px !important;height:34px !important}
   .nav-logo-name{font-size:1.15rem !important}
+}
+
+/* ── MOBILE OVERFLOW + PRICING STACK ── */
+@media(max-width:768px){
+  /* defeat horizontal overflow no matter the cause */
+  html,body{overflow-x:hidden!important;max-width:100vw!important;width:100%!important}
+  section,.stat-bar,footer,.cta-section{max-width:100vw;overflow-x:hidden}
+  .inner{max-width:100%!important;padding:0 1.25rem!important}
+  /* stack pricing — inline grid-template-columns:repeat(3,1fr) needs !important */
+  .pricing-grid{grid-template-columns:1fr!important;max-width:100%!important;gap:1.25rem!important}
+  .plan{max-width:100%}
+  /* keep brief-mockup picks single-column on mobile (already in 327, but reinforce) */
+  .bm-picks{grid-template-columns:1fr!important}
+  /* compare cards stack */
+  .compare-grid{grid-template-columns:1fr!important}
 }
 </style>
 </head>
