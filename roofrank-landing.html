@@ -5,7 +5,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://roofrank.io">
   <meta property="og:title" content="RoofRank — An AI Analyst for Every Multifamily Deal">
-  <meta property="og:description" content="RoofRank reads every active 2–30 unit multifamily listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing.">
+  <meta property="og:description" content="RoofRank reads every active 2–6 unit multifamily listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing.">
   <meta property="og:image" content="https://roofrank.io/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="https://roofrank.io/og-image.png">
 
   <!-- SEO -->
-  <meta name="description" content="An AI analyst for every multifamily deal. RoofRank reads every active 2–30 unit listing in your markets, scores it on 8 financial metrics, and writes you a daily brief on what's worth pursuing.">
+  <meta name="description" content="An AI analyst for every multifamily deal. RoofRank reads every active 2–6 unit listing in your markets, scores it on 8 financial metrics, and writes you a daily brief on what's worth pursuing.">
   <meta name="keywords" content="multifamily real estate, ai deal analysis, cap rate, cash on cash return, dscr, multifamily investing, real estate ai, deal analyzer, ai real estate analyst">
   <meta name="author" content="RoofRank">
 <meta charset="UTF-8">
@@ -432,63 +432,6 @@ section{padding:6rem 0}
 }
 .section-h2 em{font-style:italic;color:var(--forest)}
 .section-sub{font-size:.95rem;color:var(--muted);line-height:1.75;max-width:520px}
-
-/* ── PROBLEM → SOLUTION ── */
-.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.ps-content{}
-.ps-cards{display:flex;flex-direction:column;gap:.75rem;margin-top:2.5rem}
-.ps-card{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--radius);padding:1.25rem 1.4rem;
-  display:flex;align-items:flex-start;gap:.9rem;
-  opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s
-}
-.ps-card.visible{opacity:1;transform:none}
-.ps-card-icon{
-  width:36px;height:36px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0
-}
-.ps-card-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.ps-card-icon.green{background:var(--sage-dim);color:var(--forest)}
-.ps-card-icon.amber{background:rgba(160,106,0,.08);color:var(--watch)}
-.ps-card-title{font-size:.88rem;font-weight:500;color:var(--ink);margin-bottom:.2rem}
-.ps-card-sub{font-size:.8rem;color:var(--muted);line-height:1.6}
-
-/* ── SCORE VISUAL ── */
-.score-visual{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:16px;padding:2rem;
-  box-shadow:0 4px 32px rgba(28,31,28,.07);
-  opacity:0;transform:translateX(24px);transition:opacity .6s,transform .6s
-}
-.score-visual.visible{opacity:1;transform:none}
-.sv-address{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);margin-bottom:.2rem}
-.sv-city{font-size:.78rem;color:var(--muted);margin-bottom:1.25rem}
-
-.sv-score-row{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.sv-score-ring{position:relative;width:88px;height:88px;flex-shrink:0}
-.sv-score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.svr-track{fill:none;stroke:var(--border-2);stroke-width:6}
-.svr-fill{fill:none;stroke:var(--forest);stroke-width:6;stroke-linecap:round;stroke-dasharray:246;stroke-dashoffset:246;transition:stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1)}
-.svr-fill.animate{stroke-dashoffset:33}
-.sv-score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.sv-score-num{font-family:var(--mono);font-size:2rem;font-weight:500;color:var(--forest);line-height:1}
-.sv-score-sig{font-size:.6rem;font-weight:600;color:var(--forest);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
-.sv-signal-info{flex:1}
-.sv-sig-badge{
-  display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  background:rgba(28,74,53,.09);color:var(--forest);border:1px solid rgba(28,74,53,.2);
-  padding:3px 10px;border-radius:5px;margin-bottom:.6rem
-}
-.sv-sig-desc{font-size:.82rem;color:var(--muted);line-height:1.65}
-
-.sv-metrics{display:flex;flex-direction:column;gap:.55rem}
-.sv-metric{display:flex;align-items:center;gap:.75rem}
-.sv-metric-name{font-size:.75rem;color:var(--muted);min-width:120px}
-.sv-metric-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-.sv-metric-fill{height:100%;border-radius:2px;background:var(--forest);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.22,1,.36,1) .4s}
-.sv-metric-fill.animate{transform:scaleX(1)}
-.sv-metric-val{font-family:var(--mono);font-size:.75rem;font-weight:500;color:var(--ink);min-width:48px;text-align:right}
 
 /* ── HOW IT WORKS ── */
 .hiw-section{background:var(--cream-2)}
@@ -1166,7 +1109,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <h1 class="hero-h1">
       An AI analyst for every<br>multifamily deal.
     </h1>
-    <p class="hero-sub">RoofRank reads every active 2–30 unit listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing. Skip the Excel models. Move on the right deals first.</p>
+    <p class="hero-sub">RoofRank reads every active 2–6 unit listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing. Skip the Excel models. Move on the right deals first.</p>
     <div class="hero-actions">
       <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
       <button class="btn-hero-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
@@ -1292,104 +1235,13 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <div class="stat-cell-label">Access — join now</div>
   </div>
   <div class="stat-cell">
-    <div class="stat-cell-val">2–30 units</div>
+    <div class="stat-cell-val">2–6 units</div>
     <div class="stat-cell-label">The investor's sweet spot</div>
   </div>
 </div>
 
-<!-- PROBLEM → SOLUTION -->
-<section id="features" style="background:var(--white)">
-  <div class="inner">
-    <div class="ps-grid">
-      <div class="ps-content">
-        <div class="eyebrow">Why RoofRank</div>
-        <h2 class="section-h2">An AI analyst<br>working <em>24/7</em><br>on your behalf.</h2>
-        <p class="section-sub">Every active 2–6 unit listing, scored and analyzed the moment it hits the market. Ask questions, surface risks, negotiate smarter — all powered by AI.</p>
-        <div class="ps-cards">
-          <div class="ps-card">
-            <div class="ps-card-icon green">
-              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-            <div>
-              <div class="ps-card-title">AI scores every listing instantly</div>
-              <div class="ps-card-sub">Cap rate, cash-on-cash, DSCR, GRM, price/unit, NOI, CapEx reserve, and neighborhood grade — analyzed by AI the moment a listing hits the market.</div>
-            </div>
-          </div>
-          <div class="ps-card">
-            <div class="ps-card-icon green">
-              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </div>
-            <div>
-              <div class="ps-card-title">AI-written morning deal brief</div>
-              <div class="ps-card-sub">Every morning, your AI analyst writes you a personalized briefing — new listings, price drops, motivated sellers, and the one deal worth your time today.</div>
-            </div>
-          </div>
-          <div class="ps-card">
-            <div class="ps-card-icon amber">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <div>
-              <div class="ps-card-title">Ask the AI anything about a deal</div>
-              <div class="ps-card-sub">"What's the biggest risk?" "What should I offer?" "How does this compare to my last purchase?" Your AI analyst answers in seconds, backed by real data.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="score-visual" id="scoreVisual">
-        <div class="sv-address">37–39 Freeman St</div>
-        <div class="sv-city">Boston, MA · 5 Units · Built 1920</div>
-        <div class="sv-score-row">
-          <div class="sv-score-ring">
-            <svg viewBox="0 0 88 88">
-              <circle class="svr-track" cx="44" cy="44" r="39"/>
-              <circle class="svr-fill" id="svFill" cx="44" cy="44" r="39"/>
-            </svg>
-            <div class="sv-score-inner">
-              <div class="sv-score-num">87</div>
-              <div class="sv-score-sig">Strong Buy</div>
-            </div>
-          </div>
-          <div class="sv-signal-info">
-            <div class="sv-sig-badge">Strong Buy</div>
-            <div class="sv-sig-desc">Exceptional cash flow and strong debt coverage. This deal pencils at 25% down with room to refinance within 3 years.</div>
-          </div>
-        </div>
-        <div class="sv-metrics">
-          <div class="sv-metric">
-            <div class="sv-metric-name">Cash-on-Cash</div>
-            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf1" style="width:90%"></div></div>
-            <div class="sv-metric-val">10.1%</div>
-          </div>
-          <div class="sv-metric">
-            <div class="sv-metric-name">Cap Rate</div>
-            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf2" style="width:76%"></div></div>
-            <div class="sv-metric-val">7.6%</div>
-          </div>
-          <div class="sv-metric">
-            <div class="sv-metric-name">DSCR</div>
-            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf3" style="width:88%"></div></div>
-            <div class="sv-metric-val">1.44</div>
-          </div>
-          <div class="sv-metric">
-            <div class="sv-metric-name">GRM</div>
-            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf4" style="width:80%"></div></div>
-            <div class="sv-metric-val">8.2×</div>
-          </div>
-          <div class="sv-metric">
-            <div class="sv-metric-name">Neighborhood</div>
-            <div class="sv-metric-bar"><div class="sv-metric-fill" id="mf5" style="width:75%"></div></div>
-            <div class="sv-metric-val">A − Prime</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
 <!-- AI FEATURES -->
-<section class="ai-section">
+<section id="features" class="ai-section">
   <div class="inner">
     <div class="ai-badge"><span class="ai-badge-dot"></span>Powered by AI</div>
     <h2 class="section-h2" style="max-width:560px">Not just data.<br><em>Intelligence.</em></h2>
@@ -1476,14 +1328,14 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 <!-- HOW IT WORKS -->
 <section id="how-it-works" class="hiw-section">
   <div class="inner">
-    <div class="eyebrow fade-up">How Your AI Analyst Works</div>
+    <div class="eyebrow fade-up">How It Works</div>
     <h2 class="section-h2 fade-up">From listing to deal score<br>in under a minute.</h2>
     <div class="hiw-steps">
       <div class="hiw-step">
         <div class="hiw-step-num">01 — Find</div>
         <div class="hiw-step-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <h3>Pick your markets</h3>
-        <p>Tell RoofRank where you're investing. We pull every active 2–30 unit listing in those markets daily from MLS, public records, and listing feeds — you never need to refresh Zillow again.</p>
+        <p>Tell RoofRank where you're investing. We pull every active 2–6 unit listing in those markets daily from MLS, public records, and listing feeds — you never need to refresh Zillow again.</p>
       </div>
       <div class="hiw-step">
         <div class="hiw-step-num">02 — Score</div>
@@ -1565,7 +1417,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="inner">
     <div class="eyebrow fade-up" style="text-align:center">How RoofRank fits in</div>
     <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Built for the independent investor —<br><em>not the institutional fund.</em></h2>
-    <p class="section-sub fade-up" style="text-align:center;max-width:580px;margin:1rem auto 0">There's no shortage of real estate tools. Here's an honest look at where the others fall short for someone holding 2-30 doors.</p>
+    <p class="section-sub fade-up" style="text-align:center;max-width:580px;margin:1rem auto 0">There's no shortage of real estate tools. Here's an honest look at where the others fall short for someone holding 2–6 doors.</p>
 
     <div class="compare-grid">
       <!-- vs Excel -->
