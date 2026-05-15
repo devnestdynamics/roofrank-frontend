@@ -87,6 +87,26 @@ body{
 
 .logo-row{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:.6rem}
 
+/* Logo options grid for picking a Deckers mark */
+.logo-options-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.1rem;margin:.5rem 0 1rem;
+}
+@media(max-width:520px){.logo-options-grid{grid-template-columns:repeat(2,1fr)}}
+.logo-option{
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:10px;padding:1rem .85rem;
+  display:flex;flex-direction:column;align-items:center;gap:.55rem;
+  transition:border-color .15s,box-shadow .15s;
+}
+.logo-option:hover{border-color:var(--sage-border);box-shadow:0 3px 12px rgba(28,31,28,.06)}
+.logo-option svg{display:block}
+.opt-label{
+  font-size:.72rem;font-weight:600;color:var(--ink);
+  letter-spacing:.02em;text-align:center;
+}
+.opt-desc{font-size:.7rem;color:var(--muted);line-height:1.5;text-align:center}
+
 /* ── Voice / tagline ──────────────────────────────────────────────────── */
 .tagline{
   font-family:var(--serif);font-style:italic;font-size:1.05rem;
@@ -327,17 +347,106 @@ body{
     <div class="col-eyebrow">Option B</div>
     <div class="col-title">Deckers<span class="col-tag" style="background:#1c4a35;color:#fff;border-color:#1c4a35">new brand</span></div>
 
-    <!-- Logo lockups -->
+    <!-- Logo options grid -->
     <div class="block">
-      <div class="block-title">Logo Lockup</div>
+      <div class="block-title">Logo Options — pick one</div>
+      <div class="tagline-sub" style="margin-bottom:1.25rem">The original looked like a phone-battery icon (three equal stacked bars is the universal "battery level" shape). Six alternatives below — each breaks that association while still reading as a multi-deck building.</div>
+
+      <div class="logo-options-grid">
+        <!-- 1: Tapered Stack -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
+            <rect x="16" y="24" width="24" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="19" y="14" width="18" height="8" rx="1.5" fill="#fff"/>
+          </svg>
+          <div class="opt-label">A — Tapered stack</div>
+          <div class="opt-desc">Same 3-floor concept but each floor is narrower than the one below. Breaks the battery look by adding a pyramid/perspective feel.</div>
+        </div>
+
+        <!-- 2: Pitched Roof + Floor lines -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <path d="M14 22 L28 11 L42 22" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <rect x="15" y="28" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+            <rect x="15" y="35" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+            <rect x="15" y="42" width="26" height="2.5" rx=".5" fill="#7aaa8f"/>
+          </svg>
+          <div class="opt-label">B — Roof + floors</div>
+          <div class="opt-desc">Triangular roofline above three thin floor lines. Clearly residential, clearly a building — no chance of battery confusion.</div>
+        </div>
+
+        <!-- 3: Building outline + floor dividers -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="16" y="14" width="24" height="32" rx="1.5" stroke="#7aaa8f" stroke-width="2" fill="none"/>
+            <line x1="16" y1="24" x2="40" y2="24" stroke="#7aaa8f" stroke-width="2"/>
+            <line x1="16" y1="34" x2="40" y2="34" stroke="#7aaa8f" stroke-width="2"/>
+            <rect x="26" y="38" width="4" height="8" rx=".5" fill="#fff"/>
+          </svg>
+          <div class="opt-label">C — Building w/ door</div>
+          <div class="opt-desc">A literal building outline with floor dividers and a front door at the base. Most explicit "building" silhouette.</div>
+        </div>
+
+        <!-- 4: Isometric / 3D -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <!-- Side face (lighter, offset) -->
+            <path d="M36 14 L42 18 L42 50 L36 46 Z" fill="#7aaa8f" opacity=".4"/>
+            <!-- Top face -->
+            <path d="M14 14 L20 10 L42 10 L36 14 Z" fill="#7aaa8f" opacity=".55"/>
+            <!-- Front face -->
+            <rect x="14" y="14" width="22" height="32" rx="1" fill="#7aaa8f"/>
+            <!-- Floor lines on front face -->
+            <line x1="15" y1="24" x2="35" y2="24" stroke="#1c4a35" stroke-width="1.5" opacity=".5"/>
+            <line x1="15" y1="34" x2="35" y2="34" stroke="#1c4a35" stroke-width="1.5" opacity=".5"/>
+          </svg>
+          <div class="opt-label">D — Isometric building</div>
+          <div class="opt-desc">A 3D perspective view with depth on the side and top. Most distinctive silhouette; reads as architectural drawing.</div>
+        </div>
+
+        <!-- 5: D Monogram -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <path d="M16 10 L16 46 L30 46 C40 46 46 39 46 28 C46 17 40 10 30 10 Z" fill="#7aaa8f"/>
+            <line x1="22" y1="20" x2="38" y2="20" stroke="#1c4a35" stroke-width="2"/>
+            <line x1="22" y1="28" x2="38" y2="28" stroke="#1c4a35" stroke-width="2"/>
+            <line x1="22" y1="36" x2="38" y2="36" stroke="#1c4a35" stroke-width="2"/>
+          </svg>
+          <div class="opt-label">E — D monogram</div>
+          <div class="opt-desc">A bold D filled with floor lines, like windows on a building. Most "brand mark" feeling — works as a standalone symbol (like Notion's N).</div>
+        </div>
+
+        <!-- 6: Stepped / Tiered -->
+        <div class="logo-option">
+          <svg viewBox="0 0 56 56" fill="none" width="64" height="64">
+            <rect width="56" height="56" rx="11" fill="#1c4a35"/>
+            <rect x="9" y="36" width="38" height="9" rx="1.5" fill="#7aaa8f"/>
+            <rect x="14" y="23" width="32" height="9" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="19" y="10" width="26" height="9" rx="1.5" fill="#fff"/>
+          </svg>
+          <div class="opt-label">F — Tapered + offset</div>
+          <div class="opt-desc">Like option A but each floor steps slightly to the right, suggesting upward progression. Echoes the rising-score metaphor.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show selected logo at multiple sizes - using option A as default winner -->
+    <div class="block">
+      <div class="block-title">Once you pick · Lockup at 3 sizes</div>
+      <div class="tagline-sub" style="margin-bottom:1rem">Showing Option A (Tapered Stack) below. We'll swap to whichever option you pick.</div>
       <div class="logo-row">
         <span class="dk-logo-lg">
           <svg class="dk-mark-lg" viewBox="0 0 56 56" fill="none">
             <rect width="56" height="56" rx="11" fill="#1c4a35"/>
-            <!-- Three stacked floors of a decker -->
             <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
-            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
-            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+            <rect x="16" y="24" width="24" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="19" y="14" width="18" height="8" rx="1.5" fill="#fff"/>
           </svg>
           <span class="dk-name-lg">Deckers</span>
         </span>
@@ -345,8 +454,8 @@ body{
           <svg class="dk-mark-md" viewBox="0 0 56 56" fill="none">
             <rect width="56" height="56" rx="11" fill="#1c4a35"/>
             <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
-            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
-            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+            <rect x="16" y="24" width="24" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="19" y="14" width="18" height="8" rx="1.5" fill="#fff"/>
           </svg>
           <span class="dk-name-md">Deckers</span>
         </span>
@@ -354,13 +463,12 @@ body{
           <svg class="dk-mark-sm" viewBox="0 0 56 56" fill="none">
             <rect width="56" height="56" rx="11" fill="#1c4a35"/>
             <rect x="13" y="34" width="30" height="8" rx="1.5" fill="#7aaa8f"/>
-            <rect x="13" y="24" width="30" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
-            <rect x="13" y="14" width="30" height="8" rx="1.5" fill="#fff"/>
+            <rect x="16" y="24" width="24" height="8" rx="1.5" fill="#7aaa8f" opacity=".75"/>
+            <rect x="19" y="14" width="18" height="8" rx="1.5" fill="#fff"/>
           </svg>
           <span class="dk-name-sm">Deckers</span>
         </span>
       </div>
-      <div class="tagline-sub">Three stacked floors of a multifamily building. The top "floor" is the bright accent — the deal worth your time today. Mark is more distinctive than RoofRank's because the silhouette is unique (vs three vertical bars, which are common). Also extends naturally to score viz.</div>
     </div>
 
     <!-- Tagline / voice -->
