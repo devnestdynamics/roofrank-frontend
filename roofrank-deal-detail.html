@@ -581,6 +581,7 @@ nav.top{
 .cf-leg:last-child{border-bottom:none}
 .cf-leg-dot{width:10px; height:10px; border-radius:3px; flex-shrink:0}
 .cf-leg-name{flex:1; color:var(--ink)}
+.cf-leg-src{font-size:.7rem; color:var(--faint); font-weight:400; margin-left:.4rem; font-family:var(--sans)}
 .cf-leg-vals{display:flex; align-items:baseline; gap:.65rem; font-family:var(--mono)}
 .cf-leg-val{font-weight:500; color:var(--ink)}
 .cf-leg-pct{color:var(--muted); font-size:.8rem; min-width:38px; text-align:right}
@@ -1396,15 +1397,28 @@ function renderCfWaterfall(d, sFin){
     segHTML(cfClass, cfShortLabel, cfPct),
   ].join(''));
 
-  const legRow = (cls, name, val, p) => `<div class="cf-leg ${cls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${name}</span><span class="cf-leg-vals"><span class="cf-leg-val">$${Math.round(Math.abs(val)).toLocaleString()}/mo</span><span class="cf-leg-pct">${p.toFixed(0)}%</span></span></div>`;
+  const legRow = (cls, name, val, p, srcHint) => `<div class="cf-leg ${cls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${name}${srcHint?`<span class="cf-leg-src">${srcHint}</span>`:''}</span><span class="cf-leg-vals"><span class="cf-leg-val">$${Math.round(Math.abs(val)).toLocaleString()}/mo</span><span class="cf-leg-pct">${p.toFixed(0)}%</span></span></div>`;
+  // Pull assumption provenance — backend stamps these onto reportData.assumptions
+  // so users can tell "(actual)" tax from "(city est)" estimate.
+  const ass = ((_deal||{}).reportData||{}).assumptions || {};
+  const taxSrc = ass.taxes && ass.taxes.source;
+  const insSrc = ass.insurance && ass.insurance.source;
+  const hintFor = (src) => {
+    if(!src) return '';
+    if(src === 'attom-actual') return '· actual';
+    if(src.includes('city-default')) return '· city est';
+    if(src.includes('state-default')) return '· state est';
+    if(src.includes('national-default')) return '· est';
+    return '';
+  };
   const cfRowCls = 'cf' + (monthlyCf < 0 ? ' negative' : '');
   const cfSign = monthlyCf >= 0 ? '+' : '−';
   const cfLegPct = monthlyRent ? (Math.abs(monthlyCf)/monthlyRent)*100 : 0;
   const legCfRow = `<div class="cf-leg ${cfRowCls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${monthlyCf>=0?'Monthly Cash Flow':'Monthly Loss'}</span><span class="cf-leg-vals"><span class="cf-leg-val">${cfSign}$${Math.round(Math.abs(monthlyCf)).toLocaleString()}/mo</span><span class="cf-leg-pct">${cfLegPct.toFixed(0)}%</span></span></div>`;
   setHTML('cfLegend', [
     legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI)),
-    legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax)),
-    legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns)),
+    legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax), hintFor(taxSrc)),
+    legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns), hintFor(insSrc)),
     legCfRow,
   ].join(''));
 
