@@ -222,6 +222,65 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   padding:6rem 4rem 5rem 2rem
 }
 
+/* ── Hero phone + push-notification mockup ──────────────────────────────── */
+.hero-phone-wrap{width:100%;display:flex;justify-content:flex-start;padding-left:1rem;perspective:1400px}
+.hero-phone{
+  width:280px;aspect-ratio:9/19;position:relative;
+  background:linear-gradient(155deg,#1c2120 0%,#0b0e0c 100%);
+  border-radius:42px;padding:7px;
+  box-shadow:
+    -14px 36px 72px rgba(14,17,15,.55),
+    0 6px 24px rgba(14,17,15,.35),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset -1.5px 0 0 rgba(255,255,255,.14),
+    inset 2px 2px 0 rgba(255,255,255,.05);
+  transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg);
+  animation:heroPhoneIn .85s cubic-bezier(.22,1,.36,1) both
+}
+@keyframes heroPhoneIn{from{opacity:0;transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg) translateY(14px) scale(.96)}to{opacity:1;transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg) translateY(0) scale(1)}}
+.hero-phone-screen{
+  width:100%;height:100%;border-radius:36px;position:relative;overflow:hidden;
+  background:linear-gradient(170deg,#1f2a23 0%,#14201a 60%,#0e1612 100%)
+}
+.hero-phone-notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:100px;height:24px;background:#0c0f0d;border-radius:0 0 16px 16px;z-index:2}
+.hero-phone-statusbar{position:absolute;top:12px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.95);z-index:3;letter-spacing:-.01em}
+.hero-phone-statusbar-icons{display:flex;gap:5px;align-items:center}
+.hero-phone-statusbar-icons svg{width:13px;height:11px;fill:rgba(255,255,255,.95)}
+.hero-phone-bigdate{position:absolute;top:60px;left:0;right:0;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:rgba(255,255,255,.82);font-weight:500;font-size:13px;letter-spacing:.02em}
+.hero-phone-bigtime{position:absolute;top:78px;left:0;right:0;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:rgba(255,255,255,.98);font-weight:200;font-size:74px;letter-spacing:-3px;line-height:1}
+.hero-phone-notification{
+  position:absolute;top:198px;left:12px;right:12px;
+  background:rgba(245,248,244,.96);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-radius:18px;padding:14px 14px 13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  animation:heroPhoneNotif .55s cubic-bezier(.34,1.56,.64,1) .9s both
+}
+@keyframes heroPhoneNotif{from{opacity:0;transform:translateY(-14px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+.hero-phone-notif-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.hero-phone-notif-icon{width:22px;height:22px;background:var(--forest);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-phone-notif-icon svg{width:14px;height:14px}
+.hero-phone-notif-app{font-size:10.5px;font-weight:600;color:#1c1f1c;text-transform:uppercase;letter-spacing:.5px;flex:1}
+.hero-phone-notif-time{font-size:10.5px;color:rgba(28,31,28,.45);font-weight:500}
+.hero-phone-notif-title{font-family:var(--serif);font-size:16px;font-weight:500;color:#1c1f1c;margin-bottom:4px;line-height:1.3;letter-spacing:-.01em}
+.hero-phone-notif-body{font-size:12.5px;color:rgba(28,31,28,.74);line-height:1.45}
+.hero-phone-notif-action{font-size:11px;color:rgba(28,31,28,.5);font-weight:500;margin-top:6px;letter-spacing:.01em}
+
+/* Mobile-only floating notification (the phone hides on mobile; this replaces it) */
+.hero-mobile-notif{
+  display:none;margin-top:1.5rem;max-width:380px;width:100%;
+  background:rgba(245,248,244,.98);
+  border:1px solid rgba(28,74,53,.1);
+  border-radius:18px;padding:14px 14px 13px;
+  box-shadow:0 10px 28px rgba(20,24,22,.12);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  animation:heroPhoneNotif .55s cubic-bezier(.34,1.56,.64,1) .3s both
+}
+@media(max-width:768px){.hero-mobile-notif{display:block}}
+.hero-phone-homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:110px;height:4px;background:rgba(255,255,255,.4);border-radius:2px}
+@media(max-width:1024px){.hero-phone{width:250px}}
+
 .product-card{
   width:100%;max-width:480px;
   background:var(--white);
@@ -697,7 +756,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <span class="nav-logo-name">RoofRank</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#features">The Brief</a></li>
+    <li><a href="#features">Dashboard</a></li>
     <li><a href="#metrics">Scoring</a></li>
     <li><a href="#pricing">Pricing</a></li>
   </ul>
@@ -1125,103 +1184,65 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       </button>
     </div>
 
+    <!-- Mobile-only notification card (replaces the desktop phone mockup at ≤768px) -->
+    <div class="hero-mobile-notif" role="status" aria-label="Example RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash at today's rate">
+      <div class="hero-phone-notif-head">
+        <div class="hero-phone-notif-icon" aria-hidden="true">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="hero-phone-notif-app">RoofRank</span>
+        <span class="hero-phone-notif-time">now</span>
+      </div>
+      <div class="hero-phone-notif-title">Strong Buy in Lynn</div>
+      <div class="hero-phone-notif-body">58 Laighton St — <strong style="color:#1c4a35;font-weight:600">11.4% CoC</strong> at today's rate.</div>
+      <div class="hero-phone-notif-action">Tap to see the math →</div>
+    </div>
+
   </div>
 
   <div class="hero-right">
-    <div style="width:100%;max-width:480px;position:relative">
-      <div class="product-card">
-        <!-- Browser chrome -->
-        <div class="pc-header">
-          <div class="pc-dot" style="background:#ff5f57"></div>
-          <div class="pc-dot" style="background:#febc2e"></div>
-          <div class="pc-dot" style="background:#28c840"></div>
-          <div class="pc-url">app.roofrank.io/deals</div>
-        </div>
-        <!-- Topbar -->
-        <div class="pc-topbar">
-          <div class="pc-topbar-title">
-            Deal Feed
-            <span class="pc-live">Live</span>
-          </div>
-          <div class="pc-topbar-right">
-            <span class="pc-filter">My Markets</span>
-            <span class="pc-add">+ Analyze</span>
-          </div>
-        </div>
-        <!-- Tabs -->
-        <div class="pc-tabs">
-          <div class="pc-tab on">All Deals</div>
-          <div class="pc-tab">Strong Buy</div>
-          <div class="pc-tab">Buy</div>
-          <div class="pc-tab">Watch</div>
-        </div>
-        <!-- Deals -->
-        <div class="pc-body">
-          <div class="deal-row-item featured" style="animation-delay:0.00s">
-            <div class="score-badge-sm sb">85</div>
-            <div class="deal-info">
-              <div class="deal-address">37–39 Freeman St</div>
-              <div class="deal-city">Boston, MA · 5 Units · Triple Decker · 1920</div>
-              <div class="deal-kpis">
-                <span class="deal-kpi g">CoC 9.8%</span>
-                <span class="deal-kpi g">Cap 8.5%</span>
-                <span class="deal-kpi">DSCR 1.44</span>
-                <span class="deal-kpi">$1.575M</span>
-              </div>
+    <div class="hero-phone-wrap">
+      <div class="hero-phone" aria-label="A phone showing a RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash at today's rate.">
+        <div class="hero-phone-notch"></div>
+        <div class="hero-phone-screen">
+          <!-- Status bar -->
+          <div class="hero-phone-statusbar">
+            <span>7:14</span>
+            <div class="hero-phone-statusbar-icons" aria-hidden="true">
+              <svg viewBox="0 0 14 10"><path d="M1 7h2v2H1zm4-2h2v4H5zm4-2h2v6H9zm4-3h-2v9h2z"/></svg>
+              <svg viewBox="0 0 14 10"><path d="M7 1.5c2.2 0 4.2.9 5.7 2.3l-.7.7C10.7 3.2 8.9 2.5 7 2.5s-3.7.7-5 2L1.3 3.8C2.8 2.4 4.8 1.5 7 1.5zm0 3c1.4 0 2.7.5 3.7 1.5l-.7.7c-.8-.8-1.9-1.2-3-1.2s-2.2.4-3 1.2L3.3 6c1-1 2.3-1.5 3.7-1.5zm0 3c.6 0 1.2.2 1.6.7l-.7.7c-.3-.2-.6-.4-.9-.4s-.6.2-.9.4l-.7-.7c.4-.5 1-.7 1.6-.7z"/></svg>
+              <svg viewBox="0 0 24 10"><rect x="1" y="1" width="20" height="8" rx="2" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1"/><rect x="3" y="3" width="16" height="4" rx="1" fill="rgba(255,255,255,.95)"/><rect x="22" y="3.5" width="1.5" height="3" rx=".5"/></svg>
             </div>
-            <span class="deal-signal sig-sb">Strong Buy</span>
           </div>
-          <div class="deal-row-item" style="animation-delay:0.00s;animation-delay:0.12s">
-            <div class="score-badge-sm buy">82</div>
-            <div class="deal-info">
-              <div class="deal-address">1842 Maple Ave</div>
-              <div class="deal-city">Phoenix, AZ · 4 Units · Multifamily</div>
-              <div class="deal-kpis">
-                <span class="deal-kpi g">CoC 9.2%</span>
-                <span class="deal-kpi">Cap 8.1%</span>
-                <span class="deal-kpi">$685K</span>
+          <!-- Lock-screen clock -->
+          <div class="hero-phone-bigdate">Tuesday, May 13</div>
+          <div class="hero-phone-bigtime">7:14</div>
+          <!-- The notification — THE moment that converts -->
+          <div class="hero-phone-notification">
+            <div class="hero-phone-notif-head">
+              <div class="hero-phone-notif-icon" aria-hidden="true">
+                <svg viewBox="0 0 30 30" fill="none">
+                  <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+                  <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+                  <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+                </svg>
               </div>
+              <span class="hero-phone-notif-app">RoofRank</span>
+              <span class="hero-phone-notif-time">now</span>
             </div>
-            <span class="deal-signal sig-sb">Strong Buy</span>
+            <div class="hero-phone-notif-title">Strong Buy in Lynn</div>
+            <div class="hero-phone-notif-body">58 Laighton St — <strong style="color:#1c4a35;font-weight:600">11.4% CoC</strong> at today's rate.</div>
+            <div class="hero-phone-notif-action">Tap to see the math →</div>
           </div>
-          <div class="deal-row-item" style="animation-delay:0.12s;animation-delay:0.24s">
-            <div class="score-badge-sm buy">74</div>
-            <div class="deal-info">
-              <div class="deal-address">605 N 14th St</div>
-              <div class="deal-city">Tampa, FL · 6 Units · Multifamily</div>
-              <div class="deal-kpis">
-                <span class="deal-kpi g">CoC 8.6%</span>
-                <span class="deal-kpi">Cap 7.4%</span>
-                <span class="deal-kpi">$920K</span>
-              </div>
-            </div>
-            <span class="deal-signal sig-buy">Buy</span>
-          </div>
-          <div class="deal-row-item" style="opacity:.5;animation-delay:0.36s">
-            <div class="score-badge-sm watch">51</div>
-            <div class="deal-info">
-              <div class="deal-address">9 Beechwood Pl</div>
-              <div class="deal-city">Austin, TX · 4 Units</div>
-              <div class="deal-kpis">
-                <span class="deal-kpi">CoC 6.2%</span>
-                <span class="deal-kpi">Cap 5.8%</span>
-                <span class="deal-kpi">$1.1M</span>
-              </div>
-            </div>
-            <span class="deal-signal sig-watch">Watch</span>
-          </div>
+          <!-- Home indicator -->
+          <div class="hero-phone-homebar"></div>
         </div>
-        <div class="pc-footer">
-          <span>4 of 38 deals · Updated 3 min ago</span>
-          <div class="pc-live-dot"><div class="live-dot-sm"></div><span style="font-size:.6rem;color:var(--forest);font-weight:600;margin-left:3px">Live</span></div>
-        </div>
-      </div>
-
-      <!-- Floating alert -->
-      <div class="floating-alert" style="animation:dealSlideIn .5s ease .8s both">
-        <div class="fa-head"><div class="fa-dot"></div><span class="fa-label">Just listed</span></div>
-        <div class="fa-title">Strong Buy in your market</div>
-        <div class="fa-sub">241 Broad St, Tampa · Score 78</div>
       </div>
     </div>
   </div>
@@ -1533,7 +1554,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <div class="footer-col">
         <h5>Product</h5>
         <ul>
-          <li><a href="#features">The Brief</a></li>
+          <li><a href="#features">Dashboard</a></li>
           <li><a href="#metrics">Scoring</a></li>
           <li><a href="roofrank-pricing.html">Pricing</a></li>
           <li><a href="roofrank-dashboard.html">Deal Feed</a></li>

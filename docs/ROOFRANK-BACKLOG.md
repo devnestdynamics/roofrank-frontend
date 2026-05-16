@@ -9,11 +9,11 @@
 | Status | Count |
 |---|---|
 | ✅ Done | 30 |
-| 🔴 MVP Scope | 16 |
-| 🟡 Phase 2 | 55 |
-| 🟢 Phase 3 / Backlog | 34 |
+| 🔴 MVP Scope | 20 |
+| 🟡 Phase 2 | 57 |
+| 🟢 Phase 3 / Backlog | 33 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **133** |
+| **Total** | **140** |
 
 ---
 
@@ -2160,3 +2160,88 @@ This is a "halo" feature that **bridges Pro and Agent & Team** without forcing t
 - Reuse the existing push infrastructure (item 27 done) — broadcast to N tokens instead of 1.
 - Phone numbers via SMS would require Twilio (item 122 backlog) — push notifications are cheaper.
 - Privacy: each recipient should be able to unsubscribe directly from any alert.
+
+### 170. Live stats strip on landing (replaces shallow stat bar)
+**Priority:** 🔴 MVP · **Effort:** S · **Source:** Strategic review's landing fix #2 + 2026-05-16 honest audit
+
+Replace the dark `30 sec / $0` stat bar (currently filler — "30 sec" repeats the hero claim) with **live per-market deal counts** from a new public backend endpoint:
+
+> *Lynn: 24 · Worcester: 15 · Salem: 9 · Refreshed 2h ago*
+
+**Why:** Single biggest credibility gap on the landing today. The page makes big claims ("watching every active 2–6 unit listing in your markets") with zero numbers proving the product is alive. A skeptical investor scrolls 4 sections deep without seeing a single piece of evidence. The strategic review explicitly called out *"1,247 deals scored this week across Lynn, Worcester, Salem"* as the fix.
+
+**Implementation:**
+- Backend: add `GET /api/public/stats/markets` returning `[{ city, activeCount, lastRefreshAt }]`. No auth (counts aren't sensitive).
+- Frontend: replace `.stat-bar` markup; fetch on page load, render with the same dark forest treatment.
+- Fallback: if endpoint fails, show static "Watching every active 2–6 unit listing in Lynn, Worcester, Salem."
+
+---
+
+### 171. Compare section visual upgrade
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** 2026-05-16 honest audit
+
+Compare section (3 cards: vs Excel, vs DealCheck, vs Enterprise) is still text-heavy — 2-3 paragraphs per card. Reads like a feature comparison spreadsheet. The rest of the page upgraded its visual game with animations, Deckers marks, chat bubbles, verdict blocks. This section didn't.
+
+**Direction:** distill each comparison to a 1-line claim + a side-by-side visual contrast (what THEY make you do vs. what RoofRank does in one image/icon). Cut word count by ~70%.
+
+---
+
+### 172. "Try it before signup" interaction on landing
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** 2026-05-16 honest audit
+
+Every Pinterest-quality landing has SOMETHING you can do before the auth wall — type an address, hover a sample, drag a slider. Right now ours is a brochure — read-only. One tiny interactive element ("Try the analyzer on a sample address →" with auto-fill) would change the energy from "marketing page" to "demo."
+
+**Direction (cheapest version):** a hero-adjacent input that accepts an address, auto-completes it to one of the real Lynn deals (e.g. 58 Laighton), generates a fake fast-loading score animation, then CTA: *"Want yours? Sign up →"*.
+
+---
+
+### 173. Landing mobile QA sweep (proactive at 320 / 375 / 414)
+**Priority:** 🔴 MVP · **Effort:** S · **Source:** 2026-05-16 honest audit
+
+We've adjusted mobile breakpoints reactively (chip border barely visible flagged after build, layout shifts caught only at desktop testing). Need a deliberate sweep at iPhone SE (375), iPhone 14 Pro (393), Galaxy S22 (412) and the narrowest realistic device (320 / older iPhone SE). Walk every section, check:
+- Hero CTA buttons not overflowing
+- Stat bar / metrics chips wrap cleanly
+- Brief mockup card not cramped, chat bubbles readable
+- Metrics verdict + chips grid stacks correctly
+- Pricing cards stack and remain scannable
+- Hero phone mockup (post #178 build) hides or scales appropriately
+
+---
+
+### 174. Free → Pro upgrade UX (feature gating in product)
+**Priority:** 🔴 MVP · **Effort:** L · **Source:** 2026-05-16 honest audit
+
+The pricing wall is defined in copy (Starter = passive view, Pro = active engagement). But the product still shows everything to everyone. When a Free user clicks "Push alerts" or "Custom rate override," what happens?
+
+**Required for honest launch:**
+- Free users see locked badges on Pro features in the product (push alert toggle, custom rate slider, watchlist alert settings, daily email opt-in, CSV export).
+- Clicking a locked feature → upgrade modal with the specific Pro benefit + price + trial CTA.
+- Pricing copy promises must match product reality before public launch — otherwise we get reviews like *"They charged me $49 but everything works on Free."*
+
+**Blocking dependency:** the actual product changes need to land before the landing copy claims are honest. Beta launch (weeks 11-12) requires this done.
+
+---
+
+### 175. Hero imagery audit + final treatment
+**Priority:** 🟢 Phase 3 · **Effort:** S · **Source:** 2026-05-16 honest audit
+
+After the hero deal-feed mockup gets replaced by the phone-push-notification mockup (item #178 below — done in this session), review remaining hero visuals:
+- The background photo (`.hero-photo`) — does it still feel right with the decision-tool framing, or does it lean residential/aspirational in a way that conflicts?
+- Overlay opacities / gradients
+- Mobile hero crop behavior
+
+Mostly a polish pass after the bigger Option C build.
+
+---
+
+### 176. OG image + social preview regen
+**Priority:** 🔴 MVP · **Effort:** S · **Source:** 2026-05-16 honest audit
+
+The current Open Graph image (`/og-image.png`) is from before the decision-tool reframe. When a user shares roofrank.io on LinkedIn, Slack, or Twitter, the preview probably still says *"An AI analyst for every multifamily deal"* — the old positioning we deliberately moved away from.
+
+**Required:**
+- Regen og-image.png to match new hero: `Know if a multifamily cashflows — in 30 seconds.` + Deckers mark + sage/forest brand colors.
+- Update `<meta property="og:title">` and `<meta property="og:description">` on every page to match new positioning.
+- Test share preview on LinkedIn/Twitter/Slack before launch.
+
+Quiet conversion killer if missed — most traffic-driving moments (shares, link previews) flow through this asset.
