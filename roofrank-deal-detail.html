@@ -1745,18 +1745,23 @@ async function boot(){
   // Cache key versioned — bump when the deal payload shape changes so stale
   // cached entries from before a release get bypassed automatically.
   // v3 = adds reportData.rentEstimate + userRentOverride (May 16).
-  const CACHE_KEY = 'rr_deal_v3_' + fid;
+  // v4 = adds reportData.assumptions provenance hints (May 16).
+  const CACHE_KEY = 'rr_deal_v4_' + fid;
   // Clean up any older-versioned cache entries from previous releases so they
   // don't accumulate in storage.
   try {
     sessionStorage.removeItem('rr_deal_' + fid);
     sessionStorage.removeItem('rrdeal_' + fid);
+    sessionStorage.removeItem('rr_deal_v3_' + fid);
   } catch(e) {}
 
   // Helper: does this cached deal have the fields the new UI needs?
+  // Validates BOTH rentEstimate (v3) and assumptions (v4) — a cache predating
+  // either field is bypassed and a fresh fetch runs.
   function cacheLooksCurrent(d) {
     const re = d?.reportData?.rentEstimate;
-    return !!(re && (re.perUnitMonthly != null || re.unitMix));
+    const as = d?.reportData?.assumptions;
+    return !!(re && (re.perUnitMonthly != null || re.unitMix) && as && as.taxes);
   }
 
   try{
