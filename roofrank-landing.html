@@ -296,7 +296,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 
 
 /* ── MORNING BRIEF SHOWCASE — the dark Analyst card embedded as a mockup ── */
-.brief-showcase{background:var(--cream);padding:6rem 0}
+.brief-showcase{background:var(--cream);padding:5rem 0}
 .brief-showcase .inner{max-width:880px}
 .brief-showcase .section-h2{text-align:center;margin-left:auto;margin-right:auto}
 .brief-showcase .section-sub{text-align:center;margin-left:auto;margin-right:auto;max-width:560px;margin-top:1rem}
@@ -423,7 +423,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 }
 
 /* ── SECTIONS ── */
-section{padding:6rem 0}
+section{padding:5rem 0}
 .inner{max-width:var(--max);margin:0 auto;padding:0 3rem}
 
 .eyebrow{
@@ -438,34 +438,41 @@ section{padding:6rem 0}
 .section-h2 em{font-style:italic;color:var(--forest)}
 .section-sub{font-size:.95rem;color:var(--muted);line-height:1.75;max-width:520px}
 
-/* ── METRICS SECTION ── */
-.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:3rem}
-.metric-cell{
-  background:var(--white);padding:1.6rem 1.4rem;
-  border-top:2px solid transparent;
-  opacity:0;transition:opacity .4s
-}
-.metric-cell.visible{opacity:1}
-.metric-cell[data-cat="return"]{border-top-color:var(--forest)}
-.metric-cell[data-cat="risk"]{border-top-color:var(--amber)}
-.metric-cell[data-cat="market"]{border-top-color:var(--sage)}
-.metric-cell-num{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-bottom:.6rem}
-.metric-cell-cat{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.6rem}
-.metric-cell[data-cat="return"] .metric-cell-cat{color:var(--forest)}
-.metric-cell[data-cat="risk"] .metric-cell-cat{color:var(--amber)}
-.metric-cell[data-cat="market"] .metric-cell-cat{color:var(--forest-3)}
-.metric-cell-name{font-size:.92rem;font-weight:500;color:var(--ink);margin-bottom:.35rem}
-.metric-cell-desc{font-size:.78rem;color:var(--muted);line-height:1.65;margin-bottom:.65rem}
-.metric-cell-target{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:.67rem;font-weight:600;color:var(--forest);
-  background:var(--sage-dim);border:1px solid var(--sage-border);
-  padding:2px 8px;border-radius:4px
-}
-.metric-cell-target svg{width:10px;height:10px;stroke:var(--forest);fill:none;stroke-width:2.5}
+/* ── METRICS SECTION — verdict on top, evidence chips below ── */
+.metrics-engine{display:flex;flex-direction:column;align-items:center;gap:2.5rem;margin-top:2.5rem}
+.metrics-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;width:100%;max-width:780px}
+.metric-chip{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:help;position:relative}
+.metric-chip::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--ink);color:rgba(255,255,255,.96);padding:.55rem .8rem;border-radius:8px;font-family:var(--sans);font-size:.74rem;font-weight:400;line-height:1.4;width:max-content;max-width:220px;text-align:center;z-index:10;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,visibility .15s ease;box-shadow:0 6px 18px rgba(28,31,28,.18);white-space:normal}
+.metric-chip::before{content:'';position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:var(--ink);z-index:11;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,visibility .15s ease}
+.metric-chip:hover::after,
+.metric-chip:hover::before,
+.metric-chip:focus::after,
+.metric-chip:focus::before,
+.metric-chip.tip-on::after,
+.metric-chip.tip-on::before{opacity:1;visibility:visible}
+.metric-chip-name{font-family:var(--sans);font-size:.84rem;font-weight:500;color:var(--ink);line-height:1.25;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric-chip-val{font-family:var(--mono);font-size:.82rem;color:var(--ink);font-weight:500;flex-shrink:0}
+.metric-chip-check{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center}
+.metric-chip-check svg{width:8px;height:8px;stroke:var(--forest);fill:none;stroke-width:2.5}
+
+.metrics-verdict{background:#fff;border:1px solid var(--border);border-radius:18px;padding:2.25rem 2rem 1.85rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;box-shadow:0 12px 36px rgba(28,74,53,.06);max-width:340px;width:100%}
+.metrics-verdict-mark{width:84px;height:84px;display:block;overflow:visible}
+.metrics-verdict-mark .mk-roof{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.metrics-verdict-mark .mk-floor{fill:var(--cream-3);transition:fill .8s ease-out,opacity .8s ease-out}
+.metrics-verdict.visible .mk-floor-1{fill:var(--forest);opacity:.45;transition-delay:.4s}
+.metrics-verdict.visible .mk-floor-2{fill:var(--forest);opacity:.7;transition-delay:.55s}
+.metrics-verdict.visible .mk-floor-3{fill:var(--forest);opacity:1;transition-delay:.7s}
+.metrics-verdict-tier{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);line-height:1;letter-spacing:-.01em;margin-top:.3rem}
+.metrics-verdict-score{font-family:var(--mono);font-size:.82rem;color:var(--muted);letter-spacing:.02em}
+.metrics-verdict-addr{font-size:.66rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:.3rem}
+
+.metrics-caption{text-align:center;font-size:.95rem;color:var(--muted);margin:2.5rem auto 0;max-width:560px;line-height:1.6}
+
+@media(max-width:860px){.metrics-chips{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.metrics-chips{grid-template-columns:1fr}}
 
 /* ── HOW WE COMPARE — honest competitive positioning ─────────────────── */
-.compare-section{background:var(--cream);padding:6rem 0}
+.compare-section{background:var(--cream);padding:5rem 0}
 .compare-section .inner{max-width:1080px}
 .compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3rem}
 .compare-card{
@@ -543,7 +550,7 @@ section{padding:6rem 0}
 /* ── CTA SECTION ── */
 .cta-section{
   background:var(--forest);
-  text-align:center;padding:7rem 0
+  text-align:center;padding:5.5rem 0
 }
 .cta-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.65rem}
 .cta-h2{
@@ -614,7 +621,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   .hero-right{padding:0 2rem 4rem;justify-content:flex-start}
   .product-card{max-width:100%}
   .floating-alert{right:2rem;bottom:1.5rem}
-  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .metrics-verdict{padding:2rem 1.5rem 1.75rem}
   .pricing-grid{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr 1fr}
   .nav-links{display:none}
@@ -624,7 +631,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 @media(max-width:560px){
   .hero-left{padding:4.5rem 1.25rem 2rem}
   .hero-right{padding:0 1.25rem 3rem}
-  .metrics-grid{grid-template-columns:1fr}
+  .metrics-chips{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr}
   section{padding:4rem 0}
 }
@@ -1275,7 +1282,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <span class="bm-sep">·</span>
         <span class="bm-live">Live · 2h ago</span>
       </div>
-      <h3 class="bm-greeting">Good morning, Ali.</h3>
       <p class="bm-body">I'm watching <b>4 Strong Buys</b> across Lynn and Worcester right now. The standout's <b>58 Laighton St</b> in Lynn — <b>11.4% cash-on-cash</b>, <b>$2,180/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
       <div class="bm-picks">
         <div class="bm-pick">
@@ -1303,62 +1309,70 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   </div>
 </section>
 
-<!-- METRICS -->
+<!-- METRICS — verdict-first scoring engine, tied to 58 Laighton from the brief above -->
 <section id="metrics" style="background:var(--cream)">
   <div class="inner">
-    <div class="eyebrow fade-up">The Scoring Engine</div>
-    <h2 class="section-h2 fade-up">8 metrics. One score.<br><em>Complete clarity.</em></h2>
-    <p class="section-sub fade-up">Every metric a seasoned investor looks at — calculated, weighted, and combined into a single score so you spend 30 seconds on a deal instead of 3 hours.</p>
-    <div class="metrics-grid">
-      <div class="metric-cell" data-cat="return">
-        <div class="metric-cell-num">01 · <span class="metric-cell-cat">Return</span></div>
-        <div class="metric-cell-name">Cash-on-Cash Return</div>
-        <div class="metric-cell-desc">Annual pre-tax cash flow ÷ total cash invested. The number that tells you how hard your money is working.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 8%</div>
+    <div class="eyebrow fade-up" style="text-align:center">The Scoring Engine</div>
+    <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Why 58 Laighton<br><em>scored a Strong Buy.</em></h2>
+
+    <div class="metrics-engine">
+      <div class="metrics-verdict fade-up" style="transition-delay:.1s">
+        <svg class="metrics-verdict-mark" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="metrics-verdict-tier">Strong Buy</div>
+        <div class="metrics-verdict-score">87 / 100</div>
+        <div class="metrics-verdict-addr">58 Laighton St · Lynn</div>
       </div>
-      <div class="metric-cell" data-cat="return">
-        <div class="metric-cell-num">02 · <span class="metric-cell-cat">Return</span></div>
-        <div class="metric-cell-name">Cap Rate</div>
-        <div class="metric-cell-desc">NOI ÷ purchase price. Measures yield independent of financing — essential for comparing across markets.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 6.5%</div>
-      </div>
-      <div class="metric-cell" data-cat="risk">
-        <div class="metric-cell-num">03 · <span class="metric-cell-cat">Risk</span></div>
-        <div class="metric-cell-name">DSCR</div>
-        <div class="metric-cell-desc">Debt Service Coverage Ratio. NOI ÷ annual debt payments. Lenders require ≥ 1.25 — we surface this before you waste time on financing.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≥ 1.25</div>
-      </div>
-      <div class="metric-cell" data-cat="market">
-        <div class="metric-cell-num">04 · <span class="metric-cell-cat">Market</span></div>
-        <div class="metric-cell-name">Gross Rent Multiplier</div>
-        <div class="metric-cell-desc">Purchase price ÷ annual gross rent. A quick check for overpaying. A GRM above 12× usually doesn't pencil out.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Target ≤ 10×</div>
-      </div>
-      <div class="metric-cell" data-cat="market">
-        <div class="metric-cell-num">05 · <span class="metric-cell-cat">Market</span></div>
-        <div class="metric-cell-name">Price per Unit</div>
-        <div class="metric-cell-desc">Total acquisition cost ÷ number of units. Calibrated to each market's actual comps — not national averages that miss the local reality.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Market-calibrated</div>
-      </div>
-      <div class="metric-cell" data-cat="return">
-        <div class="metric-cell-num">06 · <span class="metric-cell-cat">Return</span></div>
-        <div class="metric-cell-name">Net Operating Income</div>
-        <div class="metric-cell-desc">Effective gross income minus all operating expenses. The foundation of every professional valuation — we show you the real number, not an optimistic proforma.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Higher is better</div>
-      </div>
-      <div class="metric-cell" data-cat="risk">
-        <div class="metric-cell-num">07 · <span class="metric-cell-cat">Risk</span></div>
-        <div class="metric-cell-name">CapEx Reserve Score</div>
-        <div class="metric-cell-desc">Based on year built, roofing cycles, HVAC age, and expected major repairs over a 10-year hold. Old buildings aren't automatically bad — they just need to pencil with reserves.</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>Age-adjusted</div>
-      </div>
-      <div class="metric-cell" data-cat="market">
-        <div class="metric-cell-num">08 · <span class="metric-cell-cat">Market</span></div>
-        <div class="metric-cell-name">Neighborhood Grade</div>
-        <div class="metric-cell-desc">Walk score, school quality, crime index, and rent growth trajectory by ZIP. Tells you the story behind the numbers — is this location getting better or worse?</div>
-        <div class="metric-cell-target"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg>A–D rating</div>
+
+      <div class="metrics-chips">
+        <div class="metric-chip fade-up" style="transition-delay:.55s" data-tip="Annual pre-tax cash flow ÷ cash invested" aria-label="Cash-on-Cash: Annual pre-tax cash flow ÷ cash invested">
+          <div class="metric-chip-name">Cash-on-Cash</div>
+          <div class="metric-chip-val">11.4%</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:.63s" data-tip="NOI ÷ purchase price" aria-label="Cap Rate: NOI ÷ purchase price">
+          <div class="metric-chip-name">Cap Rate</div>
+          <div class="metric-chip-val">8.3%</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:.71s" data-tip="NOI ÷ annual debt service. Lenders typically require ≥ 1.25" aria-label="DSCR: NOI ÷ annual debt service. Lenders typically require ≥ 1.25">
+          <div class="metric-chip-name">DSCR</div>
+          <div class="metric-chip-val">1.47</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:.79s" data-tip="Price ÷ annual gross rent. Quick overpay check" aria-label="GRM: Price ÷ annual gross rent">
+          <div class="metric-chip-name">GRM</div>
+          <div class="metric-chip-val">8.2×</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:.87s" data-tip="Total acquisition cost ÷ number of units, market-calibrated" aria-label="Price per Unit">
+          <div class="metric-chip-name">Price/Unit</div>
+          <div class="metric-chip-val">$161K</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:.95s" data-tip="Effective gross income minus operating expenses" aria-label="NOI: Effective gross income minus operating expenses">
+          <div class="metric-chip-name">NOI</div>
+          <div class="metric-chip-val">$24.5K</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:1.03s" data-tip="Capital reserve estimate based on year built, roof, HVAC, 10-yr hold" aria-label="CapEx Reserve">
+          <div class="metric-chip-name">CapEx</div>
+          <div class="metric-chip-val">Age-adj</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
+        <div class="metric-chip fade-up" style="transition-delay:1.11s" data-tip="Walk score, schools, crime, rent-growth trajectory by ZIP" aria-label="Neighborhood Grade">
+          <div class="metric-chip-name">Neighborhood</div>
+          <div class="metric-chip-val">A−</div>
+          <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
+        </div>
       </div>
     </div>
+
+    <p class="metrics-caption fade-up">Every metric a serious investor looks at — calculated, weighted, and combined into one verdict.</p>
   </div>
 </section>
 
@@ -1563,26 +1577,31 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.12 });
 
-document.querySelectorAll('.fade-up, .metric-cell, .plan').forEach((el, i) => {
-  el.style.transitionDelay = (i % 4) * 0.08 + 's';
+document.querySelectorAll('.fade-up, .plan').forEach((el, i) => {
+  // Honor inline transition-delay set via style attribute — used by the
+  // metrics-chips stagger and the brief-mockup chat reveal. Only apply
+  // the modulo cascade to elements that don't already have a delay.
+  if (!el.style.transitionDelay) {
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+  }
   io.observe(el);
 });
 
-// Score visual animation
-const svIo = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('visible');
-    // Animate score ring
-    setTimeout(() => {
-      const fill = document.getElementById('svFill');
-      if (fill) fill.classList.add('animate');
-      // Animate metric bars
-      document.querySelectorAll('.sv-metric-fill').forEach(b => b.classList.add('animate'));
-    }, 200);
-    svIo.unobserve(e.target);
+// Metric chip tooltips: tap-to-toggle for touch devices, hover handled in CSS
+document.querySelectorAll('.metric-chip').forEach(chip => {
+  chip.addEventListener('click', e => {
+    const wasOn = chip.classList.contains('tip-on');
+    document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
+    if (!wasOn) chip.classList.add('tip-on');
+    e.stopPropagation();
   });
-}, { threshold: 0.3 });
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.metric-chip')) {
+    document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
+  }
+});
+
 let lpAnnual=false;
 function lpToggleBilling(){
   lpAnnual=!lpAnnual;
