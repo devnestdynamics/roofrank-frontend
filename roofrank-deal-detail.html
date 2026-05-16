@@ -249,6 +249,72 @@ nav.top{
 }
 .market-signal b{color:var(--forest); font-weight:600}
 
+/* ── RENT ESTIMATE CARD (per-unit override) ──────────────────────────── */
+#rentEstimateSection{padding:.5rem 0 1rem}
+.rent-card{
+  background:#fff; border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:1.1rem 1.1rem 1rem; box-shadow:0 1px 2px rgba(28,31,28,.03);
+}
+.rent-head{margin-bottom:.85rem}
+.rent-eyebrow{font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--forest); margin-bottom:.4rem}
+.rent-headline{font-family:var(--mono); font-size:1.25rem; font-weight:500; color:var(--ink); line-height:1.15}
+.rent-headline em{font-style:normal; color:var(--forest)}
+.rent-sub{font-size:.78rem; color:var(--muted); margin-top:.3rem; line-height:1.55}
+.rent-toggle{
+  background:none; border:1px dashed var(--border-2); color:var(--muted);
+  font-family:var(--sans); font-size:.82rem; padding:.55rem .85rem; border-radius:8px;
+  cursor:pointer; display:inline-flex; align-items:center; gap:.45rem;
+  transition:all .15s;
+}
+.rent-toggle:hover{color:var(--forest); border-color:var(--forest); background:#fdfcfa}
+.rent-toggle.open svg{transform:rotate(180deg)}
+.rent-toggle svg{width:11px; height:11px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s}
+.rent-form{margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); animation:rentFormReveal .25s ease}
+@keyframes rentFormReveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.rent-form-header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:.65rem}
+.rent-form-label{font-size:.66rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.rent-form-hint{font-size:.66rem; color:var(--faint); font-style:italic}
+.rent-unit{
+  display:grid; grid-template-columns:64px 1fr 1fr; gap:.55rem;
+  align-items:center; margin-bottom:.5rem;
+}
+.rent-unit-label{font-size:.85rem; color:var(--ink); font-weight:500; font-family:var(--mono)}
+.rent-unit-bd{
+  padding:.5rem .6rem; border:1px solid var(--border-2); border-radius:7px;
+  font-family:var(--sans); font-size:.82rem; color:var(--ink); background:#fff; outline:none;
+}
+.rent-unit-bd:focus{border-color:var(--forest)}
+.rent-unit-rent{
+  padding:.5rem .65rem; border:1px solid var(--border-2); border-radius:7px;
+  font-family:var(--mono); font-size:.92rem; color:var(--ink); background:#fff; outline:none;
+  -moz-appearance:textfield;
+}
+.rent-unit-rent::-webkit-outer-spin-button,.rent-unit-rent::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rent-unit-rent:focus{border-color:var(--forest)}
+.rent-form-totals{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:.7rem 0 .25rem; margin-top:.4rem; border-top:1px solid var(--border);
+  font-size:.85rem; color:var(--muted);
+}
+.rent-form-total-val{font-family:var(--mono); font-size:1rem; font-weight:500; color:var(--forest)}
+.rent-form-actions{display:flex; gap:.55rem; margin-top:1rem}
+.rent-apply{
+  flex:1; background:var(--forest); color:#fff; border:none; padding:.65rem;
+  border-radius:8px; font-family:var(--sans); font-size:.88rem; font-weight:500;
+  cursor:pointer; transition:background .15s;
+}
+.rent-apply:hover{background:var(--forest-2)}
+.rent-apply:disabled{opacity:.6; cursor:not-allowed}
+.rent-revert{
+  background:none; border:1px solid var(--border); color:var(--muted);
+  padding:.65rem 1rem; border-radius:8px; font-family:var(--sans); font-size:.82rem;
+  cursor:pointer; transition:all .15s;
+}
+.rent-revert:hover{color:var(--rose); border-color:var(--rose)}
+.rent-form-status{font-size:.78rem; color:var(--muted); margin-top:.75rem; min-height:1.2em; line-height:1.55}
+.rent-form-status.ok{color:var(--forest)}
+.rent-form-status.err{color:var(--rose)}
+
 /* ── ANALYST CARD ──────────────────────────────────────────────────────── */
 .analyst-card{
   background:linear-gradient(180deg, #1d2420 0%, #14201a 100%);
@@ -697,6 +763,37 @@ nav.top{
     </div>
   </section>
 
+  <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
+  <section id="rentEstimateSection" style="display:none">
+    <div class="rent-card">
+      <div class="rent-head">
+        <div class="rent-eyebrow">Rent estimate</div>
+        <div class="rent-headline" id="rentHeadline">—</div>
+        <div class="rent-sub" id="rentSub">—</div>
+      </div>
+      <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
+        Use your own numbers
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="rent-form" id="rentForm" style="display:none">
+        <div class="rent-form-header">
+          <span class="rent-form-label">Per-unit rent</span>
+          <span class="rent-form-hint">your numbers</span>
+        </div>
+        <div id="rentUnitInputs"></div>
+        <div class="rent-form-totals">
+          <span>Total gross</span>
+          <span id="rentFormTotal" class="rent-form-total-val">—</span>
+        </div>
+        <div class="rent-form-actions">
+          <button class="rent-apply" type="button" onclick="applyRentOverride()">Apply →</button>
+          <button class="rent-revert" type="button" onclick="revertRentOverride()" id="rentRevertBtn" style="display:none">Revert to HUD</button>
+        </div>
+        <div class="rent-form-status" id="rentFormStatus"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── ANALYST CARD (verdict + metrics + chat — single AI identity) ── -->
   <section id="analystSection">
     <div class="analyst-card">
@@ -968,6 +1065,174 @@ const _forcedFree = new URLSearchParams(window.location.search).get('free') === 
 let isPro = false;
 function applyProUnlocks(){
   document.querySelectorAll('.pro-locked').forEach(el => el.classList.toggle('pro-unlocked', isPro));
+}
+
+// ── Per-unit rent override (backlog #79) ─────────────────────────────────
+// Reads the HUD-derived rent estimate from the loaded deal, lets the user
+// override per unit, and re-scores via POST /api/feed/:id/rent-override.
+function renderRentEstimate(d){
+  const section = document.getElementById('rentEstimateSection');
+  const rd = d.reportData || {};
+  const re = rd.rentEstimate || {};
+  if(!section || !re || !d.units){ if(section) section.style.display = 'none'; return; }
+
+  // Headline shows the current effective rent — either the user's override
+  // (if applied) or the HUD-derived default.
+  const ov = d.userRentOverride;
+  const usingOverride = !!(ov && ov.adjustedScoring);
+  const totalMonthly = usingOverride ? ov.adjustedScoring.totalMonthly : re.totalMonthly;
+  const perUnit      = usingOverride ? ov.adjustedScoring.monthlyRentPerUnit : re.perUnitMonthly;
+
+  const headEl = document.getElementById('rentHeadline');
+  const subEl  = document.getElementById('rentSub');
+  const revertBtn = document.getElementById('rentRevertBtn');
+  const toggleBtn = document.getElementById('rentToggleBtn');
+
+  headEl.innerHTML = usingOverride
+    ? `$${totalMonthly.toLocaleString()}/mo gross · <em>$${perUnit.toLocaleString()}/unit your numbers</em>`
+    : `$${(totalMonthly||0).toLocaleString()}/mo gross · $${(perUnit||0).toLocaleString()}/unit avg`;
+
+  const mix = re.unitMix || {};
+  const mixDesc = mix.unitsAtBasePlusOne > 0
+    ? `${mix.unitsAtBase}× ${mix.baseBd}BR + ${mix.unitsAtBasePlusOne}× ${Math.min(4,(mix.baseBd||2)+1)}BR`
+    : `${d.units}× ${mix.baseBd||2}BR`;
+  subEl.textContent = usingOverride
+    ? `Score recomputed with your numbers · revert below to use HUD estimate`
+    : `HUD FY${(re.version||'').includes('fy26')?'26':'25'} ${d.city||''} · ${mixDesc}`;
+
+  revertBtn.style.display = usingOverride ? '' : 'none';
+  toggleBtn.querySelector('span,br') || (toggleBtn.firstChild.textContent = usingOverride
+    ? 'Edit your numbers'
+    : 'Use your own numbers');
+  // Easier: just rewrite the toggle label
+  toggleBtn.childNodes[0].nodeValue = usingOverride ? 'Edit your numbers ' : 'Use your own numbers ';
+
+  // Build the form inputs from either the override (if set) or HUD defaults
+  const inputs = document.getElementById('rentUnitInputs');
+  inputs.innerHTML = '';
+  const defaultBdBase = mix.baseBd || 2;
+  const defaultBdNext = Math.min(4, defaultBdBase + 1);
+  const baseRent = mix.baseTierFmr || 1800;
+  const nextRent = mix.nextTierFmr || baseRent;
+
+  for(let i = 0; i < d.units; i++){
+    let bd, rent;
+    if(usingOverride && ov.unitRents[i]){
+      bd   = ov.unitRents[i].bd;
+      rent = ov.unitRents[i].rent;
+    } else {
+      // First N units at base tier, last (units - N) at base+1 tier
+      const atBase = i < (mix.unitsAtBase || d.units);
+      bd   = atBase ? defaultBdBase : defaultBdNext;
+      rent = atBase ? baseRent : nextRent;
+    }
+    inputs.insertAdjacentHTML('beforeend', `
+      <div class="rent-unit">
+        <div class="rent-unit-label">Unit ${i+1}</div>
+        <select class="rent-unit-bd" data-idx="${i}" onchange="recalcRentTotal()">
+          ${[1,2,3,4,5].map(n => `<option value="${n}"${n===bd?' selected':''}>${n}BR</option>`).join('')}
+        </select>
+        <input type="number" class="rent-unit-rent" data-idx="${i}" value="${rent}" min="0" max="15000" step="50" oninput="recalcRentTotal()" placeholder="$/mo">
+      </div>
+    `);
+  }
+  recalcRentTotal();
+
+  section.style.display = '';
+}
+
+function recalcRentTotal(){
+  const inputs = document.querySelectorAll('.rent-unit-rent');
+  let total = 0;
+  inputs.forEach(i => { total += parseInt(i.value, 10) || 0; });
+  const el = document.getElementById('rentFormTotal');
+  if(el) el.textContent = '$' + total.toLocaleString() + '/mo';
+}
+
+function toggleRentOverride(){
+  const form = document.getElementById('rentForm');
+  const btn = document.getElementById('rentToggleBtn');
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : '';
+  btn.classList.toggle('open', !isOpen);
+}
+
+async function applyRentOverride(){
+  if(!_deal || !_deal.id) return;
+  const status = document.getElementById('rentFormStatus');
+  const btn = document.querySelector('.rent-apply');
+  status.className = 'rent-form-status';
+  status.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Applying…';
+  try {
+    const inputs = document.querySelectorAll('.rent-unit-rent');
+    const bdSelects = document.querySelectorAll('.rent-unit-bd');
+    const unitRents = [];
+    inputs.forEach((inp, i) => {
+      unitRents.push({
+        bd:   parseInt(bdSelects[i].value, 10) || 2,
+        rent: parseInt(inp.value, 10) || 0,
+      });
+    });
+
+    const res = await apiFetch(`/feed/${_deal.id}/rent-override`, {
+      method: 'POST',
+      body: JSON.stringify({ unitRents }),
+    });
+
+    // Update the in-memory deal with the new scoring + re-render
+    _deal.userRentOverride = { unitRents, adjustedScoring: res.adjustedScoring };
+    // Splice the adjusted scoring into the deal so the rest of the page reflects it
+    if(res.adjustedScoring){
+      _deal.rankScore = res.adjustedScoring.score;
+      _deal.reportData = {
+        ..._deal.reportData,
+        score:      res.adjustedScoring.score,
+        signal:     res.adjustedScoring.signal,
+        summary:    res.adjustedScoring.summary,
+        metrics:    res.adjustedScoring.metrics,
+        financials: res.adjustedScoring.financials,
+      };
+      // sessionStorage cache so back/forward respects override
+      try {
+        const cacheKey = `rrdeal_${_deal.id}`;
+        sessionStorage.setItem(cacheKey, JSON.stringify(_deal));
+      } catch {}
+    }
+    renderDeal(_deal);
+    status.className = 'rent-form-status ok';
+    status.textContent = `Applied · score is now ${res.adjustedScoring?.score ?? '?'}`;
+  } catch (err) {
+    console.error('apply rent override failed', err);
+    status.className = 'rent-form-status err';
+    status.textContent = err?.message || 'Could not apply override — try again';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Apply →';
+  }
+}
+
+async function revertRentOverride(){
+  if(!_deal || !_deal.id) return;
+  const status = document.getElementById('rentFormStatus');
+  status.className = 'rent-form-status';
+  status.textContent = 'Reverting…';
+  try {
+    await apiFetch(`/feed/${_deal.id}/rent-override`, { method: 'DELETE' });
+    // Reload the deal — server will return without userRentOverride
+    const fresh = await FeedAPI.get(_deal.id);
+    if(fresh){
+      try { sessionStorage.removeItem(`rrdeal_${_deal.id}`); } catch {}
+      _deal = fresh;
+      renderDeal(_deal);
+    }
+    status.className = 'rent-form-status ok';
+    status.textContent = 'Reverted to HUD estimate';
+  } catch (err) {
+    status.className = 'rent-form-status err';
+    status.textContent = 'Could not revert — try again';
+  }
 }
 const SCEN_DEFAULT = { dpPct: 0.25, rate: 0.065 };
 let scenario = { ...SCEN_DEFAULT };
@@ -1255,6 +1520,8 @@ function setupScenarioControls(){
 function renderDeal(d){
   _deal = d;
   window._dealData = d;
+  // Per-unit rent override section (idempotent — safe to call on every renderDeal)
+  try { renderRentEstimate(d); } catch (e) { console.warn('rent estimate render failed', e); }
   const fin=(d.reportData||{}).financials||{};
   const sc=(d.reportData||{}).scores||{};
   const score=d.rankScore||0;
