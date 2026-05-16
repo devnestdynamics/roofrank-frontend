@@ -320,7 +320,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 .bm-body{font-family:var(--serif);font-size:1.05rem;font-weight:400;line-height:1.65;color:rgba(255,255,255,.92);font-style:italic;margin-bottom:1.5rem;max-width:64ch}
 .bm-body b{font-weight:600;font-style:normal;color:#fff}
 .bm-body::before{content:'"';font-size:2.2rem;color:var(--sage);line-height:0;margin-right:.15rem;vertical-align:-.35em;font-style:normal;font-family:var(--serif)}
-.bm-picks{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.5rem}
+.bm-picks{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-bottom:1.5rem}
 .bm-pick{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.95rem 1rem}
 .bm-pick-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
 .bm-pick-score{width:30px;height:30px;border-radius:50%;background:var(--sage);color:#1c1f1c;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:600;flex-shrink:0}
@@ -411,6 +411,16 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   color:#fff;line-height:1;margin-bottom:.45rem
 }
 .stat-cell-label{font-size:.8rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.1em}
+
+/* ── HOW IT WORKS — 3 product-loop steps ── */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;margin-top:3rem}
+.how-step{display:flex;flex-direction:column;align-items:flex-start;gap:.85rem}
+.how-num{width:44px;height:44px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.15rem;font-weight:500;letter-spacing:-.01em;flex-shrink:0}
+.how-h3{font-family:var(--serif);font-size:1.2rem;font-weight:500;color:var(--ink);line-height:1.25;margin:.4rem 0 0;letter-spacing:-.01em}
+.how-body{font-size:.95rem;line-height:1.6;color:var(--muted);margin:0}
+@media(max-width:768px){
+  .how-grid{grid-template-columns:1fr;gap:1.85rem;margin-top:2.25rem}
+}
 
 /* ── SECTIONS ── */
 section{padding:6rem 0}
@@ -1103,7 +1113,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
     <div class="hero-actions">
       <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">See deals in my market →</button>
-      <button class="btn-hero-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+      <button class="btn-hero-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16" fill="currentColor" stroke="none"/></svg>
         See how it works
       </button>
@@ -1223,6 +1233,32 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   </div>
 </div>
 
+<!-- HOW IT WORKS -->
+<section id="how" style="background:#fff">
+  <div class="inner">
+    <div class="eyebrow fade-up" style="text-align:center">How it works</div>
+    <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Set up once.<br><em>Decisions every morning.</em></h2>
+
+    <div class="how-grid">
+      <div class="how-step fade-up" style="transition-delay:.1s">
+        <div class="how-num">1</div>
+        <h3 class="how-h3">Tell us your markets</h3>
+        <p class="how-body">Pick the cities you'd actually buy in. We watch every active 2–6 unit listing in them.</p>
+      </div>
+      <div class="how-step fade-up" style="transition-delay:.25s">
+        <div class="how-num">2</div>
+        <h3 class="how-h3">We do the math, every night</h3>
+        <p class="how-body">Live rates, real rents, actual property tax — fed into 8 financial metrics, scored before you wake up.</p>
+      </div>
+      <div class="how-step fade-up" style="transition-delay:.4s">
+        <div class="how-num">3</div>
+        <h3 class="how-h3">You see what cashflows</h3>
+        <p class="how-body">Open the dashboard for a 30-second read on every deal. Push alert when one's worth your weekend.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- MORNING BRIEF SHOWCASE — now also the page's primary "Features" anchor since the standalone AI features section was dropped -->
 <section id="features" class="brief-showcase">
   <div class="inner">
@@ -1253,12 +1289,6 @@ footer{background:var(--ink);padding:4rem 0 2rem}
           <div class="bm-pick-addr">12 Howard St</div>
           <div class="bm-pick-meta">Worcester, MA · 6 units · 64d</div>
           <div class="bm-pick-cf">+$1,940/mo</div>
-        </div>
-        <div class="bm-pick">
-          <div class="bm-pick-head"><div class="bm-pick-score">81</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">273 Euclid Ave</div>
-          <div class="bm-pick-meta">Lynn, MA · 3 units · 8d</div>
-          <div class="bm-pick-cf">+$1,275/mo</div>
         </div>
       </div>
 
