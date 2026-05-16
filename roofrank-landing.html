@@ -328,12 +328,10 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
 .bm-pick-addr{font-family:var(--serif);font-size:.92rem;font-weight:500;color:#fff;margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bm-pick-meta{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bm-pick-cf{font-family:var(--mono);font-size:.88rem;font-weight:500;color:var(--sage)}
-.bm-followups{padding-top:1.15rem;border-top:1px solid rgba(255,255,255,.08)}
-.bm-followups-prefix{font-style:italic;font-family:var(--serif);color:rgba(255,255,255,.7);font-size:.92rem;margin-bottom:.65rem}
-.bm-followup{display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;background:none;border:none;padding:.55rem .65rem;color:rgba(255,255,255,.9);font-family:var(--sans);font-size:.92rem;line-height:1.3;border-radius:8px}
-.bm-followup-arrow{color:var(--sage);width:14px;text-align:center;opacity:.7;flex-shrink:0}
-.bm-followup-label{flex:1}
-.bm-followup-count{font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.45);background:rgba(255,255,255,.06);padding:2px 7px;border-radius:6px;flex-shrink:0}
+.bm-chat{margin-top:1.4rem;padding-top:1.15rem;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:.6rem}
+.bm-chat-prefix{font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.25rem;align-self:flex-end}
+.bm-chat-q{background:rgba(122,170,143,.16);border:1px solid rgba(122,170,143,.35);padding:.7rem 1rem;border-radius:14px 14px 3px 14px;align-self:flex-end;max-width:78%;font-family:var(--sans);font-size:.88rem;color:rgba(255,255,255,.95);line-height:1.4}
+.bm-chat-a{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);padding:.85rem 1.05rem;border-radius:14px 14px 14px 3px;align-self:flex-start;max-width:88%;font-family:var(--serif);font-size:.92rem;font-style:italic;color:rgba(255,255,255,.9);line-height:1.55}
 .brief-showcase-caption{
   text-align:center;font-size:.85rem;color:var(--muted);
   margin-top:2rem;font-style:italic;font-family:var(--serif);
@@ -1098,16 +1096,16 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="hero-photo-overlay"></div>
   <div class="hero-photo-bottom"></div>
   <div class="hero-left">
-    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · AI Deal Analysis · Daily Briefing</div>
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · 2–6 units · Live data nightly</div>
     <h1 class="hero-h1">
-      An AI analyst for every<br>multifamily deal.
+      Know if a multifamily cashflows —<br>in 30 seconds.
     </h1>
-    <p class="hero-sub">RoofRank reads every active 2–6 unit listing in your markets, scores it on 8 financial metrics, and writes you a morning brief on what's worth pursuing. Skip the Excel models. Move on the right deals first.</p>
+    <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
     <div class="hero-actions">
-      <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
+      <button class="btn-hero-primary" onclick="location.href='roofrank-login.html?mode=signup'">See deals in my market →</button>
       <button class="btn-hero-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16" fill="currentColor" stroke="none"/></svg>
-        See the daily brief
+        See how it works
       </button>
     </div>
 
@@ -1228,9 +1226,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 <!-- MORNING BRIEF SHOWCASE — now also the page's primary "Features" anchor since the standalone AI features section was dropped -->
 <section id="features" class="brief-showcase">
   <div class="inner">
-    <div class="eyebrow fade-up" style="text-align:center">Wake up to this</div>
-    <h2 class="section-h2 fade-up">A daily brief.<br><em>Written by your analyst.</em></h2>
-    <p class="section-sub fade-up">Before you check your phone, your AI analyst has already read every active multifamily listing in your markets and written you a briefing. Here's what lands in your inbox.</p>
+    <div class="eyebrow fade-up" style="text-align:center">Your dashboard</div>
+    <h2 class="section-h2 fade-up">Open the app.<br><em>See what cashflows today.</em></h2>
+    <p class="section-sub fade-up">The first thing you see when you log in: a 1-paragraph read on your markets, the deals worth your time today, and an analyst on call for everything else.</p>
 
     <div class="brief-mockup fade-up">
       <div class="bm-eyebrow">
@@ -1242,36 +1240,36 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <span class="bm-live">Live · 2h ago</span>
       </div>
       <h3 class="bm-greeting">Good morning, Ali.</h3>
-      <p class="bm-body">I'm watching <b>4 Strong Buys</b> across Phoenix and Tampa right now. The standout's <b>1842 Maple Ave</b> in Phoenix — <b>9.2% cash-on-cash</b>, <b>$1,840/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
+      <p class="bm-body">I'm watching <b>4 Strong Buys</b> across Lynn and Worcester right now. The standout's <b>58 Laighton St</b> in Lynn — <b>11.4% cash-on-cash</b>, <b>$2,180/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
       <div class="bm-picks">
         <div class="bm-pick">
-          <div class="bm-pick-head"><div class="bm-pick-score">88</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">1842 Maple Ave</div>
-          <div class="bm-pick-meta">Phoenix, AZ · 4 units · 12d</div>
-          <div class="bm-pick-cf">+$1,840/mo</div>
+          <div class="bm-pick-head"><div class="bm-pick-score">87</div><div class="bm-pick-sig">Strong Buy</div></div>
+          <div class="bm-pick-addr">58 Laighton St</div>
+          <div class="bm-pick-meta">Lynn, MA · 4 units · 12d</div>
+          <div class="bm-pick-cf">+$2,180/mo</div>
         </div>
         <div class="bm-pick">
-          <div class="bm-pick-head"><div class="bm-pick-score">83</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">605 N 14th St</div>
-          <div class="bm-pick-meta">Tampa, FL · 6 units · 64d</div>
-          <div class="bm-pick-cf">+$2,310/mo</div>
+          <div class="bm-pick-head"><div class="bm-pick-score">82</div><div class="bm-pick-sig">Strong Buy</div></div>
+          <div class="bm-pick-addr">12 Howard St</div>
+          <div class="bm-pick-meta">Worcester, MA · 6 units · 64d</div>
+          <div class="bm-pick-cf">+$1,940/mo</div>
         </div>
         <div class="bm-pick">
           <div class="bm-pick-head"><div class="bm-pick-score">81</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">9 Beechwood Pl</div>
-          <div class="bm-pick-meta">Phoenix, AZ · 3 units · 8d</div>
+          <div class="bm-pick-addr">273 Euclid Ave</div>
+          <div class="bm-pick-meta">Lynn, MA · 3 units · 8d</div>
           <div class="bm-pick-cf">+$1,275/mo</div>
         </div>
       </div>
-      <div class="bm-followups">
-        <div class="bm-followups-prefix">Want me to show you…</div>
-        <button type="button" class="bm-followup"><span class="bm-followup-arrow">→</span><span class="bm-followup-label">the standouts</span><span class="bm-followup-count">4</span></button>
-        <button type="button" class="bm-followup"><span class="bm-followup-arrow">→</span><span class="bm-followup-label">the ones to move fast on</span><span class="bm-followup-count">2</span></button>
-        <button type="button" class="bm-followup"><span class="bm-followup-arrow">→</span><span class="bm-followup-label">where sellers are negotiating</span><span class="bm-followup-count">3</span></button>
+
+      <div class="bm-chat">
+        <div class="bm-chat-prefix fade-up">Ask the analyst</div>
+        <div class="bm-chat-q fade-up" style="transition-delay:.2s">Is $645K a fair price on 58 Laighton?</div>
+        <div class="bm-chat-a fade-up" style="transition-delay:1.1s">At today's rate it pencils to 11.4% CoC — solid for Lynn. Comparable 4-units have closed $590–680K in the last 90 days, so $645K is in range. My read: start at $610K, walk above $625K.</div>
       </div>
     </div>
 
-    <p class="brief-showcase-caption">A new briefing every morning · Real-time alerts when a Strong Buy hits your market · Yours with Pro.</p>
+    <p class="brief-showcase-caption">The dashboard everyone in the app sees, every day.</p>
   </div>
 </section>
 
@@ -1461,7 +1459,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <h2 class="cta-h2">Stop guessing.<br><em>Start knowing.</em></h2>
     <p class="cta-sub">You've read the page. There's a multifamily deal in your market right now worth pursuing — we'll tell you which one. Free to start.</p>
     <div class="cta-actions">
-      <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Rank My First Deal Free →</button>
+      <button class="btn-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">See deals in my market →</button>
       <button class="btn-cta-outline" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See All Plans →</button>
     </div>
     <p class="cta-fine">14-day free trial on Pro · No credit card required · Cancel anytime</p>
