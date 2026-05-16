@@ -67,11 +67,20 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
 .dc-rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:38px}
 .dc-rmark svg{width:36px;height:36px;display:block}
 .dc-rmark .rm-roof{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke:var(--ink)}
-.dc-rmark .rm-floor{fill:var(--cream-3)}
-.dc-rmark.sb .rm-floor-1,.dc-rmark.sb .rm-floor-2,.dc-rmark.sb .rm-floor-3{fill:var(--forest)}
-.dc-rmark.buy .rm-floor-1,.dc-rmark.buy .rm-floor-2{fill:var(--sage)}
-.dc-rmark.wat .rm-floor-1{fill:var(--amber)}
-.dc-rmark.pas .rm-floor-1{fill:#cfe0d7}
+.dc-rmark .rm-roof{stroke:var(--forest)}
+.dc-rmark .rm-bar{transition:fill .3s, opacity .3s}
+.dc-rmark.sb .rm-bar-1{fill:var(--forest);opacity:.45}
+.dc-rmark.sb .rm-bar-2{fill:var(--forest);opacity:.7}
+.dc-rmark.sb .rm-bar-3{fill:var(--forest);opacity:1}
+.dc-rmark.buy .rm-bar-1{fill:var(--sage);opacity:.4}
+.dc-rmark.buy .rm-bar-2{fill:var(--sage);opacity:.7}
+.dc-rmark.buy .rm-bar-3{fill:var(--forest);opacity:1}
+.dc-rmark.wat .rm-bar-1{fill:var(--cream-3);opacity:1}
+.dc-rmark.wat .rm-bar-2{fill:var(--amber);opacity:.55}
+.dc-rmark.wat .rm-bar-3{fill:var(--amber);opacity:.9}
+.dc-rmark.pas .rm-bar-1{fill:var(--cream-3);opacity:1}
+.dc-rmark.pas .rm-bar-2{fill:var(--cream-3);opacity:1}
+.dc-rmark.pas .rm-bar-3{fill:var(--faint);opacity:.6}
 .dc-rmark-num{font-family:var(--mono);font-size:.68rem;font-weight:500;line-height:1}
 .dc-rmark.sb .dc-rmark-num{color:var(--forest)}
 .dc-rmark.buy .dc-rmark-num{color:var(--forest-3)}
@@ -101,9 +110,11 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
 .opt1 .pick-row{display:flex;align-items:center;gap:.35rem;margin-bottom:.25rem}
 .opt1 .pick-mark{width:22px;height:22px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
 .opt1 .pick-mark svg{width:20px;height:20px}
-.opt1 .pick-mark .pm-roof{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke:#fff}
-.opt1 .pick-mark .pm-floor{fill:rgba(255,255,255,.18)}
-.opt1 .pick-mark.sb .pm-floor{fill:var(--sage)}
+.opt1 .pick-mark .pm-roof{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage)}
+.opt1 .pick-mark .pm-bar{transition:fill .3s,opacity .3s}
+.opt1 .pick-mark.sb .pm-bar-1{fill:var(--sage);opacity:.4}
+.opt1 .pick-mark.sb .pm-bar-2{fill:var(--sage);opacity:.7}
+.opt1 .pick-mark.sb .pm-bar-3{fill:var(--sage);opacity:1}
 .opt1 .pick-mark-num{font-family:var(--mono);font-size:.5rem;color:#fff;font-weight:500;line-height:1}
 .opt1 .pick-sig{font-size:.46rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage)}
 .opt1 .pick-addr{font-family:var(--serif);font-size:.66rem;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -209,7 +220,7 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
         <div class="picks">
           <div class="pick">
             <div class="pick-row">
-              <div class="pick-mark sb"><svg viewBox="0 0 40 40"><path class="pm-roof" d="M5 17 L20 7 L35 17"/><rect class="pm-floor" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="pm-floor" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="pm-floor" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><span class="pick-mark-num">87</span></div>
+              <div class="pick-mark sb"><svg viewBox="0 0 40 40"><path class="pm-roof" d="M5 17 L20 7 L35 17"/><rect class="pm-bar pm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="pm-bar pm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="pm-bar pm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><span class="pick-mark-num">87</span></div>
               <div class="pick-sig">Strong Buy</div>
             </div>
             <div class="pick-addr">58 Laighton St</div>
@@ -218,7 +229,7 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
           </div>
           <div class="pick">
             <div class="pick-row">
-              <div class="pick-mark sb"><svg viewBox="0 0 40 40"><path class="pm-roof" d="M5 17 L20 7 L35 17"/><rect class="pm-floor" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="pm-floor" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="pm-floor" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><span class="pick-mark-num">84</span></div>
+              <div class="pick-mark sb"><svg viewBox="0 0 40 40"><path class="pm-roof" d="M5 17 L20 7 L35 17"/><rect class="pm-bar pm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="pm-bar pm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="pm-bar pm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><span class="pick-mark-num">84</span></div>
               <div class="pick-sig">Strong Buy</div>
             </div>
             <div class="pick-addr">52 Hamilton Ave</div>
@@ -290,7 +301,7 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
       </div>
       <div class="feed">
         <div class="deal-card">
-          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><div class="dc-rmark-num">87</div></div>
+          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-bar rm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><div class="dc-rmark-num">87</div></div>
           <div class="dc-info">
             <div class="dc-addr">58 Laighton St</div>
             <div class="dc-meta">Lynn, MA · 2 units · 26d</div>
@@ -298,7 +309,7 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
           <div class="dc-cf">+$2,384/mo</div>
         </div>
         <div class="deal-card">
-          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><div class="dc-rmark-num">84</div></div>
+          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-bar rm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><div class="dc-rmark-num">84</div></div>
           <div class="dc-info">
             <div class="dc-addr">52 Hamilton Ave</div>
             <div class="dc-meta">Lynn, MA · 2 units · 2d</div>
@@ -354,17 +365,17 @@ h1{font-family:var(--serif);font-size:2.1rem;font-weight:500;letter-spacing:-.01
       </div>
       <div class="feed">
         <div class="deal-card">
-          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><div class="dc-rmark-num">87</div></div>
+          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-bar rm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><div class="dc-rmark-num">87</div></div>
           <div class="dc-info"><div class="dc-addr">58 Laighton St</div><div class="dc-meta">Lynn · 2u · 26d</div></div>
           <div class="dc-cf">+$2,384/mo</div>
         </div>
         <div class="deal-card">
-          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><div class="dc-rmark-num">84</div></div>
+          <div class="dc-rmark sb"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-bar rm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><div class="dc-rmark-num">84</div></div>
           <div class="dc-info"><div class="dc-addr">52 Hamilton Ave</div><div class="dc-meta">Lynn · 2u · 2d</div></div>
           <div class="dc-cf">+$2,207/mo</div>
         </div>
         <div class="deal-card">
-          <div class="dc-rmark buy"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/><rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/></svg><div class="dc-rmark-num">68</div></div>
+          <div class="dc-rmark buy"><svg viewBox="0 0 40 40"><path class="rm-roof" d="M5 17 L20 7 L35 17"/><rect class="rm-bar rm-bar-1" x="8.5" y="23" width="5" height="11" rx=".7"/><rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/><rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/></svg><div class="dc-rmark-num">68</div></div>
           <div class="dc-info"><div class="dc-addr">82 Linwood St</div><div class="dc-meta">Lynn · 3u · 18d</div></div>
           <div class="dc-cf">+$1,438/mo</div>
         </div>

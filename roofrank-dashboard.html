@@ -181,13 +181,20 @@ body{
   flex-shrink:0; width:32px;
 }
 .brief-pick-score svg{width:24px; height:24px; display:block}
-.brief-pick-score .bpr-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:#fff}
-.brief-pick-score .bpr-floor{fill:rgba(255,255,255,.18); transition:fill .3s}
-.brief-pick-score.sb  .bpr-floor-1,.brief-pick-score.sb  .bpr-floor-2,.brief-pick-score.sb  .bpr-floor-3{fill:var(--sage)}
-.brief-pick-score.buy .bpr-floor-1,.brief-pick-score.buy .bpr-floor-2{fill:var(--sage)}
-.brief-pick-score.buy .bpr-floor-3{fill:rgba(122,170,143,.35)}
-.brief-pick-score.wat .bpr-floor-1{fill:#d6a85b}
-.brief-pick-score.pas .bpr-floor-1{fill:rgba(255,255,255,.45)}
+.brief-pick-score .bpr-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:var(--sage)}
+.brief-pick-score .bpr-bar{transition:fill .3s, opacity .3s}
+.brief-pick-score.sb  .bpr-bar-1{fill:var(--sage); opacity:.4}
+.brief-pick-score.sb  .bpr-bar-2{fill:var(--sage); opacity:.7}
+.brief-pick-score.sb  .bpr-bar-3{fill:var(--sage); opacity:1}
+.brief-pick-score.buy .bpr-bar-1{fill:var(--sage); opacity:.35}
+.brief-pick-score.buy .bpr-bar-2{fill:var(--sage); opacity:.6}
+.brief-pick-score.buy .bpr-bar-3{fill:var(--sage); opacity:.9}
+.brief-pick-score.wat .bpr-bar-1{fill:rgba(255,255,255,.18); opacity:1}
+.brief-pick-score.wat .bpr-bar-2{fill:#d6a85b; opacity:.55}
+.brief-pick-score.wat .bpr-bar-3{fill:#d6a85b; opacity:.9}
+.brief-pick-score.pas .bpr-bar-1{fill:rgba(255,255,255,.18); opacity:1}
+.brief-pick-score.pas .bpr-bar-2{fill:rgba(255,255,255,.18); opacity:1}
+.brief-pick-score.pas .bpr-bar-3{fill:rgba(255,255,255,.4); opacity:.6}
 .brief-pick-score-num{font-family:var(--mono); font-size:.62rem; font-weight:500; color:#fff; line-height:1}
 .brief-pick-sig{font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sage)}
 .brief-pick-addr{font-family:var(--serif); font-size:.88rem; font-weight:500; color:#fff; margin-bottom:.2rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -269,16 +276,25 @@ body{
 .deal.pas::before{background:var(--rose)}
 
 /* RankMark — the brand primitive doing double duty as score viz.
-   Building silhouette: roof + 3 horizontal floors. Floors light bottom-up by tier. */
+   Roof + 3 ascending VERTICAL bars (the nav logo identity). Color shifts by tier. */
 .rmark{flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; width:48px}
 .deal.sb .rmark{width:54px}
 .rmark-svg{width:100%; aspect-ratio:1; display:block}
-.rmark-svg .rm-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:var(--ink)}
-.rmark-svg .rm-floor{fill:var(--cream-3); transition:fill .3s}
-.rmark.sb  .rm-floor-1, .rmark.sb  .rm-floor-2, .rmark.sb  .rm-floor-3 { fill:var(--forest) }
-.rmark.buy .rm-floor-1, .rmark.buy .rm-floor-2 { fill:var(--sage) }
-.rmark.wat .rm-floor-1 { fill:var(--amber) }
-.rmark.pas .rm-floor-1 { fill:var(--sage-pale,#cfe0d7) }
+.rmark-svg .rm-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:var(--forest)}
+.rmark-svg .rm-bar{transition:fill .3s, opacity .3s}
+/* Ascending gradient identity: short bar = .35, medium = .6, tall = 1.0 */
+.rmark.sb  .rm-bar-1{fill:var(--forest); opacity:.45}
+.rmark.sb  .rm-bar-2{fill:var(--forest); opacity:.7}
+.rmark.sb  .rm-bar-3{fill:var(--forest); opacity:1}
+.rmark.buy .rm-bar-1{fill:var(--sage); opacity:.4}
+.rmark.buy .rm-bar-2{fill:var(--sage); opacity:.7}
+.rmark.buy .rm-bar-3{fill:var(--forest); opacity:1}
+.rmark.wat .rm-bar-1{fill:var(--cream-3); opacity:1}
+.rmark.wat .rm-bar-2{fill:var(--amber); opacity:.55}
+.rmark.wat .rm-bar-3{fill:var(--amber); opacity:.9}
+.rmark.pas .rm-bar-1{fill:var(--cream-3); opacity:1}
+.rmark.pas .rm-bar-2{fill:var(--cream-3); opacity:1}
+.rmark.pas .rm-bar-3{fill:var(--faint); opacity:.6}
 .rmark-num{font-family:var(--mono); font-size:.78rem; font-weight:500; line-height:1; color:var(--ink); letter-spacing:-.01em}
 .rmark.sb  .rmark-num{color:var(--forest)}
 .rmark.buy .rmark-num{color:var(--forest-3)}
@@ -1241,9 +1257,9 @@ function renderBriefPicks(){
         <div class="brief-pick-score ${tcls}" title="${s||'—'} / 100">
           <svg viewBox="0 0 40 40" aria-hidden="true">
             <path class="bpr-roof" d="M5 17 L20 7 L35 17"/>
-            <rect class="bpr-floor bpr-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
-            <rect class="bpr-floor bpr-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
-            <rect class="bpr-floor bpr-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+            <rect class="bpr-bar bpr-bar-1" x="8.5"  y="23" width="5" height="11" rx=".7"/>
+            <rect class="bpr-bar bpr-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/>
+            <rect class="bpr-bar bpr-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/>
           </svg>
           <span class="brief-pick-score-num">${p.rankScore || '—'}</span>
         </div>
@@ -1396,9 +1412,9 @@ function richCard(d, i){
     <div class="rmark ${cl}" title="${score||'—'} / 100">
       <svg class="rmark-svg" viewBox="0 0 40 40">
         <path class="rm-roof" d="M5 17 L20 7 L35 17"/>
-        <rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
-        <rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
-        <rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+        <rect class="rm-bar rm-bar-1" x="8.5"  y="23" width="5" height="11" rx=".7"/>
+        <rect class="rm-bar rm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/>
+        <rect class="rm-bar rm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/>
       </svg>
       <div class="rmark-num">${score||'—'}</div>
     </div>

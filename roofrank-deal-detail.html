@@ -87,16 +87,24 @@ nav.top{
 /* ── HERO ──────────────────────────────────────────────────────────────── */
 .hero{text-align:center; padding-top:2.25rem}
 .hero-ring-wrap{display:flex; justify-content:center; margin-bottom:1.25rem;flex-direction:column;align-items:center}
-/* RankMark — brand primitive doubling as the hero score viz. Replaces the circular ring. */
+/* RankMark — brand primitive doubling as the hero score viz. 3 ascending vertical bars + roof. */
 .hero-rmark{position:relative; cursor:pointer; transition:transform .2s; display:flex; flex-direction:column; align-items:center; gap:.45rem}
 .hero-rmark:hover{transform:scale(1.025)}
 .hero-rmark svg{width:108px; height:108px; display:block}
-.hero-rmark .hrm-roof{fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke:var(--ink)}
-.hero-rmark .hrm-floor{fill:var(--cream-3); transition:fill .6s cubic-bezier(.22,1,.36,1)}
-.hero-rmark.sb  .hrm-floor-1, .hero-rmark.sb  .hrm-floor-2, .hero-rmark.sb  .hrm-floor-3 { fill:var(--forest) }
-.hero-rmark.buy .hrm-floor-1, .hero-rmark.buy .hrm-floor-2 { fill:var(--sage) }
-.hero-rmark.wat .hrm-floor-1 { fill:var(--amber) }
-.hero-rmark.pas .hrm-floor-1 { fill:#cfe0d7 }
+.hero-rmark .hrm-roof{fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke:var(--forest)}
+.hero-rmark .hrm-bar{transition:fill .6s cubic-bezier(.22,1,.36,1), opacity .6s}
+.hero-rmark.sb  .hrm-bar-1{fill:var(--forest); opacity:.45}
+.hero-rmark.sb  .hrm-bar-2{fill:var(--forest); opacity:.7}
+.hero-rmark.sb  .hrm-bar-3{fill:var(--forest); opacity:1}
+.hero-rmark.buy .hrm-bar-1{fill:var(--sage); opacity:.4}
+.hero-rmark.buy .hrm-bar-2{fill:var(--sage); opacity:.7}
+.hero-rmark.buy .hrm-bar-3{fill:var(--forest); opacity:1}
+.hero-rmark.wat .hrm-bar-1{fill:var(--cream-3); opacity:1}
+.hero-rmark.wat .hrm-bar-2{fill:var(--amber); opacity:.55}
+.hero-rmark.wat .hrm-bar-3{fill:var(--amber); opacity:.9}
+.hero-rmark.pas .hrm-bar-1{fill:var(--cream-3); opacity:1}
+.hero-rmark.pas .hrm-bar-2{fill:var(--cream-3); opacity:1}
+.hero-rmark.pas .hrm-bar-3{fill:var(--faint); opacity:.6}
 .hero-rmark-num{font-family:var(--mono); font-size:2.6rem; font-weight:500; line-height:1; letter-spacing:-.02em}
 .hero-rmark.sb  .hero-rmark-num{color:var(--forest)}
 .hero-rmark.buy .hero-rmark-num{color:var(--forest-3)}
@@ -119,12 +127,20 @@ nav.top{
 @media(min-width:720px){.sx-grip{display:none}}
 .sx-h-score{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1;width:56px;gap:3px}
 .sx-h-score svg{width:48px;height:48px;display:block}
-.sx-h-score .sxm-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--ink)}
-.sx-h-score .sxm-floor{fill:var(--cream-3);transition:fill .3s}
-.sx-h-score.sb  .sxm-floor-1,.sx-h-score.sb  .sxm-floor-2,.sx-h-score.sb  .sxm-floor-3{fill:var(--forest)}
-.sx-h-score.buy .sxm-floor-1,.sx-h-score.buy .sxm-floor-2{fill:var(--sage)}
-.sx-h-score.wat .sxm-floor-1{fill:var(--amber)}
-.sx-h-score.pas .sxm-floor-1{fill:#cfe0d7}
+.sx-h-score .sxm-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.sx-h-score .sxm-bar{transition:fill .3s, opacity .3s}
+.sx-h-score.sb  .sxm-bar-1{fill:var(--forest);opacity:.45}
+.sx-h-score.sb  .sxm-bar-2{fill:var(--forest);opacity:.7}
+.sx-h-score.sb  .sxm-bar-3{fill:var(--forest);opacity:1}
+.sx-h-score.buy .sxm-bar-1{fill:var(--sage);opacity:.4}
+.sx-h-score.buy .sxm-bar-2{fill:var(--sage);opacity:.7}
+.sx-h-score.buy .sxm-bar-3{fill:var(--forest);opacity:1}
+.sx-h-score.wat .sxm-bar-1{fill:var(--cream-3);opacity:1}
+.sx-h-score.wat .sxm-bar-2{fill:var(--amber);opacity:.55}
+.sx-h-score.wat .sxm-bar-3{fill:var(--amber);opacity:.9}
+.sx-h-score.pas .sxm-bar-1{fill:var(--cream-3);opacity:1}
+.sx-h-score.pas .sxm-bar-2{fill:var(--cream-3);opacity:1}
+.sx-h-score.pas .sxm-bar-3{fill:var(--faint);opacity:.6}
 .sx-h-score-num{font-size:.78rem;font-weight:500;font-family:var(--mono);color:var(--ink);line-height:1}
 .sx-h-score.sb  .sx-h-score-num{color:var(--forest)}
 .sx-h-score.buy .sx-h-score-num{color:var(--forest-3)}
@@ -651,9 +667,9 @@ nav.top{
       <div class="hero-rmark" id="heroRmark" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
         <svg viewBox="0 0 40 40" aria-hidden="true">
           <path class="hrm-roof" d="M5 17 L20 7 L35 17"/>
-          <rect class="hrm-floor hrm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
-          <rect class="hrm-floor hrm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
-          <rect class="hrm-floor hrm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+          <rect class="hrm-bar hrm-bar-1" x="8.5"  y="23" width="5" height="11" rx=".7"/>
+          <rect class="hrm-bar hrm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/>
+          <rect class="hrm-bar hrm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/>
         </svg>
         <div class="hero-rmark-num" id="hrNum">—</div>
         <div class="hero-rmark-out">/ 100</div>
@@ -778,9 +794,9 @@ nav.top{
       <div class="sx-h-score" id="sxHeadScore">
         <svg viewBox="0 0 40 40" aria-hidden="true">
           <path class="sxm-roof" d="M5 17 L20 7 L35 17"/>
-          <rect class="sxm-floor sxm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
-          <rect class="sxm-floor sxm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
-          <rect class="sxm-floor sxm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+          <rect class="sxm-bar sxm-bar-1" x="8.5"  y="23" width="5" height="11" rx=".7"/>
+          <rect class="sxm-bar sxm-bar-2" x="17.5" y="18" width="5" height="16" rx=".7"/>
+          <rect class="sxm-bar sxm-bar-3" x="26.5" y="12" width="5" height="22" rx=".7"/>
         </svg>
         <div class="sx-h-score-num" id="sxHeadScoreNum">—</div>
         <div class="sx-h-score-sig" id="sxHeadScoreSig">—</div>
