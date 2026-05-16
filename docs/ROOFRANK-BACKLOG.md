@@ -2123,3 +2123,8 @@ Investors don't typically override taxes and insurance — those come from the b
 - **Down payment %** — preloaded with 25%; user can drop to 20% or push to 30%+
 
 Backend re-scores on POST and stamps `reportData.assumptions` with `source: 'user-override'` so the P&I line reads "· you said 6.25%". Re-uses the existing `recomputeWithOverride` plumbing — just extends the input schema. Explicitly skip taxes/insurance overrides for now: low value, more UI noise.
+
+### 167. Home-button signs the user out (bug)
+**Priority:** 🔴 MVP candidate · **Effort:** XS · **Source:** Reported 2026-05-16
+
+When signed in, clicking the Home nav link logs the user out instead of routing to the dashboard. Almost certainly the link points at `roofrank-landing.html` (or `/`) and the landing/login flow blows away the session, or the route doesn't carry the auth token. Repro: sign in → click Home in nav → end up signed out. Investigate `roofrank-landing.html` boot script and the shared nav `Home` href across pages.
