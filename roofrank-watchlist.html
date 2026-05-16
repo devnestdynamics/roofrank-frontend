@@ -36,11 +36,26 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .deal.sb::before{background:var(--forest)}
 .deal.buy::before{background:var(--forest-3)}
 .deal.wat::before{background:var(--amber)}
-.ring{width:46px;height:46px;flex-shrink:0;position:relative}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.rt{fill:none;stroke:var(--cream-3);stroke-width:4}
-.rf{fill:none;stroke-width:4;stroke-linecap:round}
-.rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.84rem;font-weight:500}
+.rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:48px}
+.rmark-svg{width:100%;aspect-ratio:1;display:block}
+.rmark-svg .rm-bar{transition:fill .3s,opacity .3s}
+.rmark.sb  .rm-bar-1{fill:var(--forest);opacity:.45}
+.rmark.sb  .rm-bar-2{fill:var(--forest);opacity:.7}
+.rmark.sb  .rm-bar-3{fill:var(--forest);opacity:1}
+.rmark.buy .rm-bar-1{fill:var(--sage);opacity:.4}
+.rmark.buy .rm-bar-2{fill:var(--sage);opacity:.7}
+.rmark.buy .rm-bar-3{fill:var(--forest);opacity:1}
+.rmark.wat .rm-bar-1{fill:var(--cream-3);opacity:1}
+.rmark.wat .rm-bar-2{fill:var(--amber);opacity:.55}
+.rmark.wat .rm-bar-3{fill:var(--amber);opacity:.9}
+.rmark.pas .rm-bar-1{fill:var(--cream-3);opacity:1}
+.rmark.pas .rm-bar-2{fill:var(--cream-3);opacity:1}
+.rmark.pas .rm-bar-3{fill:var(--faint);opacity:.6}
+.rmark-num{font-family:var(--mono);font-size:.78rem;font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.rmark.sb  .rmark-num{color:var(--forest)}
+.rmark.buy .rmark-num{color:var(--forest-3)}
+.rmark.wat .rmark-num{color:var(--amber)}
+.rmark.pas .rmark-num{color:var(--faint)}
 .dbody{flex:1;min-width:0}
 .daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
 .dmeta{font-size:.67rem;color:var(--muted);margin-bottom:3px}
@@ -137,13 +152,18 @@ function renderItems(deals){
   document.getElementById('countLbl').textContent=`${deals.length} ${deals.length===1?'property':'properties'}`;
   const list=document.getElementById('list');
   if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Tap the heart icon on any deal in the feed to save it here.</div><button class="empty-btn" onclick="location.href='roofrank-dashboard.html'">Browse Deals →</button></div>`;return;}
-  const circ=2*Math.PI*19;
   list.innerHTML=deals.map(d=>{
     const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
-    const c=scoreColor(score), cl=scoreClass(score);
-    const dash=(score/100)*circ;
+    const cl=scoreClass(score);
     return`<div class="deal ${cl}" onclick="location.href='roofrank-deal-detail.html?fid=${d.id}'">
-      <div class="ring"><svg viewBox="0 0 42 42" style="transform:rotate(-90deg)"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
+      <div class="rmark ${cl}" title="${score||'—'} / 100">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <rect class="rm-bar rm-bar-1" x="8.5"  y="20" width="5" height="14" rx=".7"/>
+          <rect class="rm-bar rm-bar-2" x="17.5" y="14" width="5" height="20" rx=".7"/>
+          <rect class="rm-bar rm-bar-3" x="26.5" y="6"  width="5" height="28" rx=".7"/>
+        </svg>
+        <div class="rmark-num">${score||'—'}</div>
+      </div>
       <div class="dbody">
         <div class="daddr">${d.address}</div>
         <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'?'} units · ${d.propertyType||''}</div>
