@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank · Deckers-shaped rebrand mockup</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;
+  --white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;
+  --forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;
+  --sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00;--rose:#a03030;
+  --border:#e0d9cf;--border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;padding:2rem 1rem 4rem}
+
+/* ── Preview chrome ────────────────────────────────────────────── */
+.preview-hdr{max-width:900px;margin:0 auto 1.8rem;text-align:center}
+.preview-hdr .eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.5rem}
+.preview-hdr h1{font-family:var(--serif);font-size:1.85rem;font-weight:500;margin-bottom:.5rem}
+.preview-hdr p{font-size:.92rem;color:var(--muted);max-width:620px;margin:0 auto;line-height:1.65}
+
+.section-label{max-width:900px;margin:2.2rem auto 0.8rem;font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:0 .25rem}
+
+/* ── THE NEW MARK (Deckers-shape, RoofRank tier colors) ──────────
+   Roof outline (sage) + 3 horizontal floor bars.
+   Floor opacity ascends like the vertical bar version did,
+   so the visual hierarchy of "small/medium/large signal"
+   still reads even though the shape is horizontal slabs. */
+.mark{display:block}
+.mark .mk-roof{fill:none;stroke:var(--sage);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.mark .mk-floor{transition:fill .3s,opacity .3s}
+/* Default (unlit) state */
+.mark .mk-floor{fill:var(--cream-3);opacity:1}
+
+/* Strong Buy — all 3 floors forest, ascending opacity */
+.mark.sb  .mk-floor-1{fill:var(--forest);opacity:.45}
+.mark.sb  .mk-floor-2{fill:var(--forest);opacity:.7}
+.mark.sb  .mk-floor-3{fill:var(--forest);opacity:1}
+/* Buy — bottom sage, middle sage-deep, top forest */
+.mark.buy .mk-floor-1{fill:var(--sage);opacity:.5}
+.mark.buy .mk-floor-2{fill:var(--sage);opacity:.85}
+.mark.buy .mk-floor-3{fill:var(--forest);opacity:1}
+/* Watch — bottom dim, middle/top amber gradient */
+.mark.wat .mk-floor-1{fill:var(--cream-3);opacity:1}
+.mark.wat .mk-floor-2{fill:var(--amber);opacity:.55}
+.mark.wat .mk-floor-3{fill:var(--amber);opacity:.95}
+/* Pass — almost all dim */
+.mark.pas .mk-floor-1{fill:var(--cream-3);opacity:1}
+.mark.pas .mk-floor-2{fill:var(--cream-3);opacity:1}
+.mark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
+
+/* Brand variants — solid sage for the logo lockup */
+.mark.brand     .mk-floor-1,.mark.brand     .mk-floor-2,.mark.brand     .mk-floor-3{fill:var(--sage);opacity:1}
+.mark.brand-dark .mk-roof{stroke:#fff}
+.mark.brand-dark .mk-floor-1,.mark.brand-dark .mk-floor-2,.mark.brand-dark .mk-floor-3{fill:var(--sage);opacity:1}
+.mark.brand-dark-grad .mk-roof{stroke:#fff}
+.mark.brand-dark-grad .mk-floor-1{fill:var(--sage);opacity:.4}
+.mark.brand-dark-grad .mk-floor-2{fill:var(--sage);opacity:.7}
+.mark.brand-dark-grad .mk-floor-3{fill:var(--sage);opacity:1}
+
+/* Sizes */
+.mark-22{width:22px;height:22px}
+.mark-30{width:30px;height:30px}
+.mark-34{width:34px;height:34px}
+.mark-44{width:44px;height:44px}
+.mark-56{width:56px;height:56px}
+.mark-72{width:72px;height:72px}
+
+/* ── Frame for product mockup ───────────────────────────────── */
+.frame{max-width:900px;margin:0 auto;background:var(--cream);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(28,31,28,.06)}
+
+/* ── App bar ───────────────────────────────────────────────── */
+.appbar{background:var(--white);border-bottom:1px solid var(--border);padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.brand-lockup{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--ink)}
+.brand-tile{background:var(--forest);border-radius:8px;padding:5px 6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.brand-name{font-family:var(--serif);font-size:1.1rem;font-weight:500;letter-spacing:-.005em}
+.appbar-right{display:flex;align-items:center;gap:.5rem}
+.appbar-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.appbar-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.appbar-avatar{width:30px;height:30px;border-radius:50%;background:var(--forest-2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:500}
+
+/* Page padding */
+.page{padding:1.2rem 1.2rem 2rem}
+
+/* ── Brief card ────────────────────────────────────────────── */
+.brief-card{background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);color:#fff;border-radius:14px;padding:1.3rem 1.25rem;margin-bottom:1.3rem;box-shadow:0 6px 24px rgba(20,32,26,.15)}
+.brief-eye{display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.brief-eye-label{font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.brief-eye-sep{color:rgba(255,255,255,.25)}
+.brief-eye-meta{font-size:.62rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;font-weight:500;margin-left:auto}
+.brief-title{font-family:var(--serif);font-size:1.35rem;font-weight:500;line-height:1.25;margin-bottom:.45rem;letter-spacing:-.005em}
+.brief-body{font-size:.86rem;color:rgba(255,255,255,.78);line-height:1.65}
+.brief-body b{color:#fff;font-weight:600}
+
+/* ── City chips ───────────────────────────────────────────── */
+.city-row{margin:0 0 1rem}
+.city-chips{display:flex;gap:.4rem;overflow-x:auto}
+.city-chip{flex-shrink:0;background:var(--white);border:1px solid var(--border);border-radius:999px;padding:.36rem .85rem;font-size:.74rem;color:var(--muted);font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:.4rem}
+.city-chip.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+.city-chip-count{font-size:.66rem;opacity:.7;font-family:var(--mono)}
+
+/* ── Section header ───────────────────────────────────────── */
+.sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 .65rem}
+.sec-ttl{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.sec-meta{font-size:.7rem;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+
+/* ── Deal cards ───────────────────────────────────────────── */
+.deal{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.85rem .95rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .14s;margin-bottom:.5rem;position:relative;overflow:hidden}
+.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
+.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.deal.sb::before{background:var(--forest)}
+.deal.buy::before{background:var(--forest-3)}
+.deal.wat::before{background:var(--amber)}
+.deal.pas::before{background:var(--faint)}
+
+/* The score block — Deckers shape + numeric */
+.score-blk{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;width:50px}
+.deal.sb .score-blk{width:54px}
+.score-num{font-family:var(--mono);font-size:.78rem;font-weight:500;letter-spacing:-.01em}
+.deal.sb  .score-num{color:var(--forest)}
+.deal.buy .score-num{color:var(--forest-3)}
+.deal.wat .score-num{color:var(--amber)}
+.deal.pas .score-num{color:var(--faint)}
+
+.dbody{flex:1;min-width:0}
+.daddr{font-family:var(--serif);font-size:.98rem;font-weight:500;color:var(--ink);margin-bottom:.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:.4rem}
+.dpick{display:inline-flex;align-items:center;gap:.18rem;background:var(--sage-dim);color:var(--forest);padding:.1rem .42rem;border-radius:999px;font-family:var(--sans);font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--sage-border)}
+.dpick svg{width:8px;height:8px;fill:currentColor}
+.dmeta{font-size:.74rem;color:var(--muted);margin-bottom:.32rem}
+.dkpis{display:flex;flex-wrap:wrap;gap:.32rem}
+.kp{font-family:var(--mono);font-size:.66rem;padding:.16rem .42rem;border-radius:4px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
+.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+
+.dright{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.sbadge{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:4px;border:1px solid;font-family:var(--sans)}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.dprice{font-family:var(--mono);font-size:.86rem;font-weight:500;color:var(--ink)}
+
+/* ── Legend strip ────────────────────────────────────────── */
+.legend{max-width:900px;margin:1.4rem auto 0;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.lg-cell{display:flex;flex-direction:column;align-items:center;gap:.4rem;text-align:center}
+.lg-cell-label{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.lg-cell-range{font-family:var(--mono);font-size:.66rem;color:var(--muted)}
+.lg-cell.sb  .lg-cell-label{color:var(--forest)}
+.lg-cell.buy .lg-cell-label{color:var(--forest-3)}
+.lg-cell.wat .lg-cell-label{color:var(--amber)}
+.lg-cell.pas .lg-cell-label{color:var(--faint)}
+
+/* ── Brand panel (logo lockup variations) ────────────────── */
+.brand-panel{max-width:900px;margin:0 auto;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.4rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;align-items:center}
+.bp-cell{display:flex;flex-direction:column;align-items:center;gap:.6rem;text-align:center}
+.bp-tile-lt{background:var(--white);border:1px dashed var(--border-2);border-radius:10px;padding:1rem;display:flex;align-items:center;justify-content:center;width:100%;min-height:96px}
+.bp-tile-tile{background:var(--forest);border-radius:10px;padding:.9rem;width:64px;height:64px;display:flex;align-items:center;justify-content:center}
+.bp-tile-dk{background:#14201a;border-radius:10px;padding:.9rem;width:100%;min-height:96px;display:flex;align-items:center;justify-content:center;gap:.55rem;color:#fff;font-family:var(--serif);font-size:1.05rem}
+.bp-cell-label{font-family:var(--sans);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+
+/* ── Watchlist sample row ────────────────────────────────── */
+.wl-row{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.85rem .95rem;display:flex;align-items:center;gap:.9rem;margin-bottom:.5rem}
+
+/* ── Deal-detail hero mini ───────────────────────────────── */
+.dh-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:1.1rem}
+.dh-l{flex-shrink:0}
+.dh-body{flex:1;min-width:0}
+.dh-addr{font-family:var(--serif);font-size:1.25rem;font-weight:500;line-height:1.25;margin-bottom:.2rem}
+.dh-meta{font-size:.78rem;color:var(--muted);margin-bottom:.6rem}
+.dh-stats{display:flex;flex-wrap:wrap;gap:.4rem}
+.dh-stats .kp{font-size:.7rem;padding:.22rem .5rem}
+.dh-num{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--forest);text-align:center;line-height:1.1;margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<div class="preview-hdr">
+  <div class="eyebrow">Rebrand mockup</div>
+  <h1>RoofRank, Deckers-shaped</h1>
+  <p>Same name, same color story. The vertical-bar score viz is replaced by the Deckers mark — a sage roof over three horizontal floor slabs that fill bottom-up with the existing forest/sage/amber/rose tier palette and ascending opacity.</p>
+</div>
+
+<!-- ── 1) Logo lockup variations ────────────────────────────── -->
+<div class="section-label">1 · Logo lockup variations</div>
+<div class="brand-panel">
+
+  <div class="bp-cell">
+    <div class="bp-tile-lt">
+      <svg class="mark mark-72 brand" viewBox="0 0 40 40">
+        <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+        <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+      </svg>
+    </div>
+    <div class="bp-cell-label">Mark · light</div>
+  </div>
+
+  <div class="bp-cell">
+    <div class="bp-tile-lt" style="background:var(--cream-2)">
+      <div class="bp-tile-tile">
+        <svg class="mark mark-44 brand-dark" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+      </div>
+    </div>
+    <div class="bp-cell-label">App tile</div>
+  </div>
+
+  <div class="bp-cell">
+    <div class="bp-tile-dk">
+      <svg class="mark mark-34 brand-dark" viewBox="0 0 40 40">
+        <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+        <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+      </svg>
+      RoofRank
+    </div>
+    <div class="bp-cell-label">Horizontal · dark</div>
+  </div>
+
+  <div class="bp-cell">
+    <div class="bp-tile-dk">
+      <svg class="mark mark-34 brand-dark-grad" viewBox="0 0 40 40">
+        <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+        <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+      </svg>
+      RoofRank
+    </div>
+    <div class="bp-cell-label">Horizontal · gradient</div>
+  </div>
+
+</div>
+
+<!-- ── 2) Product mockup (Dashboard) ────────────────────────── -->
+<div class="section-label">2 · Dashboard with rebrand applied</div>
+<div class="frame">
+
+  <header class="appbar">
+    <a class="brand-lockup" href="#">
+      <div class="brand-tile">
+        <svg class="mark mark-30 brand-dark" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+      </div>
+      <div class="brand-name">RoofRank</div>
+    </a>
+    <div class="appbar-right">
+      <button class="appbar-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+      <button class="appbar-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
+      <div class="appbar-avatar">A</div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <div class="brief-card">
+      <div class="brief-eye">
+        <span class="brief-eye-label">Analyst's Brief</span>
+        <span class="brief-eye-sep">·</span>
+        <span class="brief-eye-label" style="color:var(--sage)">LIVE</span>
+        <span class="brief-eye-meta">Fri, May 16 · 7:42a</span>
+      </div>
+      <div class="brief-title">Two Strong Buys in Lynn after the morning refresh.</div>
+      <div class="brief-body">I'm watching <b>2 Strong Buys</b> in Lynn right now. The standout's <b>58 Laighton St</b> — <b>11.4%</b> cash-on-cash, <b>$1,840/mo</b> coming in. <b>3 fresh listings</b> this week worth a quick look. <b>4 sellers</b> have sat 60+ days — real pricing leverage if you act on it.</div>
+    </div>
+
+    <section class="city-row">
+      <div class="city-chips">
+        <button class="city-chip active">All <span class="city-chip-count">23</span></button>
+        <button class="city-chip">Lynn <span class="city-chip-count">11</span></button>
+        <button class="city-chip">Worcester <span class="city-chip-count">8</span></button>
+        <button class="city-chip">Salem <span class="city-chip-count">4</span></button>
+      </div>
+    </section>
+
+    <div class="sec-hd">
+      <div class="sec-ttl">Today's picks</div>
+      <div class="sec-meta">Top 3 · refreshed 5m ago</div>
+    </div>
+
+    <!-- Card · Strong Buy -->
+    <div class="deal sb">
+      <div class="score-blk">
+        <svg class="mark mark-44 sb" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="score-num">87</div>
+      </div>
+      <div class="dbody">
+        <div class="daddr"><span class="dpick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span><span>58 Laighton St</span></div>
+        <div class="dmeta">Lynn, MA · 3 units · Triplex</div>
+        <div class="dkpis">
+          <span class="kp g">CoC 11.4%</span>
+          <span class="kp g">Cap 7.8%</span>
+          <span class="kp g">DSCR 1.42</span>
+        </div>
+      </div>
+      <div class="dright">
+        <span class="sbadge sb">Strong Buy</span>
+        <div class="dprice">$525K</div>
+      </div>
+    </div>
+
+    <!-- Card · Buy -->
+    <div class="deal buy">
+      <div class="score-blk">
+        <svg class="mark mark-44 buy" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="score-num">71</div>
+      </div>
+      <div class="dbody">
+        <div class="daddr">82 Linwood Rd</div>
+        <div class="dmeta">Lynn, MA · 2 units · Duplex</div>
+        <div class="dkpis">
+          <span class="kp g">CoC 8.2%</span>
+          <span class="kp">Cap 6.4%</span>
+          <span class="kp g">DSCR 1.28</span>
+        </div>
+      </div>
+      <div class="dright">
+        <span class="sbadge buy">Buy</span>
+        <div class="dprice">$589K</div>
+      </div>
+    </div>
+
+    <!-- Card · Watch -->
+    <div class="deal wat">
+      <div class="score-blk">
+        <svg class="mark mark-44 wat" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="score-num">54</div>
+      </div>
+      <div class="dbody">
+        <div class="daddr">139 Vernon St</div>
+        <div class="dmeta">Worcester, MA · 3 units · Needs reno</div>
+        <div class="dkpis">
+          <span class="kp">CoC 5.1%</span>
+          <span class="kp">Cap 5.4%</span>
+          <span class="kp">DSCR 0.96</span>
+        </div>
+      </div>
+      <div class="dright">
+        <span class="sbadge wat">Watch</span>
+        <div class="dprice">$385K</div>
+      </div>
+    </div>
+
+    <!-- Card · Pass -->
+    <div class="deal pas">
+      <div class="score-blk">
+        <svg class="mark mark-44 pas" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="score-num">38</div>
+      </div>
+      <div class="dbody">
+        <div class="daddr">12 Howard Pl</div>
+        <div class="dmeta">Lynn, MA · 2 units · High-end duplex</div>
+        <div class="dkpis">
+          <span class="kp">CoC 2.4%</span>
+          <span class="kp">Cap 4.1%</span>
+          <span class="kp">DSCR 0.82</span>
+        </div>
+      </div>
+      <div class="dright">
+        <span class="sbadge wat" style="background:rgba(168,173,159,.15);color:var(--faint);border-color:rgba(168,173,159,.3)">Pass</span>
+        <div class="dprice">$749K</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 3) Legend — what each level looks like ──────────────── -->
+<div class="section-label">3 · Score legend (4 tiers, ascending floors fill)</div>
+<div class="legend">
+  <div class="lg-cell sb">
+    <svg class="mark mark-56 sb" viewBox="0 0 40 40">
+      <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+      <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+    </svg>
+    <div class="lg-cell-label">Strong Buy</div>
+    <div class="lg-cell-range">75–100</div>
+  </div>
+  <div class="lg-cell buy">
+    <svg class="mark mark-56 buy" viewBox="0 0 40 40">
+      <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+      <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+    </svg>
+    <div class="lg-cell-label">Buy</div>
+    <div class="lg-cell-range">60–74</div>
+  </div>
+  <div class="lg-cell wat">
+    <svg class="mark mark-56 wat" viewBox="0 0 40 40">
+      <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+      <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+    </svg>
+    <div class="lg-cell-label">Watch</div>
+    <div class="lg-cell-range">40–59</div>
+  </div>
+  <div class="lg-cell pas">
+    <svg class="mark mark-56 pas" viewBox="0 0 40 40">
+      <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+      <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+      <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+    </svg>
+    <div class="lg-cell-label">Pass</div>
+    <div class="lg-cell-range">0–39</div>
+  </div>
+</div>
+
+<!-- ── 4) Deal-detail hero (rebranded score block) ─────────── -->
+<div class="section-label">4 · Deal detail · hero card</div>
+<div style="max-width:900px;margin:0 auto">
+  <div class="dh-card">
+    <div class="dh-l">
+      <svg class="mark mark-72 sb" viewBox="0 0 40 40">
+        <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+        <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+        <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+      </svg>
+      <div class="dh-num">87</div>
+    </div>
+    <div class="dh-body">
+      <div class="dh-addr">58 Laighton St</div>
+      <div class="dh-meta">Lynn, MA · 3 units · Triplex · 6 bed · $525,000</div>
+      <div class="dh-stats">
+        <span class="kp g">CoC 11.4%</span>
+        <span class="kp g">Cap 7.8%</span>
+        <span class="kp g">DSCR 1.42</span>
+        <span class="kp">$1,840/mo</span>
+        <span class="kp">$87K down</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
