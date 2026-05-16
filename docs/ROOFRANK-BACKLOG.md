@@ -11,9 +11,9 @@
 | ✅ Done | 30 |
 | 🔴 MVP Scope | 16 |
 | 🟡 Phase 2 | 55 |
-| 🟢 Phase 3 / Backlog | 32 |
+| 🟢 Phase 3 / Backlog | 33 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **131** |
+| **Total** | **132** |
 
 ---
 
@@ -2128,3 +2128,16 @@ Backend re-scores on POST and stamps `reportData.assumptions` with `source: 'use
 **Priority:** 🔴 MVP candidate · **Effort:** XS · **Source:** Reported 2026-05-16
 
 When signed in, clicking the Home nav link logs the user out instead of routing to the dashboard. **Root cause:** wasn't actually a sign-out — `Auth.clear()` was never called. The Home/logo links across every page point at `roofrank-landing.html`, which renders the marketing CTAs ("Sign In · Start Free →") regardless of auth state, so a signed-in user landing there *feels* signed out (and the rest of the marketing page is unhelpful when they came for the dashboard). **Fix:** added a tiny boot script at the top of `roofrank-landing.html` that reads `rr_token` from localStorage and `window.location.replace('roofrank-dashboard.html')` if present. Bypass via `?marketing=1` if a logged-in account wants to share/view the marketing page.
+
+### 168. Rotate exposed AWS deploy key
+**Priority:** 🟢 Phase 3 / hygiene · **Effort:** XS · **Source:** Pasted in Claude chat 2026-05-16 then deliberately reused
+
+The current `roofrank-deploy` IAM access key (`AKIA3WKTSYVX2QHVM554`) was pasted into a Claude conversation transcript on 2026-05-16 while wiring up the backend deploy workflow. Decision at the time was to keep using it (it lives in GitHub Secrets on roofrank-backend and in `~/.aws/credentials` locally; the conversation log is the only "leak" vector).
+
+When time permits — or on any deploy rotation cadence — rotate this key:
+1. `aws iam create-access-key --user-name roofrank-deploy`
+2. Replace `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` in GitHub Secrets on `roofrank-backend`
+3. Update `~/.aws/credentials` locally via `aws configure`
+4. `aws iam delete-access-key --user-name roofrank-deploy --access-key-id AKIA3WKTSYVX2QHVM554`
+
+Better long-term: migrate the workflow from long-lived access keys to GitHub OIDC + an assumable IAM role (`aws-actions/configure-aws-credentials` supports `role-to-assume`). No static creds anywhere — eliminates this category of risk entirely. Larger change, defer to post-launch.
