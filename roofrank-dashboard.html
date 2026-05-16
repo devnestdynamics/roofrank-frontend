@@ -790,17 +790,7 @@ body{
     <button class="changed-dismiss" type="button" onclick="dismissChanged()" aria-label="Dismiss">×</button>
   </section>
 
-  <!-- ── BRIEF — dark editorial hero ─────────────────────────────────── -->
-  <!-- ── PICKS-FIRST: top 3 picks above the brief ──────────────────── -->
-  <section class="todays-picks-section" id="todaysPicksSection" style="display:none">
-    <div class="tp-head">
-      <div class="tp-title">Today's picks</div>
-      <div class="tp-meta" id="tpMeta"></div>
-    </div>
-    <div class="tp-carousel" id="todaysPicks"></div>
-  </section>
-
-  <!-- ── BRIEF — slimmed: eyebrow + analyst sentence ────────────────── -->
+  <!-- ── BRIEF — slim editorial hero (no greeting, no picks inside) ──── -->
   <section class="brief" id="briefSection" style="display:none">
     <div class="brief-card">
       <div class="brief-eyebrow">
@@ -812,6 +802,15 @@ body{
       </div>
       <p class="brief-body" id="briefBody">—</p>
     </div>
+  </section>
+
+  <!-- ── TODAY'S PICKS — carousel below the brief ────────────────────── -->
+  <section class="todays-picks-section" id="todaysPicksSection" style="display:none">
+    <div class="tp-head">
+      <div class="tp-title">Today's picks</div>
+      <div class="tp-meta" id="tpMeta"></div>
+    </div>
+    <div class="tp-carousel" id="todaysPicks"></div>
   </section>
 
   <!-- ── LENS PILLS (horizontal scroll) ─────────────────────────────── -->
