@@ -498,15 +498,16 @@ section{padding:5rem 0}
 .section-sub{font-size:.95rem;color:var(--muted);line-height:1.75;max-width:520px}
 
 /* ── METRICS SECTION — verdict on top, evidence chips below ── */
-.metrics-engine{display:flex;flex-direction:column;align-items:center;gap:2.5rem;margin-top:2.5rem}
+.metrics-engine{display:flex;flex-direction:column;align-items:center;gap:1.25rem;margin-top:2rem}
 .metrics-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;width:100%;max-width:780px}
-.metric-chip{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:help;transition:border-color .15s,box-shadow .15s}
+.metric-chip{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:help;transition:border-color .15s,box-shadow .15s,background-color .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
 .metric-chip:hover,.metric-chip.tip-on{border-color:var(--forest);background:rgba(122,170,143,.07);box-shadow:0 4px 12px rgba(28,74,53,.08)}
 
 /* Shared definition display below the chip grid — one element, no overlap */
-.metric-tip-display{width:100%;max-width:780px;min-height:2.6rem;margin-top:1.25rem;padding:.85rem 1rem;text-align:center;font-family:var(--sans);font-size:.85rem;line-height:1.5;color:var(--muted);transition:color .2s}
+.metric-tip-display{width:100%;max-width:560px;min-height:4rem;margin:0 auto;padding:.85rem 1rem;text-align:center;font-family:var(--sans);font-size:.95rem;line-height:1.55;color:var(--muted);transition:color .2s}
+@media(max-width:560px){.metric-tip-display{min-height:5.2rem;font-size:.9rem}}
 .metric-tip-display b{color:var(--ink);font-weight:500;margin-right:.35rem}
-.metric-tip-default{font-style:italic;opacity:.7}
+.metric-tip-default{font-style:italic;opacity:.75}
 .metric-chip-name{font-family:var(--sans);font-size:.84rem;font-weight:500;color:var(--ink);line-height:1.25;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .metric-chip-val{font-family:var(--mono);font-size:.82rem;color:var(--ink);font-weight:500;flex-shrink:0}
 .metric-chip-check{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center}
@@ -522,8 +523,6 @@ section{padding:5rem 0}
 .metrics-verdict-tier{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);line-height:1;letter-spacing:-.01em;margin-top:.3rem}
 .metrics-verdict-score{font-family:var(--mono);font-size:.82rem;color:var(--muted);letter-spacing:.02em}
 .metrics-verdict-addr{font-size:.66rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:.3rem}
-
-.metrics-caption{text-align:center;font-size:.95rem;color:var(--muted);margin:2.5rem auto 0;max-width:560px;line-height:1.6}
 
 @media(max-width:860px){.metrics-chips{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:420px){.metrics-chips{grid-template-columns:1fr}}
@@ -1291,7 +1290,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="inner">
     <div class="eyebrow fade-up" style="text-align:center">Your dashboard</div>
     <h2 class="section-h2 fade-up">Open the app.<br><em>See what cashflows today.</em></h2>
-    <p class="section-sub fade-up">The first thing you see when you log in: a 1-paragraph read on your markets, the deals worth your time today, and an analyst on call for everything else.</p>
+    <p class="section-sub fade-up">The deals worth your time today, and an analyst on call for everything else.</p>
 
     <div class="brief-mockup fade-up">
       <div class="bm-eyebrow">
@@ -1348,6 +1347,11 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <div class="metrics-verdict-addr">58 Laighton St · Lynn</div>
       </div>
 
+      <!-- Definition display — default is the section caption; morphs to active metric definition on hover/tap -->
+      <div class="metric-tip-display fade-up" id="metricTip" aria-live="polite" style="transition-delay:.4s">
+        <span class="metric-tip-default">8 metrics, weighted into one verdict.</span>
+      </div>
+
       <div class="metrics-chips">
         <div class="metric-chip fade-up" style="transition-delay:.55s" data-tip="Annual pre-tax cash flow ÷ cash invested" aria-label="Cash-on-Cash: Annual pre-tax cash flow ÷ cash invested">
           <div class="metric-chip-name">Cash-on-Cash</div>
@@ -1391,12 +1395,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         </div>
       </div>
 
-      <div class="metric-tip-display fade-up" id="metricTip" aria-live="polite" style="transition-delay:1.25s">
-        <span class="metric-tip-default">Hover or tap any metric for its definition.</span>
-      </div>
     </div>
-
-    <p class="metrics-caption fade-up">Every metric a serious investor looks at — calculated, weighted, and combined into one verdict.</p>
   </div>
 </section>
 
@@ -1614,7 +1613,7 @@ document.querySelectorAll('.fade-up, .plan').forEach((el, i) => {
 
 // Metric chips → shared definition display below the grid (no overlap with rows)
 const tipEl = document.getElementById('metricTip');
-const tipDefault = '<span class="metric-tip-default">Hover or tap any metric for its definition.</span>';
+const tipDefault = '<span class="metric-tip-default">8 metrics, weighted into one verdict.</span>';
 function showMetricTip(chip){
   const name = chip.querySelector('.metric-chip-name').textContent.trim();
   const tip = chip.getAttribute('data-tip') || '';
