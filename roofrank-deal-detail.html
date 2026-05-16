@@ -1403,6 +1403,7 @@ function renderCfWaterfall(d, sFin){
   const ass = ((_deal||{}).reportData||{}).assumptions || {};
   const taxSrc = ass.taxes && ass.taxes.source;
   const insSrc = ass.insurance && ass.insurance.source;
+  const rateInfo = ass.rate || null;
   const hintFor = (src) => {
     if(!src) return '';
     if(src === 'attom-actual') return '· actual';
@@ -1411,12 +1412,23 @@ function renderCfWaterfall(d, sFin){
     if(src.includes('national-default')) return '· est';
     return '';
   };
+  // Mortgage P&I hint: "· Freddie 6.83% · May 9" or "· est 6.5%" on fallback.
+  const piHint = (() => {
+    if(!rateInfo || rateInfo.value == null) return '';
+    const r = `${rateInfo.value.toFixed(2)}%`;
+    if(rateInfo.source === 'freddie-mac' && rateInfo.weekOf){
+      const wk = new Date(rateInfo.weekOf+'T00:00').toLocaleDateString('en-US', {month:'short',day:'numeric'});
+      return `· Freddie ${r} · wk ${wk}`;
+    }
+    if(rateInfo.source === 'fallback') return `· est ${r}`;
+    return `· ${r}`;
+  })();
   const cfRowCls = 'cf' + (monthlyCf < 0 ? ' negative' : '');
   const cfSign = monthlyCf >= 0 ? '+' : '−';
   const cfLegPct = monthlyRent ? (Math.abs(monthlyCf)/monthlyRent)*100 : 0;
   const legCfRow = `<div class="cf-leg ${cfRowCls}"><span class="cf-leg-dot"></span><span class="cf-leg-name">${monthlyCf>=0?'Monthly Cash Flow':'Monthly Loss'}</span><span class="cf-leg-vals"><span class="cf-leg-val">${cfSign}$${Math.round(Math.abs(monthlyCf)).toLocaleString()}/mo</span><span class="cf-leg-pct">${cfLegPct.toFixed(0)}%</span></span></div>`;
   setHTML('cfLegend', [
-    legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI)),
+    legRow('pi',  'Mortgage P&I',   monthlyPI,  pct(monthlyPI), piHint),
     legRow('tax', 'Property Taxes', monthlyTax, pct(monthlyTax), hintFor(taxSrc)),
     legRow('ins', 'Insurance',      monthlyIns, pct(monthlyIns), hintFor(insSrc)),
     legCfRow,
