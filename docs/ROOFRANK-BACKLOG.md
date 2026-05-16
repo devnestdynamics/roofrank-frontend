@@ -2124,7 +2124,7 @@ Investors don't typically override taxes and insurance — those come from the b
 
 Backend re-scores on POST and stamps `reportData.assumptions` with `source: 'user-override'` so the P&I line reads "· you said 6.25%". Re-uses the existing `recomputeWithOverride` plumbing — just extends the input schema. Explicitly skip taxes/insurance overrides for now: low value, more UI noise.
 
-### 167. Home-button signs the user out (bug)
+### ~~167. Home-button signs the user out (bug)~~ ✅ FIXED 2026-05-16
 **Priority:** 🔴 MVP candidate · **Effort:** XS · **Source:** Reported 2026-05-16
 
-When signed in, clicking the Home nav link logs the user out instead of routing to the dashboard. Almost certainly the link points at `roofrank-landing.html` (or `/`) and the landing/login flow blows away the session, or the route doesn't carry the auth token. Repro: sign in → click Home in nav → end up signed out. Investigate `roofrank-landing.html` boot script and the shared nav `Home` href across pages.
+When signed in, clicking the Home nav link logs the user out instead of routing to the dashboard. **Root cause:** wasn't actually a sign-out — `Auth.clear()` was never called. The Home/logo links across every page point at `roofrank-landing.html`, which renders the marketing CTAs ("Sign In · Start Free →") regardless of auth state, so a signed-in user landing there *feels* signed out (and the rest of the marketing page is unhelpful when they came for the dashboard). **Fix:** added a tiny boot script at the top of `roofrank-landing.html` that reads `rr_token` from localStorage and `window.location.replace('roofrank-dashboard.html')` if present. Bypass via `?marketing=1` if a logged-in account wants to share/view the marketing page.

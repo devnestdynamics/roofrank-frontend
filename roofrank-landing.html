@@ -24,6 +24,20 @@
   <meta name="author" content="RoofRank">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// Signed-in users land here via Home / logo clicks and see "Sign In · Start Free"
+// CTAs, which feels like a sign-out. Send them straight to the dashboard instead.
+// Skip the redirect if the URL says ?marketing=1 (lets us share the marketing
+// page with a logged-in account without bouncing).
+(function () {
+  try {
+    var marketing = new URLSearchParams(window.location.search).get('marketing');
+    if (!marketing && localStorage.getItem('rr_token')) {
+      window.location.replace('roofrank-dashboard.html');
+    }
+  } catch (e) { /* ignore — fall through to marketing page */ }
+})();
+</script>
 <title>RoofRank — An AI Analyst for Every Multifamily Deal</title>
 <meta name="description" content="RoofRank reads every active multifamily listing in your markets, scores it on 8 financial metrics, and writes you a morning brief — so you spend minutes on the right deals, not hours on the wrong ones.">
 <link rel="preconnect" href="https://fonts.bunny.net">
