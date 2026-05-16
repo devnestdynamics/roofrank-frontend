@@ -2028,3 +2028,89 @@ HUD FMR is what Section 8 vouchers will pay — not what landlords actually coll
 5. Let user pick which to use (related to per-unit override #79)
 
 This becomes the wedge feature that differentiates RoofRank from BiggerPockets / DealCheck — they all use HUD FMR or template assumptions.
+
+---
+
+## 🔑 MLS-Gated Killer Features — for review (May 16, 2026)
+
+These features unlock once we have real MLS data (SimplyRETS / Repliers / etc. — requires broker sponsorship). Adding to backlog so we can prioritize when data partnership lands.
+
+### 151. Distressed Deal Radar
+**Priority:** 🔴 MVP candidate (once MLS lands) · **Effort:** S · **Source:** `specialListingConditions` field
+
+1-tap filter on dashboard: "Show me only foreclosures / short sales / estates / REO." Most marketable single feature in our pipeline — value-add investors' first question on every deal. Promote as Pro-tier "Distressed Deal Alerts" with push notifications.
+
+### 152. Real per-unit unit-mix (1BR/2BR/3BR per unit, not building total)
+**Priority:** 🔴 MVP candidate · **Effort:** M · **Source:** `rooms` array with per-room dimensions (Repliers only — SimplyRETS likely too, need to verify)
+
+Today we estimate per-unit bedrooms by dividing total by units. With MLS rooms data, we get actual per-unit unit-mix: "Unit 1: 2BR, Unit 2: 3BR, Unit 3: 2BR". Unlocks:
+- Accurate per-unit rent (sum of correct FMR tiers, not weighted approximation)
+- Owner-occupier scoring (you live in the smallest unit, rent the rest)
+- Per-unit override feature (#79) becomes pre-filled, not blank
+
+If Repliers exposes this well, it's a deciding factor over SimplyRETS.
+
+### 153. Vacancy / occupancy detector
+**Priority:** 🟡 Phase 2 · **Effort:** S · **Source:** `showingInstructions` text parsing
+
+Parse showing instructions for vacancy signals: "lockbox vacant" / "vacant — go anytime" / "24hr notice — tenant occupied" / "owner occupied". Surface as a badge on deal cards. Vacant + low price = high negotiation leverage. Tenant occupied = harder close.
+
+### 154. Listing agent direct outreach
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** `agent.contact.{email,cell,office}` + Claude
+
+Surface listing agent contact on deal detail. Pro-tier: "Draft a question for the agent" — Claude generates outreach email about deferred maintenance, days on market, seller motivation. Click-to-copy or send via mailto/SMS.
+
+### 155. MLS-grade price reduction tracker
+**Priority:** 🟡 Phase 2 · **Effort:** S · **Source:** `originalListPrice` + `lastStatus` history array
+
+Today we infer price drops between ingestion runs. MLS gives us authoritative history: "Listed Jan 15 at $850K, dropped to $799K Feb 22, dropped to $749K Mar 30, current ask $725K". Pair with #102 watchlist price alerts.
+
+### 156. Repeat listing / re-list detector
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** `sales` history + `lastStatus`
+
+"This building sold 2018 for $480K, relisted 2021 (expired), back on market 2026 at $825K." Strong signal for problem properties. Surface as a warning card on deal detail.
+
+### 157. Open house aggregator
+**Priority:** 🔴 MVP candidate · **Effort:** M · **Source:** `openHouses` array
+
+Friday afternoon brief: "3 open houses in your watchlist this weekend." Day-of push notification. Saturday morning email with map. Kills BiggerPockets for actual weekend deal-hunting. Connects to push notification work already shipped (#135).
+
+### 158. Image-based condition tagging
+**Priority:** 🟡 Phase 2 · **Effort:** S · **Source:** Repliers `imageInsights` (pre-computed)
+
+Repliers tags photos with: "kitchen-renovated", "dated-bathroom", "original-flooring", "deferred-maintenance-visible". Combined with our distress flags, gives confident "this needs $40-60K of work" pre-purchase. Cheaper than running Claude vision ourselves ($0 vs ~$0.05/deal).
+
+### 159. Co-agent / commission signal
+**Priority:** 🟢 Phase 3 · **Effort:** S · **Source:** `coAgent`, `coopCompensation`
+
+2.5% buyer agent commission vs 3% sometimes signals motivated seller (offering less to attract bidders). Subtle but stack-able with other signals.
+
+### 160. Fresh per-property tax data
+**Priority:** 🟢 Phase 3 · **Effort:** S · **Source:** `tax.taxAnnualAmount` + `taxYear`
+
+Currently we cache ATTOM tax annually. MLS gives fresh per-listing tax. Catches recent reassessments that ATTOM hasn't updated. Affects DSCR + cash flow accuracy.
+
+### 161. Building systems risk surfacing
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** `property.foundation`, `property.heating`, `property.roof`, `property.parking`, year built
+
+"Oil heat — $8-15K to convert to gas." "Slab foundation 1880 — settling risk." "Tile roof installed 2018 — clean for 20 years." Surface as a "Building Systems" panel on deal detail. Connects to Negotiation Coach (#61) — these are the things buyers leverage in offers.
+
+### 162. Neighborhood-level filtering
+**Priority:** 🟡 Phase 2 · **Effort:** M · **Source:** `mls.area`, `geo.marketArea`, `geo.county`
+
+Today we filter by city. MLS exposes sub-city market areas (e.g., "Worcester West" / "Lynn Highlands"). Lets users target the actual neighborhoods they want, not whole-city averages.
+
+### 163. Showing requirements as a leverage signal
+**Priority:** 🟢 Phase 3 · **Effort:** XS · **Source:** `showingInstructions`
+
+Listings requiring 48h notice = tenants engaged = harder to flip vacant after closing. Surface as a "Closing complexity: high" flag.
+
+### 164. Lot dimensions / subdivision potential
+**Priority:** 🟢 Phase 3 · **Effort:** M · **Source:** `property.lotSize` with dimensions
+
+Big lots = subdivision / ADU potential. Surface lot size + zoning hint on deal detail. Could partner with municipal zoning APIs for "ADU eligibility" flag per address. NE-specific demand.
+
+### 165. Lease type / NNN signal for commercial-leaning multi
+**Priority:** 🟢 Phase 3 · **Effort:** XS · **Source:** `leaseType`
+
+Some small multifamily is set up as NNN where tenants pay expenses. Materially different scoring math (lower expense ratio, higher CoC). Catch via leaseType field.
