@@ -1,6 +1,6 @@
 # RoofRank Product Backlog
 
-**Last updated:** May 15, 2026
+**Last updated:** May 16, 2026
 
 ---
 
@@ -2114,3 +2114,12 @@ Big lots = subdivision / ADU potential. Surface lot size + zoning hint on deal d
 **Priority:** 🟢 Phase 3 · **Effort:** XS · **Source:** `leaseType`
 
 Some small multifamily is set up as NNN where tenants pay expenses. Materially different scoring math (lower expense ratio, higher CoC). Catch via leaseType field.
+
+### 166. Per-deal rate + down payment overrides
+**Priority:** 🔴 MVP candidate · **Effort:** S · **Source:** New `deal_assumption_overrides` table (mirror `deal_rent_overrides`)
+
+Investors don't typically override taxes and insurance — those come from the bill or the carrier. But they DO override the financing assumptions on every deal: *"I can lock 6.25% with my lender"* or *"I'm putting 30% down on this one, not 25%."* Mirror the rent-override pattern (#79 shipped) so deal-detail exposes two more dials:
+- **Mortgage rate** — preloaded with the live Freddie Mac rate; user can type their own
+- **Down payment %** — preloaded with 25%; user can drop to 20% or push to 30%+
+
+Backend re-scores on POST and stamps `reportData.assumptions` with `source: 'user-override'` so the P&I line reads "· you said 6.25%". Re-uses the existing `recomputeWithOverride` plumbing — just extends the input schema. Explicitly skip taxes/insurance overrides for now: low value, more UI noise.
