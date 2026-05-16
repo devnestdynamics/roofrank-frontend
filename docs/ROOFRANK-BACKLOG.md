@@ -1766,3 +1766,188 @@ Eventually add property photos, but selectively. Default approach:
 Sourced from RentCast listing data; CDN-cached. Lazy-loaded.
 
 **Why selective:** Listing photos are marketing material. They make every deal look "good" because agents picked the best angles. Wholesale adoption would work against the data-driven brand position. Use sparingly, where the user has already chosen to engage.
+
+---
+
+## 🔔 Notification Strategy — Master Plan (TABLED for build, May 15)
+
+**Status:** Strategy locked in this conversation. Build paused pending decisions on tier mix and open-house data. Pieces partially shipped: PWA push end-to-end live, basic `sendMorningDigest` template exists, `user_preferences` schema staged, `morningBrief.ts` service drafted but not wired to a cron yet.
+
+### Core principle
+
+> **An analyst stays quiet when the market is quiet.**
+>
+> Real estate moves slowly. A typical market sees ~1-3 new listings/week and a Strong Buy maybe every 1-2 weeks. Daily-brief-style cadence trains users to ignore us. The retention loop isn't "open every email" — it's "trust RoofRank to tell me when something matters."
+
+### Tier matrix
+
+| Channel | Starter (free) | Pro ($49/mo) | Team ($249/mo) |
+|---|---|---|---|
+| **In-app "Since last visit" strip** | ✅ Already shipped | ✅ | ✅ |
+| **Weekly summary email (Sunday)** | ✅ Default ON | ✅ | ✅ |
+| **Event-triggered email** (new SB, watchlist drop, score Δ) | ❌ — capped at 1 teaser email/month | ✅ | ✅ |
+| **Daily morning brief email** | ❌ | ✅ Opt-in | ✅ |
+| **Weekend amplified briefs (Fri PM + Sat AM)** | ❌ | ✅ Pro-default | ✅ |
+| **Open house alerts on watchlist** | ❌ | ✅ | ✅ |
+| **SMS alerts (high-priority signals)** | ❌ | ✅ Opt-in at upgrade | ✅ |
+| **PWA push** | Free if installed (universal, not gated) | Same | Same |
+
+Rationale: Free users get **enough to feel value + a sense of momentum** (weekly + in-app), nothing real-time. Pro gets the **active-investor cadence**. SMS specifically reserved for Pro because it's the most premium-feeling channel and has a real per-message cost.
+
+### Signal taxonomy + cadence
+
+| Signal | Email | SMS (Pro) | Push (installed) | Cadence |
+|---|---|---|---|---|
+| New Strong Buy in user's markets | ✅ Pro · within 1hr | ✅ within 30min | ✅ within 30min | Event-triggered |
+| Watchlist deal price drop ≥1% / ≥$1K | ✅ Pro · immediate | ✅ immediate | ✅ immediate | Event-triggered |
+| Watchlist deal score Δ ≥5 pts | ✅ Pro · daily roll-up | — | ✅ if Δ ≥10 | Daily 7am batch |
+| Watchlist deal 30/60/90 DOM milestone | ✅ Pro · day-of | — | — | Daily 7am |
+| Open house on watchlist deal | ✅ Pro · 48h prior | ✅ Pro · 24h prior | ✅ 24h prior | Event |
+| Open house in user's markets (Pro only, opt-in) | ✅ Pro · weekly summary | — | — | Friday brief |
+| Weekly market summary | ✅ All · Sunday 8am | — | — | Cron |
+| Daily morning brief (Pro opt-in) | ✅ Pro opt-in · 7am | — | — | Cron + adaptive content |
+| 3 unopened emails in a row | Auto-downgrade prompt | — | — | Tracked opens |
+
+### Weekend warming pattern (Pro)
+
+Real estate's "rush hour" is Friday afternoon → Sunday evening. Pro users get an amplified weekend cadence:
+
+- **Friday 4pm ET — "Weekend Brief"**: "Here's what to look at this weekend." Lists every open house on watchlist + matching markets, new listings hit in the past 48h, what would be worth touring.
+- **Saturday 8am ET — "Today's Tours"**: Day-of summary of open houses + any overnight Strong Buys.
+- **Sunday 8am ET — Weekly summary + "What's worth watching next week"**: This is the universal Sunday brief (also goes to Starter).
+
+The Friday/Saturday cadence only fires when there's actual weekend activity to report — if no open houses + no new SBs, Friday email skips, Saturday skips. Sunday weekly always sends.
+
+### Adaptive content for slow days (daily brief, Pro)
+
+When the daily brief fires and nothing material moved, swap content tier by tier:
+
+1. **Real news first** — new listings, price drops, score changes
+2. **Aging insights** — "82 Linwood: now 23 days listed. Sellers typically discount after 30."
+3. **Cross-market nudges** — "Lynn is quiet. Worcester just had 2 new Buys."
+4. **Macro context** — "Treasury yields dropped 0.15% overnight. Your watched deals' DSCR just improved by ~0.03."
+5. **Educational micro-content** — "Quiet morning. 90-second refresher on how I weigh DSCR vs. CoC."
+
+Never copy yesterday's brief. Daily must always feel fresh; if we can't make it fresh, we don't send.
+
+### Open house data — sourcing options
+
+Data is the gating dependency for open-house alerts. Ranked by realism:
+
+1. **RealtyMole / RentCast premium tier** — same parent as our existing listing source; ask about open-house fields in their MLS-grade data plan. Probably easiest path.
+2. **HomeJunction API** — independent provider, has open houses, ~$200-500/mo.
+3. **ATTOM upgrade** — they have it in higher tiers; we already integrate.
+4. **MLS direct (Bridge/Trestle)** — gold standard, requires broker sponsorship. Long term.
+5. **User-supplied** — when saving a deal, let them paste an open-house URL or date. Useful long tail.
+
+For MVP-launch we say: "Open house alerts coming as data partners onboard." Don't fake it.
+
+### Re-engagement / auto-protection
+
+- **3 unopened daily briefs in a row** (Pro) → in-app banner: "Switch to weekly?" plus a one-click toggle in settings.
+- **30 days of zero opens** (any plan) → soft pause emails, in-app strip says "I've stopped sending emails — re-enable when you're ready."
+- **Bounce / complaint** → immediately mark opt-out (Resend webhook handles this).
+
+### What's already done (don't rebuild)
+
+- ✅ PWA push end-to-end (VAPID generated, frontend wired, backend routes deployed, table migrated in prod). #135
+- ✅ `service-worker.js` push/click/rotation handlers
+- ✅ Strong Buy push fanout in ingestion worker — fires on score ≥75
+- ✅ Watchlist price drop push trigger — fires on ≥$1K + ≥1% drop
+- ✅ "Since last visit" in-app strip on dashboard — #133
+- ✅ `sendMorningDigest` email template (basic — needs personalization upgrade)
+- ✅ `sendStrongBuyAlert` email template
+- ✅ Resend account + API key + domain DKIM verified (SPF pending propagation as of May 15 evening)
+- ✅ `user_preferences` schema designed (morningBriefEmail, strongBuyAlertEmail, priceDropAlertEmail, lastBriefSentAt) — migration generated locally as 0002_many_stranger.sql, NOT yet applied to prod
+- ✅ `src/services/morningBrief.ts` drafted — builds personalized payload, cron entrypoint, per-user test path
+
+### What needs to ship to make this real
+
+**Phase A — Weekly + event-triggered foundation (ship first)**
+1. Apply 0002_many_stranger.sql to prod DB (after roofrank-backend is redeployed with the schema change committed)
+2. New email template: `sendWeeklySummary` — Sunday cadence, all opted-in users
+3. Rename `morningBrief.ts` logic to support weekly mode (sendBriefToUser already has the structure)
+4. Wire 3 event-triggered email senders:
+   - Strong Buy detected in ingestion → `sendStrongBuyEmail` per matching user
+   - Watchlist price drop → `sendPriceDropEmail` per watcher
+   - Watchlist score Δ ≥5 daily roll-up → `sendWatchlistDailyEmail`
+5. Cron entries (BullMQ or AWS EventBridge): Sunday 8am ET for weekly, daily 7am ET for watchlist roll-up
+6. Frontend: opt-in toggles in More sheet for all 3 email types (default ON)
+7. Re-add `/api/notifications/preferences` GET/PATCH endpoints
+8. Unsubscribe link in every email (token-based, no login required) → respects opt-out
+
+**Phase B — Pro tier + daily + adaptive content**
+1. Plan check before each email send (Starter → only weekly, Pro → all)
+2. `sendDailyBrief` email — Pro opt-in, adaptive content fallback (aging, cross-market, macro, educational)
+3. Friday/Saturday weekend cadence
+4. Re-engagement: track opens (Resend webhook), auto-downgrade after 3 unopened
+
+**Phase C — SMS (Pro-only)**
+1. Twilio account + verified sender number
+2. `sendSmsAlert(userId, payload)` service mirroring `pushToUser` signature
+3. SMS opt-in at Pro upgrade (capture phone, double opt-in via consent text)
+4. Wire to Strong Buy + watchlist price drop signals (Pro accounts only)
+
+**Phase D — Open houses**
+1. Audit data partners (RealtyMole tier, HomeJunction, ATTOM)
+2. Add `open_houses` table once we have a source
+3. Friday weekend brief includes open houses on watchlist + matching markets
+4. Push + SMS 24h prior for watchlist matches
+
+### Open product questions
+
+1. **Starter teaser email cap** — is 1/month right? 1/week feels like marketing spam. 1/month feels respectful.
+2. **Daily brief Pro default** — opt-in OFF (user must enable) or opt-in ON (must disable)? My vote: OFF. Users opt INTO daily, opt OUT of weekly.
+3. **Weekend cadence for free users** — should Starter get Saturday open house data too as an upsell signal ("3 open houses today in your markets — Pro shows them all")? Worth A/B.
+4. **PWA push gating** — currently universal. Question: should we promote it more aggressively to Pro? My vote: no, keep it universal. Push is the modern equivalent of an SMS alert without the cost; gating it cheapens Pro.
+
+
+---
+
+## 🎯 Multifamily-Native Wedge — MVP Scope Candidates (May 15)
+
+The strategic insight: **every competitor (DealCheck, BiggerPockets, Mashvisor) was built for single-family rentals and bolted on multifamily as an afterthought.** Their data models assume 1 unit = 1 rent = 1 tenant. We can be the only product that's natively multifamily, scoped tight to 2-6 units (residential financing range, the bulk of "small landlord" inventory).
+
+These features carry the wedge. Revisit + prioritize against current MVP items.
+
+### 141. Per-unit rent override on deal detail
+**Priority:** 🔴 MVP candidate · **Effort:** M · **Category:** Product
+
+Show HUD FMR estimate broken down by unit + bedroom count. Let investor type their actual per-unit rent and recalculate score live. Single most multifamily-native feature we could ship — competitors literally cannot do this because their data model is single-rent.
+
+UI: deal detail page, between hero and analyst card. Default to HUD/RentCast estimate. On override, score and CF refresh inline.
+
+### 142. Unit-mix-aware scoring
+**Priority:** 🔴 MVP candidate · **Effort:** L · **Category:** Product · Scoring engine
+
+A 4-unit with 4×1BR scores differently than 4-unit with 2×2BR + 2×3BR. Different rent per door, different vacancy risk, different exit comps. Today we treat them as the same. Multifamily investors know this matters; we should reflect it.
+
+### 143. Owner-occupier scoring mode
+**Priority:** 🔴 MVP candidate · **Effort:** M · **Category:** Product · Scoring engine
+
+Toggle on deal detail: "I'd live in one unit." Recalc with one unit's rent zeroed out, but use FHA-friendly financing assumptions (3.5% down, lower rate). Surface effective cap rate, monthly housing cost vs renting, exit timeline (must occupy 1yr). Owner-occupier is a huge MF strategy nobody else surfaces.
+
+### 144. Per-door price vs. market benchmark
+**Priority:** 🟡 Phase 2 candidate · **Effort:** M · **Category:** Product
+
+Already partially in scoring. Promote to a headline metric on deal detail: "$262K/door · 18% above Lynn market avg." Compares against actual recent transactions in the city + unit count band. The "are you overpaying per door" question is what experienced MF investors ask first.
+
+### 145. Tenant-mix risk scoring
+**Priority:** 🟡 Phase 2 candidate · **Effort:** S · **Category:** Scoring engine
+
+A 2-unit loses 50% income when 1 vacates; a 6-unit loses 17%. Bake this asymmetric risk into the DSCR variance + factor it into the score. A 2-unit at marginal DSCR is meaningfully riskier than a 6-unit at the same DSCR — we should show that.
+
+### 146. Triple-decker / vintage archetype warnings
+**Priority:** 🟡 Phase 2 candidate · **Effort:** M · **Category:** Product · AI
+
+Pre-1920 NE buildings have predictable risk patterns: cast iron pipes, knob-and-tube, lead paint, foundation settling, deferred maintenance budgets. Surface these as part of the due-diligence checklist (related to #113). The analyst voice can lead with: "1907 triple-decker. Budget $15-20K for deferred maintenance in year 1."
+
+### 147. RentCast units bug — investigate + fix
+**Priority:** 🔴 MVP · **Effort:** S · **Category:** Data quality
+
+Suspected: RentCast doesn't always populate the `units` field for small multifamily, so we fall back to a propertyType lookup that defaults to **2 units** for unknowns and **6 units** for `Multi Family`. Both wrong for most actual listings.
+
+**Fix path:** when units is missing or 0, derive from bedrooms (assume avg 2BR/unit) instead of defaulting blindly. OR, get ATTOM-enrichment running for every listing (#33 shipped) and use ATTOM's unit count when available. Flag listings with "unverified" unit count in the UI rather than guessing silently.
+
+Quick investigation needed in `src/workers/ingestionWorker.ts` → `estimateUnits()` function and the upsertListing path. Add logging on every listing where units came from a fallback.
+
