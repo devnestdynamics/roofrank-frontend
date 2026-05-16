@@ -275,6 +275,22 @@ body{
 .deal.wat::before{background:var(--amber)}
 .deal.pas::before{background:var(--rose)}
 
+/* ── CITY FILTER ─────────────────────────────────────────────────── */
+.city-row{padding:.5rem 0 .25rem}
+.city-chips{display:flex; gap:.4rem; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 -1.1rem; padding:.1rem 1.1rem}
+.city-chips::-webkit-scrollbar{display:none}
+.city-chip{
+  flex-shrink:0; background:#fff; border:1px solid var(--border); color:var(--ink);
+  font-family:var(--sans); font-size:.78rem; font-weight:500;
+  padding:.42rem .85rem; border-radius:18px;
+  display:inline-flex; align-items:center; gap:.4rem;
+  cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.city-chip:hover{border-color:var(--sage-border); background:#fdfcfa}
+.city-chip.active{background:var(--forest); color:#fff; border-color:var(--forest)}
+.city-chip-count{font-family:var(--mono); font-size:.62rem; background:var(--cream-2); color:var(--muted); padding:1px 6px; border-radius:8px; font-weight:500}
+.city-chip.active .city-chip-count{background:rgba(255,255,255,.18); color:#fff}
+
 /* ── TODAY'S PICKS (above the brief) ─────────────────────────────── */
 .todays-picks-section{padding:.5rem 0 .25rem}
 .tp-head{display:flex;align-items:baseline;justify-content:space-between;padding:.1rem .1rem .5rem}
@@ -790,6 +806,11 @@ body{
     <button class="changed-dismiss" type="button" onclick="dismissChanged()" aria-label="Dismiss">×</button>
   </section>
 
+  <!-- ── CITY FILTER — scopes brief / picks / lenses / feed ──────────── -->
+  <section class="city-row" id="cityRow" style="display:none">
+    <div class="city-chips" id="cityChips"></div>
+  </section>
+
   <!-- ── BRIEF — slim editorial hero (no greeting, no picks inside) ──── -->
   <section class="brief" id="briefSection" style="display:none">
     <div class="brief-card">
@@ -1038,6 +1059,64 @@ refreshAlertsButton();
 const circ = 2*Math.PI*19;
 let allDeals = [];
 let activeLens = 'curated';
+// City filter — null means "all markets". Initialized in boot() from URL/localStorage.
+let activeCity = null;
+const CITY_STORAGE_KEY = 'rr_active_city';
+// Returns the subset of allDeals matching the active city filter. Everything
+// downstream (brief, picks, lenses, feed) should consume this instead of
+// allDeals directly, so a single switch reshapes the whole page.
+function getCityFilteredDeals(){
+  if(!activeCity) return allDeals;
+  return allDeals.filter(d => d.city === activeCity);
+}
+
+// Build the horizontal "All · Lynn (24) · Worcester (64)" chip row. Cities are
+// derived from current feed data, sorted by deal count desc so the busiest
+// market is always nearest the user's thumb.
+function renderCityChips(){
+  const wrap = document.getElementById('cityChips');
+  const row = document.getElementById('cityRow');
+  if(!wrap || !row) return;
+  if(!allDeals.length){ row.style.display = 'none'; return; }
+
+  const counts = {};
+  for(const d of allDeals){ if(d.city) counts[d.city] = (counts[d.city] || 0) + 1; }
+  const cities = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+  // Only show the chip row if there's more than one city; otherwise it's noise.
+  if(cities.length < 2){ row.style.display = 'none'; return; }
+
+  const chips = [
+    `<button class="city-chip${activeCity ? '' : ' active'}" type="button" onclick="setActiveCity(null)">All <span class="city-chip-count">${allDeals.length}</span></button>`,
+    ...cities.map(([city, count]) =>
+      `<button class="city-chip${activeCity === city ? ' active' : ''}" type="button" onclick="setActiveCity('${city.replace(/'/g, "\\'")}')">${city} <span class="city-chip-count">${count}</span></button>`
+    ),
+  ];
+  wrap.innerHTML = chips.join('');
+  row.style.display = '';
+}
+
+function setActiveCity(city){
+  if(activeCity === city) return;
+  activeCity = city || null;
+  // Persist preference for next visit
+  try {
+    if(activeCity) localStorage.setItem(CITY_STORAGE_KEY, activeCity);
+    else localStorage.removeItem(CITY_STORAGE_KEY);
+  } catch {}
+  // Reflect in URL for shareable links — without reloading
+  try {
+    const url = new URL(window.location.href);
+    if(activeCity) url.searchParams.set('city', activeCity);
+    else url.searchParams.delete('city');
+    window.history.replaceState(null, '', url.toString());
+  } catch {}
+  // Re-render everything downstream of the city filter
+  renderCityChips();
+  renderBriefBody();
+  renderBriefPicks();
+  renderFollowups();
+  applyLens(activeLens);
+}
 let currentLensDeals = [];
 
 // ── PRO STATE ─────────────────────────────────────────────────────────────
@@ -1075,6 +1154,12 @@ const LENSES = [
 
 // ── BOOT ──────────────────────────────────────────────────────────────────
 async function boot(){
+  // Read initial city filter: URL param wins over localStorage so shared links work.
+  try {
+    const urlCity = new URLSearchParams(window.location.search).get('city');
+    activeCity = urlCity || localStorage.getItem(CITY_STORAGE_KEY) || null;
+  } catch { activeCity = null; }
+
   loadFeed();
   syncWatchBadge();
   AuthAPI.me().then(({user}={}) => {
@@ -1112,6 +1197,12 @@ async function loadFeed(){
   try {
     const data = await FeedAPI.list({ page:1, limit:30, sort:'score' });
     allDeals = data.deals || [];
+    // Reconcile the saved city filter: if no deals in that city anymore, drop it.
+    if(activeCity && !allDeals.some(d => d.city === activeCity)){
+      activeCity = null;
+      try { localStorage.removeItem(CITY_STORAGE_KEY); } catch {}
+    }
+    renderCityChips();
     renderBriefHead();
     renderBriefBody();
     renderBriefPicks();
@@ -1279,21 +1370,23 @@ function renderBriefHead(){
 
 // ── BRIEF BODY (the analyst's voice) ────────────────────────────────────
 function renderBriefBody(){
-  if(!allDeals.length) return;
-  const strongCount = allDeals.filter(d => (d.rankScore||0) >= 75).length;
-  const buyCount    = allDeals.filter(d => (d.rankScore||0) >= 60).length;
-  const freshCount  = allDeals.filter(d => (d.daysOnMarket||999) <= 7).length;
-  const motivatedCount = allDeals.filter(d => (d.daysOnMarket||0) >= 60).length;
+  const pool = getCityFilteredDeals();
+  if(!pool.length) return;
+  const strongCount = pool.filter(d => (d.rankScore||0) >= 75).length;
+  const buyCount    = pool.filter(d => (d.rankScore||0) >= 60).length;
+  const freshCount  = pool.filter(d => (d.daysOnMarket||999) <= 7).length;
+  const motivatedCount = pool.filter(d => (d.daysOnMarket||0) >= 60).length;
 
   const cityCounts = {};
-  allDeals.forEach(d => { if(d.city) cityCounts[d.city] = (cityCounts[d.city]||0)+1; });
+  pool.forEach(d => { if(d.city) cityCounts[d.city] = (cityCounts[d.city]||0)+1; });
   const cities = Object.entries(cityCounts).sort((a,b)=>b[1]-a[1]).map(c=>c[0]);
-  const cityCtx = cities.length === 0 ? 'your markets'
+  const cityCtx = activeCity ? activeCity
+                : cities.length === 0 ? 'your markets'
                 : cities.length === 1 ? cities[0]
                 : cities.length === 2 ? cities.join(' and ')
                 : 'your markets';
 
-  const top = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
+  const top = [...pool].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0))[0];
   const topAddr = top?.address?.split(',')[0] || 'one of the top-scored deals';
   const topCity = top?.city || cityCtx;
   const fin = top?.reportData?.financials || {};
@@ -1312,7 +1405,7 @@ function renderBriefBody(){
     body += `I'd open the top one or two before they go stale. `;
     if(motivatedCount > 0) body += `<b>${motivatedCount}</b> motivated seller${motivatedCount>1?'s':''} on the board.`;
   } else {
-    body = `Thin pickings in ${cityCtx} today — <b>${allDeals.length}</b> deal${allDeals.length>1?'s':''} but none scoring strong. `;
+    body = `Thin pickings in ${cityCtx} today — <b>${pool.length}</b> deal${pool.length>1?'s':''} but none scoring strong. `;
     body += `Days like this favor patient buyers. Fresh inventory after the nightly refresh.`;
   }
   document.getElementById('briefBody').innerHTML = body;
@@ -1326,11 +1419,12 @@ function renderBriefPicks(){
   const el = document.getElementById('todaysPicks');
   const sec = document.getElementById('todaysPicksSection');
   const metaEl = document.getElementById('tpMeta');
-  if(!el || !allDeals.length){
+  const pool = getCityFilteredDeals();
+  if(!el || !pool.length){
     if(sec) sec.style.display = 'none';
     return;
   }
-  const sortedByScore = [...allDeals].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0));
+  const sortedByScore = [...pool].sort((a,b)=>(b.rankScore||0)-(a.rankScore||0));
   const picks = sortedByScore.slice(0, 3);
   if(metaEl) metaEl.textContent = `3 of ${sortedByScore.length}`;
   if(sec) sec.style.display = '';
@@ -1369,10 +1463,10 @@ function renderFollowups(){
   const el = document.getElementById('followups');
   const row = document.getElementById('lensRow');
   if(!el) return;
-  // Render every lens as a horizontal pill EXCEPT lenses marked hiddenAsPill
-  // (curated = the default state shown by the picks carousel above).
+  // Lens counts respect the active city filter — chip + lens compose.
+  const pool = getCityFilteredDeals();
   const pillsHtml = LENSES.filter(l => !l.hiddenAsPill).map(l => {
-    const count = l.apply(allDeals).length;
+    const count = l.apply(pool).length;
     const locked = l.pro && !isPro;
     const lockIcon = locked
       ? `<svg class="followup-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
@@ -1392,16 +1486,18 @@ function renderFollowups(){
 function applyLens(id){
   const lens = LENSES.find(l => l.id === id);
   if(!lens) return;
+  // City-scoped pool for both the pro-lock count message and the actual results.
+  const pool = getCityFilteredDeals();
   // Free user tapping a Pro lens → upgrade modal, don't actually switch
   if(lens.pro && !isPro){
     openProModal({
       title: `Unlock "${lens.sectionEyebrow}"`,
-      sub: `Pro members get all 5 analyst lenses — including ${lens.sectionEyebrow.toLowerCase()}, which surfaces ${lens.apply(allDeals).length} deal${lens.apply(allDeals).length===1?'':'s'} matching this view right now.`,
+      sub: `Pro members get all 5 analyst lenses — including ${lens.sectionEyebrow.toLowerCase()}, which surfaces ${lens.apply(pool).length} deal${lens.apply(pool).length===1?'':'s'} matching this view right now.`,
     });
     return;
   }
   activeLens = id;
-  currentLensDeals = lens.apply(allDeals);
+  currentLensDeals = lens.apply(pool);
   // Update section header
   const picksHead = document.getElementById('picksHead');
   if(picksHead) picksHead.style.display = currentLensDeals.length ? 'flex' : 'none';
