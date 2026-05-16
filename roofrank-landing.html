@@ -441,15 +441,13 @@ section{padding:5rem 0}
 /* ── METRICS SECTION — verdict on top, evidence chips below ── */
 .metrics-engine{display:flex;flex-direction:column;align-items:center;gap:2.5rem;margin-top:2.5rem}
 .metrics-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;width:100%;max-width:780px}
-.metric-chip{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:help;position:relative}
-.metric-chip::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--ink);color:rgba(255,255,255,.96);padding:.55rem .8rem;border-radius:8px;font-family:var(--sans);font-size:.74rem;font-weight:400;line-height:1.4;width:max-content;max-width:220px;text-align:center;z-index:10;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,visibility .15s ease;box-shadow:0 6px 18px rgba(28,31,28,.18);white-space:normal}
-.metric-chip::before{content:'';position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:var(--ink);z-index:11;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,visibility .15s ease}
-.metric-chip:hover::after,
-.metric-chip:hover::before,
-.metric-chip:focus::after,
-.metric-chip:focus::before,
-.metric-chip.tip-on::after,
-.metric-chip.tip-on::before{opacity:1;visibility:visible}
+.metric-chip{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .85rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;cursor:help;transition:border-color .15s,box-shadow .15s}
+.metric-chip:hover,.metric-chip.tip-on{border-color:var(--forest);background:rgba(122,170,143,.07);box-shadow:0 4px 12px rgba(28,74,53,.08)}
+
+/* Shared definition display below the chip grid — one element, no overlap */
+.metric-tip-display{width:100%;max-width:780px;min-height:2.6rem;margin-top:1.25rem;padding:.85rem 1rem;text-align:center;font-family:var(--sans);font-size:.85rem;line-height:1.5;color:var(--muted);transition:color .2s}
+.metric-tip-display b{color:var(--ink);font-weight:500;margin-right:.35rem}
+.metric-tip-default{font-style:italic;opacity:.7}
 .metric-chip-name{font-family:var(--sans);font-size:.84rem;font-weight:500;color:var(--ink);line-height:1.25;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .metric-chip-val{font-family:var(--mono);font-size:.82rem;color:var(--ink);font-weight:500;flex-shrink:0}
 .metric-chip-check{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center}
@@ -683,6 +681,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
 <link rel="apple-touch-icon" href="/icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RoofRank">
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
@@ -1370,6 +1369,10 @@ footer{background:var(--ink);padding:4rem 0 2rem}
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
       </div>
+
+      <div class="metric-tip-display fade-up" id="metricTip" aria-live="polite" style="transition-delay:1.25s">
+        <span class="metric-tip-default">Hover or tap any metric for its definition.</span>
+      </div>
     </div>
 
     <p class="metrics-caption fade-up">Every metric a serious investor looks at — calculated, weighted, and combined into one verdict.</p>
@@ -1402,7 +1405,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <div class="compare-card-body">Spreadsheet-as-a-service tools score what you bring them. You're still the one hunting listings, building shortlists, and deciding which deal deserves the next hour of your time.</div>
         <div class="compare-card-divider"></div>
         <div class="compare-card-line them"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reactive — you find the deal first</div>
-        <div class="compare-card-line them"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No AI verdict, no morning brief</div>
+        <div class="compare-card-line them"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No alerts, no analyst to ask</div>
         <div class="compare-card-line us"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>RoofRank: scans your markets, surfaces the deals worth opening</div>
       </div>
 
@@ -1427,8 +1430,8 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   <div class="inner">
     <div class="pricing-header">
       <div class="eyebrow fade-up">Simple Pricing</div>
-      <h2 class="section-h2 fade-up">Start free. Upgrade when<br><em>the product pays for itself.</em></h2>
-      <p style="font-size:.9rem;color:var(--muted);margin-top:.75rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.7" class="fade-up">Founding member pricing — locked in forever for early subscribers. No contracts, cancel any time.</p>
+      <h2 class="section-h2 fade-up">Free to verify.<br><em>Pro to move.</em></h2>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.75rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7" class="fade-up">Use Starter to see if our math matches your gut. Upgrade when you can't afford to miss a deal.</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.25rem" class="fade-up">
         <span style="font-size:.8rem;color:var(--ink);font-weight:500" id="lp-mo-lbl">Monthly</span>
         <div id="lpToggle" onclick="lpToggleBilling()" style="width:40px;height:22px;background:var(--forest);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0">
@@ -1441,37 +1444,38 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <!-- STARTER -->
       <div class="plan fade-up">
         <div class="plan-name">Starter</div>
-        <div class="plan-desc">For investors exploring the product or new to multifamily investing.</div>
+        <div class="plan-desc">See if our math matches your gut. No card required.</div>
         <div class="plan-price">$0</div>
         <div class="plan-period">Free forever</div>
         <button class="plan-cta plan-cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Get Started Free</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>2 markets · 5 deal views per day</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>RoofRank score + signal per deal</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Basic analyzer (3 reports/month)</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist (up to 5 deals)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Up to 3 markets · every active deal</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Verdicts, scores, 8-metric breakdown</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist (15 deals)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Ask the analyst (10 questions/day)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Dashboard brief in-app</li>
         </ul>
       </div>
 
       <!-- PRO -->
       <div class="plan featured fade-up" style="position:relative">
-        <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--forest-3);color:#fff;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.22rem .7rem;border-radius:20px;white-space:nowrap">Founding Member Price</div>
+        <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--sage);color:#1c1f1c;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.22rem .7rem;border-radius:20px;white-space:nowrap">Recommended</div>
         <div class="plan-name">Pro</div>
-        <div class="plan-desc">For active investors closing deals and tracking multiple markets.</div>
+        <div class="plan-desc">For active investors who can't afford to miss a deal.</div>
         <div class="plan-price" id="lp-pro-price">$49</div>
-        <div class="plan-period" id="lp-pro-period">/month · locked in forever</div>
-        <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
+        <div class="plan-period" id="lp-pro-period">/month · founding price locked in</div>
+        <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start 14-day trial →</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All markets · unlimited deals</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Full 8-metric breakdown per deal</li>
-          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI deal narratives on every listing</li>
-          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Ask the Analyst — AI chat on any deal</li>
-          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI morning deal brief · daily email</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Strong Buy real-time alerts</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited analyzer reports</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Priority support</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>🔔 Push alerts — Strong Buy, Buy, watchlist</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Ask the analyst — unlimited</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Your numbers — custom rate + down payment</li>
+          <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Daily 7am email brief</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Watchlist signals (price drops, score shifts)</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited markets, deals, analyzer</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>CSV + PDF export</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>14-day trial · money-back guarantee</li>
         </ul>
       </div>
 
@@ -1481,7 +1485,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <div class="plan-desc">For investor-focused agents and partnerships sharing deal flow with clients.</div>
         <div class="plan-price" id="lp-team-price">$249</div>
         <div class="plan-period" id="lp-team-period">/month</div>
-        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Team →</button>
+        <button class="plan-cta plan-cta-solid" onclick="location.href='mailto:hello@roofrank.io?subject=Team%20plan%20inquiry'">Contact us →</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Everything in Pro</li>
@@ -1519,7 +1523,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
           <svg width="24" height="24" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#2d6448"/><path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/></svg>
           <span class="footer-logo-name">RoofRank</span>
         </a>
-        <p class="footer-desc">An AI analyst for every multifamily deal. Built for the independent investor — not the institutional fund.</p>
+        <p class="footer-desc">Know if a multifamily cashflows — in 30 seconds. Built for the independent investor — not the institutional fund.</p>
         <p style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:.25rem;margin-bottom:.9rem">Also: subscribe for our free weekly Deal of the Week email.</p>
         <div class="footer-email-row">
           <input class="footer-email-input" type="email" placeholder="your@email.com" id="femail">
@@ -1587,19 +1591,27 @@ document.querySelectorAll('.fade-up, .plan').forEach((el, i) => {
   io.observe(el);
 });
 
-// Metric chip tooltips: tap-to-toggle for touch devices, hover handled in CSS
+// Metric chips → shared definition display below the grid (no overlap with rows)
+const tipEl = document.getElementById('metricTip');
+const tipDefault = '<span class="metric-tip-default">Hover or tap any metric for its definition.</span>';
+function showMetricTip(chip){
+  const name = chip.querySelector('.metric-chip-name').textContent.trim();
+  const tip = chip.getAttribute('data-tip') || '';
+  tipEl.innerHTML = `<b>${name}.</b> ${tip}`;
+  document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
+  chip.classList.add('tip-on');
+}
+function clearMetricTip(){
+  tipEl.innerHTML = tipDefault;
+  document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
+}
 document.querySelectorAll('.metric-chip').forEach(chip => {
-  chip.addEventListener('click', e => {
-    const wasOn = chip.classList.contains('tip-on');
-    document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
-    if (!wasOn) chip.classList.add('tip-on');
-    e.stopPropagation();
-  });
+  chip.addEventListener('mouseenter', () => showMetricTip(chip));
+  chip.addEventListener('mouseleave', clearMetricTip);
+  chip.addEventListener('click', e => { showMetricTip(chip); e.stopPropagation(); });
 });
 document.addEventListener('click', e => {
-  if (!e.target.closest('.metric-chip')) {
-    document.querySelectorAll('.metric-chip.tip-on').forEach(c => c.classList.remove('tip-on'));
-  }
+  if (!e.target.closest('.metric-chip')) clearMetricTip();
 });
 
 let lpAnnual=false;

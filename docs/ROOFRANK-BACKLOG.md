@@ -11,9 +11,9 @@
 | ✅ Done | 30 |
 | 🔴 MVP Scope | 16 |
 | 🟡 Phase 2 | 55 |
-| 🟢 Phase 3 / Backlog | 33 |
+| 🟢 Phase 3 / Backlog | 34 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **132** |
+| **Total** | **133** |
 
 ---
 
@@ -2141,3 +2141,22 @@ When time permits — or on any deploy rotation cadence — rotate this key:
 4. `aws iam delete-access-key --user-name roofrank-deploy --access-key-id AKIA3WKTSYVX2QHVM554`
 
 Better long-term: migrate the workflow from long-lived access keys to GitHub OIDC + an assumable IAM role (`aws-actions/configure-aws-credentials` supports `role-to-assume`). No static creds anywhere — eliminates this category of risk entirely. Larger change, defer to post-launch.
+
+### 169. Multi-recipient alert routing for Pro (up to 3 numbers)
+**Priority:** 🟢 Phase 3 / post-MVP · **Effort:** M · **Source:** Pricing iteration 2026-05-16
+
+Pro users can add up to **3 phone numbers** (or push targets) that receive their RoofRank alerts. Stripe + a contacts UI on the Pro settings page. Each added recipient gets the same Strong Buy / Buy / watchlist push that the primary user gets, scoped to the primary's markets and watchlist.
+
+**Why:** Several latent personas benefit from this single feature without us building the full Agent & Team tier:
+- A **light agent** can put 1–3 investor clients on alerts as a soft service offering — without needing the $249 Team plan.
+- A **buying pair** (spouse, business partner) can both be notified of the same deal — no shared-account gymnastics.
+- An **investor-of-record + builder/operator** combo (e.g. one person holds the deal, another runs the rehab) can both stay in the loop.
+
+This is a "halo" feature that **bridges Pro and Agent & Team** without forcing the user to upgrade or build a full multi-seat product. It also increases Pro stickiness (now the Pro user has 2 other people relying on the alert flow they set up).
+
+**Defer to:** Post-MVP. Revisit alongside the pricing-wall re-evaluation. Could be a "Pro Plus" add-on at $10/mo if standalone Pro stays at $49.
+
+**Implementation notes:**
+- Reuse the existing push infrastructure (item 27 done) — broadcast to N tokens instead of 1.
+- Phone numbers via SMS would require Twilio (item 122 backlog) — push notifications are cheaper.
+- Privacy: each recipient should be able to unsubscribe directly from any alert.
