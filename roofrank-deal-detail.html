@@ -1073,8 +1073,11 @@ function applyProUnlocks(){
 function renderRentEstimate(d){
   const section = document.getElementById('rentEstimateSection');
   const rd = d.reportData || {};
-  const re = rd.rentEstimate || {};
-  if(!section || !re || !d.units){ if(section) section.style.display = 'none'; return; }
+  const re = rd.rentEstimate;
+  // Hide entirely if the deal hasn't been re-ingested with the new rentEstimate fields.
+  // Showing $0/unit on a deal that clearly has a cash flow looks broken — better to be quiet.
+  if(!section || !d.units) return;
+  if(!re || (re.perUnitMonthly == null && !re.unitMix)){ section.style.display = 'none'; return; }
 
   // Headline shows the current effective rent — either the user's override
   // (if applied) or the HUD-derived default.
@@ -1196,8 +1199,7 @@ async function applyRentOverride(){
       };
       // sessionStorage cache so back/forward respects override
       try {
-        const cacheKey = `rrdeal_${_deal.id}`;
-        sessionStorage.setItem(cacheKey, JSON.stringify(_deal));
+        sessionStorage.setItem('rr_deal_v3_' + _deal.id, JSON.stringify(_deal));
       } catch {}
     }
     renderDeal(_deal);
@@ -1223,7 +1225,7 @@ async function revertRentOverride(){
     // Reload the deal — server will return without userRentOverride
     const fresh = await FeedAPI.get(_deal.id);
     if(fresh){
-      try { sessionStorage.removeItem(`rrdeal_${_deal.id}`); } catch {}
+      try { sessionStorage.removeItem('rr_deal_v3_' + _deal.id); } catch {}
       _deal = fresh;
       renderDeal(_deal);
     }
@@ -1709,13 +1711,46 @@ async function boot(){
       applyProUnlocks();
     }).catch(e => console.warn('[RoofRank] could not load subscription:', e?.message));
   }
+  // Cache key versioned — bump when the deal payload shape changes so stale
+  // cached entries from before a release get bypassed automatically.
+  // v3 = adds reportData.rentEstimate + userRentOverride (May 16).
+  const CACHE_KEY = 'rr_deal_v3_' + fid;
+  // Clean up any older-versioned cache entries from previous releases so they
+  // don't accumulate in storage.
+  try {
+    sessionStorage.removeItem('rr_deal_' + fid);
+    sessionStorage.removeItem('rrdeal_' + fid);
+  } catch(e) {}
+
+  // Helper: does this cached deal have the fields the new UI needs?
+  function cacheLooksCurrent(d) {
+    const re = d?.reportData?.rentEstimate;
+    return !!(re && (re.perUnitMonthly != null || re.unitMix));
+  }
+
   try{
-    const cached = sessionStorage.getItem('rr_deal_'+fid);
-    if(cached){ renderDeal(JSON.parse(cached)); syncWatchButton(); loadChatHistory(); applyProUnlocks(); return; }
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if(cached){
+      const parsed = JSON.parse(cached);
+      if(cacheLooksCurrent(parsed)){
+        renderDeal(parsed); syncWatchButton(); loadChatHistory(); applyProUnlocks();
+        // Refresh in background so override + price always reflect the latest server state
+        FeedAPI.get(fid).then(fresh => {
+          if(fresh){ try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(fresh)); } catch{} renderDeal(fresh); syncWatchButton(); }
+        }).catch(() => {});
+        return;
+      }
+      // Cached but stale shape — drop it and fall through to a live fetch
+      try { sessionStorage.removeItem(CACHE_KEY); } catch(e) {}
+    }
   } catch(e){}
+
   try{
     const deal = await FeedAPI.get(fid);
-    if(deal){ renderDeal(deal); syncWatchButton(); loadChatHistory(); applyProUnlocks(); }
+    if(deal){
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(deal)); } catch{}
+      renderDeal(deal); syncWatchButton(); loadChatHistory(); applyProUnlocks();
+    }
     else document.getElementById('loading').textContent='Deal not found.';
   } catch(e){ document.getElementById('loading').textContent='Could not load deal: '+e.message; }
 }
