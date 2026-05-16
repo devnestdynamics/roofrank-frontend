@@ -1951,3 +1951,80 @@ Suspected: RentCast doesn't always populate the `units` field for small multifam
 
 Quick investigation needed in `src/workers/ingestionWorker.ts` → `estimateUnits()` function and the upsertListing path. Add logging on every listing where units came from a fallback.
 
+
+---
+
+### 148. Founder concierge — 1:1 onboarding for first 100 Pro signups
+**Priority:** 🟡 Phase 2 candidate · **Effort:** S · **Category:** Conversion / GTM / Founder-led growth
+
+Personally onboard the first 100 Pro signups via 30-min Calendly calls. Framed as a launch motion ("I'm personally onboarding our first 100 customers"), NOT as a permanent Pro tier feature.
+
+**Why this works in early days:**
+- Highest-leverage product research possible — every call surfaces what users actually struggle with
+- Strong conversion lever — "book a call with the founder" closes warm leads
+- Outsized word-of-mouth in the first 6 months
+- The constraint (100 spots) creates urgency
+- Selection filter — people who book are higher intent
+- Pricing justification without changing the pricing card
+
+**Why it fails if framed wrong:**
+- "Personal onboarding" in the Pro pricing card → you're a permanent CSM at user #800
+- Mixing onboarding (UX) with investment education (content) → calls become teaching sessions that don't scale
+
+**Three-call structure (in this order, every time):**
+1. Listen to their actual use case (15 min) — best product research possible
+2. Walk through the product (10 min) — show, don't tell
+3. One forcing-function question (5 min) — "What would make this a $99/mo product for you?" or "If you canceled in 30 days, what would the reason be?"
+
+**Graduation plan — write this DOWN before call #1:**
+| Phase | Users | What |
+|---|---|---|
+| 1 | 1-100 | 1:1, founder-led, 30 min, free |
+| 2 | 100-500 | Weekly group office hours, founder-led, free for all Pro |
+| 3 | 500-2K | Self-serve onboarding video + AI walkthrough + "book a call" link for Team only |
+| 4 | 2K+ | Concierge for Team only, full self-serve for Pro |
+
+Without a graduation plan you'll still be doing 1:1s at user #800 wondering why you can't build product.
+
+**Minimal infrastructure (ships in ~half a day):**
+1. Calendly account + a 30-min "Founding Member Onboarding" event type
+2. Pro signup success page: "Book your founding-member onboarding call" CTA → Calendly embed
+3. In-app banner for first-week Pro users who haven't booked: "I'm offering 1:1 sessions to our first 100 Pro members — N spots left this week" (pull N from Calendly availability)
+4. Email trigger at day 3 if no booking yet (uses Resend infra once verified)
+5. **Backlog reminder to retire the offer at user #100** — forcing function so we don't drift
+
+**Don't try to teach investment concepts on these calls.** Investment education is a content problem (blog + onboarding tooltips + standalone Analyst page), not a 1:1 problem. Personal onboarding shows them how to use RoofRank on THEIR specific deal/market. Two different products; don't conflate.
+
+**Comparable companies:** Superhuman (3 years of founder onboarding, 90% retention), Linear (first 1000 customers founder-onboarded), Notion (founders DM'd every early user). Counter-examples: many $5-10M ARR B2B SaaS where "personal onboarding" became a permanent yoke.
+
+---
+
+### 149. Verify Worcester (and other city) HUD FMR numbers + add periodic re-check
+**Priority:** 🟡 Phase 2 · **Effort:** S · **Category:** Data quality
+
+The Worcester FMR table entry was hardcoded as a Lawrence proxy until May 16, 2026, when it was replaced with conservative Worcester MA Metro estimates (2BR $1694 / 3BR $2108 / 4BR $2343 — gross). These were swapped in without API access to the canonical HUD FY2026 Worcester publication.
+
+**Verify:**
+1. Pull official HUD FY2026 Worcester MA Metro FMR from huduser.gov directly (requires HUD API key registration)
+2. Cross-check against Section 8 Payment Standards published by Worcester Housing Authority
+3. Cross-check against landlord-collected market rents for Worcester triple-deckers observed in actual deals over Q3 2026
+4. Update the table; bump `rentEstimate.version` (currently `fmr-fy26-v2`) so re-scored deals can be identified
+
+**Add periodic check:** HUD updates FMRs every October (federal FY). Add to ops calendar as an annual task; ideally also write a smoke test that fails if values look stale (>14 months since last update).
+
+**For other cities in the table**, run the same verification. Lynn currently uses the LHAND Payment Standards Jan 2026 (Boston metro FMR) which is at the high end — worth verifying it matches actual Lynn triple-decker rents.
+
+---
+
+### 150. Comp-based rent estimation as a tier 2 source
+**Priority:** 🟡 Phase 2 · **Effort:** L · **Category:** Data quality
+
+HUD FMR is what Section 8 vouchers will pay — not what landlords actually collect on the open market. For Pro users we should layer in market-comp-based rents:
+
+1. Pull RentCast's `/avm/rent/long-term` for each scored deal (returns rent estimate + low/high range + comparable rentals)
+2. Pull ATTOM's rental comps from `/property/expandedprofile` if available
+3. Compute weighted median of comps, filter to same zip + bedroom tier + similar sqft
+4. Surface in deal-detail UI as second signal: "HUD estimate: $X · Market comps: $Y"
+5. Let user pick which to use (related to per-unit override #79)
+
+This becomes the wedge feature that differentiates RoofRank from BiggerPockets / DealCheck — they all use HUD FMR or template assumptions.
