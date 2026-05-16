@@ -177,10 +177,18 @@ body{
 .brief-pick:hover{background:rgba(255,255,255,.08); border-color:rgba(122,170,143,.3); transform:translateY(-1px)}
 .brief-pick-head{display:flex; align-items:center; gap:.5rem; margin-bottom:.45rem}
 .brief-pick-score{
-  width:30px; height:30px; border-radius:50%; background:var(--sage); color:#1c1f1c;
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-size:.78rem; font-weight:600; flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  flex-shrink:0; width:32px;
 }
+.brief-pick-score svg{width:24px; height:24px; display:block}
+.brief-pick-score .bpr-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:#fff}
+.brief-pick-score .bpr-floor{fill:rgba(255,255,255,.18); transition:fill .3s}
+.brief-pick-score.sb  .bpr-floor-1,.brief-pick-score.sb  .bpr-floor-2,.brief-pick-score.sb  .bpr-floor-3{fill:var(--sage)}
+.brief-pick-score.buy .bpr-floor-1,.brief-pick-score.buy .bpr-floor-2{fill:var(--sage)}
+.brief-pick-score.buy .bpr-floor-3{fill:rgba(122,170,143,.35)}
+.brief-pick-score.wat .bpr-floor-1{fill:#d6a85b}
+.brief-pick-score.pas .bpr-floor-1{fill:rgba(255,255,255,.45)}
+.brief-pick-score-num{font-family:var(--mono); font-size:.62rem; font-weight:500; color:#fff; line-height:1}
 .brief-pick-sig{font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sage)}
 .brief-pick-addr{font-family:var(--serif); font-size:.88rem; font-weight:500; color:#fff; margin-bottom:.2rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .brief-pick-meta{font-size:.7rem; color:rgba(255,255,255,.5); margin-bottom:.35rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
@@ -260,12 +268,22 @@ body{
 .deal.wat::before{background:var(--amber)}
 .deal.pas::before{background:var(--rose)}
 
-.ring{width:48px; height:48px; flex-shrink:0; position:relative}
-.deal.sb .ring{width:54px; height:54px}
-.ring svg{width:100%; height:100%; transform:rotate(-90deg)}
-.rt{fill:none; stroke:var(--cream-3); stroke-width:4}
-.rf{fill:none; stroke-width:4; stroke-linecap:round}
-.rn{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.88rem; font-weight:500}
+/* RankMark — the brand primitive doing double duty as score viz.
+   Building silhouette: roof + 3 horizontal floors. Floors light bottom-up by tier. */
+.rmark{flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:2px; position:relative; width:48px}
+.deal.sb .rmark{width:54px}
+.rmark-svg{width:100%; aspect-ratio:1; display:block}
+.rmark-svg .rm-roof{fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:var(--ink)}
+.rmark-svg .rm-floor{fill:var(--cream-3); transition:fill .3s}
+.rmark.sb  .rm-floor-1, .rmark.sb  .rm-floor-2, .rmark.sb  .rm-floor-3 { fill:var(--forest) }
+.rmark.buy .rm-floor-1, .rmark.buy .rm-floor-2 { fill:var(--sage) }
+.rmark.wat .rm-floor-1 { fill:var(--amber) }
+.rmark.pas .rm-floor-1 { fill:var(--sage-pale,#cfe0d7) }
+.rmark-num{font-family:var(--mono); font-size:.78rem; font-weight:500; line-height:1; color:var(--ink); letter-spacing:-.01em}
+.rmark.sb  .rmark-num{color:var(--forest)}
+.rmark.buy .rmark-num{color:var(--forest-3)}
+.rmark.wat .rmark-num{color:var(--amber)}
+.rmark.pas .rmark-num{color:var(--muted)}
 
 .dbody{flex:1; min-width:0; overflow:hidden}
 .daddr{
@@ -619,9 +637,9 @@ body{
   .brief-greeting{font-size:1.55rem}
   .brief-body{font-size:1rem; line-height:1.6}
   .deal{padding:.85rem .85rem; gap:.7rem}
-  .ring{width:46px; height:46px}
-  .deal.sb .ring{width:52px; height:52px}
-  .rn{font-size:.85rem}
+  .rmark{width:44px}
+  .deal.sb .rmark{width:50px}
+  .rmark-num{font-size:.74rem}
   .daddr{font-size:.9rem}
   .dmeta{font-size:.7rem}
   .kp{font-size:.62rem; padding:1px 5px}
@@ -1215,10 +1233,20 @@ function renderBriefPicks(){
   el.innerHTML = picks.map(p => {
     const fin = p.reportData?.financials || {};
     const cf = fin.monthlyCashFlow;
-    const sig = scoreSignal(p.rankScore || 0);
+    const s = p.rankScore || 0;
+    const sig = scoreSignal(s);
+    const tcls = s>=75?'sb':s>=60?'buy':s>=45?'wat':'pas';
     return `<div class="brief-pick" onclick="openDeal('${p.id}',event)">
       <div class="brief-pick-head">
-        <div class="brief-pick-score">${p.rankScore || '—'}</div>
+        <div class="brief-pick-score ${tcls}" title="${s||'—'} / 100">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <path class="bpr-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="bpr-floor bpr-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
+            <rect class="bpr-floor bpr-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
+            <rect class="bpr-floor bpr-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+          </svg>
+          <span class="brief-pick-score-num">${p.rankScore || '—'}</span>
+        </div>
         <div class="brief-pick-sig">${sig}</div>
       </div>
       <div class="brief-pick-addr">${(p.address || 'Unknown').split(',')[0]}</div>
@@ -1365,7 +1393,15 @@ function richCard(d, i){
     ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
     : '';
   return `<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
-    <div class="ring"><svg viewBox="0 0 42 42"><circle class="rt" cx="21" cy="21" r="19"/><circle class="rf" cx="21" cy="21" r="19" stroke="${c}" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"/></svg><div class="rn" style="color:${c}">${score||'—'}</div></div>
+    <div class="rmark ${cl}" title="${score||'—'} / 100">
+      <svg class="rmark-svg" viewBox="0 0 40 40">
+        <path class="rm-roof" d="M5 17 L20 7 L35 17"/>
+        <rect class="rm-floor rm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
+        <rect class="rm-floor rm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
+        <rect class="rm-floor rm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+      </svg>
+      <div class="rmark-num">${score||'—'}</div>
+    </div>
     <div class="dbody">
       <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
       <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>

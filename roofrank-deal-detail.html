@@ -87,9 +87,23 @@ nav.top{
 /* ── HERO ──────────────────────────────────────────────────────────────── */
 .hero{text-align:center; padding-top:2.25rem}
 .hero-ring-wrap{display:flex; justify-content:center; margin-bottom:1.25rem;flex-direction:column;align-items:center}
-.hero-ring{position:relative; width:144px; height:144px; cursor:pointer; transition:transform .2s}
-.hero-ring:hover{transform:scale(1.025)}
-.hero-ring-hint{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:.55rem;cursor:pointer;transition:color .15s;display:inline-flex;align-items:center;gap:.3rem}
+/* RankMark — brand primitive doubling as the hero score viz. Replaces the circular ring. */
+.hero-rmark{position:relative; cursor:pointer; transition:transform .2s; display:flex; flex-direction:column; align-items:center; gap:.45rem}
+.hero-rmark:hover{transform:scale(1.025)}
+.hero-rmark svg{width:108px; height:108px; display:block}
+.hero-rmark .hrm-roof{fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke:var(--ink)}
+.hero-rmark .hrm-floor{fill:var(--cream-3); transition:fill .6s cubic-bezier(.22,1,.36,1)}
+.hero-rmark.sb  .hrm-floor-1, .hero-rmark.sb  .hrm-floor-2, .hero-rmark.sb  .hrm-floor-3 { fill:var(--forest) }
+.hero-rmark.buy .hrm-floor-1, .hero-rmark.buy .hrm-floor-2 { fill:var(--sage) }
+.hero-rmark.wat .hrm-floor-1 { fill:var(--amber) }
+.hero-rmark.pas .hrm-floor-1 { fill:#cfe0d7 }
+.hero-rmark-num{font-family:var(--mono); font-size:2.6rem; font-weight:500; line-height:1; letter-spacing:-.02em}
+.hero-rmark.sb  .hero-rmark-num{color:var(--forest)}
+.hero-rmark.buy .hero-rmark-num{color:var(--forest-3)}
+.hero-rmark.wat .hero-rmark-num{color:var(--amber)}
+.hero-rmark.pas .hero-rmark-num{color:var(--muted)}
+.hero-rmark-out{font-size:.66rem; color:var(--faint); letter-spacing:.08em; text-transform:uppercase; margin-top:-2px}
+.hero-ring-hint{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:.55rem;cursor:pointer;transition:color .15s;display:inline-flex;align-items:center;gap:.3rem;background:none;border:none;font-family:var(--sans)}
 .hero-ring-hint:hover{color:var(--forest)}
 .hero-ring-hint svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
 
@@ -103,9 +117,20 @@ nav.top{
 .sx-head{padding:1.4rem 1.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem;position:sticky;top:0;background:#fff;z-index:2;border-radius:18px 18px 0 0}
 .sx-grip{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:34px;height:4px;background:var(--border-2);border-radius:2px}
 @media(min-width:720px){.sx-grip{display:none}}
-.sx-h-score{width:56px;height:56px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);flex-shrink:0;color:#fff;line-height:1}
-.sx-h-score-num{font-size:1.4rem;font-weight:500}
-.sx-h-score-sig{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;opacity:.85}
+.sx-h-score{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1;width:56px;gap:3px}
+.sx-h-score svg{width:48px;height:48px;display:block}
+.sx-h-score .sxm-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--ink)}
+.sx-h-score .sxm-floor{fill:var(--cream-3);transition:fill .3s}
+.sx-h-score.sb  .sxm-floor-1,.sx-h-score.sb  .sxm-floor-2,.sx-h-score.sb  .sxm-floor-3{fill:var(--forest)}
+.sx-h-score.buy .sxm-floor-1,.sx-h-score.buy .sxm-floor-2{fill:var(--sage)}
+.sx-h-score.wat .sxm-floor-1{fill:var(--amber)}
+.sx-h-score.pas .sxm-floor-1{fill:#cfe0d7}
+.sx-h-score-num{font-size:.78rem;font-weight:500;font-family:var(--mono);color:var(--ink);line-height:1}
+.sx-h-score.sb  .sx-h-score-num{color:var(--forest)}
+.sx-h-score.buy .sx-h-score-num{color:var(--forest-3)}
+.sx-h-score.wat .sx-h-score-num{color:var(--amber)}
+.sx-h-score.pas .sx-h-score-num{color:var(--muted)}
+.sx-h-score-sig{font-size:.46rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .sx-h-title{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink);flex:1}
 .sx-h-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
 .sx-close{background:none;border:none;color:var(--muted);font-size:1.6rem;line-height:1;cursor:pointer;padding:.2rem .4rem;border-radius:6px;transition:all .15s}
@@ -623,15 +648,15 @@ nav.top{
   <!-- ── HERO ─────────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-ring-wrap">
-      <div class="hero-ring" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
-        <svg viewBox="0 0 144 144">
-          <circle class="hr-track" cx="72" cy="72" r="64"/>
-          <circle class="hr-fill" id="hrFill" cx="72" cy="72" r="64"/>
+      <div class="hero-rmark" id="heroRmark" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <path class="hrm-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="hrm-floor hrm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
+          <rect class="hrm-floor hrm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
+          <rect class="hrm-floor hrm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
         </svg>
-        <div class="hr-inner">
-          <div class="hr-num" id="hrNum">—</div>
-          <div class="hr-out">/ 100</div>
-        </div>
+        <div class="hero-rmark-num" id="hrNum">—</div>
+        <div class="hero-rmark-out">/ 100</div>
       </div>
       <button type="button" class="hero-ring-hint" onclick="openScoreExplain()">
         How is this calculated?
@@ -751,6 +776,12 @@ nav.top{
     <div class="sx-grip"></div>
     <div class="sx-head">
       <div class="sx-h-score" id="sxHeadScore">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <path class="sxm-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="sxm-floor sxm-floor-3" x="6" y="21" width="28" height="3.2" rx=".6"/>
+          <rect class="sxm-floor sxm-floor-2" x="6" y="26.2" width="28" height="3.2" rx=".6"/>
+          <rect class="sxm-floor sxm-floor-1" x="6" y="31.4" width="28" height="3.2" rx=".6"/>
+        </svg>
         <div class="sx-h-score-num" id="sxHeadScoreNum">—</div>
         <div class="sx-h-score-sig" id="sxHeadScoreSig">—</div>
       </div>
@@ -835,7 +866,10 @@ function openScoreExplain(){
 
   // Header
   const headScore = document.getElementById('sxHeadScore');
-  if(headScore) headScore.style.background = bg;
+  if(headScore){
+    headScore.classList.remove('sb','buy','wat','pas');
+    headScore.classList.add(cls);
+  }
   setText('sxHeadScoreNum', score);
   setText('sxHeadScoreSig', String(signal).toUpperCase());
   setText('sxTitle', 'How '+(d.address||'this').split(',')[0]+' scored '+score);
@@ -1296,12 +1330,12 @@ function renderDeal(d){
     heroCityEl.innerHTML = facts + (marketTag ? ` <span style="color:var(--forest);font-weight:500">· ${marketTag}</span>` : '');
   }
 
-  // ── Score ring
+  // ── Score (RankMark — building silhouette with floors lit by tier)
   setText('hrNum', score);
-  const hrFill=document.getElementById('hrFill');
-  if(hrFill){
-    hrFill.style.stroke=c;
-    hrFill.style.strokeDashoffset = (2*Math.PI*64) * (1 - score/100);
+  const heroRmark = document.getElementById('heroRmark');
+  if(heroRmark){
+    heroRmark.classList.remove('sb','buy','wat','pas');
+    heroRmark.classList.add(cls);
   }
   setText('bdScore', score+'/100');
 
