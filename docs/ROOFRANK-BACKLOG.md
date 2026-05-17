@@ -11,9 +11,9 @@
 | ✅ Done | 30 |
 | 🔴 MVP Scope | 20 |
 | 🟡 Phase 2 | 57 |
-| 🟢 Phase 3 / Backlog | 33 |
+| 🟢 Phase 3 / Backlog | 34 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **140** |
+| **Total** | **141** |
 
 ---
 
@@ -2245,3 +2245,25 @@ The current Open Graph image (`/og-image.png`) is from before the decision-tool 
 - Test share preview on LinkedIn/Twitter/Slack before launch.
 
 Quiet conversion killer if missed — most traffic-driving moments (shares, link previews) flow through this asset.
+
+### 177. Brand evaluation: DealDeckers vs RoofRank (post-MVP)
+**Priority:** 🟢 Phase 3 / post-MVP · **Effort:** S (decision) + L (if executing rebrand) · **Source:** Surfaced 2026-05-16 — dealdeckers.com is available
+
+`dealdeckers.com` is currently available. The name combines "Deal" (real estate transaction) + "Deckers" (the established brand mark) and unlocks a `.com` domain — better than the current `roofrank.io`. Worth evaluating post-MVP.
+
+**Cheap pre-decision move (do this now, separate from the rebrand):**
+Register and park the domain (~$10/yr Namecheap). Doesn't commit to a rebrand. Preserves the option in case someone else snags it. Redirect to roofrank.io for now.
+
+**Prerequisites before any actual rebrand:**
+1. **Trademark research.** Deckers Brands (UGG, Hoka — apparel) holds the "Deckers" trademark in their class. Real estate is a different class so likely OK, but Deckers Brands is large and litigious. Need a trademark attorney to clear it before commit. (Same risk noted in #123.)
+2. **Migration scope assessment.** Real cost: domain swap, all OG/meta on every page, repos (`roofrank-frontend`/`-backend`/`-infra`), GitHub handle (`devnestdynamics` already owns this), IAM users (`roofrank-deploy`), CSV/secret files (`roofrank-deploy_accessKeys.csv`), bookmarks/social, any user memory. Conservatively 1-2 days of grunt work.
+3. **User research signal.** Get 5-10 target users to react to both names. Don't decide on founder instinct alone.
+
+**Decision criteria:**
+- Does "Deal Deckers" feel more memorable to active investors than "RoofRank"?
+- Is the trademark friction tolerable per legal opinion?
+- Does the .com gain meaningfully outweigh the migration cost?
+
+**Defer to:** Post-MVP, after we have actual users to ask. Strategic review (May 16) explicitly listed brand pivot as out-of-scope for the 90-day launch path.
+
+Related: #123 (Brand decision RoofRank vs Deckers, deferred May 15).
