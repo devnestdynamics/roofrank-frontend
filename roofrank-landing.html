@@ -235,7 +235,18 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
     inset -1.5px 0 0 rgba(255,255,255,.14),
     inset 2px 2px 0 rgba(255,255,255,.05);
   transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg);
-  animation:heroPhoneIn .85s cubic-bezier(.22,1,.36,1) both
+  animation:heroPhoneIn .85s cubic-bezier(.22,1,.36,1) both;
+  cursor:pointer;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s
+}
+.hero-phone:hover,.hero-phone:focus-visible{
+  transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg) translateY(-4px);
+  box-shadow:
+    -16px 42px 80px rgba(14,17,15,.6),
+    0 8px 28px rgba(14,17,15,.4),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset -1.5px 0 0 rgba(255,255,255,.14),
+    inset 2px 2px 0 rgba(255,255,255,.05);
+  outline:none
 }
 @keyframes heroPhoneIn{from{opacity:0;transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg) translateY(14px) scale(.96)}to{opacity:1;transform:perspective(1100px) rotateY(-9deg) rotateZ(-2.5deg) translateY(0) scale(1)}}
 .hero-phone-screen{
@@ -257,7 +268,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
   animation:heroPhoneNotif .55s cubic-bezier(.34,1.56,.64,1) .9s both
 }
-@keyframes heroPhoneNotif{from{opacity:0;transform:translateY(-14px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes heroPhoneNotif{from{opacity:0;transform:translateY(-32px) scale(.88)}to{opacity:1;transform:translateY(0) scale(1)}}
 .hero-phone-notif-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .hero-phone-notif-icon{width:22px;height:22px;background:var(--forest);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hero-phone-notif-icon svg{width:14px;height:14px}
@@ -275,7 +286,16 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   border-radius:18px;padding:14px 14px 13px;
   box-shadow:0 10px 28px rgba(20,24,22,.12);
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  animation:heroPhoneNotif .55s cubic-bezier(.34,1.56,.64,1) .3s both
+  animation:heroPhoneNotif .55s cubic-bezier(.34,1.56,.64,1) .3s both, heroMobileNotifPing 1.6s ease-out 1s 1;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;
+  transition:transform .12s ease, box-shadow .2s
+}
+.hero-mobile-notif:active{transform:scale(.97)}
+.hero-mobile-notif:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
+@keyframes heroMobileNotifPing{
+  0%{box-shadow:0 10px 28px rgba(20,24,22,.12), 0 0 0 0 rgba(122,170,143,.5)}
+  55%{box-shadow:0 10px 28px rgba(20,24,22,.12), 0 0 0 16px rgba(122,170,143,0)}
+  100%{box-shadow:0 10px 28px rgba(20,24,22,.12), 0 0 0 16px rgba(122,170,143,0)}
 }
 @media(max-width:768px){.hero-mobile-notif{display:block}}
 .hero-phone-homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:110px;height:4px;background:rgba(255,255,255,.4);border-radius:2px}
@@ -1184,7 +1204,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     </div>
 
     <!-- Mobile-only notification card (replaces the desktop phone mockup at ≤768px) -->
-    <div class="hero-mobile-notif" role="status" aria-label="Example RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash at today's rate">
+    <div class="hero-mobile-notif" role="button" tabindex="0" aria-label="Example RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash. Tap to preview the dashboard." onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('features').scrollIntoView({behavior:'smooth'})}">
       <div class="hero-phone-notif-head">
         <div class="hero-phone-notif-icon" aria-hidden="true">
           <svg viewBox="0 0 30 30" fill="none">
@@ -1206,7 +1226,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 
   <div class="hero-right">
     <div class="hero-phone-wrap">
-      <div class="hero-phone" aria-label="A phone showing a RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash at today's rate.">
+      <div class="hero-phone" role="button" tabindex="0" aria-label="Example RoofRank push notification: Strong Buy in Lynn — 58 Laighton St, 11.4% cash-on-cash. Click to preview the dashboard." onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('features').scrollIntoView({behavior:'smooth'})}">
         <div class="hero-phone-notch"></div>
         <div class="hero-phone-screen">
           <!-- Status bar -->
