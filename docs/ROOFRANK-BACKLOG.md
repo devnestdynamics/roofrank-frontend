@@ -2267,3 +2267,28 @@ Register and park the domain (~$10/yr Namecheap). Doesn't commit to a rebrand. P
 **Defer to:** Post-MVP, after we have actual users to ask. Strategic review (May 16) explicitly listed brand pivot as out-of-scope for the 90-day launch path.
 
 Related: #123 (Brand decision RoofRank vs Deckers, deferred May 15).
+
+### 178. Hero imagery: bold redesign (post-launch experiment)
+**Priority:** 🟢 Phase 3 / post-launch · **Effort:** M · **Source:** Surfaced 2026-05-17
+
+The current hero uses a hand-drawn Boston triple-decker streetscape SVG. It works as atmospheric backdrop on desktop (overlay keeps it from competing with copy) but leans **lifestyle/editorial** rather than **decision-tool**. The streetscape says "we love multifamily." A skeptical investor expects the hero of a decision tool to say "we have data."
+
+**Three bold directions explored (see `hero-imagery-mockup.html` for live mockups):**
+
+1. **Data canvas** — Abstract scoring chips, faded ghost numbers, mini bars. Subtle drift animation. Reads as software product.
+2. **Live ticker** — Three slow-scrolling lines of real deals at different speeds. Hits the freshness wedge. Hardest to fake — proves the engine is alive.
+3. **Score grid wallpaper** — Faded grid of mini deal cards. Visualizes coverage. "We scored all of them" implicit.
+
+**Why deferred from launch (decided 2026-05-17):**
+- The receipt card (#4 / hero "30 sec proof") already carries the decision-tool signal hard in the foreground. Adding a data-coded background risks redundancy and visual noise.
+- Streetscape's only real problem was mobile readability — fixed by hiding it on mobile (`display:none` ≤768px). One-line CSS change can ship alongside the receipt card.
+- Bold imagery experiment is better evaluated post-launch with real user behavior data, not pre-launch instinct.
+
+**Cheap pre-launch move (do alongside receipt card):**
+Hide streetscape on mobile via CSS:
+```css
+@media(max-width:768px){.hero-photo{display:none}}
+```
+Mobile gets a clean cream hero. Desktop keeps the streetscape as backdrop. Zero design risk.
+
+**Re-evaluate when:** post-launch, after 50+ users, with bounce-rate data on the current hero. If desktop bounce is high, swap to Direction 2 (ticker) as the first experiment.

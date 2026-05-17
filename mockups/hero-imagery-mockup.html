@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Hero imagery mockups (#8)</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --radius:12px;
+}
+body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+
+.opt-bar{background:var(--ink);color:#fff;padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.opt-bar-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.opt-bar-desc{font-size:.82rem;color:rgba(255,255,255,.65);font-style:italic;max-width:560px;text-align:right}
+
+/* ── Shared hero shell ─────────────────────────────────────────────── */
+.hero{
+  min-height:540px;
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--cream);
+  position:relative;overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    105deg,
+    rgba(247,244,239,.98) 0%,
+    rgba(247,244,239,.96) 25%,
+    rgba(247,244,239,.72) 42%,
+    rgba(247,244,239,.18) 60%,
+    rgba(247,244,239,.0) 75%
+  )
+}
+.hero-left{
+  position:relative;z-index:3;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:3.5rem 3rem 3rem 4rem;
+}
+.hero-right{
+  position:relative;z-index:3;
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem 3rem 3rem 1.5rem;
+}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--forest);margin-bottom:1.1rem}
+.hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--forest-3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-h1{font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,3rem);font-weight:500;line-height:1.08;color:#0f0f0e;letter-spacing:-.025em;margin-bottom:1rem}
+.hero-sub{font-size:.95rem;color:#2a2e29;line-height:1.65;max-width:440px;margin-bottom:1.5rem}
+.cta-row{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.75rem 1.4rem;border-radius:var(--radius);font-size:.92rem;font-weight:500;cursor:pointer;font-family:var(--sans)}
+.btn-secondary{background:transparent;color:var(--ink);border:1.5px solid var(--border-2);padding:.75rem 1.3rem;border-radius:var(--radius);font-size:.92rem;cursor:pointer;font-family:var(--sans)}
+
+/* phone placeholder for the right column */
+.phone-mock{
+  width:240px;aspect-ratio:9/19;
+  background:linear-gradient(155deg,#1c2120 0%,#0b0e0c 100%);
+  border-radius:36px;padding:6px;
+  box-shadow:-12px 30px 60px rgba(14,17,15,.5);
+  transform:perspective(1100px) rotateY(-9deg) rotateZ(-2deg);
+}
+.phone-screen{
+  width:100%;height:100%;border-radius:30px;
+  background:linear-gradient(170deg,#1f2a23 0%,#14201a 60%);
+  position:relative;
+}
+
+/* ============================================================
+   DIRECTION 1 — Data canvas
+   ============================================================ */
+.dc-canvas{position:absolute;inset:0}
+.dc-chip{
+  position:absolute;
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  border-radius:8px;padding:.35rem .55rem;
+  font-family:var(--mono);font-size:.62rem;color:var(--forest);
+  white-space:nowrap;
+  opacity:.55;
+  display:flex;align-items:center;gap:.3rem;
+}
+.dc-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--forest)}
+.dc-chip-dot.w{background:var(--watch)}
+.dc-chip-dot.b{background:var(--buy)}
+.dc-bar{
+  position:absolute;
+  height:4px;border-radius:2px;
+  background:var(--sage);opacity:.25;
+}
+.dc-num{
+  position:absolute;font-family:var(--serif);font-weight:500;
+  color:var(--forest);opacity:.18;letter-spacing:-.02em;line-height:1;
+}
+.dc-pill{
+  position:absolute;
+  background:rgba(28,74,53,.06);border:1px solid var(--sage-border);
+  border-radius:18px;padding:.35rem 1rem;
+  font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--forest);opacity:.45;white-space:nowrap;
+}
+@keyframes dcDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.dc-chip{animation:dcDrift 6s ease-in-out infinite}
+.dc-chip:nth-child(2n){animation-duration:7.5s;animation-delay:-1s}
+.dc-chip:nth-child(3n){animation-duration:8.5s;animation-delay:-2s}
+
+/* ============================================================
+   DIRECTION 2 — Live ticker
+   ============================================================ */
+.ticker-bg{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-start;padding-top:1.5rem;gap:.85rem;overflow:hidden}
+.ticker-row{
+  width:100%;overflow:hidden;
+  display:flex;align-items:center;
+  font-family:var(--mono);font-size:.75rem;color:var(--forest);
+  opacity:.5;
+  white-space:nowrap;
+}
+.ticker-row.dim{opacity:.28;font-size:.7rem}
+.ticker-row.dimmer{opacity:.18;font-size:.68rem}
+.ticker-track{
+  display:inline-flex;gap:1.5rem;align-items:center;
+  animation:tickerScroll 55s linear infinite;
+  padding-right:1.5rem;
+}
+.ticker-track.fast{animation-duration:42s}
+.ticker-track.slow{animation-duration:78s;animation-direction:reverse}
+@keyframes tickerScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.tk{display:inline-flex;align-items:center;gap:.5rem}
+.tk-dot{width:5px;height:5px;border-radius:50%;background:var(--forest)}
+.tk-dot.w{background:var(--watch)}
+.tk-dot.b{background:var(--buy)}
+.tk-tag{
+  font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:1px 6px;border-radius:4px;
+}
+
+/* For ticker direction, use a lighter overlay so the ticker breathes */
+.hero.ticker .hero-overlay{
+  background:linear-gradient(
+    105deg,
+    rgba(247,244,239,.95) 0%,
+    rgba(247,244,239,.85) 30%,
+    rgba(247,244,239,.45) 55%,
+    rgba(247,244,239,.15) 75%,
+    rgba(247,244,239,.0) 90%
+  )
+}
+
+/* ============================================================
+   DIRECTION 3 — Score grid wallpaper
+   ============================================================ */
+.grid-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:80px;gap:.6rem;padding:.8rem;overflow:hidden}
+.grid-card{
+  background:var(--white);border:1px solid var(--border);border-radius:8px;
+  padding:.55rem .6rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  opacity:.55;
+  transition:opacity .3s;
+}
+.grid-card-top{display:flex;align-items:center;gap:.4rem}
+.grid-card-score{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--forest);background:rgba(28,74,53,.06);
+  color:var(--forest);font-family:var(--mono);font-size:.55rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.grid-card-score.w{border-color:var(--watch);color:var(--watch);background:rgba(160,106,0,.05)}
+.grid-card-score.b{border-color:var(--buy);color:var(--buy);background:rgba(45,100,72,.05)}
+.grid-card-tag{
+  font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--forest);
+}
+.grid-card-tag.w{color:var(--watch)}
+.grid-card-tag.b{color:var(--buy)}
+.grid-card-addr{font-size:.58rem;color:var(--ink-2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid-card-cf{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+
+/* Heavier overlay for grid so copy is readable */
+.hero.grid .hero-overlay{
+  background:linear-gradient(
+    105deg,
+    rgba(247,244,239,.99) 0%,
+    rgba(247,244,239,.97) 28%,
+    rgba(247,244,239,.80) 45%,
+    rgba(247,244,239,.30) 65%,
+    rgba(247,244,239,.05) 85%
+  )
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-left{padding:2.5rem 1.25rem 1.5rem}
+  .hero-right{display:none}
+  .opt-bar{padding:.85rem 1.25rem;flex-direction:column;align-items:flex-start}
+  .opt-bar-desc{text-align:left}
+}
+
+/* Intro */
+.intro{max-width:880px;margin:2.5rem auto;text-align:center;padding:0 1.5rem}
+.intro-h1{font-family:var(--serif);font-size:1.6rem;font-weight:500;color:var(--ink);margin-bottom:.5rem}
+.intro-p{color:var(--muted);font-size:.95rem;line-height:1.65;max-width:620px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="intro-h1">Hero imagery · 3 directions</div>
+  <p class="intro-p">All three replace the streetscape illustration. Each leans into a different argument: <b>Data canvas</b> = "this is software." <b>Live ticker</b> = "we're always watching." <b>Score grid</b> = "we scored all of them."</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- DIRECTION 1 — Data canvas -->
+<!-- ============================================================ -->
+<div class="opt-bar">
+  <div class="opt-bar-name">Direction 1 · Data canvas</div>
+  <div class="opt-bar-desc">Abstract scoring chips, faded numbers, mini bars. Subtle drift animation. Reads "software product."</div>
+</div>
+<div class="hero">
+  <div class="hero-bg">
+    <div class="dc-canvas">
+      <!-- Faded large numbers in the back -->
+      <div class="dc-num" style="top:8%;left:62%;font-size:180px">87</div>
+      <div class="dc-num" style="top:55%;left:78%;font-size:120px">11.4</div>
+
+      <!-- Score chips scattered -->
+      <div class="dc-chip" style="top:14%;left:55%"><span class="dc-chip-dot"></span>Strong Buy · 87</div>
+      <div class="dc-chip" style="top:24%;left:78%"><span class="dc-chip-dot b"></span>Buy · 76</div>
+      <div class="dc-chip" style="top:36%;left:60%"><span class="dc-chip-dot"></span>Strong Buy · 91</div>
+      <div class="dc-chip" style="top:42%;left:88%"><span class="dc-chip-dot w"></span>Watch · 68</div>
+      <div class="dc-chip" style="top:54%;left:54%"><span class="dc-chip-dot b"></span>Buy · 73</div>
+      <div class="dc-chip" style="top:66%;left:72%"><span class="dc-chip-dot"></span>Strong Buy · 84</div>
+      <div class="dc-chip" style="top:75%;left:58%"><span class="dc-chip-dot w"></span>Watch · 65</div>
+      <div class="dc-chip" style="top:82%;left:80%"><span class="dc-chip-dot b"></span>Buy · 78</div>
+
+      <!-- Pills with metric labels -->
+      <div class="dc-pill" style="top:18%;left:70%">11.4% CoC</div>
+      <div class="dc-pill" style="top:48%;left:65%">DSCR 1.47</div>
+      <div class="dc-pill" style="top:72%;left:85%">$2,180/mo</div>
+
+      <!-- Bars suggesting cashflow histogram -->
+      <div class="dc-bar" style="top:30%;left:55%;width:70px"></div>
+      <div class="dc-bar" style="top:32%;left:55%;width:55px"></div>
+      <div class="dc-bar" style="top:34%;left:55%;width:90px"></div>
+      <div class="dc-bar" style="top:60%;left:85%;width:60px"></div>
+      <div class="dc-bar" style="top:62%;left:85%;width:45px"></div>
+      <div class="dc-bar" style="top:64%;left:85%;width:78px"></div>
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-left">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · 2–6 units · Live data nightly</div>
+    <h1 class="hero-h1">Know if a multifamily cashflows —<br>in 30 seconds.</h1>
+    <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
+    <div class="cta-row">
+      <button class="btn-primary">See deals in my market →</button>
+      <button class="btn-secondary">See how it works</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="phone-mock"><div class="phone-screen"></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DIRECTION 2 — Live ticker -->
+<!-- ============================================================ -->
+<div class="opt-bar" style="margin-top:2.5rem">
+  <div class="opt-bar-name">Direction 2 · Live ticker</div>
+  <div class="opt-bar-desc">Three slow-scrolling lines of real deals. Different speeds and opacities for depth. Feels alive.</div>
+</div>
+<div class="hero ticker">
+  <div class="hero-bg">
+    <div class="ticker-bg">
+      <!-- Row 1 — primary -->
+      <div class="ticker-row">
+        <div class="ticker-track">
+          <span class="tk"><span class="tk-dot"></span>58 Laighton St · Lynn · <span class="tk-tag">Strong Buy</span> · $2,180/mo · 11.4% CoC</span>
+          <span class="tk"><span class="tk-dot b"></span>12 Howard St · Worcester · <span class="tk-tag">Buy</span> · $1,420/mo · 8.6% CoC</span>
+          <span class="tk"><span class="tk-dot w"></span>87 Boston St · Lynn · <span class="tk-tag">Watch</span> · $640/mo · 5.1% CoC</span>
+          <span class="tk"><span class="tk-dot"></span>22 Pleasant St · Worcester · <span class="tk-tag">Strong Buy</span> · $2,340/mo · 12.1% CoC</span>
+          <span class="tk"><span class="tk-dot b"></span>104 Western Ave · Lynn · <span class="tk-tag">Buy</span> · $1,610/mo · 9.2% CoC</span>
+          <!-- Duplicate for seamless loop -->
+          <span class="tk"><span class="tk-dot"></span>58 Laighton St · Lynn · <span class="tk-tag">Strong Buy</span> · $2,180/mo · 11.4% CoC</span>
+          <span class="tk"><span class="tk-dot b"></span>12 Howard St · Worcester · <span class="tk-tag">Buy</span> · $1,420/mo · 8.6% CoC</span>
+          <span class="tk"><span class="tk-dot w"></span>87 Boston St · Lynn · <span class="tk-tag">Watch</span> · $640/mo · 5.1% CoC</span>
+          <span class="tk"><span class="tk-dot"></span>22 Pleasant St · Worcester · <span class="tk-tag">Strong Buy</span> · $2,340/mo · 12.1% CoC</span>
+          <span class="tk"><span class="tk-dot b"></span>104 Western Ave · Lynn · <span class="tk-tag">Buy</span> · $1,610/mo · 9.2% CoC</span>
+        </div>
+      </div>
+      <!-- Row 2 — dimmer, different speed -->
+      <div class="ticker-row dim">
+        <div class="ticker-track slow">
+          <span class="tk">refreshed 2h ago · 30 active</span>
+          <span class="tk">Freddie Mac 6.83% · wk May 9</span>
+          <span class="tk">3 new this week</span>
+          <span class="tk">ATTOM tax · live</span>
+          <span class="tk">per-unit rents · 2br avg $1,650</span>
+          <span class="tk">DSCR 1.47 avg</span>
+          <span class="tk">refreshed 2h ago · 30 active</span>
+          <span class="tk">Freddie Mac 6.83% · wk May 9</span>
+          <span class="tk">3 new this week</span>
+          <span class="tk">ATTOM tax · live</span>
+          <span class="tk">per-unit rents · 2br avg $1,650</span>
+          <span class="tk">DSCR 1.47 avg</span>
+        </div>
+      </div>
+      <!-- Row 3 — dimmest, fastest -->
+      <div class="ticker-row dimmer">
+        <div class="ticker-track fast">
+          <span class="tk"><span class="tk-dot"></span>14 Main St · Lynn · 79</span>
+          <span class="tk"><span class="tk-dot b"></span>301 Park Ave · Worcester · 74</span>
+          <span class="tk"><span class="tk-dot"></span>9 Adams Ct · Lynn · 88</span>
+          <span class="tk"><span class="tk-dot w"></span>56 Pleasant St · Worcester · 66</span>
+          <span class="tk"><span class="tk-dot b"></span>78 Lewis St · Lynn · 75</span>
+          <span class="tk"><span class="tk-dot"></span>33 Grand St · Worcester · 82</span>
+          <span class="tk"><span class="tk-dot"></span>14 Main St · Lynn · 79</span>
+          <span class="tk"><span class="tk-dot b"></span>301 Park Ave · Worcester · 74</span>
+          <span class="tk"><span class="tk-dot"></span>9 Adams Ct · Lynn · 88</span>
+          <span class="tk"><span class="tk-dot w"></span>56 Pleasant St · Worcester · 66</span>
+          <span class="tk"><span class="tk-dot b"></span>78 Lewis St · Lynn · 75</span>
+          <span class="tk"><span class="tk-dot"></span>33 Grand St · Worcester · 82</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-left">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · 2–6 units · Live data nightly</div>
+    <h1 class="hero-h1">Know if a multifamily cashflows —<br>in 30 seconds.</h1>
+    <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
+    <div class="cta-row">
+      <button class="btn-primary">See deals in my market →</button>
+      <button class="btn-secondary">See how it works</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="phone-mock"><div class="phone-screen"></div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DIRECTION 3 — Score grid wallpaper -->
+<!-- ============================================================ -->
+<div class="opt-bar" style="margin-top:2.5rem">
+  <div class="opt-bar-name">Direction 3 · Score grid wallpaper</div>
+  <div class="opt-bar-desc">A faded grid of mini deal cards. Visualizes coverage. "We scored all of them" as the implicit message.</div>
+</div>
+<div class="hero grid">
+  <div class="hero-bg">
+    <div class="grid-bg">
+      <!-- Row 1 -->
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">87</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">58 Laighton St</div><div class="grid-card-cf">$2,180/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">76</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">12 Howard St</div><div class="grid-card-cf">$1,420/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">68</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">87 Boston St</div><div class="grid-card-cf">$640/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">91</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">22 Pleasant St</div><div class="grid-card-cf">$2,340/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">74</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">104 Western Ave</div><div class="grid-card-cf">$1,610/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">84</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">14 Main St</div><div class="grid-card-cf">$1,920/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">65</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">301 Park Ave</div><div class="grid-card-cf">$510/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">88</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">9 Adams Ct</div><div class="grid-card-cf">$2,050/mo</div></div></div>
+      <!-- Row 2 -->
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">73</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">56 Pleasant St</div><div class="grid-card-cf">$1,290/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">82</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">33 Grand St</div><div class="grid-card-cf">$1,870/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">75</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">78 Lewis St</div><div class="grid-card-cf">$1,530/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">86</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">41 Oak Ave</div><div class="grid-card-cf">$1,990/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">63</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">22 Birch Ln</div><div class="grid-card-cf">$480/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">78</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">15 Spring St</div><div class="grid-card-cf">$1,640/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">89</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">7 Cedar St</div><div class="grid-card-cf">$2,210/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">77</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">62 Elm St</div><div class="grid-card-cf">$1,580/mo</div></div></div>
+      <!-- Row 3 -->
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">83</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">18 Maple St</div><div class="grid-card-cf">$1,840/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">66</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">94 Walnut St</div><div class="grid-card-cf">$590/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">79</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">28 Chestnut St</div><div class="grid-card-cf">$1,700/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">90</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">3 Hill St</div><div class="grid-card-cf">$2,290/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">72</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">51 Forest Ave</div><div class="grid-card-cf">$1,360/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">85</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">24 Bay St</div><div class="grid-card-cf">$1,970/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">67</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">110 Lake St</div><div class="grid-card-cf">$620/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">74</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">39 River St</div><div class="grid-card-cf">$1,470/mo</div></div></div>
+      <!-- Row 4 -->
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">86</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">17 Park Pl</div><div class="grid-card-cf">$1,960/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">76</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">65 Sea St</div><div class="grid-card-cf">$1,550/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">88</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">12 Pine St</div><div class="grid-card-cf">$2,070/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score w">64</div><div class="grid-card-tag w">Watch</div></div><div><div class="grid-card-addr">48 Salem Tpke</div><div class="grid-card-cf">$540/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">73</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">21 North Ave</div><div class="grid-card-cf">$1,380/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">81</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">36 South St</div><div class="grid-card-cf">$1,810/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score b">77</div><div class="grid-card-tag b">Buy</div></div><div><div class="grid-card-addr">42 King St</div><div class="grid-card-cf">$1,610/mo</div></div></div>
+      <div class="grid-card"><div class="grid-card-top"><div class="grid-card-score">84</div><div class="grid-card-tag">SB</div></div><div><div class="grid-card-addr">73 Queen St</div><div class="grid-card-cf">$1,890/mo</div></div></div>
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-left">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · 2–6 units · Live data nightly</div>
+    <h1 class="hero-h1">Know if a multifamily cashflows —<br>in 30 seconds.</h1>
+    <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
+    <div class="cta-row">
+      <button class="btn-primary">See deals in my market →</button>
+      <button class="btn-secondary">See how it works</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="phone-mock"><div class="phone-screen"></div></div>
+  </div>
+</div>
+
+</body>
+</html>
