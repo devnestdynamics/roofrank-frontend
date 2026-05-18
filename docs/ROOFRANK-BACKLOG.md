@@ -2312,20 +2312,22 @@ Related: [[mvp-launch-markets]] in memory.
 ### 180. Pre-auth AI chat as conversion device (v1.1)
 **Priority:** 🟢 Phase 3 / post-launch · **Effort:** L · **Source:** Decided 2026-05-17 during onboarding design — deferred from MVP
 
-Pre-auth AI chat was considered for the onboarding flow as a wow moment. Deferred to v1.1.
+**Scope clarification (added 2026-05-17 after audit confusion):** This item is about exposing the AI chat to **anonymous pre-auth visitors** during onboarding. It is NOT about the existing post-auth chat. The chat UI is already built and ships today: `roofrank-deal-detail.html` has the "Ask a follow-up" widget, and the Pro tier advertises "Ask the analyst — unlimited" / Starter advertises "Ask the analyst (10 questions/day)". Those claims are accurate. **Don't remove them from pricing.**
 
-**Why deferred (decided 2026-05-17):**
+What IS deferred: making chat available BEFORE the user has signed up.
+
+**Why pre-auth chat is deferred (decided 2026-05-17):**
 - Positioning memory ([[feedback-positioning-decision-tool]]) says AI is a capability inside the product, not a marketing claim
 - Anonymous chat = no rate limiting per user = abuse + cost risk
 - Hallucination risk without identity (no way to reach user to clarify mistakes)
-- W1 (Score Your Deal), W2 (sensitivity sliders), W4 (beat-the-market context) already create wow moments without AI chat
-- Strategic review explicitly listed AI chat as v1.1 deferred
+- W7 (editorial notes) + W8 (engine animation) already create wow moments without exposing chat to anonymous traffic
+- Strategic review explicitly listed pre-auth AI chat as v1.1 deferred
 
 **The bold v1.1 play to consider:**
 Use "Ask the analyst" as the conversion device on the soft signup wall. Limit to 3 free messages pre-auth, then the chat itself asks for email to continue. Combines AI wow with conversion trigger. Engineering scope: rate limiting per session/IP, prompt safety, content moderation, abuse prevention, cost ceiling per anonymous session.
 
-**Tension flagged with landing page:**
-Landing's brief showcase shows an "Ask the analyst" Q&A example. If pre-auth flow has zero chat presence, that's a small credibility crack. **Pre-launch fix:** add a small label on the landing's chat preview clarifying it's a post-signup capability (e.g., "↳ The analyst is on every deal-detail page · sign in to ask"). Track this as part of the landing/onboarding launch QA.
+**Landing chat preview labeling (shipped 2026-05-17, commit 2bb4df2):**
+Landing's brief showcase shows an "Ask the analyst" Q&A example. Added small footnote to that preview clarifying chat lives post-signup: *"↳ Lives on every deal-detail page · coming with your account"*. Sets correct expectation without overpromising pre-auth chat.
 
 Related: [[feedback-positioning-decision-tool]], strategic review's "Out of scope" list.
 
