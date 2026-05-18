@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<head>
+<script>
+// Auto-detect API base — localhost dev backend in local, prod elsewhere.
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Watchlist</title>
 <link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
