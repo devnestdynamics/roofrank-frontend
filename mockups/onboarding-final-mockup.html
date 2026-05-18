@@ -124,6 +124,11 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
 .ft-step-label,.sc-step-label{flex:1;line-height:1.4}
 .ft-step-val,.sc-step-val{margin-left:auto;font-weight:500;color:var(--forest);opacity:0;transition:opacity .35s;font-size:.82rem;text-align:right}
 .ft-step.done .ft-step-val,.sc-step.done .sc-step-val{opacity:1}
+.ft-step.analyst .ft-step-val,.sc-step.analyst .sc-step-val{
+  font-family:var(--serif);font-style:italic;color:var(--forest);font-size:.84rem;font-weight:500;
+}
+.featured-tile.engine-hidden .ft-engine{display:none}
+.featured-tile.engine-hidden .ft-reveal{margin-top:0;padding-top:0;border-top:none}
 
 .ft-reveal{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--cream-3);opacity:0;transform:translateY(8px);transition:all .55s cubic-bezier(.22,1,.36,1)}
 .ft-reveal.in{opacity:1;transform:none}
@@ -330,7 +335,7 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
         <div class="ft-step" data-step="0"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling Freddie Mac mortgage rate</span><span class="ft-step-val">6.83% · week of May 13</span></div>
         <div class="ft-step" data-step="1"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling ATTOM property tax assessment</span><span class="ft-step-val">$7,820/yr · actual</span></div>
         <div class="ft-step" data-step="2"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling per-unit rent comps (HUD)</span><span class="ft-step-val">$2,100/mo · 2BR avg, 01902</span></div>
-        <div class="ft-step" data-step="3"><span class="ft-step-dot"></span><span class="ft-step-label">Comparing to Lynn this week</span><span class="ft-step-val">2.8× median CoC</span></div>
+        <div class="ft-step analyst" data-step="3"><span class="ft-step-dot"></span><span class="ft-step-label">Analyst take</span><span class="ft-step-val">Top deal in Lynn — pricing leverage at $610K</span></div>
       </div>
       <div class="ft-reveal" id="ftReveal">
         <div class="ft-verdict-row">
@@ -340,7 +345,10 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
         <div class="ft-body"><span class="ft-cf">$2,180</span><span class="ft-cf-l">/mo cashflow</span><span class="ft-divider">·</span><span class="ft-coc">11.4% CoC</span></div>
         <div class="ft-foot">
           <span class="ft-foot-meta"><span class="ft-foot-meta-dot"></span>at today's Freddie rate (6.83%)</span>
-          <button class="ft-replay" onclick="playEngine()">↻ replay scoring</button>
+          <span style="display:flex;gap:.35rem">
+            <button class="ft-replay" onclick="playEngine()">↻ replay</button>
+            <button class="ft-replay" onclick="toggleFeatEngine()" id="featToggleBtn">↑ hide scoring</button>
+          </span>
         </div>
       </div>
     </div>
@@ -359,7 +367,7 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
           <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
           <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$6,200/yr · actual</span></div>
           <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,850/mo · 2BR avg</span></div>
-          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">2.5× median CoC</span></div>
+          <div class="sc-step analyst" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Analyst take</span><span class="sc-step-val">Don't sleep — priced right despite 12 days</span></div>
           <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('howard')">↑ hide</button></div>
         </div>
       </div>
@@ -376,7 +384,7 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
           <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
           <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$5,900/yr · actual</span></div>
           <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,780/mo · 2BR avg</span></div>
-          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">2.2× median CoC</span></div>
+          <div class="sc-step analyst" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Analyst take</span><span class="sc-step-val">Sellers motivated — start $580K, walk above $625K</span></div>
           <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('pleasant')">↑ hide</button></div>
         </div>
       </div>
@@ -393,7 +401,7 @@ body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-hei
           <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
           <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$8,400/yr · actual</span></div>
           <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,920/mo · 2BR avg</span></div>
-          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">1.2× median CoC</span></div>
+          <div class="sc-step analyst" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Analyst take</span><span class="sc-step-val">Tight margins — pass unless $50K below ask</span></div>
           <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('boston')">↑ hide</button></div>
         </div>
       </div>
@@ -529,6 +537,13 @@ function hideSmallCard(id){
   const card = document.getElementById('card-' + id);
   if (!card) return;
   card.classList.remove('expanded');
+}
+
+function toggleFeatEngine(){
+  const tile = document.getElementById('featTile');
+  const btn = document.getElementById('featToggleBtn');
+  const hidden = tile.classList.toggle('engine-hidden');
+  btn.textContent = hidden ? '↓ show scoring' : '↑ hide scoring';
 }
 </script>
 
