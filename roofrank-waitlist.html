@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Tell us your market</title>
+<meta name="description" content="We're starting with 5 Massachusetts cities. Tell us where you invest and we'll ping you when we expand.">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --sage:#7aaa8f;
+  --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --pass:#a03030; --watch:#a06a00;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;font-size:16px;-webkit-font-smoothing:antialiased}
+
+main{flex:1;padding:3rem 1.5rem 4rem;display:flex;flex-direction:column;align-items:center}
+
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:2rem}
+.brand-mark{width:28px;height:28px}
+.brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink)}
+
+.card{width:100%;max-width:480px;background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2.25rem 2rem 1.85rem;box-shadow:0 10px 40px rgba(28,31,28,.08);text-align:center}
+h1{font-family:var(--serif);font-size:1.55rem;font-weight:500;line-height:1.2;margin-bottom:.5rem}
+h1 em{font-style:italic;color:var(--forest)}
+.sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.5rem}
+
+.fields{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+input{width:100%;padding:.78rem 1rem;border:1.5px solid var(--border-2);border-radius:10px;font-size:.95rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;text-align:left}
+input:focus{border-color:var(--forest)}
+input::placeholder{color:var(--faint)}
+
+.btn{width:100%;background:var(--forest);color:#fff;border:none;padding:.78rem;border-radius:10px;font-size:.92rem;font-weight:500;cursor:pointer;font-family:var(--sans)}
+.btn:hover:not(:disabled){background:var(--forest-2)}
+.btn:disabled{opacity:.6;cursor:wait}
+
+.bridge{width:100%;max-width:480px;margin-top:1.25rem;padding:1rem 1.25rem;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:12px;text-align:center}
+.bridge-text{font-size:.82rem;color:var(--ink);line-height:1.6;margin-bottom:.65rem}
+.bridge-text strong{color:var(--forest);font-weight:500}
+.bridge-btn{background:var(--forest);color:#fff;border:none;padding:.55rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;font-family:var(--sans);text-decoration:none;display:inline-block}
+.bridge-btn:hover{background:var(--forest-2)}
+
+.back{display:inline-block;margin-bottom:1.5rem;color:var(--muted);text-decoration:none;font-size:.85rem;padding:6px 10px;border-radius:5px;transition:color .15s}
+.back:hover{color:var(--forest)}
+
+.success-card{background:var(--white);border:1px solid var(--sage-border);border-radius:16px;padding:2.5rem 2rem;box-shadow:0 10px 40px rgba(28,74,53,.1);max-width:480px;width:100%;text-align:center}
+.success-icon{width:60px;height:60px;border-radius:14px;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
+.success-icon svg{width:30px;height:30px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.state{display:none}
+.state.on{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--forest);color:#fff;padding:.65rem 1.1rem;border-radius:8px;font-size:.78rem;box-shadow:0 4px 16px rgba(28,31,28,.25);z-index:9999;max-width:340px;line-height:1.55}
+.toast.error{background:var(--pass)}
+.toast.warning{background:var(--watch)}
+
+.legal-footer{border-top:1px solid var(--border);background:var(--cream);padding:1.5rem 1.5rem 2rem;text-align:center;font-size:.75rem;color:#6a6e68;line-height:1.7}
+.legal-footer a{color:#6a6e68;text-decoration:underline;text-underline-offset:2px}
+</style>
+<script src="api.js"></script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c4a35">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+</head>
+<body>
+
+<main>
+  <a href="roofrank-landing.html" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <a href="roofrank-onboard.html" class="back">← back to markets</a>
+
+  <!-- FORM STATE -->
+  <div class="state on" id="state-form" style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <h1>Where do you <em>invest?</em></h1>
+      <p class="sub">We're starting with <strong>5 Massachusetts cities</strong> (Lynn, Salem, Revere, Worcester, Framingham). Tell us where you invest and we'll ping you when we expand there.</p>
+      <div class="fields">
+        <input type="text" id="cityInput" placeholder="City (e.g., Brookline, MA)" autocomplete="address-level2">
+        <input type="email" id="emailInput" placeholder="you@email.com" autocomplete="email"
+               onkeydown="if(event.key==='Enter') submitWaitlist()">
+      </div>
+      <button class="btn" id="submitBtn" onclick="submitWaitlist()">Tell me when you launch there →</button>
+    </div>
+
+    <div class="bridge">
+      <div class="bridge-text"><strong>While you wait —</strong> want to see how our scoring works? Lynn is closest to most of MA.</div>
+      <a href="roofrank-onboard.html?market=lynn" class="bridge-btn">Show me Lynn deals →</a>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="state" id="state-success" style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h1>You're on the list</h1>
+      <p class="sub">We'll email <span id="confirmedEmail" style="color:var(--ink);font-weight:500">you</span> the moment we start scoring deals in <span id="confirmedCity" style="color:var(--forest);font-weight:500">your city</span>.</p>
+      <a href="roofrank-onboard.html?market=lynn" class="btn" style="display:inline-block;text-decoration:none;width:auto;padding:.6rem 1.4rem">See what we have in Lynn →</a>
+    </div>
+  </div>
+</main>
+
+<div class="legal-footer">
+  <div style="max-width:680px;margin:0 auto">
+    &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
+    <a href="/privacy.html">Privacy</a> &middot;
+    <a href="/terms.html">Terms</a>
+  </div>
+</div>
+
+<script>
+function showState(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('on'));
+  document.getElementById('state-' + id).classList.add('on');
+}
+
+function showToast(message, type = 'success') {
+  const t = document.createElement('div');
+  t.className = 'toast' + (type !== 'success' ? ' ' + type : '');
+  t.textContent = message;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function parseCity(raw) {
+  // Try to extract city + state from "City, ST" format. Permissive.
+  const parts = raw.split(',').map(p => p.trim());
+  return {
+    city: parts[0] || raw.trim(),
+    state: (parts[1] || 'MA').toUpperCase().slice(0, 2),
+  };
+}
+
+async function submitWaitlist() {
+  const cityRaw = document.getElementById('cityInput').value.trim();
+  const email = document.getElementById('emailInput').value.trim();
+  if (!cityRaw) { showToast('Tell us what city you invest in.', 'warning'); return; }
+  if (!email || !email.includes('@')) { showToast('Enter a valid email.', 'warning'); return; }
+
+  const { city, state } = parseCity(cityRaw);
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Adding you to the list…';
+  btn.disabled = true;
+
+  try {
+    // TODO BACKEND: WaitlistAPI.join(email, city, state) is already in api.js,
+    // hits POST /waitlist. Confirm schema matches once backend ready.
+    if (typeof WaitlistAPI !== 'undefined' && WaitlistAPI.join) {
+      await WaitlistAPI.join(email, city, state);
+    } else {
+      // Fallback for local-only test: simulate success
+      await new Promise(r => setTimeout(r, 600));
+    }
+
+    document.getElementById('confirmedEmail').textContent = email;
+    document.getElementById('confirmedCity').textContent = city;
+    showState('success');
+  } catch (e) {
+    btn.textContent = 'Tell me when you launch there →';
+    btn.disabled = false;
+    showToast('Couldn\'t save your spot. Try again?', 'error');
+  }
+}
+</script>
+
+</body>
+</html>
