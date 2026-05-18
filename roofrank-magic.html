@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<script>
+// Auto-detect API base — localhost dev backend in local, prod elsewhere.
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Signing you in</title>
@@ -106,26 +111,26 @@ async function verifyToken() {
   }
 
   try {
-    // TODO BACKEND: replace with real GET /auth/magic-link/verify?token=X
-    // Returns: { accessToken, refreshToken, user, returnTo }
-    // For scaffold: simulate latency + success with fake tokens.
-    await new Promise(r => setTimeout(r, 900));
-
-    // SCAFFOLD-ONLY: fake tokens to demo signed-in state. Replace these
-    // with real tokens from backend response.
-    localStorage.setItem('rr_token', 'scaffold-fake-access-token');
-    localStorage.setItem('rr_refresh', 'scaffold-fake-refresh-token');
+    // AuthAPI.verifyMagicLink stores the access + refresh tokens via
+    // Auth.setToken/setRefresh as part of the call, and returns the full
+    // response (including returnTo, which backend echoes from the request).
+    const result = await AuthAPI.verifyMagicLink(token);
 
     showState('success');
     setTimeout(() => {
-      window.location.replace(returnTo);
+      // Backend's returnTo wins over URL param if present (it's the path
+      // the user originally requested when they submitted the email).
+      window.location.replace(result.returnTo || returnTo);
     }, 800);
   } catch (e) {
+    console.error('[magic] verify failed', e);
     showState('error');
     if (e.status === 410 || e.status === 401) {
-      document.getElementById('errorMsg').textContent = 'This link has expired or already been used. Magic links work once and last 15 minutes.';
+      document.getElementById('errorMsg').textContent = e.message ||
+        'This link has expired or already been used. Magic links work once and last 15 minutes.';
     } else {
-      document.getElementById('errorMsg').textContent = 'Couldn\'t verify the link. Try requesting a new one.';
+      document.getElementById('errorMsg').textContent =
+        'Couldn\'t verify the link. Try requesting a new one.';
     }
   }
 }

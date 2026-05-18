@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.ROOFRANK_API_URL="https://api.roofrank.io/api";</script>
+<script>
+// Auto-detect API base — localhost dev backend in local, prod elsewhere.
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — See deals in your market</title>
@@ -384,77 +389,19 @@ const MARKETS = [
   { id:'all',        city:'All 5 cities', region:'Multi-market', activeCount:57, live:true, multi:true },
 ];
 
-// TODO BACKEND: Replace with GET /feed/public?market=X — for now mocked from
-// the locked design. The featured deal carries the W8 engine animation; the
-// small cards expand inline when ↻ clicked.
-const FAKE_FEEDS = {
-  lynn: {
-    brief: '4 worth opening. <strong>58 Laighton</strong> leads — 11.4% CoC, per-unit rents 8% below market. Three more below.',
-    deals: [
-      {
-        id:'lynn-58-laighton', featured:true,
-        address:'58 Laighton St, Lynn', verdict:'Strong Buy', score:87,
-        monthlyCashflow:2180, coc:11.4, units:4, price:645000, daysListed:8,
-        analystNote:'Top deal in Lynn — pricing leverage at $610K',
-        scoring:{ rate:'6.83% · week of May 13', tax:'$7,820/yr · actual', rent:'$2,100/mo · 2BR avg, 01902' },
-      },
-      {
-        id:'lynn-12-howard',
-        address:'12 Howard St, Lynn', verdict:'Strong Buy', score:82,
-        monthlyCashflow:1920, coc:10.2, units:3, price:510000, daysListed:12,
-        analystNote:"Don't sleep — priced right despite 12 days",
-        scoring:{ rate:'6.83% · week of May 13', tax:'$6,200/yr · actual', rent:'$1,850/mo · 2BR avg' },
-      },
-      {
-        id:'lynn-22-pleasant',
-        address:'22 Pleasant St, Lynn', verdict:'Buy', score:76,
-        monthlyCashflow:1840, coc:8.9, units:4, price:580000, daysListed:62,
-        analystNote:'Sellers motivated — start $580K, walk above $625K',
-        scoring:{ rate:'6.83% · week of May 13', tax:'$5,900/yr · actual', rent:'$1,780/mo · 2BR avg' },
-      },
-      {
-        id:'lynn-87-boston',
-        address:'87 Boston St, Lynn', verdict:'Watch', score:68,
-        monthlyCashflow:640, coc:5.1, units:3, price:720000, daysListed:38,
-        analystNote:'Tight margins — pass unless $50K below ask',
-        scoring:{ rate:'6.83% · week of May 13', tax:'$8,400/yr · actual', rent:'$1,920/mo · 2BR avg' },
-      },
-    ],
-  },
-  worcester: {
-    brief: '3 worth opening. <strong>14 Main St</strong> leads — 9.8% CoC at today\'s rate.',
-    deals: [
-      {
-        id:'wor-14-main', featured:true,
-        address:'14 Main St, Worcester', verdict:'Strong Buy', score:79,
-        monthlyCashflow:1640, coc:9.8, units:4, price:485000, daysListed:14,
-        analystNote:"Best Worcester pick this week — DSCR has room",
-        scoring:{ rate:'6.83% · week of May 13', tax:'$4,800/yr · actual', rent:'$1,720/mo · 2BR avg' },
-      },
-      {
-        id:'wor-33-grand',
-        address:'33 Grand St, Worcester', verdict:'Strong Buy', score:75,
-        monthlyCashflow:1480, coc:8.9, units:3, price:415000, daysListed:9,
-        analystNote:'Solid hold candidate — neighborhood trending up',
-        scoring:{ rate:'6.83% · week of May 13', tax:'$4,200/yr · actual', rent:'$1,640/mo · 2BR avg' },
-      },
-      {
-        id:'wor-301-park',
-        address:'301 Park Ave, Worcester', verdict:'Watch', score:64,
-        monthlyCashflow:520, coc:4.8, units:4, price:610000, daysListed:51,
-        analystNote:'Priced for retail buyer — investor pass unless 8% off',
-        scoring:{ rate:'6.83% · week of May 13', tax:'$6,100/yr · actual', rent:'$1,580/mo · 2BR avg' },
-      },
-    ],
-  },
-};
-
-// Markets without live scoring fall back to Lynn data for demo purposes.
-// TODO BACKEND: real /feed/public should return proper market data once
-// scoring engine covers Salem/Revere/Framingham (backlog #179).
-function getFeed(market) {
-  return FAKE_FEEDS[market] || FAKE_FEEDS.lynn;
+// Trim backend's full address ("58 Laighton St, Lynn, MA 01902") to the
+// short format the UI uses ("58 Laighton St, Lynn"). Backend returns the
+// full address for accuracy; this is purely a display concern.
+function shortAddress(full) {
+  if (!full) return '';
+  const parts = full.split(',').map(p => p.trim()).filter(Boolean);
+  return parts.length >= 2 ? `${parts[0]}, ${parts[1]}` : full;
 }
+
+// Default analyst note shown when backend hasn't populated one yet
+// (Phase 1B Claude batch ships these). Keeps the W8 engine animation
+// visually complete even before per-deal narratives are live.
+const PENDING_ANALYST_NOTE = 'Open the deal for the full analyst breakdown';
 
 // ═══════════════════════════════════════════════════════════════════
 // PANEL NAVIGATION
@@ -493,7 +440,7 @@ function renderMarkets() {
   `).join('');
 }
 
-function selectMarket(id) {
+async function selectMarket(id) {
   State.market = id;
   const market = MARKETS.find(m => m.id === id);
   if (!market) return;
@@ -501,22 +448,46 @@ function selectMarket(id) {
   // Persist for cross-session continuity
   try { localStorage.setItem('rr_pre_market', id); } catch (e) {}
 
-  // Load feed for market
-  const feed = getFeed(id);
-  State.deals = feed.deals;
-  State.brief = feed.brief;
-
-  // Render Panel 2 content
+  // Show market label immediately while feed loads (avoids flash of stale data)
   document.getElementById('briefMarket').textContent = market.multi ? 'your markets' : market.city;
   document.getElementById('feedMarket').textContent = market.multi ? 'all 5 cities' : market.city;
-  document.getElementById('briefText').innerHTML = feed.brief;
-  document.getElementById('feedCount').textContent = `${feed.deals.length} deals`;
-  renderDealList();
-
+  document.getElementById('briefText').innerHTML = '<em style="color:rgba(255,255,255,.55)">Pulling fresh deals…</em>';
+  document.getElementById('feedCount').textContent = '…';
+  document.getElementById('dealList').innerHTML = '';
   goPanel(2);
 
-  // Auto-trigger W8 animation after panel render
-  setTimeout(playFeaturedEngine, 600);
+  // Fetch real pre-auth feed from backend (no auth required).
+  try {
+    const feed = await FeedAPI.public(id, 4);
+    // Normalize backend response to UI shape — addresses are trimmed,
+    // missing analyst notes get the soft CTA fallback. Mark the first
+    // deal as featured (backend also sets featured=true on idx 0; we
+    // defensively re-derive to handle either case).
+    State.deals = (feed.deals || []).map((d, idx) => ({
+      ...d,
+      featured: d.featured === true || idx === 0,
+      address: shortAddress(d.address),
+      analystNote: d.analystNote || PENDING_ANALYST_NOTE,
+      // Backend sometimes returns null tax/rent until propertyData is enriched.
+      // Replace nulls with generic strings so the W8 animation reads clean.
+      scoring: {
+        rate: d.scoring?.rate || '6.50% · estimate',
+        tax:  d.scoring?.tax  || 'Pending — open deal for details',
+        rent: d.scoring?.rent || 'Pending — open deal for details',
+      },
+    }));
+    State.brief = feed.brief || '';
+    document.getElementById('briefText').innerHTML = State.brief;
+    document.getElementById('feedCount').textContent = `${State.deals.length} deal${State.deals.length === 1 ? '' : 's'}`;
+    renderDealList();
+    // Auto-trigger W8 animation after panel render — only if we have a featured tile to play.
+    if (State.deals.length > 0) setTimeout(playFeaturedEngine, 600);
+  } catch (err) {
+    console.error('[onboard] feed load failed', err);
+    document.getElementById('briefText').innerHTML = '<em style="color:rgba(255,255,255,.55)">Couldn\'t load deals — try again or pick another market.</em>';
+    document.getElementById('feedCount').textContent = '0';
+    showToast('Couldn\'t load deals. Check your connection and retry.', 'error');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -697,14 +668,15 @@ async function requestMagicLink() {
   btn.disabled = true;
 
   try {
-    // TODO BACKEND: replace with real POST /auth/magic-link/request
-    // Body: { email, returnTo: '/dashboard?market=' + State.market }
-    // Returns: { ok: true, expiresAt }
-    await new Promise(r => setTimeout(r, 700)); // simulate latency
+    // After magic-link verify, backend redirects user to this returnTo path.
+    // Carry their market selection so the dashboard opens on the right view.
+    const returnTo = State.market ? `roofrank-dashboard.html?market=${encodeURIComponent(State.market)}` : 'roofrank-dashboard.html';
+    await AuthAPI.requestMagicLink(email, returnTo);
     State.emailSent = email;
     document.getElementById('sentToEmail').textContent = email;
     goPanel(4);
   } catch (e) {
+    console.error('[onboard] magic link request failed', e);
     showToast('Couldn\'t send the link. Try again.', 'error');
   } finally {
     btn.textContent = 'Send me the link →';
@@ -722,10 +694,11 @@ async function resendMagicLink() {
   btn.textContent = 'Sending…';
   btn.disabled = true;
   try {
-    // TODO BACKEND: same endpoint as requestMagicLink
-    await new Promise(r => setTimeout(r, 700));
+    const returnTo = State.market ? `roofrank-dashboard.html?market=${encodeURIComponent(State.market)}` : 'roofrank-dashboard.html';
+    await AuthAPI.requestMagicLink(State.emailSent, returnTo);
     showToast('Sent another link — check your inbox.');
   } catch (e) {
+    console.error('[onboard] magic link resend failed', e);
     showToast('Couldn\'t resend. Try again.', 'error');
   } finally {
     btn.textContent = 'Resend the link';
