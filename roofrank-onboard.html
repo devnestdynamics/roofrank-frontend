@@ -175,8 +175,8 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 .wall-foot a:hover{text-decoration:underline}
 .wall-escape{display:block;margin-top:.45rem;font-size:.7rem;color:var(--faint);text-decoration:none;cursor:pointer;background:none;border:none;font-family:var(--sans)}
 .wall-escape:hover{color:var(--muted)}
-.wall-back{display:block;margin-top:1.25rem;font-size:.78rem;color:var(--muted);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:6px 10px;border-radius:5px}
-.wall-back:hover{color:var(--forest)}
+.wall-back{margin-bottom:1.25rem;font-size:.88rem;color:var(--muted);text-decoration:none;background:var(--white);border:1px solid var(--border);cursor:pointer;font-family:var(--sans);padding:7px 14px;border-radius:6px;display:inline-flex;align-items:center;gap:.35rem;transition:all .15s;box-shadow:0 1px 3px rgba(28,31,28,.04)}
+.wall-back:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
 
 /* ── Panel 4: Check inbox ──────────────────────────────────────────── */
 .inbox-card{width:100%;max-width:440px;background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem 1.85rem;box-shadow:0 10px 40px rgba(28,31,28,.08);text-align:center}
@@ -305,6 +305,7 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
        PANEL 3 — Magic link wall
        ═════════════════════════════════════════════════════════════════ -->
   <div class="panel" id="panel3" data-step="3">
+    <button class="wall-back" onclick="goPanel(2)">← back to deals</button>
     <div class="wall-triggered-by" id="triggeredBy">
       <span style="color:var(--forest)">●</span>
       <span id="triggerText">Saving to your watchlist</span>
@@ -322,7 +323,6 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
       </div>
       <button class="wall-escape" onclick="location.href='roofrank-login.html?mode=signup&password=1'">Prefer a password? Use one instead →</button>
     </div>
-    <button class="wall-back" onclick="goPanel(2)">← back to deals</button>
   </div>
 
   <!-- ═════════════════════════════════════════════════════════════════
