@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Onboarding flow mockup</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --radius:12px;
+}
+body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+
+.opt-bar{background:var(--ink);color:#fff;padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.opt-bar-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.opt-bar-desc{font-size:.82rem;color:rgba(255,255,255,.65);font-style:italic;max-width:560px;text-align:right}
+.opt-bar-step{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.1em;color:var(--sage);background:rgba(122,170,143,.15);padding:3px 10px;border-radius:5px;margin-right:.5rem}
+
+/* Frame = a phone-shaped or full-screen container */
+.frame{background:var(--cream);min-height:640px;padding:3rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;overflow:hidden}
+.frame.tall{min-height:780px}
+
+/* Brand mark in frame */
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:2rem}
+.brand-mark{width:24px;height:24px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+
+/* Step dots */
+.step-dots{display:flex;align-items:center;gap:.4rem;margin-bottom:2.25rem}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border-2);transition:all .3s}
+.step-dot.on{background:var(--forest);width:22px;border-radius:4px}
+.step-dot.done{background:var(--forest-3)}
+
+/* Headings */
+.h1{font-family:var(--serif);font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:500;line-height:1.15;color:var(--ink);text-align:center;margin-bottom:.65rem;letter-spacing:-.02em;max-width:560px}
+.h1 em{font-style:italic;color:var(--forest)}
+.sub{font-size:.95rem;color:var(--muted);line-height:1.65;text-align:center;max-width:480px;margin-bottom:2.25rem}
+.sub strong{color:var(--ink);font-weight:500}
+
+/* ================================================================
+   SCREEN 1 — Market picker
+   ================================================================ */
+.mkt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;width:100%;max-width:640px;margin-bottom:1.5rem}
+.mkt-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1rem;cursor:pointer;transition:all .15s;text-align:center;position:relative}
+.mkt-card:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateY(-1px)}
+.mkt-card.on{border-color:var(--forest);background:var(--sage-dim);box-shadow:0 4px 14px rgba(28,74,53,.1)}
+.mkt-card.on::after{content:'✓';position:absolute;top:.55rem;right:.65rem;font-size:.75rem;color:var(--forest);font-weight:700}
+.mkt-city{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);margin-bottom:.15rem}
+.mkt-region{font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.4rem}
+.mkt-count{font-family:var(--mono);font-size:.7rem;color:var(--forest);font-weight:500}
+.mkt-card.soon{opacity:.55;cursor:not-allowed}
+.mkt-card.soon .mkt-count{color:var(--muted)}
+.mkt-soon-tag{position:absolute;top:.55rem;left:.65rem;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--cream-2);padding:2px 5px;border-radius:3px}
+.mkt-no-market{display:block;text-align:center;font-size:.85rem;color:var(--muted);text-decoration:none;margin-top:.5rem;padding:.6rem;border-radius:8px;transition:color .15s}
+.mkt-no-market:hover{color:var(--forest)}
+.mkt-no-market u{text-decoration:underline;text-underline-offset:3px}
+
+/* ================================================================
+   SCREEN 2 — Live deal feed (the wow)
+   ================================================================ */
+.feed-header{width:100%;max-width:560px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:.85rem;border-bottom:1px solid var(--cream-3)}
+.feed-h{font-family:var(--serif);font-size:1.4rem;font-weight:500;color:var(--ink)}
+.feed-h em{color:var(--forest);font-style:italic}
+.feed-meta{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+.feed-change{font-size:.78rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:.25rem}
+.feed-change:hover{color:var(--forest)}
+
+.deal-list{width:100%;max-width:560px;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.deal-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:1.1rem 1.2rem;
+  cursor:pointer;
+  transition:all .15s;
+  display:flex;flex-direction:column;gap:.65rem;
+  position:relative;
+}
+.deal-card:hover{border-color:var(--sage-border);box-shadow:0 4px 16px rgba(28,31,28,.06);transform:translateY(-1px)}
+.deal-card.featured{border-color:var(--sage-border);background:linear-gradient(180deg,rgba(122,170,143,.04) 0%,var(--white) 100%);box-shadow:0 6px 22px rgba(28,74,53,.07)}
+.deal-card.featured::before{
+  content:'TOP PICK';
+  position:absolute;top:-9px;left:1rem;
+  font-size:.55rem;font-weight:700;letter-spacing:.14em;
+  color:#fff;background:var(--forest);
+  padding:3px 8px;border-radius:4px;
+}
+.deal-head{display:flex;align-items:center;gap:.65rem}
+.deal-mark{
+  width:30px;height:30px;border-radius:7px;
+  background:var(--forest);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.deal-mark svg{width:18px;height:18px}
+.deal-verdict{
+  font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;
+  flex-shrink:0;
+}
+.deal-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2)}
+.deal-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.deal-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.deal-addr{font-family:var(--serif);font-size:.98rem;font-weight:500;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-score{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-weight:500;flex-shrink:0}
+.deal-body{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap}
+.deal-cf{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--forest);line-height:1}
+.deal-cf-label{font-size:.75rem;color:var(--muted)}
+.deal-divider{color:var(--faint)}
+.deal-coc{font-family:var(--mono);font-size:.85rem;color:var(--ink);font-weight:500}
+.deal-foot{display:flex;align-items:center;gap:.45rem;font-size:.7rem;color:var(--muted);font-family:var(--mono)}
+.deal-foot-dot{width:4px;height:4px;border-radius:50%;background:var(--sage)}
+
+.feed-cta-bar{
+  width:100%;max-width:560px;
+  background:var(--forest);border-radius:14px;padding:1.25rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  margin-top:.5rem;
+}
+.feed-cta-text{color:rgba(255,255,255,.95);font-size:.92rem;font-family:var(--serif);font-style:italic}
+.feed-cta-text strong{font-weight:600;font-style:normal;color:#fff}
+.feed-cta-btn{background:#fff;color:var(--forest);border:none;padding:.6rem 1.1rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.feed-cta-btn:hover{background:var(--cream-2)}
+
+/* ================================================================
+   SCREEN 3 — Soft signup wall (magic link)
+   ================================================================ */
+.wall-card{
+  width:100%;max-width:440px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:2.25rem 2rem 1.85rem;
+  box-shadow:0 10px 40px rgba(28,31,28,.08);
+  text-align:center;
+}
+.wall-context{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:5px 11px;border-radius:6px;margin-bottom:1.25rem;
+}
+.wall-context-dot{width:6px;height:6px;border-radius:50%;background:var(--forest-3)}
+.wall-h{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.5rem;letter-spacing:-.01em}
+.wall-sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.5rem;max-width:340px;margin-left:auto;margin-right:auto}
+.wall-input{
+  width:100%;padding:.78rem 1rem;
+  border:1.5px solid var(--border-2);border-radius:10px;
+  font-size:.95rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;
+  margin-bottom:.75rem;text-align:center;
+}
+.wall-input:focus{border-color:var(--forest)}
+.wall-input::placeholder{color:var(--faint)}
+.wall-btn{
+  width:100%;background:var(--forest);color:#fff;border:none;
+  padding:.78rem;border-radius:10px;
+  font-size:.92rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+  transition:background .15s;
+}
+.wall-btn:hover{background:var(--forest-2)}
+.wall-foot{margin-top:1.15rem;font-size:.74rem;color:var(--muted);line-height:1.6}
+.wall-foot a{color:var(--forest);text-decoration:none}
+.wall-foot a:hover{text-decoration:underline}
+.wall-escape{display:block;margin-top:.45rem;font-size:.7rem;color:var(--faint);text-decoration:none}
+.wall-escape:hover{color:var(--muted)}
+
+/* The deal that triggered the wall — shown above the form */
+.wall-triggered-by{
+  width:100%;max-width:440px;margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:.65rem;
+  padding:.7rem .85rem;background:var(--cream-2);border:1px solid var(--cream-3);border-radius:10px;
+  font-size:.78rem;color:var(--muted);
+}
+.wall-triggered-by strong{color:var(--ink);font-weight:500}
+
+/* ================================================================
+   SCREEN 4 — Check your inbox
+   ================================================================ */
+.inbox-card{
+  width:100%;max-width:440px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:2.5rem 2rem 1.85rem;
+  box-shadow:0 10px 40px rgba(28,31,28,.08);
+  text-align:center;
+}
+.inbox-icon{
+  width:60px;height:60px;border-radius:14px;
+  background:var(--sage-dim);border:1px solid var(--sage-border);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;
+}
+.inbox-icon svg{width:30px;height:30px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.inbox-h{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.55rem}
+.inbox-sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:.5rem}
+.inbox-email{font-family:var(--mono);font-size:.88rem;color:var(--ink);font-weight:500;background:var(--cream-2);padding:6px 12px;border-radius:6px;display:inline-block;margin-bottom:1.5rem;border:1px solid var(--cream-3)}
+.inbox-meta{font-size:.75rem;color:var(--faint);line-height:1.6;margin-bottom:1.25rem}
+.inbox-actions{display:flex;flex-direction:column;gap:.5rem;align-items:center;font-size:.78rem}
+.inbox-actions a{color:var(--forest);text-decoration:none}
+.inbox-actions a:hover{text-decoration:underline}
+.inbox-actions .dim{color:var(--muted)}
+.inbox-actions .dim:hover{color:var(--forest)}
+
+/* ================================================================
+   SCREEN 5 — Waitlist fallback
+   ================================================================ */
+.waitlist-card{
+  width:100%;max-width:480px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:2.25rem 2rem 1.85rem;
+  box-shadow:0 10px 40px rgba(28,31,28,.08);
+  text-align:center;
+}
+.waitlist-h{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.5rem}
+.waitlist-h em{color:var(--forest);font-style:italic}
+.waitlist-sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.5rem}
+.waitlist-fields{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+.waitlist-row{display:flex;gap:.5rem}
+.waitlist-row .wall-input{margin-bottom:0;text-align:left}
+.waitlist-row .wall-input:first-child{flex:1.2}
+.waitlist-row .wall-input:last-child{flex:1}
+.waitlist-bridge{
+  width:100%;max-width:480px;margin-top:1.25rem;
+  padding:1rem 1.25rem;background:var(--sage-dim);border:1px solid var(--sage-border);
+  border-radius:12px;text-align:center;
+}
+.waitlist-bridge-text{font-size:.82rem;color:var(--ink);line-height:1.6;margin-bottom:.65rem}
+.waitlist-bridge-text strong{color:var(--forest);font-weight:500}
+.waitlist-bridge-btn{
+  background:var(--forest);color:#fff;border:none;
+  padding:.55rem 1.1rem;border-radius:8px;
+  font-size:.82rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+}
+
+/* Page intro */
+.intro{max-width:880px;margin:2.5rem auto;text-align:center;padding:0 1.5rem}
+.intro-h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;color:var(--ink);margin-bottom:.6rem}
+.intro-p{color:var(--muted);font-size:.95rem;line-height:1.65;max-width:680px;margin:0 auto}
+.intro-flow{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;font-family:var(--mono);font-size:.75rem;color:var(--forest)}
+.intro-flow .step{background:var(--white);border:1px solid var(--sage-border);padding:.35rem .7rem;border-radius:6px}
+.intro-flow .arrow{color:var(--faint)}
+
+/* Mobile */
+@media(max-width:560px){
+  .mkt-grid{grid-template-columns:repeat(2,1fr)}
+  .opt-bar{flex-direction:column;align-items:flex-start;padding:.85rem 1.25rem}
+  .opt-bar-desc{text-align:left}
+  .frame{padding:2.5rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="intro-h1">Onboarding flow · 5 screens</div>
+  <p class="intro-p">Value before auth. One question per screen. Real deals pre-auth. Magic link signup. Waitlist fallback.</p>
+  <div class="intro-flow">
+    <span class="step">1 · Market</span>
+    <span class="arrow">→</span>
+    <span class="step">2 · Live feed (wow)</span>
+    <span class="arrow">→</span>
+    <span class="step">3 · Soft wall</span>
+    <span class="arrow">→</span>
+    <span class="step">4 · Check inbox</span>
+    <span class="arrow">↘ fallback</span>
+    <span class="step">5 · Waitlist</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCREEN 1 — Market picker -->
+<!-- ================================================================ -->
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Screen 1</span><span class="opt-bar-name">Market picker · one question, no auth</span></div>
+  <div class="opt-bar-desc">User lands here from the landing CTA. No email. No name. Just pick.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="step-dots">
+    <div class="step-dot on"></div>
+    <div class="step-dot"></div>
+    <div class="step-dot"></div>
+  </div>
+
+  <h1 class="h1">Where do you <em>invest?</em></h1>
+  <p class="sub">Pick a market — we'll show you what's scoring right now. <strong>No account needed yet.</strong></p>
+
+  <div class="mkt-grid">
+    <div class="mkt-card on">
+      <div class="mkt-city">Lynn</div>
+      <div class="mkt-region">North Shore</div>
+      <div class="mkt-count">18 active</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-city">Salem</div>
+      <div class="mkt-region">North Shore</div>
+      <div class="mkt-count">9 active</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-city">Revere</div>
+      <div class="mkt-region">North Shore</div>
+      <div class="mkt-count">11 active</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-city">Worcester</div>
+      <div class="mkt-region">Central MA</div>
+      <div class="mkt-count">12 active</div>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-city">Framingham</div>
+      <div class="mkt-region">MetroWest</div>
+      <div class="mkt-count">7 active</div>
+    </div>
+    <div class="mkt-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="mkt-region" style="color:var(--forest);margin-bottom:.3rem">Multi-market</div>
+      <div class="mkt-city" style="font-size:.9rem">All 5 cities</div>
+    </div>
+  </div>
+
+  <a href="#" class="mkt-no-market">I invest somewhere else — <u>tell us where</u> →</a>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCREEN 2 — Live deal feed (the wow) -->
+<!-- ================================================================ -->
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Screen 2</span><span class="opt-bar-name">Live deal feed · the wow moment</span></div>
+  <div class="opt-bar-desc">Real deals. Real numbers. No auth. This is where they decide if you're real.</div>
+</div>
+<div class="frame tall">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="step-dots">
+    <div class="step-dot done"></div>
+    <div class="step-dot on"></div>
+    <div class="step-dot"></div>
+  </div>
+
+  <div class="feed-header">
+    <div>
+      <div class="feed-h"><em>4 deals</em> in Lynn worth opening today.</div>
+    </div>
+    <a href="#" class="feed-change">← change market</a>
+  </div>
+
+  <div class="deal-list">
+    <!-- Featured "top pick" -->
+    <div class="deal-card featured">
+      <div class="deal-head">
+        <div class="deal-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="deal-verdict sb">Strong Buy</span>
+        <span class="deal-addr">58 Laighton St, Lynn</span>
+        <span class="deal-score">87/100</span>
+      </div>
+      <div class="deal-body">
+        <span class="deal-cf">$2,180</span><span class="deal-cf-label">/mo cashflow</span>
+        <span class="deal-divider">·</span>
+        <span class="deal-coc">11.4% CoC</span>
+      </div>
+      <div class="deal-foot"><span class="deal-foot-dot"></span>4 units · $645K · at today's Freddie rate (6.83%)</div>
+    </div>
+
+    <div class="deal-card">
+      <div class="deal-head">
+        <div class="deal-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="deal-verdict sb">Strong Buy</span>
+        <span class="deal-addr">12 Howard St, Lynn</span>
+        <span class="deal-score">82/100</span>
+      </div>
+      <div class="deal-body">
+        <span class="deal-cf">$1,920</span><span class="deal-cf-label">/mo cashflow</span>
+        <span class="deal-divider">·</span>
+        <span class="deal-coc">10.2% CoC</span>
+      </div>
+      <div class="deal-foot"><span class="deal-foot-dot"></span>3 units · $510K · listed 12 days ago</div>
+    </div>
+
+    <div class="deal-card">
+      <div class="deal-head">
+        <div class="deal-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="deal-verdict buy">Buy</span>
+        <span class="deal-addr">22 Pleasant St, Lynn</span>
+        <span class="deal-score">76/100</span>
+      </div>
+      <div class="deal-body">
+        <span class="deal-cf">$1,840</span><span class="deal-cf-label">/mo cashflow</span>
+        <span class="deal-divider">·</span>
+        <span class="deal-coc">8.9% CoC</span>
+      </div>
+      <div class="deal-foot"><span class="deal-foot-dot"></span>4 units · $580K · sat 62 days — pricing leverage</div>
+    </div>
+
+    <div class="deal-card">
+      <div class="deal-head">
+        <div class="deal-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="deal-verdict watch">Watch</span>
+        <span class="deal-addr">87 Boston St, Lynn</span>
+        <span class="deal-score">68/100</span>
+      </div>
+      <div class="deal-body">
+        <span class="deal-cf">$640</span><span class="deal-cf-label">/mo cashflow</span>
+        <span class="deal-divider">·</span>
+        <span class="deal-coc">5.1% CoC</span>
+      </div>
+      <div class="deal-foot"><span class="deal-foot-dot" style="background:var(--watch)"></span>3 units · $720K · tight margins at today's rate</div>
+    </div>
+  </div>
+
+  <div class="feed-cta-bar">
+    <div class="feed-cta-text">Want to <strong>open the full math</strong> on any deal — or get pinged when a new Strong Buy hits Lynn?</div>
+    <button class="feed-cta-btn">Save & continue →</button>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCREEN 3 — Soft signup wall (magic link) -->
+<!-- ================================================================ -->
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Screen 3</span><span class="opt-bar-name">Soft signup wall · magic link primary</span></div>
+  <div class="opt-bar-desc">Triggered when they click into a deal, save, or set alerts. Email only. No password.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="step-dots">
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot on"></div>
+  </div>
+
+  <div class="wall-triggered-by">
+    <span style="color:var(--forest)">●</span>
+    Saving <strong>58 Laighton St, Lynn</strong> to your watchlist
+  </div>
+
+  <div class="wall-card">
+    <div class="wall-context"><span class="wall-context-dot"></span>Free · no card</div>
+    <h2 class="wall-h">Where should we send the link?</h2>
+    <p class="wall-sub">We'll email you a one-tap sign-in link. No password to remember.</p>
+    <input type="email" class="wall-input" placeholder="you@email.com" value="">
+    <button class="wall-btn">Send me the link →</button>
+    <div class="wall-foot">
+      Already have an account? <a href="#">Sign in →</a>
+    </div>
+    <a href="#" class="wall-escape">Prefer a password? Use one instead →</a>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCREEN 4 — Check your inbox -->
+<!-- ================================================================ -->
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Screen 4</span><span class="opt-bar-name">Check your inbox · waiting state</span></div>
+  <div class="opt-bar-desc">After they submit email. Show while they switch to email to click the link.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="inbox-card">
+    <div class="inbox-icon">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 7 L12 13 L21 7"/>
+      </svg>
+    </div>
+    <h2 class="inbox-h">Check your inbox</h2>
+    <p class="inbox-sub">We sent a sign-in link to</p>
+    <div class="inbox-email">michael@example.com</div>
+    <p class="inbox-meta">Click the link to finish signing in. It expires in 15 minutes.</p>
+    <div class="inbox-actions">
+      <a href="#">Resend the link</a>
+      <a href="#" class="dim">Use a different email →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCREEN 5 — Waitlist fallback -->
+<!-- ================================================================ -->
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Screen 5</span><span class="opt-bar-name">Waitlist fallback · for cities we don't yet cover</span></div>
+  <div class="opt-bar-desc">Reached via "I invest somewhere else" link on Screen 1. Capture the lead AND offer the wow anyway.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="waitlist-card">
+    <h2 class="waitlist-h">Where do you <em>invest?</em></h2>
+    <p class="waitlist-sub">We're starting with 5 Massachusetts cities. Tell us where you invest and we'll ping you when we expand there.</p>
+    <div class="waitlist-fields">
+      <div class="waitlist-row">
+        <input type="text" class="wall-input" placeholder="City (e.g., Brookline, MA)">
+      </div>
+      <div class="waitlist-row">
+        <input type="email" class="wall-input" placeholder="you@email.com">
+      </div>
+    </div>
+    <button class="wall-btn">Tell me when you launch there →</button>
+  </div>
+
+  <div class="waitlist-bridge">
+    <div class="waitlist-bridge-text">
+      <strong>While you wait —</strong> want to see how our scoring works? Lynn is closest to most of MA.
+    </div>
+    <button class="waitlist-bridge-btn">Show me Lynn deals →</button>
+  </div>
+</div>
+
+</body>
+</html>

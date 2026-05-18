@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Simplified feed (locked)</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+
+.opt-bar{background:var(--ink);color:#fff;padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.opt-bar-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.opt-bar-desc{font-size:.82rem;color:rgba(255,255,255,.65);font-style:italic;max-width:560px;text-align:right}
+.opt-bar-step{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.1em;color:var(--sage);background:rgba(122,170,143,.15);padding:3px 10px;border-radius:5px;margin-right:.5rem}
+
+.frame{background:var(--cream);min-height:880px;padding:3rem 2rem;display:flex;flex-direction:column;align-items:center}
+
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:2rem}
+.brand-mark{width:24px;height:24px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+
+.step-dots{display:flex;align-items:center;gap:.4rem;margin-bottom:2.25rem}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border-2)}
+.step-dot.on{background:var(--forest);width:22px;border-radius:4px}
+.step-dot.done{background:var(--forest-3)}
+
+.feed-wrap{width:100%;max-width:600px}
+
+/* ============================================================
+   Brief voice line — Analyst (matches dashboard brief brand)
+   ============================================================ */
+.feed-brief{
+  background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);
+  color:#fff;border-radius:14px;
+  padding:1.1rem 1.3rem;margin-bottom:1.5rem;
+  display:flex;align-items:flex-start;gap:.85rem;
+}
+.brief-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(122,170,143,.15);border:1px solid rgba(122,170,143,.3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  color:var(--sage);
+}
+.brief-mark svg{width:18px;height:18px;animation:briefSpin 16s linear infinite}
+@keyframes briefSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.brief-content{flex:1;min-width:0}
+.brief-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:.25rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.brief-label-dot{width:5px;height:5px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:briefDot 1.8s ease-in-out infinite}
+@keyframes briefDot{0%,100%{opacity:1}50%{opacity:.3}}
+.brief-text{
+  font-family:var(--serif);font-size:1rem;color:#fff;line-height:1.55;
+  font-weight:400;font-style:italic;
+}
+.brief-text strong{font-weight:600;color:var(--sage);font-style:normal}
+
+/* ============================================================
+   Featured top tile — W8 engine animation (~5 sec)
+   ============================================================ */
+.featured-tile{
+  background:var(--white);
+  border:2px solid var(--sage-border);
+  border-radius:16px;
+  padding:1.5rem;
+  box-shadow:0 8px 28px rgba(28,74,53,.08);
+  margin-bottom:1.5rem;
+  position:relative;
+}
+.featured-tile::before{
+  content:'TOP PICK · 58 LAIGHTON ST · LYNN';
+  position:absolute;top:-10px;left:1.2rem;
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;
+  color:#fff;background:var(--forest);padding:4px 10px;border-radius:5px;
+}
+
+.ft-engine{
+  background:var(--cream-2);border:1px solid var(--cream-3);border-radius:12px;
+  padding:1.2rem 1.35rem;
+  display:flex;flex-direction:column;gap:.75rem;
+  font-family:var(--mono);
+  margin-top:.5rem;
+}
+.ft-engine-label{
+  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.25rem;
+}
+.ft-step,.sc-step{
+  display:flex;align-items:center;gap:.7rem;
+  opacity:0;transform:translateY(4px);transition:all .35s;
+  font-size:.86rem;color:var(--ink-2);
+}
+.ft-step.in,.sc-step.in{opacity:1;transform:none}
+.ft-step-dot,.sc-step-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border-2);background:var(--white);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .35s;
+}
+.ft-step.done .ft-step-dot,.sc-step.done .sc-step-dot{background:var(--sage);border-color:var(--forest)}
+.ft-step.done .ft-step-dot::after,.sc-step.done .sc-step-dot::after{content:'✓';color:var(--forest);font-weight:700;font-size:.7rem;line-height:1}
+.ft-step.active .ft-step-dot,.sc-step.active .sc-step-dot{
+  border-color:var(--forest);border-top-color:transparent;
+  animation:ftSpin .8s linear infinite;
+}
+@keyframes ftSpin{to{transform:rotate(360deg)}}
+.ft-step-label,.sc-step-label{flex:1;line-height:1.4}
+.ft-step-val,.sc-step-val{margin-left:auto;font-weight:500;color:var(--forest);opacity:0;transition:opacity .35s;font-size:.82rem;text-align:right}
+.ft-step.done .ft-step-val,.sc-step.done .sc-step-val{opacity:1}
+
+/* Reveal block — appears AFTER animation, engine loader stays */
+.ft-reveal{
+  margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--cream-3);
+  opacity:0;transform:translateY(8px);transition:all .55s cubic-bezier(.22,1,.36,1);
+}
+.ft-reveal.in{opacity:1;transform:none}
+
+.ft-verdict-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.85rem}
+.ft-verdict-circle{
+  width:54px;height:54px;border-radius:50%;
+  background:rgba(28,74,53,.08);border:2.5px solid var(--strong-buy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ft-verdict-num{font-family:var(--mono);font-size:1.15rem;font-weight:500;color:var(--strong-buy);line-height:1}
+.ft-verdict-of{font-size:.5rem;color:var(--muted);letter-spacing:.05em}
+.ft-verdict-info{flex:1}
+.ft-verdict-tier{
+  font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--strong-buy);line-height:1.15;
+  letter-spacing:-.01em;
+}
+.ft-verdict-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-top:.2rem}
+
+.ft-body{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.85rem}
+.ft-cf{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--forest);line-height:1}
+.ft-cf-l{font-size:.85rem;color:var(--muted)}
+.ft-divider{color:var(--faint);font-size:.95rem}
+.ft-coc{font-family:var(--mono);font-size:1rem;color:var(--ink);font-weight:500}
+
+.ft-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:.85rem;
+  font-family:var(--mono);font-size:.75rem;color:var(--muted);flex-wrap:wrap;
+}
+.ft-foot-meta{display:flex;align-items:center;gap:.45rem}
+.ft-foot-meta-dot{width:5px;height:5px;border-radius:50%;background:var(--sage)}
+.ft-replay,.sc-hide{
+  background:none;border:none;color:var(--muted);
+  font-family:var(--mono);font-size:.7rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:3px 6px;border-radius:5px;transition:all .15s;
+}
+.ft-replay:hover,.sc-hide:hover{color:var(--forest);background:var(--sage-dim)}
+
+/* ============================================================
+   Small cards — clean, with inline engine reveal on ↻ click
+   ============================================================ */
+.small-cards{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem}
+
+.sc-card{
+  background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:1rem 1.15rem;
+  display:flex;flex-direction:column;gap:.5rem;
+  transition:all .15s;
+}
+.sc-card:not(.expanded):hover{border-color:var(--sage-border);box-shadow:0 4px 14px rgba(28,31,28,.05);transform:translateY(-1px);cursor:pointer}
+.sc-card.expanded{border-color:var(--sage-border);box-shadow:0 6px 20px rgba(28,74,53,.07);background:linear-gradient(180deg,rgba(122,170,143,.04) 0%,var(--white) 100%)}
+
+.sc-row1{display:flex;align-items:center;gap:.6rem}
+.sc-mark{width:24px;height:24px;border-radius:6px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc-mark.watch{background:var(--watch)}
+.sc-mark svg{width:14px;height:14px}
+.sc-verdict{
+  font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;flex-shrink:0;
+}
+.sc-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2)}
+.sc-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.sc-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.sc-addr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-score{font-family:var(--mono);font-size:.74rem;color:var(--muted);font-weight:500;flex-shrink:0}
+
+.sc-row2{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.sc-cf{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--forest);line-height:1}
+.sc-cf.watch{color:var(--watch)}
+.sc-cf-l{font-size:.7rem;color:var(--muted)}
+.sc-divider{color:var(--faint)}
+.sc-coc{font-family:var(--mono);font-size:.8rem;color:var(--ink);font-weight:500}
+
+.sc-row3{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:.66rem;color:var(--muted);
+}
+.sc-meta-dot{width:4px;height:4px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:.4rem;vertical-align:middle}
+.sc-meta-dot.watch{background:var(--watch)}
+.sc-howscore{
+  background:none;border:none;color:var(--muted);
+  font-family:var(--mono);font-size:.65rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:2px 5px;border-radius:4px;transition:all .15s;
+}
+.sc-howscore:hover{color:var(--forest);background:var(--sage-dim)}
+
+/* Engine section inside small card — same treatment as featured */
+.sc-engine{
+  display:none;margin-top:.5rem;padding-top:.75rem;border-top:1px solid var(--cream-3);
+  flex-direction:column;gap:.6rem;
+  font-family:var(--mono);
+}
+.sc-card.expanded .sc-engine{display:flex}
+.sc-engine-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);
+}
+.sc-step{font-size:.78rem}
+.sc-step-val{font-size:.74rem}
+.sc-engine-foot{display:flex;justify-content:flex-end;margin-top:.5rem;opacity:0;transition:opacity .4s}
+.sc-engine-foot.in{opacity:1}
+
+/* CTA bar */
+.feed-cta-bar{
+  width:100%;background:var(--forest);border-radius:14px;padding:1.2rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+}
+.feed-cta-text{color:rgba(255,255,255,.95);font-size:.92rem;font-family:var(--serif);font-style:italic;flex:1}
+.feed-cta-text strong{font-weight:600;font-style:normal;color:#fff}
+.feed-cta-btn{background:#fff;color:var(--forest);border:none;padding:.6rem 1.1rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.feed-cta-btn:hover{background:var(--cream-2)}
+
+/* Intro */
+.intro{max-width:880px;margin:2.5rem auto;text-align:center;padding:0 1.5rem}
+.intro-h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;color:var(--ink);margin-bottom:.6rem}
+.intro-p{color:var(--muted);font-size:.95rem;line-height:1.65;max-width:680px;margin:0 auto}
+
+@media(max-width:560px){
+  .frame{padding:2.5rem 1rem}
+  .opt-bar{flex-direction:column;align-items:flex-start;padding:.85rem 1.25rem}
+  .opt-bar-desc{text-align:left}
+  .featured-tile{padding:1.25rem 1rem}
+  .ft-engine{padding:1rem .9rem}
+  .ft-step{font-size:.78rem;gap:.55rem}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="intro-h1">Simplified feed · locked design</div>
+  <p class="intro-p"><b>Brief voice at top</b> in dark analyst card (matches dashboard brief brand). <b>Featured tile</b> plays W8 engine animation (~5 sec, 4 steps). <b>Small cards</b> are clean — click "↻ how was this scored?" to expand inline and watch the engine work on that deal.</p>
+</div>
+
+<div class="opt-bar">
+  <div><span class="opt-bar-step">Feed</span><span class="opt-bar-name">Simplified · locked design ready to ship</span></div>
+  <div class="opt-bar-desc">W8 auto-plays on top tile. Click "↻" on any small card to see it score that deal inline.</div>
+</div>
+
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="step-dots">
+    <div class="step-dot done"></div>
+    <div class="step-dot on"></div>
+    <div class="step-dot"></div>
+  </div>
+
+  <div class="feed-wrap">
+
+    <!-- BRIEF VOICE — Analyst (matches dashboard brand pattern) -->
+    <div class="feed-brief">
+      <div class="brief-mark" aria-hidden="true">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        </svg>
+      </div>
+      <div class="brief-content">
+        <div class="brief-label"><span class="brief-label-dot"></span>Analyst · Today in Lynn</div>
+        <div class="brief-text">
+          4 worth opening. <strong>58 Laighton</strong> leads — 11.4% CoC, per-unit rents 8% below market. Three more below.
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURED TILE — W8 as centerpiece -->
+    <div class="featured-tile" id="featTile">
+      <div class="ft-engine">
+        <div class="ft-engine-label">Scoring live · pulling fresh data</div>
+        <div class="ft-step" data-step="0">
+          <span class="ft-step-dot"></span>
+          <span class="ft-step-label">Pulling Freddie Mac mortgage rate</span>
+          <span class="ft-step-val">6.83% · week of May 13</span>
+        </div>
+        <div class="ft-step" data-step="1">
+          <span class="ft-step-dot"></span>
+          <span class="ft-step-label">Pulling ATTOM property tax assessment</span>
+          <span class="ft-step-val">$7,820/yr · actual</span>
+        </div>
+        <div class="ft-step" data-step="2">
+          <span class="ft-step-dot"></span>
+          <span class="ft-step-label">Pulling per-unit rent comps (HUD)</span>
+          <span class="ft-step-val">$2,100/mo · 2BR avg, 01902</span>
+        </div>
+        <div class="ft-step" data-step="3">
+          <span class="ft-step-dot"></span>
+          <span class="ft-step-label">Comparing to Lynn this week</span>
+          <span class="ft-step-val">2.8× median CoC</span>
+        </div>
+      </div>
+
+      <div class="ft-reveal" id="ftReveal">
+        <div class="ft-verdict-row">
+          <div class="ft-verdict-circle">
+            <div class="ft-verdict-num">87</div>
+            <div class="ft-verdict-of">/ 100</div>
+          </div>
+          <div class="ft-verdict-info">
+            <div class="ft-verdict-tier">Strong Buy</div>
+            <div class="ft-verdict-meta">4 units · $645K · listed 8 days ago</div>
+          </div>
+        </div>
+        <div class="ft-body">
+          <span class="ft-cf">$2,180</span>
+          <span class="ft-cf-l">/mo cashflow</span>
+          <span class="ft-divider">·</span>
+          <span class="ft-coc">11.4% CoC</span>
+        </div>
+        <div class="ft-foot">
+          <span class="ft-foot-meta"><span class="ft-foot-meta-dot"></span>at today's Freddie rate (6.83%)</span>
+          <button class="ft-replay" onclick="playEngine(true)">↻ replay scoring</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMALL CARDS — clean, click ↻ to expand engine inline -->
+    <div class="small-cards">
+
+      <!-- 12 Howard St -->
+      <div class="sc-card" id="card-howard"
+           data-rate="6.83%" data-tax="$6,200/yr" data-rent="$1,850/mo · 2BR avg, 01902" data-compare="2.5× median CoC">
+        <div class="sc-row1">
+          <div class="sc-mark">
+            <svg viewBox="0 0 30 30" fill="none">
+              <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+              <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+              <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+            </svg>
+          </div>
+          <span class="sc-verdict sb">Strong Buy</span>
+          <span class="sc-addr">12 Howard St, Lynn</span>
+          <span class="sc-score">82/100</span>
+        </div>
+        <div class="sc-row2">
+          <span class="sc-cf">$1,920</span>
+          <span class="sc-cf-l">/mo cashflow</span>
+          <span class="sc-divider">·</span>
+          <span class="sc-coc">10.2% CoC</span>
+        </div>
+        <div class="sc-row3">
+          <span><span class="sc-meta-dot"></span>3 units · $510K · listed 12 days</span>
+          <button class="sc-howscore" onclick="event.stopPropagation();playSmallCard('howard')">↻ how was this scored?</button>
+        </div>
+        <div class="sc-engine">
+          <div class="sc-engine-label">Scoring · 12 Howard St</div>
+          <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
+          <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$6,200/yr · actual</span></div>
+          <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,850/mo · 2BR avg</span></div>
+          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">2.5× median CoC</span></div>
+          <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('howard')">↑ hide</button></div>
+        </div>
+      </div>
+
+      <!-- 22 Pleasant St -->
+      <div class="sc-card" id="card-pleasant"
+           data-rate="6.83%" data-tax="$5,900/yr" data-rent="$1,780/mo · 2BR avg" data-compare="2.2× median CoC">
+        <div class="sc-row1">
+          <div class="sc-mark">
+            <svg viewBox="0 0 30 30" fill="none">
+              <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+              <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+              <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+            </svg>
+          </div>
+          <span class="sc-verdict buy">Buy</span>
+          <span class="sc-addr">22 Pleasant St, Lynn</span>
+          <span class="sc-score">76/100</span>
+        </div>
+        <div class="sc-row2">
+          <span class="sc-cf">$1,840</span>
+          <span class="sc-cf-l">/mo cashflow</span>
+          <span class="sc-divider">·</span>
+          <span class="sc-coc">8.9% CoC</span>
+        </div>
+        <div class="sc-row3">
+          <span><span class="sc-meta-dot"></span>4 units · $580K · sat 62 days</span>
+          <button class="sc-howscore" onclick="event.stopPropagation();playSmallCard('pleasant')">↻ how was this scored?</button>
+        </div>
+        <div class="sc-engine">
+          <div class="sc-engine-label">Scoring · 22 Pleasant St</div>
+          <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
+          <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$5,900/yr · actual</span></div>
+          <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,780/mo · 2BR avg</span></div>
+          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">2.2× median CoC</span></div>
+          <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('pleasant')">↑ hide</button></div>
+        </div>
+      </div>
+
+      <!-- 87 Boston St -->
+      <div class="sc-card" id="card-boston"
+           data-rate="6.83%" data-tax="$8,400/yr" data-rent="$1,920/mo · 2BR avg" data-compare="1.2× median CoC">
+        <div class="sc-row1">
+          <div class="sc-mark watch">
+            <svg viewBox="0 0 30 30" fill="none">
+              <path d="M5 12 L15 6 L25 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#fff"/>
+              <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#fff" opacity=".7"/>
+              <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#fff" opacity=".4"/>
+            </svg>
+          </div>
+          <span class="sc-verdict watch">Watch</span>
+          <span class="sc-addr">87 Boston St, Lynn</span>
+          <span class="sc-score">68/100</span>
+        </div>
+        <div class="sc-row2">
+          <span class="sc-cf watch">$640</span>
+          <span class="sc-cf-l">/mo cashflow</span>
+          <span class="sc-divider">·</span>
+          <span class="sc-coc">5.1% CoC</span>
+        </div>
+        <div class="sc-row3">
+          <span><span class="sc-meta-dot watch"></span>3 units · $720K · listed 38 days</span>
+          <button class="sc-howscore" onclick="event.stopPropagation();playSmallCard('boston')">↻ how was this scored?</button>
+        </div>
+        <div class="sc-engine">
+          <div class="sc-engine-label">Scoring · 87 Boston St</div>
+          <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">6.83% · week of May 13</span></div>
+          <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">$8,400/yr · actual</span></div>
+          <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rent comps (HUD)</span><span class="sc-step-val">$1,920/mo · 2BR avg</span></div>
+          <div class="sc-step" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Comparing to Lynn this week</span><span class="sc-step-val">1.2× median CoC</span></div>
+          <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('boston')">↑ hide</button></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="feed-cta-bar">
+      <div class="feed-cta-text">Want to <strong>open the full math</strong> or get pinged when a new Strong Buy hits Lynn?</div>
+      <button class="feed-cta-btn">Save & continue →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Shared timing — ~5 second animation (4 steps × ~1s each + reveal)
+function buildTimings(steps, revealCallback){
+  return [
+    {delay: 300,  fn: () => steps[0].classList.add('in','active')},
+    {delay: 1100, fn: () => { steps[0].classList.remove('active'); steps[0].classList.add('done'); }},
+
+    {delay: 1300, fn: () => steps[1].classList.add('in','active')},
+    {delay: 2100, fn: () => { steps[1].classList.remove('active'); steps[1].classList.add('done'); }},
+
+    {delay: 2300, fn: () => steps[2].classList.add('in','active')},
+    {delay: 3100, fn: () => { steps[2].classList.remove('active'); steps[2].classList.add('done'); }},
+
+    {delay: 3300, fn: () => steps[3].classList.add('in','active')},
+    {delay: 4200, fn: () => { steps[3].classList.remove('active'); steps[3].classList.add('done'); }},
+
+    {delay: 4800, fn: revealCallback},
+  ];
+}
+
+// ===== FEATURED TILE =====
+const ftSteps = () => document.querySelectorAll('#featTile .ft-step');
+const ftReveal = document.getElementById('ftReveal');
+
+function resetFeatured(){
+  ftSteps().forEach(s => s.classList.remove('in','active','done'));
+  ftReveal.classList.remove('in');
+}
+
+function playEngine(){
+  resetFeatured();
+  buildTimings(ftSteps(), () => ftReveal.classList.add('in'))
+    .forEach(({delay, fn}) => setTimeout(fn, delay));
+}
+
+// Auto-play on load
+window.addEventListener('load', () => setTimeout(playEngine, 600));
+
+// ===== SMALL CARDS — inline engine reveal =====
+function playSmallCard(id){
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  card.classList.add('expanded');
+  const steps = card.querySelectorAll('.sc-step');
+  const foot = card.querySelector('.sc-engine-foot');
+  steps.forEach(s => s.classList.remove('in','active','done'));
+  foot.classList.remove('in');
+  buildTimings(steps, () => foot.classList.add('in'))
+    .forEach(({delay, fn}) => setTimeout(fn, delay));
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function hideSmallCard(id){
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  card.classList.remove('expanded');
+}
+</script>
+
+</body>
+</html>

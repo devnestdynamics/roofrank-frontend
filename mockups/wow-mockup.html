@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Wow moments mockup</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+
+.opt-bar{background:var(--ink);color:#fff;padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.opt-bar-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.opt-bar-desc{font-size:.82rem;color:rgba(255,255,255,.65);font-style:italic;max-width:560px;text-align:right}
+.opt-bar-tag{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.1em;color:var(--sage);background:rgba(122,170,143,.15);padding:3px 10px;border-radius:5px;margin-right:.5rem}
+
+.frame{background:var(--cream);padding:3rem 2rem;display:flex;flex-direction:column;align-items:center;min-height:560px}
+.intro{max-width:880px;margin:2.5rem auto;text-align:center;padding:0 1.5rem}
+.intro-h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;color:var(--ink);margin-bottom:.6rem}
+.intro-p{color:var(--muted);font-size:.95rem;line-height:1.65;max-width:680px;margin:0 auto}
+
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:2rem}
+.brand-mark{width:24px;height:24px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+
+.h1{font-family:var(--serif);font-size:clamp(1.65rem,3vw,2.2rem);font-weight:500;line-height:1.15;color:var(--ink);text-align:center;margin-bottom:.6rem;letter-spacing:-.02em;max-width:560px}
+.h1 em{font-style:italic;color:var(--forest)}
+.sub{font-size:.92rem;color:var(--muted);line-height:1.65;text-align:center;max-width:480px;margin-bottom:2rem}
+.sub strong{color:var(--ink);font-weight:500}
+
+/* ===========================================================
+   WOW 1 — Score YOUR deal
+   =========================================================== */
+.w1-input-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;max-width:520px;width:100%;box-shadow:0 4px 18px rgba(28,31,28,.05)}
+.w1-input{width:100%;padding:.85rem 1rem;border:1.5px solid var(--border-2);border-radius:10px;font-size:1rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;transition:border-color .15s;margin-bottom:.75rem}
+.w1-input:focus{border-color:var(--forest)}
+.w1-input::placeholder{color:var(--faint)}
+.w1-btn{width:100%;background:var(--forest);color:#fff;border:none;padding:.78rem;border-radius:10px;font-size:.92rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.w1-btn:hover:not(:disabled){background:var(--forest-2)}
+.w1-btn:disabled{opacity:.6;cursor:wait}
+.w1-examples{text-align:center;font-size:.78rem;color:var(--muted);margin-top:1rem}
+.w1-example-link{color:var(--forest);text-decoration:none;cursor:pointer;font-family:var(--mono);font-size:.78rem;border-bottom:1px dotted var(--sage-border)}
+.w1-example-link:hover{border-bottom-style:solid}
+
+/* Result panel */
+.w1-result{display:none;max-width:560px;width:100%;animation:fu .4s ease}
+.w1-result.show{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.w1-result-tag{display:inline-flex;align-items:center;gap:.45rem;font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:5px 11px;border-radius:6px;margin-bottom:1rem}
+.w1-result-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--forest);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.w1-card{background:var(--white);border:2px solid var(--sage-border);border-radius:16px;padding:1.75rem;box-shadow:0 8px 28px rgba(28,74,53,.1)}
+.w1-card-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem;padding-bottom:1rem;border-bottom:1px solid var(--cream-3)}
+.w1-card-score{
+  width:64px;height:64px;border-radius:50%;border:3px solid var(--buy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--mono);background:rgba(45,100,72,.06);flex-shrink:0;
+}
+.w1-card-score-n{font-size:1.4rem;font-weight:500;color:var(--buy);line-height:1}
+.w1-card-score-l{font-size:.5rem;font-weight:700;letter-spacing:.1em;color:var(--buy);text-transform:uppercase}
+.w1-card-info{flex:1;min-width:0}
+.w1-card-addr{font-family:var(--serif);font-size:1.1rem;font-weight:500;color:var(--ink);margin-bottom:.15rem}
+.w1-card-meta{font-size:.78rem;color:var(--muted);font-family:var(--mono)}
+.w1-card-tag{
+  font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);
+  padding:4px 8px;border-radius:5px;flex-shrink:0;
+}
+.w1-card-cf-row{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap}
+.w1-card-cf{font-family:var(--serif);font-size:1.5rem;font-weight:500;color:var(--buy)}
+.w1-card-cf-l{font-size:.85rem;color:var(--muted)}
+.w1-card-coc{font-family:var(--mono);font-size:1rem;color:var(--ink);font-weight:500}
+.w1-context-line{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--cream-2);border:1px solid var(--cream-3);border-radius:8px;
+  padding:.7rem .85rem;font-size:.82rem;color:var(--ink-2);margin-bottom:1.25rem;
+}
+.w1-context-line strong{color:var(--forest);font-weight:600}
+
+/* Metric grid */
+.w1-metrics-h{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.w1-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem}
+.w1-metric{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:.5rem .55rem;display:flex;flex-direction:column;gap:.15rem;align-items:center;text-align:center}
+.w1-metric-name{font-size:.62rem;color:var(--muted);font-weight:500}
+.w1-metric-val{font-family:var(--mono);font-size:.78rem;color:var(--ink);font-weight:500}
+.w1-metric-grade{font-size:.55rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;border-radius:3px;margin-top:1px}
+.w1-metric-grade.g{color:var(--forest);background:var(--sage-dim)}
+.w1-metric-grade.y{color:var(--watch);background:rgba(160,106,0,.08)}
+.w1-metric-grade.r{color:var(--pass);background:rgba(160,48,48,.08)}
+
+.w1-cta-row{display:flex;gap:.65rem;margin-top:.75rem}
+.w1-cta-primary{flex:1;background:var(--forest);color:#fff;border:none;padding:.72rem;border-radius:10px;font-size:.88rem;font-weight:500;cursor:pointer;font-family:var(--sans)}
+.w1-cta-primary:hover{background:var(--forest-2)}
+.w1-cta-secondary{padding:.72rem 1rem;background:transparent;color:var(--ink);border:1.5px solid var(--border-2);border-radius:10px;font-size:.85rem;cursor:pointer;font-family:var(--sans)}
+.w1-cta-secondary:hover{border-color:var(--forest);color:var(--forest)}
+
+.w1-bridge{margin-top:1.25rem;max-width:560px;width:100%;padding:.95rem 1.1rem;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:10px;font-size:.82rem;color:var(--ink-2);text-align:center;line-height:1.6}
+.w1-bridge strong{color:var(--forest);font-weight:500}
+
+/* ===========================================================
+   WOW 2 — Live sensitivity sliders
+   =========================================================== */
+.w2-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;max-width:560px;width:100%;box-shadow:0 6px 22px rgba(28,31,28,.06)}
+.w2-card-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem}
+.w2-verdict{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18);padding:3px 8px;border-radius:6px}
+.w2-addr{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);flex:1}
+.w2-score{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-weight:500}
+.w2-default-row,.w2-current-row{display:flex;align-items:baseline;gap:.6rem;padding:.85rem 1rem;background:var(--cream-2);border-radius:10px;margin-bottom:1rem}
+.w2-current-row{background:linear-gradient(90deg,rgba(122,170,143,.12) 0%,rgba(122,170,143,.04) 100%);border:1px solid var(--sage-border)}
+.w2-row-label{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);min-width:80px}
+.w2-current-row .w2-row-label{color:var(--forest)}
+.w2-row-cf{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--ink)}
+.w2-current-row .w2-row-cf{color:var(--forest)}
+.w2-row-coc{font-family:var(--mono);font-size:.9rem;color:var(--ink);font-weight:500}
+.w2-row-divider{color:var(--faint)}
+.w2-delta{font-family:var(--mono);font-size:.78rem;color:var(--forest);font-weight:500;margin-left:auto}
+.w2-delta.neg{color:var(--pass)}
+
+.w2-sliders-h{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:1.25rem 0 .75rem}
+.w2-slider-row{display:grid;grid-template-columns:120px 1fr 80px;gap:.8rem;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--cream-3)}
+.w2-slider-row:last-of-type{border-bottom:none}
+.w2-slider-name{font-size:.85rem;color:var(--ink)}
+.w2-slider-input{
+  -webkit-appearance:none;appearance:none;height:5px;background:var(--cream-3);border-radius:3px;outline:none;
+}
+.w2-slider-input::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--forest);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.w2-slider-input::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--forest);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.w2-slider-val{font-family:var(--mono);font-size:.88rem;color:var(--ink);font-weight:500;text-align:right}
+.w2-reset{display:block;text-align:center;font-size:.78rem;color:var(--muted);background:none;border:none;cursor:pointer;margin-top:1rem;text-decoration:underline;text-underline-offset:3px}
+.w2-reset:hover{color:var(--forest)}
+
+/* ===========================================================
+   WOW 3 — The 83 we passed on
+   =========================================================== */
+.w3-wrap{max-width:560px;width:100%}
+.w3-feed-h{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--ink);margin-bottom:1rem;text-align:left}
+.w3-feed-h em{color:var(--forest);font-style:italic}
+.w3-mini-deal{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;margin-bottom:.45rem;display:flex;align-items:center;gap:.65rem;font-size:.82rem}
+.w3-mini-deal .verdict{font-size:.55rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2);padding:2px 6px;border-radius:4px;flex-shrink:0}
+.w3-mini-deal .addr{flex:1;font-family:var(--serif);font-weight:500;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w3-mini-deal .cf{font-family:var(--mono);color:var(--forest);font-weight:500;flex-shrink:0}
+
+.w3-divider{display:flex;align-items:center;gap:.85rem;margin:1.5rem 0 1rem;color:var(--faint);font-size:.78rem;font-family:var(--mono)}
+.w3-divider::before,.w3-divider::after{content:'';flex:1;height:1px;background:var(--cream-3)}
+
+.w3-toggle{
+  width:100%;background:var(--white);border:1.5px dashed var(--border-2);border-radius:10px;
+  padding:.85rem 1rem;cursor:pointer;font-family:var(--sans);font-size:.88rem;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;transition:all .15s;
+}
+.w3-toggle:hover{border-color:var(--forest);background:var(--sage-dim)}
+.w3-toggle-icon{font-family:var(--mono);color:var(--forest);font-weight:700;transition:transform .25s}
+.w3-toggle.open .w3-toggle-icon{transform:rotate(180deg)}
+
+.w3-passed{display:none;margin-top:.85rem;max-height:0;overflow:hidden;transition:max-height .35s ease;background:var(--white);border:1px solid var(--border);border-radius:10px}
+.w3-passed.open{display:block;max-height:600px;overflow-y:auto}
+.w3-passed-item{padding:.85rem 1rem;border-bottom:1px solid var(--cream-3);display:flex;align-items:flex-start;gap:.85rem}
+.w3-passed-item:last-child{border-bottom:none}
+.w3-passed-cross{
+  width:18px;height:18px;border-radius:50%;background:rgba(160,48,48,.08);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+  color:var(--pass);font-size:.65rem;font-weight:700;
+}
+.w3-passed-text{flex:1;font-size:.85rem;line-height:1.5}
+.w3-passed-addr{font-family:var(--serif);font-weight:500;color:var(--ink);display:inline}
+.w3-passed-meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:.4rem}
+.w3-passed-reason{display:block;margin-top:.15rem;font-size:.78rem;color:var(--muted);font-style:italic}
+
+/* ===========================================================
+   WOW 4 — Beat-the-market context line
+   =========================================================== */
+.w4-card{background:var(--white);border:1.5px solid var(--sage-border);border-radius:14px;padding:1.2rem 1.4rem;max-width:520px;width:100%;display:flex;flex-direction:column;gap:.7rem;box-shadow:0 4px 18px rgba(28,74,53,.06);margin-bottom:1.25rem;position:relative}
+.w4-head{display:flex;align-items:center;gap:.65rem}
+.w4-mark{width:28px;height:28px;border-radius:7px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.w4-mark svg{width:18px;height:18px}
+.w4-verdict{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2);padding:3px 8px;border-radius:6px;flex-shrink:0}
+.w4-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border-color:rgba(160,106,0,.18)}
+.w4-addr{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w4-score{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.w4-body{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap}
+.w4-cf{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--forest);line-height:1}
+.w4-cf-l{font-size:.75rem;color:var(--muted)}
+.w4-coc{font-family:var(--mono);font-size:.88rem;color:var(--ink);font-weight:500}
+.w4-divider{color:var(--faint)}
+
+.w4-context{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-size:.78rem;color:var(--forest);font-weight:500;font-family:var(--sans);
+  background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:6px;
+  padding:5px 10px;align-self:flex-start;
+}
+.w4-context.warn{color:var(--watch);background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+.w4-context-arrow{font-size:.85rem;line-height:1}
+.w4-foot{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.w4-foot-dot{width:4px;height:4px;border-radius:50%;background:var(--sage)}
+.w4-old-tag{position:absolute;top:.55rem;right:.85rem;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);background:var(--cream-2);padding:2px 6px;border-radius:3px}
+.w4-new-tag{position:absolute;top:.55rem;right:.85rem;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:2px 6px;border-radius:3px}
+
+@media(max-width:560px){
+  .frame{padding:2.5rem 1rem}
+  .opt-bar{flex-direction:column;align-items:flex-start;padding:.85rem 1.25rem}
+  .opt-bar-desc{text-align:left}
+  .w1-metrics{grid-template-columns:repeat(2,1fr)}
+  .w2-slider-row{grid-template-columns:90px 1fr 70px;gap:.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="intro-h1">4 wow ideas, head-to-head</div>
+  <p class="intro-p">Each one is a different bet on what makes someone tell their friend about RoofRank. W1 (personal) and W2 (interactive) are interactive in this mockup — try them.</p>
+</div>
+
+<!-- ===========================================================
+     WOW 1 — Score YOUR deal
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">WOW 1</span><span class="opt-bar-name">Score YOUR deal · the personal moment</span></div>
+  <div class="opt-bar-desc">Try it: paste any address, or click "use demo address" — watch the engine run on your deal.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <h1 class="h1">Already looking at <em>a deal?</em></h1>
+  <p class="sub">Paste the address — we'll run the same 8-metric engine on YOUR property in <strong>30 seconds.</strong> No signup, no credit card.</p>
+
+  <div class="w1-input-card" id="w1Input">
+    <input type="text" class="w1-input" id="w1Addr" placeholder="123 Main St, Lynn MA 01902">
+    <button class="w1-btn" id="w1Btn" onclick="w1Score()">Score this deal →</button>
+    <div class="w1-examples">
+      Or try a demo: <span class="w1-example-link" onclick="w1Demo()">14 Adams Ct, Lynn MA</span>
+    </div>
+  </div>
+
+  <div class="w1-result" id="w1Result">
+    <div style="text-align:center"><div class="w1-result-tag"><span class="w1-result-tag-dot"></span>Your deal · scored in 22s</div></div>
+    <div class="w1-card">
+      <div class="w1-card-head">
+        <div class="w1-card-score">
+          <div class="w1-card-score-n">71</div>
+          <div class="w1-card-score-l">Buy</div>
+        </div>
+        <div class="w1-card-info">
+          <div class="w1-card-addr" id="w1ResAddr">14 Adams Ct, Lynn MA</div>
+          <div class="w1-card-meta">3 units · $585K · listed 18 days</div>
+        </div>
+        <span class="w1-card-tag">Your deal</span>
+      </div>
+
+      <div class="w1-card-cf-row">
+        <span class="w1-card-cf">$1,420</span>
+        <span class="w1-card-cf-l">/mo cashflow</span>
+        <span style="color:var(--faint)">·</span>
+        <span class="w1-card-coc">7.8% CoC</span>
+      </div>
+
+      <div class="w1-context-line">
+        <span style="color:var(--forest)">●</span>
+        Your deal cashflows <strong>1.9× Lynn median</strong> (4.1%) — but two Strong Buys nearby score 82–87.
+      </div>
+
+      <div class="w1-metrics-h">All 8 metrics</div>
+      <div class="w1-metrics">
+        <div class="w1-metric"><div class="w1-metric-name">CoC</div><div class="w1-metric-val">7.8%</div><div class="w1-metric-grade g">Good</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">Cap Rate</div><div class="w1-metric-val">6.4%</div><div class="w1-metric-grade g">Good</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">NOI</div><div class="w1-metric-val">$37K</div><div class="w1-metric-grade g">Good</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">DSCR</div><div class="w1-metric-val">1.18</div><div class="w1-metric-grade y">Watch</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">GRM</div><div class="w1-metric-val">9.4×</div><div class="w1-metric-grade g">Good</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">$/Unit</div><div class="w1-metric-val">$195K</div><div class="w1-metric-grade g">Good</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">CapEx</div><div class="w1-metric-val">Adj</div><div class="w1-metric-grade y">Watch</div></div>
+        <div class="w1-metric"><div class="w1-metric-name">Neighborhood</div><div class="w1-metric-val">B+</div><div class="w1-metric-grade g">Good</div></div>
+      </div>
+
+      <div class="w1-cta-row">
+        <button class="w1-cta-primary">Save this analysis →</button>
+        <button class="w1-cta-secondary">See full math</button>
+      </div>
+    </div>
+
+    <div class="w1-bridge">
+      <strong>While the engine was running</strong> — 4 Strong Buys hit Lynn this week. Top: <strong>58 Laighton St (87)</strong> at 11.4% CoC.
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     WOW 2 — Live sensitivity sliders
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">WOW 2</span><span class="opt-bar-name">Live sensitivity · the interactive moment</span></div>
+  <div class="opt-bar-desc">Slide the three controls — cashflow updates live. This is what an analyst does in a meeting.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <h1 class="h1">Slide the numbers. <em>Watch it move.</em></h1>
+  <p class="sub">What if you put more down? What if the Fed cuts rates? What if rents are higher than HUD says? Don't open Excel — <strong>just slide.</strong></p>
+
+  <div class="w2-card">
+    <div class="w2-card-head">
+      <span class="w2-verdict">Buy</span>
+      <span class="w2-addr">22 Pleasant St, Lynn</span>
+      <span class="w2-score">76/100</span>
+    </div>
+
+    <div class="w2-default-row">
+      <span class="w2-row-label">At defaults</span>
+      <span class="w2-row-cf">$1,840</span>
+      <span class="w2-row-coc">8.9% CoC</span>
+    </div>
+
+    <div class="w2-current-row">
+      <span class="w2-row-label">Your numbers</span>
+      <span class="w2-row-cf">$<span id="w2Cf">1,840</span></span>
+      <span class="w2-row-coc"><span id="w2Coc">8.9</span>% CoC</span>
+      <span class="w2-delta" id="w2Delta">±$0</span>
+    </div>
+
+    <div class="w2-sliders-h">Adjust your assumptions</div>
+
+    <div class="w2-slider-row">
+      <div class="w2-slider-name">Down payment</div>
+      <input type="range" class="w2-slider-input" id="w2Down" min="20" max="40" value="25" step="1">
+      <div class="w2-slider-val"><span id="w2DownVal">25</span>%</div>
+    </div>
+
+    <div class="w2-slider-row">
+      <div class="w2-slider-name">Mortgage rate</div>
+      <input type="range" class="w2-slider-input" id="w2Rate" min="500" max="800" value="683" step="1">
+      <div class="w2-slider-val"><span id="w2RateVal">6.83</span>%</div>
+    </div>
+
+    <div class="w2-slider-row">
+      <div class="w2-slider-name">Avg rent / unit</div>
+      <input type="range" class="w2-slider-input" id="w2Rent" min="1700" max="2400" value="2100" step="25">
+      <div class="w2-slider-val">$<span id="w2RentVal">2,100</span></div>
+    </div>
+
+    <button class="w2-reset" onclick="w2Reset()">Reset to defaults</button>
+  </div>
+</div>
+
+<!-- ===========================================================
+     WOW 3 — The 83 we passed on
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">WOW 3</span><span class="opt-bar-name">The 83 we passed on · the transparency moment</span></div>
+  <div class="opt-bar-desc">Click the dashed bar — see the deals we evaluated and rejected, with one-line reasons.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="w3-wrap">
+    <div class="w3-feed-h">We scanned <em>87 listings</em> in Lynn this week. Here are the 4 worth opening:</div>
+
+    <div class="w3-mini-deal">
+      <span class="verdict">SB</span>
+      <span class="addr">58 Laighton St</span>
+      <span class="cf">$2,180/mo</span>
+    </div>
+    <div class="w3-mini-deal">
+      <span class="verdict">SB</span>
+      <span class="addr">12 Howard St</span>
+      <span class="cf">$1,920/mo</span>
+    </div>
+    <div class="w3-mini-deal">
+      <span class="verdict" style="color:var(--buy);background:rgba(45,100,72,.07);border-color:rgba(45,100,72,.18)">Buy</span>
+      <span class="addr">22 Pleasant St</span>
+      <span class="cf">$1,840/mo</span>
+    </div>
+    <div class="w3-mini-deal">
+      <span class="verdict" style="color:var(--watch);background:rgba(160,106,0,.07);border-color:rgba(160,106,0,.18)">Watch</span>
+      <span class="addr">87 Boston St</span>
+      <span class="cf">$640/mo</span>
+    </div>
+
+    <div class="w3-divider">— and the other 83 —</div>
+
+    <button class="w3-toggle" id="w3Toggle" onclick="w3ToggleList()">
+      <span>Show me the 83 we passed on (and why)</span>
+      <span class="w3-toggle-icon">▾</span>
+    </button>
+
+    <div class="w3-passed" id="w3List">
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">44 Adams St</span><span class="w3-passed-meta">$485K · 3 units</span>
+          <span class="w3-passed-reason">4.1% CoC at today's rate. Hard pass on cashflow.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">9 Lincoln Ave</span><span class="w3-passed-meta">$420K · 2 units</span>
+          <span class="w3-passed-reason">Built 1888, deferred maintenance flagged — CapEx reserve eats cashflow.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">21 Maple St</span><span class="w3-passed-meta">$615K · 4 units</span>
+          <span class="w3-passed-reason">DSCR 0.91 — below lender threshold (1.25). Wouldn't finance.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">73 Western Ave</span><span class="w3-passed-meta">$1.2M · 6 units</span>
+          <span class="w3-passed-reason">$/unit 18% above Lynn median. Overpriced for the block.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">11 River St</span><span class="w3-passed-meta">$390K · 2 units</span>
+          <span class="w3-passed-reason">Per-unit rents 14% below market — listing rents are stale.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item">
+        <div class="w3-passed-cross">✕</div>
+        <div class="w3-passed-text">
+          <span class="w3-passed-addr">8 Park Pl</span><span class="w3-passed-meta">$540K · 3 units</span>
+          <span class="w3-passed-reason">Neighborhood D+ (crime + schools). Long-term hold risk.</span>
+        </div>
+      </div>
+      <div class="w3-passed-item" style="background:var(--cream-2);justify-content:center;color:var(--muted);font-size:.78rem;font-style:italic">
+        77 more — sign in to see them all
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     WOW 4 — Beat-the-market context line
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">WOW 4</span><span class="opt-bar-name">Beat-the-market context · the meaning moment</span></div>
+  <div class="opt-bar-desc">Side-by-side: the deal card without the context line (top, before) vs. with it (bottom, after).</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <h1 class="h1">Numbers <em>with meaning.</em></h1>
+  <p class="sub">A number alone tells you nothing. A number in context tells you whether to call the broker today.</p>
+
+  <!-- BEFORE card -->
+  <div class="w4-card" style="border-color:var(--border)">
+    <span class="w4-old-tag">Before</span>
+    <div class="w4-head">
+      <div class="w4-mark">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="w4-verdict">Strong Buy</span>
+      <span class="w4-addr">58 Laighton St, Lynn</span>
+      <span class="w4-score">87/100</span>
+    </div>
+    <div class="w4-body">
+      <span class="w4-cf">$2,180</span><span class="w4-cf-l">/mo cashflow</span>
+      <span class="w4-divider">·</span>
+      <span class="w4-coc">11.4% CoC</span>
+    </div>
+    <div class="w4-foot"><span class="w4-foot-dot"></span>4 units · $645K · at today's Freddie rate</div>
+  </div>
+
+  <!-- AFTER card -->
+  <div class="w4-card">
+    <span class="w4-new-tag">After</span>
+    <div class="w4-head">
+      <div class="w4-mark">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="w4-verdict">Strong Buy</span>
+      <span class="w4-addr">58 Laighton St, Lynn</span>
+      <span class="w4-score">87/100</span>
+    </div>
+    <div class="w4-body">
+      <span class="w4-cf">$2,180</span><span class="w4-cf-l">/mo cashflow</span>
+      <span class="w4-divider">·</span>
+      <span class="w4-coc">11.4% CoC</span>
+    </div>
+    <div class="w4-context">
+      <span class="w4-context-arrow">↑</span>
+      <span><strong>2.8× Lynn median</strong> CoC this week (4.1%)</span>
+    </div>
+    <div class="w4-foot"><span class="w4-foot-dot"></span>4 units · $645K · at today's Freddie rate</div>
+  </div>
+
+  <!-- AFTER — Watch tier example -->
+  <div class="w4-card">
+    <span class="w4-new-tag">After · Watch tier</span>
+    <div class="w4-head">
+      <div class="w4-mark" style="background:var(--watch)">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#fff"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#fff" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#fff" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="w4-verdict watch">Watch</span>
+      <span class="w4-addr">87 Boston St, Lynn</span>
+      <span class="w4-score">68/100</span>
+    </div>
+    <div class="w4-body">
+      <span class="w4-cf" style="color:var(--watch)">$640</span><span class="w4-cf-l">/mo cashflow</span>
+      <span class="w4-divider">·</span>
+      <span class="w4-coc">5.1% CoC</span>
+    </div>
+    <div class="w4-context warn">
+      <span class="w4-context-arrow">↓</span>
+      <span>Slightly above Lynn median (4.1%) — but tight margin at today's rate</span>
+    </div>
+    <div class="w4-foot"><span class="w4-foot-dot" style="background:var(--watch)"></span>3 units · $720K · listed 38 days</div>
+  </div>
+</div>
+
+<script>
+// ===========================================================
+// W1 — Score Your Deal (fake but feels real)
+// ===========================================================
+function w1Demo(){
+  document.getElementById('w1Addr').value = '14 Adams Ct, Lynn MA';
+  w1Score();
+}
+function w1Score(){
+  const addr = document.getElementById('w1Addr').value.trim();
+  if(!addr) { document.getElementById('w1Addr').focus(); return; }
+  const btn = document.getElementById('w1Btn');
+  btn.textContent = 'Pulling rent comps…'; btn.disabled = true;
+  setTimeout(()=>{ btn.textContent = 'Running 8-metric analysis…'; }, 600);
+  setTimeout(()=>{ btn.textContent = 'Comparing to Lynn median…'; }, 1200);
+  setTimeout(()=>{
+    document.getElementById('w1Input').style.display = 'none';
+    document.getElementById('w1ResAddr').textContent = addr;
+    document.getElementById('w1Result').classList.add('show');
+    document.getElementById('w1Result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 1900);
+}
+
+// ===========================================================
+// W2 — Live sensitivity sliders
+// ===========================================================
+// Simplified model. Real version would use full proforma math.
+// Defaults: $580K, 25% down ($145K cash), 6.83% rate, 4 units @ $2,100/mo = $8,400 gross/mo
+const W2_PRICE = 580000;
+const W2_UNITS = 4;
+const W2_TAX_INS_MO = 980; // tax + insurance
+const W2_VACANCY = 0.05;
+const W2_MAINT_PCT = 0.08;
+const W2_MGMT_PCT = 0.07;
+
+function w2Calc(downPct, ratePct, rentPerUnit){
+  const down = W2_PRICE * (downPct/100);
+  const loan = W2_PRICE - down;
+  const r = (ratePct/100)/12;
+  const n = 360;
+  const piMo = (loan*r*Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+  const grossMo = rentPerUnit * W2_UNITS;
+  const effGrossMo = grossMo * (1 - W2_VACANCY);
+  const opexMo = effGrossMo * (W2_MAINT_PCT + W2_MGMT_PCT) + W2_TAX_INS_MO;
+  const noiMo = effGrossMo - opexMo;
+  const cfMo = noiMo - piMo;
+  const cfYr = cfMo * 12;
+  const cashIn = down + W2_PRICE*0.03; // 3% closing
+  const coc = (cfYr / cashIn) * 100;
+  return { cfMo: Math.round(cfMo), coc: coc };
+}
+
+function w2Update(){
+  const down = +document.getElementById('w2Down').value;
+  const rate = +document.getElementById('w2Rate').value / 100;
+  const rent = +document.getElementById('w2Rent').value;
+  document.getElementById('w2DownVal').textContent = down;
+  document.getElementById('w2RateVal').textContent = rate.toFixed(2);
+  document.getElementById('w2RentVal').textContent = rent.toLocaleString();
+
+  const result = w2Calc(down, rate, rent);
+  const defaultResult = w2Calc(25, 6.83, 2100);
+  document.getElementById('w2Cf').textContent = result.cfMo.toLocaleString();
+  document.getElementById('w2Coc').textContent = result.coc.toFixed(1);
+  const delta = result.cfMo - defaultResult.cfMo;
+  const deltaEl = document.getElementById('w2Delta');
+  deltaEl.textContent = (delta>=0?'+':'') + '$' + delta.toLocaleString() + '/mo';
+  deltaEl.className = 'w2-delta' + (delta<0 ? ' neg' : '');
+}
+
+document.getElementById('w2Down').addEventListener('input', w2Update);
+document.getElementById('w2Rate').addEventListener('input', w2Update);
+document.getElementById('w2Rent').addEventListener('input', w2Update);
+
+function w2Reset(){
+  document.getElementById('w2Down').value = 25;
+  document.getElementById('w2Rate').value = 683;
+  document.getElementById('w2Rent').value = 2100;
+  w2Update();
+}
+w2Update();
+
+// ===========================================================
+// W3 — Toggle the rejected list
+// ===========================================================
+function w3ToggleList(){
+  const btn = document.getElementById('w3Toggle');
+  const list = document.getElementById('w3List');
+  const open = btn.classList.toggle('open');
+  list.classList.toggle('open');
+  btn.querySelector('span').textContent = open
+    ? 'Hide the 83 we passed on'
+    : 'Show me the 83 we passed on (and why)';
+}
+</script>
+
+</body>
+</html>

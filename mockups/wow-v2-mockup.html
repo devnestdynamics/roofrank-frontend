@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — W7 + W8 wow mockup</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+body{background:var(--cream-2);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+
+.opt-bar{background:var(--ink);color:#fff;padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.opt-bar-name{font-family:var(--serif);font-size:1.05rem;font-weight:500}
+.opt-bar-desc{font-size:.82rem;color:rgba(255,255,255,.65);font-style:italic;max-width:560px;text-align:right}
+.opt-bar-tag{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.1em;color:var(--sage);background:rgba(122,170,143,.15);padding:3px 10px;border-radius:5px;margin-right:.5rem}
+
+.frame{background:var(--cream);padding:3rem 2rem;display:flex;flex-direction:column;align-items:center;min-height:560px}
+.intro{max-width:880px;margin:2.5rem auto;text-align:center;padding:0 1.5rem}
+.intro-h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;color:var(--ink);margin-bottom:.6rem}
+.intro-p{color:var(--muted);font-size:.95rem;line-height:1.65;max-width:680px;margin:0 auto}
+
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:2rem}
+.brand-mark{width:24px;height:24px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+
+.h1{font-family:var(--serif);font-size:clamp(1.65rem,3vw,2.2rem);font-weight:500;line-height:1.15;color:var(--ink);text-align:center;margin-bottom:.6rem;letter-spacing:-.02em;max-width:580px}
+.h1 em{font-style:italic;color:var(--forest)}
+.sub{font-size:.92rem;color:var(--muted);line-height:1.65;text-align:center;max-width:520px;margin-bottom:2rem}
+.sub strong{color:var(--ink);font-weight:500}
+
+/* ===========================================================
+   W8 · Engine Replay Animation
+   =========================================================== */
+.w8-wrap{max-width:560px;width:100%}
+.w8-card{
+  background:var(--white);border:1.5px solid var(--border);border-radius:16px;
+  padding:1.5rem;box-shadow:0 6px 22px rgba(28,31,28,.06);
+  position:relative;overflow:hidden;
+}
+.w8-card-head{display:flex;align-items:center;gap:.65rem;margin-bottom:1rem}
+.w8-card-mark{width:30px;height:30px;border-radius:7px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.w8-card-mark svg{width:18px;height:18px}
+.w8-card-addr{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);flex:1}
+.w8-card-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+
+.w8-steps{
+  background:var(--cream-2);border:1px solid var(--cream-3);border-radius:10px;
+  padding:1rem 1.1rem;margin-bottom:1rem;min-height:200px;
+  display:flex;flex-direction:column;gap:.55rem;
+  font-family:var(--mono);font-size:.82rem;
+}
+.w8-step{
+  display:flex;align-items:flex-start;gap:.6rem;
+  opacity:0;transform:translateY(4px);
+  transition:opacity .3s, transform .3s;
+  color:var(--ink-2);
+}
+.w8-step.in{opacity:1;transform:none}
+.w8-step-dot{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--border-2);background:var(--white);
+  flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;
+}
+.w8-step.done .w8-step-dot{
+  background:var(--sage);border-color:var(--forest);
+}
+.w8-step.done .w8-step-dot::after{
+  content:'✓';color:var(--forest);font-weight:700;font-size:.65rem;line-height:1;
+}
+.w8-step.active .w8-step-dot{
+  border-color:var(--forest);
+  animation:w8spin 1s linear infinite;
+}
+@keyframes w8spin{
+  0%{transform:rotate(0deg);border-top-color:var(--cream-2)}
+  100%{transform:rotate(360deg);border-top-color:var(--cream-2)}
+}
+.w8-step-label{flex:1;line-height:1.4}
+.w8-step-val{
+  margin-left:auto;font-weight:500;color:var(--forest);
+  opacity:0;transition:opacity .3s;font-family:var(--mono);font-size:.82rem;
+  text-align:right;
+}
+.w8-step.done .w8-step-val{opacity:1}
+
+.w8-result{
+  display:flex;align-items:center;gap:1rem;
+  background:linear-gradient(135deg,var(--forest) 0%,var(--forest-2) 100%);
+  border-radius:12px;padding:1rem 1.25rem;
+  opacity:0;transform:scale(.96);transition:all .5s cubic-bezier(.22,1,.36,1);
+}
+.w8-result.in{opacity:1;transform:scale(1)}
+.w8-result-circle{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.w8-result-num{font-family:var(--mono);font-size:1.5rem;font-weight:500;color:#fff;line-height:1}
+.w8-result-of{font-size:.55rem;color:rgba(255,255,255,.7);letter-spacing:.06em}
+.w8-result-info{flex:1}
+.w8-result-verdict{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:#fff;line-height:1.2;margin-bottom:.15rem}
+.w8-result-sub{font-size:.78rem;color:rgba(255,255,255,.78);font-family:var(--mono)}
+
+.w8-controls{display:flex;justify-content:center;margin-top:1.25rem;gap:.5rem}
+.w8-replay-btn{
+  background:var(--white);color:var(--ink);
+  border:1.5px solid var(--border-2);padding:.55rem 1.1rem;border-radius:8px;
+  font-size:.82rem;font-family:var(--sans);cursor:pointer;
+  display:inline-flex;align-items:center;gap:.4rem;transition:all .15s;
+}
+.w8-replay-btn:hover{border-color:var(--forest);color:var(--forest);background:var(--sage-dim)}
+.w8-replay-btn:disabled{opacity:.5;cursor:wait}
+
+/* ===========================================================
+   W7 · Editorial note on every deal
+   =========================================================== */
+.w7-wrap{max-width:600px;width:100%}
+.w7-feed-h{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--ink);margin-bottom:1.25rem}
+.w7-feed-h em{color:var(--forest);font-style:italic}
+
+.w7-card{
+  background:var(--white);border:1.5px solid var(--border);border-radius:14px;
+  padding:1.2rem 1.3rem;margin-bottom:.85rem;
+  transition:all .15s;cursor:pointer;
+  position:relative;
+}
+.w7-card:hover{border-color:var(--sage-border);box-shadow:0 4px 16px rgba(28,31,28,.06);transform:translateY(-1px)}
+.w7-card.featured{border-color:var(--sage-border);background:linear-gradient(180deg,rgba(122,170,143,.05) 0%,var(--white) 100%);box-shadow:0 6px 22px rgba(28,74,53,.07)}
+.w7-card.featured::before{
+  content:'TOP PICK';position:absolute;top:-9px;left:1rem;
+  font-size:.55rem;font-weight:700;letter-spacing:.14em;
+  color:#fff;background:var(--forest);padding:3px 8px;border-radius:4px;
+}
+
+.w7-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.w7-mark{width:28px;height:28px;border-radius:7px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.w7-mark.watch{background:var(--watch)}
+.w7-mark svg{width:17px;height:17px}
+.w7-verdict{
+  font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;flex-shrink:0;
+}
+.w7-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2)}
+.w7-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.w7-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.w7-addr{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w7-score{font-family:var(--mono);font-size:.76rem;color:var(--muted);font-weight:500;flex-shrink:0}
+
+/* THE EDITORIAL NOTE — the wedge made tactile */
+.w7-note{
+  font-family:var(--serif);font-style:italic;font-size:.95rem;
+  color:var(--ink);line-height:1.5;
+  padding:.65rem .9rem .65rem 1rem;
+  border-left:3px solid var(--sage);
+  background:linear-gradient(90deg,rgba(122,170,143,.06) 0%,transparent 100%);
+  border-radius:0 6px 6px 0;
+  margin:.5rem 0 .85rem;
+}
+.w7-note b{font-weight:600;font-style:normal;color:var(--forest)}
+.w7-note::before{
+  content:'"';font-family:var(--serif);font-size:1.4rem;color:var(--sage);
+  line-height:0;margin-right:.1rem;vertical-align:-.3em;
+}
+
+.w7-body{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.w7-cf{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--forest);line-height:1}
+.w7-cf.watch{color:var(--watch)}
+.w7-cf-l{font-size:.74rem;color:var(--muted)}
+.w7-divider{color:var(--faint)}
+.w7-coc{font-family:var(--mono);font-size:.85rem;color:var(--ink);font-weight:500}
+
+.w7-context{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.72rem;color:var(--forest);font-weight:500;
+  background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:5px;
+  padding:3px 8px;margin-bottom:.5rem;
+}
+.w7-context.warn{color:var(--watch);background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+
+.w7-foot{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.w7-foot-dot{width:4px;height:4px;border-radius:50%;background:var(--sage)}
+.w7-foot-dot.watch{background:var(--watch)}
+
+.w7-byline{
+  margin-top:1.25rem;text-align:center;font-size:.78rem;color:var(--muted);
+  font-style:italic;font-family:var(--serif);max-width:480px;margin-left:auto;margin-right:auto;
+}
+.w7-byline b{color:var(--forest);font-weight:500;font-style:normal}
+
+/* ===========================================================
+   W7 + W8 — Combined experience (the dream)
+   =========================================================== */
+.combo-card{position:relative}
+.combo-loader{
+  position:absolute;inset:0;background:var(--cream-2);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:14px;
+  font-family:var(--mono);font-size:.78rem;color:var(--muted);
+  z-index:2;opacity:1;transition:opacity .5s;
+}
+.combo-loader.gone{opacity:0;pointer-events:none}
+.combo-loader span{display:inline-flex;align-items:center;gap:.5rem}
+.combo-loader span::before{
+  content:'';width:10px;height:10px;border-radius:50%;
+  border:2px solid var(--sage);border-top-color:transparent;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:560px){
+  .frame{padding:2.5rem 1rem}
+  .opt-bar{flex-direction:column;align-items:flex-start;padding:.85rem 1.25rem}
+  .opt-bar-desc{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="intro-h1">W7 + W8 · the wedge made tactile</div>
+  <p class="intro-p"><b>W8</b> shows the engine actually running — pulling Freddie, ATTOM, HUD live — then revealing the score. <b>W7</b> shows the analyst voice on every deal card. Together they prove the product is both <em>real</em> and <em>thoughtful</em>.</p>
+</div>
+
+<!-- ===========================================================
+     W8 — Engine Replay Animation
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">W8</span><span class="opt-bar-name">Engine replay · the magic moment</span></div>
+  <div class="opt-bar-desc">Click Replay to watch the engine score 58 Laighton — pulling live data from Freddie, ATTOM, HUD, then computing all 8 metrics.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <h1 class="h1">Watch the <em>2am scoring</em> in real time.</h1>
+  <p class="sub">Every night, RoofRank pulls live data and scores every active 2–6 unit listing. This is what it actually does — just made visible for you.</p>
+
+  <div class="w8-wrap">
+    <div class="w8-card">
+      <div class="w8-card-head">
+        <div class="w8-card-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="w8-card-addr">58 Laighton St, Lynn</span>
+        <span class="w8-card-meta">4 units · $645K</span>
+      </div>
+
+      <div class="w8-steps" id="w8Steps">
+        <div class="w8-step" data-step="0">
+          <span class="w8-step-dot"></span>
+          <span class="w8-step-label">Pulling Freddie Mac rate</span>
+          <span class="w8-step-val">6.83% · wk May 13</span>
+        </div>
+        <div class="w8-step" data-step="1">
+          <span class="w8-step-dot"></span>
+          <span class="w8-step-label">Pulling ATTOM property tax</span>
+          <span class="w8-step-val">$7,820/yr · actual</span>
+        </div>
+        <div class="w8-step" data-step="2">
+          <span class="w8-step-dot"></span>
+          <span class="w8-step-label">Pulling per-unit rents (HUD)</span>
+          <span class="w8-step-val">$2,100/mo · 2BR avg</span>
+        </div>
+        <div class="w8-step" data-step="3">
+          <span class="w8-step-dot"></span>
+          <span class="w8-step-label">Computing 8 financial metrics</span>
+          <span class="w8-step-val">CoC · Cap · DSCR · NOI · ...</span>
+        </div>
+        <div class="w8-step" data-step="4">
+          <span class="w8-step-dot"></span>
+          <span class="w8-step-label">Comparing to Lynn this week</span>
+          <span class="w8-step-val">2.8× median CoC</span>
+        </div>
+      </div>
+
+      <div class="w8-result" id="w8Result">
+        <div class="w8-result-circle">
+          <div class="w8-result-num">87</div>
+          <div class="w8-result-of">/ 100</div>
+        </div>
+        <div class="w8-result-info">
+          <div class="w8-result-verdict">Strong Buy</div>
+          <div class="w8-result-sub">Top deal in Lynn this week</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="w8-controls">
+      <button class="w8-replay-btn" id="w8ReplayBtn" onclick="w8Play()">
+        <span>↻</span> Replay the scoring
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     W7 — Editorial note on every deal
+     =========================================================== -->
+<div class="opt-bar">
+  <div><span class="opt-bar-tag">W7</span><span class="opt-bar-name">Editorial note on every deal · the wedge moment</span></div>
+  <div class="opt-bar-desc">The brief voice on every card. Per-deal analyst commentary. No competitor does this.</div>
+</div>
+<div class="frame">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 30 30" fill="none">
+      <rect width="30" height="30" rx="7" fill="#1c4a35"/>
+      <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+      <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+      <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+    </svg>
+    <span class="brand-name">RoofRank</span>
+  </a>
+
+  <div class="w7-wrap">
+    <div class="w7-feed-h">4 deals worth opening in <em>Lynn</em> this week.</div>
+
+    <!-- TOP PICK · 58 Laighton -->
+    <div class="w7-card featured">
+      <div class="w7-head">
+        <div class="w7-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="w7-verdict sb">Strong Buy</span>
+        <span class="w7-addr">58 Laighton St, Lynn</span>
+        <span class="w7-score">87/100</span>
+      </div>
+      <div class="w7-note">
+        <b>Top deal in Lynn this week.</b> Per-unit rents 8% below market — that's your pricing leverage. Walk in confident; comps support an offer at $610K.
+      </div>
+      <div class="w7-body">
+        <span class="w7-cf">$2,180</span>
+        <span class="w7-cf-l">/mo cashflow</span>
+        <span class="w7-divider">·</span>
+        <span class="w7-coc">11.4% CoC</span>
+      </div>
+      <div class="w7-context">↑ 2.8× Lynn median (4.1%)</div>
+      <div class="w7-foot"><span class="w7-foot-dot"></span>4 units · $645K · at today's Freddie rate</div>
+    </div>
+
+    <!-- 12 Howard -->
+    <div class="w7-card">
+      <div class="w7-head">
+        <div class="w7-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="w7-verdict sb">Strong Buy</span>
+        <span class="w7-addr">12 Howard St, Lynn</span>
+        <span class="w7-score">82/100</span>
+      </div>
+      <div class="w7-note">
+        <b>Don't sleep on this one.</b> Sat 12 days but priced right — quietly the best risk-adjusted return on the board. DSCR has real headroom if rates dip.
+      </div>
+      <div class="w7-body">
+        <span class="w7-cf">$1,920</span>
+        <span class="w7-cf-l">/mo cashflow</span>
+        <span class="w7-divider">·</span>
+        <span class="w7-coc">10.2% CoC</span>
+      </div>
+      <div class="w7-context">↑ 2.5× Lynn median (4.1%)</div>
+      <div class="w7-foot"><span class="w7-foot-dot"></span>3 units · $510K · listed 12 days ago</div>
+    </div>
+
+    <!-- 22 Pleasant -->
+    <div class="w7-card">
+      <div class="w7-head">
+        <div class="w7-mark">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="w7-verdict buy">Buy</span>
+        <span class="w7-addr">22 Pleasant St, Lynn</span>
+        <span class="w7-score">76/100</span>
+      </div>
+      <div class="w7-note">
+        <b>Sellers are motivated</b> — 62 days on market and a $20K price cut last week. Comps closed $590-680K. Start at $580K, walk above $625K.
+      </div>
+      <div class="w7-body">
+        <span class="w7-cf">$1,840</span>
+        <span class="w7-cf-l">/mo cashflow</span>
+        <span class="w7-divider">·</span>
+        <span class="w7-coc">8.9% CoC</span>
+      </div>
+      <div class="w7-context">↑ 2.2× Lynn median (4.1%)</div>
+      <div class="w7-foot"><span class="w7-foot-dot"></span>4 units · $580K · sat 62 days</div>
+    </div>
+
+    <!-- 87 Boston St — Watch tier example -->
+    <div class="w7-card">
+      <div class="w7-head">
+        <div class="w7-mark watch">
+          <svg viewBox="0 0 30 30" fill="none">
+            <path d="M5 12 L15 6 L25 12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#fff"/>
+            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#fff" opacity=".7"/>
+            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#fff" opacity=".4"/>
+          </svg>
+        </div>
+        <span class="w7-verdict watch">Watch</span>
+        <span class="w7-addr">87 Boston St, Lynn</span>
+        <span class="w7-score">68/100</span>
+      </div>
+      <div class="w7-note">
+        <b>Tight margins at today's rate.</b> Worth opening only if you can negotiate $50K off — otherwise pass. Building's solid; numbers aren't.
+      </div>
+      <div class="w7-body">
+        <span class="w7-cf watch">$640</span>
+        <span class="w7-cf-l">/mo cashflow</span>
+        <span class="w7-divider">·</span>
+        <span class="w7-coc">5.1% CoC</span>
+      </div>
+      <div class="w7-context warn">↓ Slightly above Lynn median (4.1%)</div>
+      <div class="w7-foot"><span class="w7-foot-dot watch"></span>3 units · $720K · listed 38 days</div>
+    </div>
+
+    <div class="w7-byline">
+      <b>The analyst's notes are written nightly</b> — one per deal, with the math behind them.
+    </div>
+  </div>
+</div>
+
+<script>
+// ===========================================================
+// W8 — Engine Replay Animation
+// ===========================================================
+const w8Steps = document.querySelectorAll('.w8-step');
+const w8Result = document.getElementById('w8Result');
+const w8Btn = document.getElementById('w8ReplayBtn');
+
+function w8Reset(){
+  w8Steps.forEach(s => s.classList.remove('in','active','done'));
+  w8Result.classList.remove('in');
+}
+
+function w8Play(){
+  w8Btn.disabled = true;
+  w8Reset();
+  const stepTimings = [
+    {delay: 200, action: () => { w8Steps[0].classList.add('in','active'); }},
+    {delay: 900, action: () => { w8Steps[0].classList.remove('active'); w8Steps[0].classList.add('done'); }},
+    {delay: 1100, action: () => { w8Steps[1].classList.add('in','active'); }},
+    {delay: 1800, action: () => { w8Steps[1].classList.remove('active'); w8Steps[1].classList.add('done'); }},
+    {delay: 2000, action: () => { w8Steps[2].classList.add('in','active'); }},
+    {delay: 2700, action: () => { w8Steps[2].classList.remove('active'); w8Steps[2].classList.add('done'); }},
+    {delay: 2900, action: () => { w8Steps[3].classList.add('in','active'); }},
+    {delay: 3700, action: () => { w8Steps[3].classList.remove('active'); w8Steps[3].classList.add('done'); }},
+    {delay: 3900, action: () => { w8Steps[4].classList.add('in','active'); }},
+    {delay: 4500, action: () => { w8Steps[4].classList.remove('active'); w8Steps[4].classList.add('done'); }},
+    {delay: 4800, action: () => { w8Result.classList.add('in'); w8Btn.disabled = false; }},
+  ];
+  stepTimings.forEach(({delay, action}) => setTimeout(action, delay));
+}
+
+// Auto-play on load
+window.addEventListener('load', () => setTimeout(w8Play, 600));
+</script>
+
+</body>
+</html>

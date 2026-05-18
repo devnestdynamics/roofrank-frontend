@@ -2292,3 +2292,107 @@ Hide streetscape on mobile via CSS:
 Mobile gets a clean cream hero. Desktop keeps the streetscape as backdrop. Zero design risk.
 
 **Re-evaluate when:** post-launch, after 50+ users, with bounce-rate data on the current hero. If desktop bounce is high, swap to Direction 2 (ticker) as the first experiment.
+
+### 179. Landing stat bar — flip to 5 cities when backend coverage is live
+**Priority:** 🟡 Phase 2 / pre-launch · **Effort:** XS · **Source:** Decided 2026-05-17 alongside onboarding scope
+
+Landing stat bar currently reads `30 active · Lynn · Worcester` (honest — those are the only 2 markets currently scoring). Pre-launch decision: MVP target is 5 MA cities — Lynn, Worcester, Salem, Revere, Framingham.
+
+When backend coverage goes live for Salem/Revere/Framingham:
+- Update stat bar cell 1 to the new count + new city list
+- Update the listing-count number to reflect actual aggregate across 5 cities
+- Consider whether to break out per-city counts ("Lynn 24 · Salem 8 · Revere 12 · Worcester 15 · Framingham 6") vs comma-list
+
+Tracking deps:
+- Backend: scoring engine + RentCast/ATTOM coverage for the 3 new cities
+- Frontend: this is a 5-line edit to `roofrank-landing.html` stat bar HTML
+
+Related: [[mvp-launch-markets]] in memory.
+
+### 180. Pre-auth AI chat as conversion device (v1.1)
+**Priority:** 🟢 Phase 3 / post-launch · **Effort:** L · **Source:** Decided 2026-05-17 during onboarding design — deferred from MVP
+
+Pre-auth AI chat was considered for the onboarding flow as a wow moment. Deferred to v1.1.
+
+**Why deferred (decided 2026-05-17):**
+- Positioning memory ([[feedback-positioning-decision-tool]]) says AI is a capability inside the product, not a marketing claim
+- Anonymous chat = no rate limiting per user = abuse + cost risk
+- Hallucination risk without identity (no way to reach user to clarify mistakes)
+- W1 (Score Your Deal), W2 (sensitivity sliders), W4 (beat-the-market context) already create wow moments without AI chat
+- Strategic review explicitly listed AI chat as v1.1 deferred
+
+**The bold v1.1 play to consider:**
+Use "Ask the analyst" as the conversion device on the soft signup wall. Limit to 3 free messages pre-auth, then the chat itself asks for email to continue. Combines AI wow with conversion trigger. Engineering scope: rate limiting per session/IP, prompt safety, content moderation, abuse prevention, cost ceiling per anonymous session.
+
+**Tension flagged with landing page:**
+Landing's brief showcase shows an "Ask the analyst" Q&A example. If pre-auth flow has zero chat presence, that's a small credibility crack. **Pre-launch fix:** add a small label on the landing's chat preview clarifying it's a post-signup capability (e.g., "↳ The analyst is on every deal-detail page · sign in to ask"). Track this as part of the landing/onboarding launch QA.
+
+Related: [[feedback-positioning-decision-tool]], strategic review's "Out of scope" list.
+
+### 181. Onboarding wow ideas · considered & deferred for MVP
+**Priority:** 🟢 Phase 3 / post-launch · **Effort:** Variable per item · **Source:** Onboarding design 2026-05-17
+
+During the onboarding redesign (Stages 1-4 of the rebuild), six wow ideas were considered. MVP design locked in **W7 (editorial note on every deal)** and **W8 (engine replay animation on top pick)** only. The six below were deferred. Re-evaluate post-launch once we have user behavior data.
+
+---
+
+**W1 · "Score YOUR deal" — the personal moment**
+User pastes their own address pre-auth, gets a personalized score with all 8 metrics. Strongest "I'd tell my friend" wow when it works.
+
+*Why deferred:* Address validation is a tar pit — users will paste single-families, condos, commercial, junk. Need RentCast lookup + graceful redirect logic + type-ahead from known listings. Real engineering. Also, most users don't have a specific deal in mind — they trust RoofRank to surface good ones, so personalization is "interesting but not great" (Ali, 2026-05-17).
+
+*To ship later:* Build type-ahead from active listings as the primary input. Freeform with RentCast validation as fallback. Estimate 2 weeks backend + 1 week frontend.
+
+---
+
+**W2 · Live sensitivity sliders — the interactive moment**
+On any deal card, sliders for down payment, rate, and rent assumption. Cashflow updates live as user slides. Unreasonably fun (the mockup is live in `mockups/wow-mockup.html`).
+
+*Why deferred:* Needs real proforma math hooked to the backend (not the simplified client-side model in the mockup). Real engineering — probably 2-3 weeks to do properly with all 8 metrics responding correctly.
+
+*To ship later:* v1.1 candidate. Pairs naturally with the deal-detail page rebuild planned for Weeks 3-4.
+
+---
+
+**W3 · "The 83 we passed on" — the transparency moment**
+Above the feed: *"We scanned 87 listings in Lynn. Here are the 4 worth opening. Curious about the other 83?"* Expand reveals the rejected deals with one-line reasons.
+
+*Why deferred:* Great trust signal but works better once we have a track record. Pre-launch with few listings, the "we passed on 6 because they don't cashflow" reveal isn't as impressive. Also requires backend to surface rejected listings with reason metadata.
+
+*To ship later:* Re-evaluate at Weeks 9-10 (Trust & Track Record phase).
+
+---
+
+**W4 · Beat-the-market context line — the meaning moment**
+On every deal card: *"11.4% CoC · 2.8× Lynn median (4.1%)"* — a small line putting each number in context.
+
+*Why deferred:* Removed from the final design per Ali's call ("no other wow moments besides W7 + W8"). The wedge is already carried by W7's editorial voice — adding context lines was redundant given the analyst note already provides context narratively.
+
+*To ship later:* Easiest re-add of all six items if A/B testing shows users want quantitative context alongside the editorial note. ~30 lines of CSS + a backend field per deal.
+
+---
+
+**W5 · Track record — the trust moment**
+*"We flagged 14 Adams Ct as a Strong Buy on Feb 12. Listed $510K. Closed $475K Mar 19. Cashflowing $1,650/mo today."* Past calls with outcomes. Killer wow because past performance is the most powerful social proof in finance.
+
+*Why deferred:* Requires historical scoring data + sold price data + current cashflow tracking. Not possible at launch — we don't have history yet.
+
+*To ship later:* Weeks 9-10 (Trust & Track Record phase). Build the audit trail NOW so 6 months in we can show real history. This is the moat DealCheck doesn't have (from strategic review).
+
+---
+
+**W6 · Take-home proforma PDF — the utility moment**
+Below every deal card: *"Download the proforma →"* User gets a 1-page PDF with full income/expense breakdown, watermarked with RoofRank's mark. Pre-auth shows preview; full clean PDF requires email.
+
+*Why deferred:* Real engineering (server-side PDF generation, template design, watermarking). 3-5 days.
+
+*To ship later:* Strong candidate for v1.1 — combines viral potential (they show partner/lender/CPA) with conversion driver (full PDF gated to email). Worth it once core flow is validated.
+
+---
+
+**Related items already captured:**
+- #180 — Pre-auth AI chat as conversion device (v1.1)
+- #178 — Bold hero imagery (post-launch experiment)
+- Behavioral persona derivation — implied v1.1, no separate backlog entry yet
+
+Related: [[mvp-launch-markets]], strategic review's "Out of scope for 90 days" list.
