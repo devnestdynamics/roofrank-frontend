@@ -466,7 +466,14 @@ async function selectMarket(id) {
     // missing analyst notes get the soft CTA fallback. Mark the first
     // deal as featured (backend also sets featured=true on idx 0; we
     // defensively re-derive to handle either case).
-    State.deals = (feed.deals || []).map((d, idx) => ({
+    // Drop unscored / unenriched rows before featuring — rentcast sometimes
+    // surfaces a listing before the scoring pipeline has run, leaving score,
+    // monthlyCashflow, units, etc. null. Featuring one of those crashes the
+    // renderer on `null.toLocaleString()`. Backend filter on /public is the
+    // long-term home of this guard; this is the defensive client copy.
+    State.deals = (feed.deals || [])
+      .filter(d => d.score != null && d.monthlyCashflow != null && d.coc != null)
+      .map((d, idx) => ({
       ...d,
       featured: d.featured === true || idx === 0,
       address: shortAddress(d.address, d.city),
