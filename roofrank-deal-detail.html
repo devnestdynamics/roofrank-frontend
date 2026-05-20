@@ -255,6 +255,42 @@ nav.top{
 .hero-cf.negative::before{background:radial-gradient(circle, rgba(240,128,128,.16), transparent 65%)}
 .hero-cf.negative .hero-cf-val{color:#ffb0b0}
 
+/* ── FRESHNESS SIGNAL ──────────────────────────────────────────────────
+   Pulsing sage dot + "Scored nightly · at today's Freddie rate" — same
+   pattern landing/onboarding/dashboard heroes use. Tells the user the
+   analysis is live, not a stale snapshot. */
+.hd-fresh{font-family:var(--mono);font-size:.74rem;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1rem}
+.hd-fresh-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:hdFreshPulse 1.8s ease-in-out infinite;flex-shrink:0}
+@keyframes hdFreshPulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── PROPERTY PHOTOS ───────────────────────────────────────────────────
+   Horizontal scroll above the hero when RentCast returns photos. Hides
+   completely if there are none. Snaps to each photo on touch. */
+.photos-section{margin:0 -1rem 1.4rem;padding:0 1rem;position:relative}
+@media(min-width:720px){.photos-section{margin:0 0 1.4rem;padding:0}}
+.photos-strip{display:flex;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x mandatory;padding-bottom:.25rem}
+.photos-strip::-webkit-scrollbar{display:none}
+.photo-tile{flex-shrink:0;width:88%;max-width:560px;aspect-ratio:4/3;border-radius:14px;background:var(--cream-2) center/cover no-repeat;scroll-snap-align:start;border:1px solid var(--border);position:relative;overflow:hidden}
+.photo-tile.first{width:100%}
+.photo-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-count{position:absolute;top:.7rem;right:.85rem;background:rgba(28,31,28,.78);color:#fff;font-family:var(--mono);font-size:.66rem;font-weight:500;padding:.25rem .55rem;border-radius:5px;letter-spacing:.04em;backdrop-filter:blur(4px)}
+
+/* ── EXTERNAL MLS LINK ─────────────────────────────────────────────────
+   Small chip beneath the price row — quick exit to the original listing
+   for serious buyers (photos, agent, tour scheduling). */
+.hero-mls-row{display:flex;justify-content:center;margin-top:.4rem;margin-bottom:.9rem}
+.hero-mls-link{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);text-decoration:none;padding:.32rem .7rem;border:1px solid var(--border);border-radius:6px;background:var(--white);transition:all .15s}
+.hero-mls-link:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.hero-mls-link svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* ── PRO QUIET LINK ────────────────────────────────────────────────────
+   Replaces the old loud Pro lock overlay (billboard with green button).
+   Same upgrade-tone rule we applied to dashboard's top-right Upgrade link. */
+.pro-quiet-link{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.9rem 1.1rem;margin-top:.85rem;background:var(--cream-2);border:1px dashed var(--border-2);border-radius:11px;font-family:var(--mono);font-size:.74rem;color:var(--muted);text-decoration:none;transition:all .15s}
+.pro-quiet-link:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+.pro-quiet-arrow{font-size:1rem;line-height:1;transition:transform .15s}
+.pro-quiet-link:hover .pro-quiet-arrow{transform:translateX(3px)}
+
 /* ── MARKET SIGNAL ─────────────────────────────────────────────────────── */
 .market-signal{
   text-align:center; padding:1.25rem 0 0 !important;
@@ -742,6 +778,14 @@ nav.top{
 
 <main class="brief" id="mainLayout" style="display:none">
 
+  <!-- ── PROPERTY PHOTOS ───────────────────────────────────────────
+       Populated from listingData.photos if RentCast returns them;
+       hidden otherwise. Transforms the page from spreadsheet to
+       real-estate-listing-with-analyst-overlay. -->
+  <section class="photos-section" id="photosSection" style="display:none">
+    <div class="photos-strip" id="photosStrip"></div>
+  </section>
+
   <!-- ── HERO ─────────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-ring-wrap">
@@ -770,12 +814,28 @@ nav.top{
       <span class="hero-price-meta" id="heroPricePerUnit"></span>
     </div>
 
+    <!-- External link to the original MLS / RentCast listing (photos,
+         agent, tour scheduling). Hidden if listingUrl isn't on the deal. -->
+    <div class="hero-mls-row" id="heroMlsRow" style="display:none">
+      <a class="hero-mls-link" id="heroMlsLink" href="#" target="_blank" rel="noopener noreferrer">
+        <span id="heroMlsText">View on MLS</span>
+        <svg viewBox="0 0 24 24"><path d="M7 17 L17 7 M9 7 H17 V15"/></svg>
+      </a>
+    </div>
+
     <div class="hero-badges" id="heroBadges"></div>
 
     <div class="hero-cf" id="heroCf">
       <div class="hero-cf-label" id="heroCfLabel">Projected monthly cash flow</div>
       <div class="hero-cf-val" id="heroCfVal">—</div>
       <div class="hero-cf-sub" id="heroCfSub">—</div>
+    </div>
+
+    <!-- Freshness signal — pulsing sage dot + Freddie rate. Same DNA as
+         the other product heroes. -->
+    <div class="hd-fresh" id="heroFresh">
+      <span class="hd-fresh-dot" aria-hidden="true"></span>
+      <span id="heroFreshText">Scored nightly · at today's Freddie rate (6.50%)</span>
     </div>
   </section>
 
@@ -883,17 +943,12 @@ nav.top{
   <section>
     <div class="section-title">Why this score <span class="meta">how we got to <span id="bdScore">—</span></span></div>
     <div id="scoreBreakdownPublic"></div>
-    <div class="pro-locked">
-      <div class="pro-locked-inner" id="scoreBreakdownLocked"></div>
-      <div class="pro-lock-overlay">
-        <div class="pro-lock-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <div class="pro-lock-title">See the full breakdown</div>
-        <div class="pro-lock-sub">All eight scoring dimensions — including CapEx, neighborhood grade, and price-per-unit benchmarks.</div>
-        <a href="roofrank-pricing.html" class="pro-lock-btn">Unlock with Pro →</a>
-      </div>
-    </div>
+    <!-- Pro lock — quiet inline link (was a loud overlay/billboard).
+         Same upgrade-tone rule we applied to the dashboard. -->
+    <a class="pro-quiet-link" href="roofrank-pricing.html" id="proQuietLink">
+      <span>4 more metrics in Pro — CapEx, Neighborhood grade, Price-per-Unit benchmarks</span>
+      <span class="pro-quiet-arrow" aria-hidden="true">→</span>
+    </a>
   </section>
 
 </main>
@@ -1674,6 +1729,51 @@ function renderDeal(d){
   // Hero badges row no longer used — all facts live in the summary line now
   const _hb=document.getElementById('heroBadges');
   if(_hb) _hb.innerHTML = '';
+
+  // ── Property photos (from RentCast listingData) ──────────────────────
+  // RentCast returns photos as listingData.photos[] OR listingData.images[].
+  // Try both keys defensively; hide section if neither has anything.
+  try {
+    const ld = d.listingData || {};
+    const photos = (ld.photos || ld.images || []).filter(p => p && (typeof p === 'string' || p.url));
+    const photosSection = document.getElementById('photosSection');
+    const photosStrip   = document.getElementById('photosStrip');
+    if (photos.length && photosSection && photosStrip) {
+      photosStrip.innerHTML = photos.slice(0, 12).map((p, i) => {
+        const src = typeof p === 'string' ? p : p.url;
+        const isFirst = i === 0 ? ' first' : '';
+        const badge   = i === 0 && photos.length > 1 ? `<div class="photo-count">${photos.length} photos</div>` : '';
+        return `<div class="photo-tile${isFirst}"><img src="${src}" alt="${d.address || 'Property photo'} — image ${i+1}" loading="lazy">${badge}</div>`;
+      }).join('');
+      photosSection.style.display = '';
+    }
+  } catch (e) { console.warn('photos render failed:', e); }
+
+  // ── External listing URL (View on MLS) ───────────────────────────────
+  try {
+    const ld = d.listingData || {};
+    const listingUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
+    const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
+    const mlsRow  = document.getElementById('heroMlsRow');
+    const mlsLink = document.getElementById('heroMlsLink');
+    const mlsText = document.getElementById('heroMlsText');
+    if (listingUrl && mlsRow && mlsLink && mlsText) {
+      mlsLink.href = listingUrl;
+      mlsText.textContent = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
+      mlsRow.style.display = '';
+    }
+  } catch (e) { console.warn('mls link render failed:', e); }
+
+  // ── Freshness signal — use the live Freddie rate if we have it ──────
+  try {
+    const freshTextEl = document.getElementById('heroFreshText');
+    const rate = (d.reportData && d.reportData.interestRateUsed)
+      || (d.scoring && d.scoring.rate);
+    const rateStr = rate != null && !isNaN(parseFloat(rate))
+      ? `${parseFloat(rate).toFixed(2)}%`
+      : '6.50%';
+    if (freshTextEl) freshTextEl.textContent = `Scored nightly · at today's Freddie rate (${rateStr})`;
+  } catch (e) { console.warn('freshness label render failed:', e); }
 
   // ── Score breakdown
   const bars=[
