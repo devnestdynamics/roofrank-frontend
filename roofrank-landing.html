@@ -181,13 +181,6 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   color:var(--sage);
 }
 .hero-receipt-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.8rem;padding-bottom:.7rem;border-bottom:1px solid var(--cream-3);flex-wrap:wrap}
-.hero-receipt-mark{
-  width:28px;height:28px;border-radius:7px;
-  background:var(--forest);
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0
-}
-.hero-receipt-mark svg{width:18px;height:18px}
 .hero-receipt-verdict{
   font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   color:var(--forest);
@@ -195,13 +188,47 @@ nav.scrolled{box-shadow:0 2px 20px rgba(28,31,28,.07)}
   padding:3px 8px;border-radius:6px;
   flex-shrink:0;
 }
+.hero-receipt-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border-color:rgba(28,74,53,.22)}
+.hero-receipt-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border-color:rgba(45,100,72,.18)}
+.hero-receipt-verdict.wat{color:var(--watch);background:rgba(160,106,0,.07);border-color:rgba(160,106,0,.18)}
 .hero-receipt-addr{
   font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);
   flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.hero-receipt-score{
-  font-family:var(--mono);font-size:.78rem;color:var(--muted);font-weight:500;flex-shrink:0
-}
+
+/* RankMark — canonical scoring icon (Deckers roof + 3 floor bars, tier
+   colored). Lifted from the dashboard so every surface that shows a
+   score uses the same icon system. Compact inline variant in the hero
+   receipt; bigger stacked variant in the "Why X scored" section. */
+.rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rmark-svg{width:100%;aspect-ratio:1;display:block;overflow:visible}
+.rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage);transition:stroke .3s}
+.rmark-svg .mk-floor{transition:fill .3s,opacity .3s;fill:var(--cream-3)}
+.rmark.sb  .mk-roof{stroke:var(--forest)}
+.rmark.sb  .mk-floor-1{fill:var(--forest);opacity:.45}
+.rmark.sb  .mk-floor-2{fill:var(--forest);opacity:.7}
+.rmark.sb  .mk-floor-3{fill:var(--forest);opacity:1}
+.rmark.buy .mk-roof{stroke:var(--forest-3)}
+.rmark.buy .mk-floor-1{fill:var(--sage);opacity:.55}
+.rmark.buy .mk-floor-2{fill:var(--sage);opacity:.9}
+.rmark.buy .mk-floor-3{fill:var(--forest-3);opacity:1}
+.rmark.wat .mk-roof{stroke:var(--watch)}
+.rmark.wat .mk-floor-1{fill:var(--cream-3);opacity:1}
+.rmark.wat .mk-floor-2{fill:var(--watch);opacity:.55}
+.rmark.wat .mk-floor-3{fill:var(--watch);opacity:.95}
+.rmark.pas .mk-roof{stroke:var(--faint)}
+.rmark.pas .mk-floor-1{fill:var(--cream-3);opacity:1}
+.rmark.pas .mk-floor-2{fill:var(--cream-3);opacity:1}
+.rmark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
+.rmark-num{font-family:var(--mono);font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.rmark.sb  .rmark-num{color:var(--forest)}
+.rmark.buy .rmark-num{color:var(--forest-3)}
+.rmark.wat .rmark-num{color:var(--watch)}
+.rmark.pas .rmark-num{color:var(--muted)}
+/* Receipt slot — small inline (svg + num side by side). */
+.hero-receipt-head .rmark{flex-direction:row;align-items:center;gap:.35rem;width:auto}
+.hero-receipt-head .rmark-svg{width:22px;height:22px;flex-shrink:0}
+.hero-receipt-head .rmark-num{font-size:.78rem}
 .hero-receipt-body{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem}
 .hero-receipt-cf{font-family:var(--serif);font-size:1.4rem;font-weight:500;color:var(--forest);line-height:1}
 .hero-receipt-cf-label{font-size:.78rem;color:var(--muted)}
@@ -732,17 +759,19 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <div class="hero-receipt" id="heroReceipt" role="img" aria-label="Live 30-second analysis: 139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
       <span class="hero-receipt-30s">in 30 sec</span>
       <div class="hero-receipt-head">
-        <div class="hero-receipt-mark" aria-hidden="true">
-          <svg viewBox="0 0 30 30" fill="none">
-            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
-            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
-            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        <!-- RankMark: canonical Deckers icon + score, tier-colored. Same
+             system the dashboard + onboarding hero use. -->
+        <div class="rmark sb" id="hrMark" title="Strong Buy · 92 / 100">
+          <svg class="rmark-svg" viewBox="0 0 40 40">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
           </svg>
+          <div class="rmark-num" id="hrScore">92</div>
         </div>
-        <span class="hero-receipt-verdict" id="hrVerdict">Strong Buy</span>
+        <span class="hero-receipt-verdict sb" id="hrVerdict">Strong Buy</span>
         <span class="hero-receipt-addr" id="hrAddr">139 Vernon St, Worcester</span>
-        <span class="hero-receipt-score" id="hrScore">92/100</span>
       </div>
       <div class="hero-receipt-body">
         <span class="hero-receipt-cf" id="hrCf">$2,165</span><span class="hero-receipt-cf-label">/mo cashflow</span>
@@ -1137,10 +1166,22 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         : `$${Math.round(best.price / 1000)}K`;
 
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      // Tier class for the RankMark — sb/buy/wat/pas, matches dashboard.
+      const vc = best.verdict === 'Strong Buy' ? 'sb'
+              : best.verdict === 'Buy' ? 'buy'
+              : best.verdict === 'Watch' ? 'wat' : 'pas';
+      const swapTier = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('sb', 'buy', 'wat', 'pas');
+        el.classList.add(vc);
+      };
       // Hero receipt
+      swapTier('hrMark');
+      swapTier('hrVerdict');
       set('hrVerdict', best.verdict);
       set('hrAddr', shortAddr);
-      set('hrScore', `${best.score}/100`);
+      set('hrScore', String(best.score));
       set('hrCf', `$${best.monthlyCashflow.toLocaleString()}`);
       set('hrCoc', `${best.coc}% CoC`);
       set('hrFoot', `at today's Freddie rate · ${best.units} units · ${priceStr}`);
