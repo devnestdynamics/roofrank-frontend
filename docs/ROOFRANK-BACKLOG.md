@@ -2422,3 +2422,52 @@ The new default everywhere is **PITI cashflow** (rent − mortgage − taxes −
 **Re-evaluate when:** Post-launch, if active investors ask for it. Or before pitching brokers/agents who may want the more conservative number.
 
 Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db/seed.ts:calcFinancials`)
+
+---
+
+### 183. BUG-001 · GET /api/feed/:id with a non-UUID returns 500
+
+**What:** Hitting `GET /api/feed/nonexistent-id` (or any non-UUID string) currently throws a Postgres invalid-input-syntax error that bubbles up as `{"error":"Internal server error"}` with status 500.
+
+**Should:** Return a clean `404` (or `400 Bad Request` for malformed UUIDs) with the standard error JSON envelope.
+
+**Where:**
+- `src/routes/feed.ts` — the `GET /:id` route should `zod.uuid()` the param before reaching the DB.
+
+**Why it matters:** Any link rot to a stale deal page surfaces a server error to the user instead of a graceful "deal not found" page. Also breaks the `api.spec.ts` 404-format test (currently skipped).
+
+**Re-evaluate when:** Onboarding ships and we start seeing real user link traffic.
+
+---
+
+### 184. BUG-002 · CORS with Origin: https://roofrank.io against local backend throws 500
+
+**What:** `GET /api/feed` with header `Origin: https://roofrank.io` against a local dev backend returns 500. The CORS middleware likely only allows-lists prod origins in prod and throws (rather than rejecting) when an unknown origin is encountered in dev.
+
+**Should:** Either (a) allow the prod origin in dev too, or (b) reject cross-origin requests with a normal CORS denial (no 500).
+
+**Where:**
+- Wherever CORS is configured in the backend (likely `src/middleware/cors.ts` or `src/index.ts`).
+
+**Why it matters:** Hides any genuine CORS misconfig behind a 500. Also breaks the `api.spec.ts` CORS test (currently skipped).
+
+**Re-evaluate when:** Setting up integration tests in CI — that pipeline will hit the same case.
+
+---
+
+### 185. BUG-003 · Wrong-password login leaves user with no feedback
+
+**What:** Entering the wrong password on `roofrank-login.html` silently reloads the page. No toast, no error message, nothing.
+
+**Root cause:** `api.js → apiFetch()` intercepts every 401 with a hard redirect to `roofrank-login.html`. Because the login call itself returns 401 on bad creds, the redirect fires before `handleSignin()`'s `showToast('Invalid email or password.', 'error')` line runs.
+
+**Fix sketch:** Either:
+- Exempt `/auth/login` (and probably `/auth/register`) from the 401-redirect interceptor, or
+- Have `apiFetch` only redirect on 401 *when* an access token was actually attached (so unauthenticated calls fall through to the caller).
+
+**Where:**
+- `api.js:38` (`apiFetch`)
+
+**Why it matters:** Users typing the wrong password think the page is broken. Also breaks the `auth.spec.ts` wrong-password test (currently skipped).
+
+**Re-evaluate when:** Before launch — this is a UX bug that will hit every user who mistypes a password.
