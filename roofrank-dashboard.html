@@ -69,6 +69,12 @@ body{
 .rh-add{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s;flex-shrink:0}
 .rh-add:hover{background:var(--forest-2)}
 .rh-add svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+/* Quiet "Upgrade" text link replaces the loud green "+ Pro" pill.
+   Daily users have either converted or they haven't — no need to
+   shout on every screen. Pill markup retained for the hover popup
+   in case we want it later, but the link is the primary surface. */
+.rh-upgrade{font-family:var(--sans);font-size:.74rem;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:5px;font-weight:500;cursor:pointer;background:none;border:none}
+.rh-upgrade:hover{color:var(--forest);background:var(--sage-dim)}
 .rh-pro{position:relative;display:inline-flex;align-items:center;gap:.32rem;padding:.3rem .65rem;border:1px solid var(--sage-border);background:var(--sage-dim);color:var(--forest);font-size:.66rem;font-weight:600;letter-spacing:.04em;border-radius:14px;cursor:default}
 .rh-pro svg{width:9px;height:9px;fill:currentColor}
 .rh-pro-pop{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;box-shadow:0 8px 28px rgba(28,31,28,.1);font-size:.76rem;color:var(--ink);min-width:260px;font-weight:400;letter-spacing:normal;display:none;z-index:120;text-align:left;line-height:1.5}
@@ -86,6 +92,75 @@ body{
 }
 
 /* ── BRIEF — dark editorial hero with picks carousel inside ──────────── */
+/* ── Hero deal card (V1 polish — merges brief + top pick into one
+   focal block, same DNA as the onboarding hero). Replaces the old
+   dark .brief tile + the today's-picks carousel that lived below
+   it. The brief copy now folds INSIDE this card as an italicized
+   analyst line attributed with the sparkle ✦. */
+.hero-deal-section{padding:.25rem 0 1.25rem}
+.hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.hero-deal:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(28,74,53,.12)}
+.hd-head{display:flex;align-items:center;gap:.85rem;margin-bottom:.9rem}
+.hd-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:5px;line-height:1}
+.hd-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22)}
+.hd-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.hd-verdict.wat{color:var(--amber);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.hd-verdict.pas{color:var(--muted);background:var(--cream-2);border:1px solid var(--cream-3)}
+.hd-score-slot{margin-left:auto;display:flex;align-items:center}
+.hd-score-slot .rmark{width:62px}
+.hd-score-slot .rmark-num{font-size:1rem;margin-top:2px}
+.hd-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.95rem;letter-spacing:-.01em}
+.hd-numbers{display:flex;align-items:baseline;gap:1.6rem;margin-bottom:.85rem;flex-wrap:wrap}
+.hd-num{display:flex;flex-direction:column;line-height:1}
+.hd-num-val{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);letter-spacing:-.01em}
+.hd-num-label{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.hd-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:.5rem}
+.hd-fresh{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.45rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.hd-fresh-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:hdFreshPulse 1.8s ease-in-out infinite;flex-shrink:0}
+@keyframes hdFreshPulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hd-brief{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:1.1rem}
+.hd-brief-spark{width:18px;height:18px;color:var(--sage);flex-shrink:0;margin-top:.15rem}
+.hd-brief-spark svg{width:100%;height:100%;fill:currentColor;display:block;animation:hdSparkPulse 2.4s ease-in-out infinite}
+@keyframes hdSparkPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.92)}}
+.hd-brief-text{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink-2);line-height:1.5;flex:1}
+.hd-brief-text strong{font-weight:600;color:var(--forest);font-style:normal}
+.hd-action{padding-top:1rem;border-top:1px solid var(--cream-3);display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--forest);letter-spacing:.02em;transition:color .15s}
+.hero-deal:hover .hd-action{color:var(--forest-2)}
+.hd-action-arrow{font-size:1.1rem;line-height:1;transition:transform .15s}
+.hero-deal:hover .hd-action-arrow{transform:translateX(3px)}
+@media(max-width:560px){
+  .hero-deal{padding:1.25rem 1.1rem}
+  .hd-addr{font-size:1.2rem}
+  .hd-num-val{font-size:1.55rem}
+}
+
+/* Runner rows — compact runners that sit under the hero ("Also worth
+   opening"). Same DNA, smaller. Uses inline RankMark instead of
+   stacked since the row is horizontal. */
+.runners-section{padding:0 0 1.25rem}
+.runners-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;padding-left:.2rem}
+.runners-list{display:flex;flex-direction:column;gap:.4rem}
+.runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.85rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.runner-row:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+.runner-row .rmark{flex-direction:row;width:auto;gap:.4rem;align-items:center}
+.runner-row .rmark-svg{width:22px;height:22px;flex-shrink:0}
+.runner-row .rmark-num{font-size:.82rem;margin-top:0}
+.runner-addr{font-family:var(--serif);font-size:.92rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.runner-nums{font-family:var(--mono);font-size:.74rem;color:var(--muted);flex-shrink:0;display:flex;gap:.45rem;align-items:baseline}
+.runner-cf{color:var(--forest);font-weight:500}
+@media(max-width:480px){
+  .runner-nums{display:none}
+  .runner-row::after{content:'›';color:var(--faint);font-size:1.2rem;line-height:1;margin-left:.2rem}
+}
+
+/* View ▾ chip — replaces the horizontal lens-pill row. Tap to open
+   a sheet with the lenses. Active lens shown as eyebrow next to it. */
+.view-row{display:flex;gap:.7rem;align-items:center;margin-bottom:1rem;padding-top:.6rem;border-top:1px dashed var(--cream-3)}
+.view-trigger{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:.45rem .9rem .45rem .85rem;font-family:var(--mono);font-size:.72rem;color:var(--ink);display:flex;align-items:center;gap:.4rem;cursor:pointer}
+.view-trigger:hover{border-color:var(--sage-border);background:var(--sage-dim)}
+.view-trigger-caret{font-size:.6rem;color:var(--muted)}
+.view-active-eyebrow{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.3rem}
+
 .brief{padding:.5rem 0 1.25rem}
 /* "What changed since yesterday" strip — above the brief */
 .changed-strip{
@@ -796,22 +871,9 @@ body{
     <a href="roofrank-analyzer.html" class="rh-add" title="Add a deal" aria-label="Add a deal">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </a>
-    <div class="rh-pro" id="rhPro" style="display:none">
-      <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
-      Pro
-      <div class="rh-pro-pop">
-        <h4>What's in Pro</h4>
-        <ul>
-          <li>Every deal in your markets, not just the top 5</li>
-          <li>All 5 analyst lenses (Move fast, Negotiation, Top earners…)</li>
-          <li>Strong Buy push + email alerts the moment they hit</li>
-          <li>AI deal narratives on every listing</li>
-          <li>Unlimited Ask the Analyst conversations</li>
-          <li>Full 8-metric breakdown on every deal</li>
-          <li>Daily morning brief via email</li>
-        </ul>
-      </div>
-    </div>
+    <!-- Quiet upgrade text-link (was a loud green "+ Pro" pill that
+         shouted on every screen — replaced 2026-05-19 V1 polish). -->
+    <a href="roofrank-pricing.html" class="rh-upgrade" id="rhPro" style="display:none">Upgrade</a>
     <button class="rh-avatar" id="rhAvatar" onclick="document.getElementById('bnSheet').classList.add('open')">A</button>
   </div>
 </header>
@@ -830,40 +892,32 @@ body{
     <div class="city-chips" id="cityChips"></div>
   </section>
 
-  <!-- ── BRIEF — slim editorial hero (no greeting, no picks inside) ──── -->
-  <section class="brief" id="briefSection" style="display:none">
-    <div class="brief-card">
-      <div class="brief-eyebrow">
-        <div class="brief-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
-        <span class="brief-label">Analyst's Brief</span>
-        <span class="brief-sep">·</span>
-        <span class="brief-meta" id="briefDay">today</span>
-        <span class="brief-live" id="briefLive">Live</span>
-      </div>
-      <p class="brief-body" id="briefBody">—</p>
-    </div>
+  <!-- ── HERO DEAL — top pick + brief copy folded INSIDE one card.
+       Replaces the old dark .brief tile + the today's-picks carousel.
+       Same DNA as the onboarding hero (V1 polish 2026-05-19). -->
+  <section class="hero-deal-section" id="heroSection" style="display:none">
+    <div id="heroDeal"></div>
   </section>
 
-  <!-- ── TODAY'S PICKS — carousel below the brief ────────────────────── -->
-  <section class="todays-picks-section" id="todaysPicksSection" style="display:none">
-    <div class="tp-head">
-      <div class="tp-title">Today's picks</div>
-      <div class="tp-meta" id="tpMeta"></div>
-    </div>
-    <div class="tp-carousel" id="todaysPicks"></div>
+  <!-- ── RUNNERS — "Also worth opening" (positions 2-4 below hero). -->
+  <section class="runners-section" id="runnersSection" style="display:none">
+    <div class="runners-label">Also worth opening</div>
+    <div class="runners-list" id="runnersList"></div>
   </section>
 
-  <!-- ── LENS PILLS (horizontal scroll) ─────────────────────────────── -->
-  <section class="lens-row" id="lensRow" style="display:none">
-    <div class="lens-pills" id="followups"></div>
+  <!-- ── VIEW ▾ trigger — collapses lens pills behind one chip.
+       Active lens shown as eyebrow. Tap opens the lens sheet. -->
+  <section class="view-row" id="viewRow" style="display:none">
+    <button class="view-trigger" type="button" onclick="openLensSheet()">View <span class="view-trigger-caret">▾</span></button>
+    <span class="view-active-eyebrow" id="viewActiveLabel">Curated</span>
   </section>
 
-  <!-- ── PICKS / DEALS ──────────────────────────────────────────────── -->
+  <!-- ── REST OF FEED — rich cards for positions 4+ (no PICK badges). -->
   <section class="picks-section">
     <div class="section-head" id="picksHead" style="display:none">
       <div style="flex:1">
-        <div class="section-eyebrow" id="picksEyebrow">Today's picks</div>
-        <div class="section-title" id="picksTitle">What I'd open first</div>
+        <div class="section-eyebrow" id="picksEyebrow">Rest of feed</div>
+        <div class="section-title" id="picksTitle">Everything else worth a look</div>
       </div>
       <div class="section-count" id="picksCount"></div>
     </div>
@@ -884,17 +938,13 @@ body{
 
 </main>
 
-<!-- ── STICKY BOTTOM: ASK + BOTTOM NAV ──────────────────────────────── -->
+<!-- ── STICKY BOTTOM: NAV ONLY ──────────────────────────────────────
+     The ask-bar above the nav was removed in V1 polish — Analyst is
+     already a bottom-nav tab and the bar was duplicating its entry
+     point while eating ~50px of bottom real estate on every screen.
+     Center [+] (analyzer FAB) was also removed: the top-right [+]
+     in the header still routes to the analyzer for power users. -->
 <div class="rr-bottom">
-  <div class="ask-bar">
-    <div class="ask-inner">
-      <div class="ask-mark"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg></div>
-      <button class="ask-input" id="askTrigger" type="button" onclick="openChat()">Ask the analyst anything about your markets…</button>
-      <button class="ask-send" type="button" onclick="openChat()" aria-label="Open chat">
-        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
-    </div>
-  </div>
   <nav class="bnav" aria-label="Primary navigation">
     <div class="bnav-inner">
       <a href="roofrank-dashboard.html" class="bn-tab active">
@@ -905,9 +955,6 @@ body{
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         <span>Watching</span>
         <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
-      </a>
-      <a href="roofrank-analyzer.html" class="bn-tab bn-add-fab" aria-label="Add a deal">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </a>
       <a href="roofrank-analyst.html" class="bn-tab">
         <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
@@ -1203,10 +1250,8 @@ async function boot(){
   AuthAPI.me().then(({user}={}) => {
     if(!user) return;
     document.getElementById('rhAvatar').textContent = (user.name || user.email || '?')[0].toUpperCase();
-    // Personalize the greeting
     const first = (user.name || '').split(' ')[0];
     if(first) personalizedFirstName = first;
-    renderBriefHead();
   }).catch(()=>{});
   // Pro state — flips locked UI to unlocked when the user has a paid plan
   if(_forcedFree){
@@ -1217,10 +1262,10 @@ async function boot(){
       console.log('[RoofRank] subscription plan:', plan || '(none)');
       isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
       syncProBadge();
-      if(isPro){
-        // Re-render lens row and feed without Pro locks
-        renderFollowups();
-        if(currentLensDeals.length) renderDeals(currentLensDeals);
+      if(isPro && currentLensDeals.length){
+        // Re-render the rest-of-feed without Pro locks (hero + runners
+        // are unchanged by Pro state — they were never gated).
+        renderDeals(currentLensDeals);
       }
     }).catch(e => console.warn('[RoofRank] could not load subscription:', e?.message));
   }
@@ -1259,10 +1304,10 @@ async function loadFeed(){
     }
 
     renderCityChips();
-    renderBriefHead();
-    renderBriefBody();
-    renderBriefPicks();
-    renderFollowups();
+    // V1 polish: hero + runners are driven by applyLens (the lens-
+    // filtered pool feeds both). The standalone brief/picks/lens-pills
+    // renderers are gone — their content lives inside the hero or
+    // behind the View ▾ chip now.
     applyLens(activeLens);
     renderChangedSinceStrip();   // #133 — compute deltas vs last snapshot
   } catch(e) {
@@ -1467,6 +1512,159 @@ function renderBriefBody(){
   document.getElementById('briefBody').innerHTML = body;
 }
 
+// ── HERO DEAL + RUNNERS — V1 polish replacement for the old dark
+// brief tile + today's picks carousel. Single visual block (hero)
+// for the lead deal with the analyst brief folded inside, then a
+// compact list of "Also worth opening" runner rows. Same DNA as
+// the onboarding hero — see [[project-dashboard-v1-polish]].
+
+// Build a tight 1-2 sentence analyst line for the hero card.
+// Counts from the lens-filtered pool, not the raw global feed.
+function buildHeroAnalystLine(deal, pool){
+  const score = deal.rankScore || 0;
+  const verdict = scoreSignal(score);
+  const cityLabel = activeCity
+    || (pool.length && pool.every(d => d.city === pool[0].city) ? pool[0].city : 'your markets');
+  const otherStrong = pool.filter(d => d.id !== deal.id && (d.rankScore||0) >= 75).length;
+  const otherBuys   = pool.filter(d => d.id !== deal.id && (d.rankScore||0) >= 60 && (d.rankScore||0) < 75).length;
+  const motivated   = pool.filter(d => (d.daysOnMarket||0) >= 60).length;
+  let line = '';
+  if(verdict === 'Strong Buy'){
+    line = otherStrong > 0
+      ? `Top of <b>${otherStrong + 1}</b> Strong Buys in ${cityLabel}.`
+      : `Only Strong Buy in ${cityLabel} right now.`;
+    if(motivated > 0) line += ` ${motivated} seller${motivated > 1 ? 's' : ''} sitting 60+ days — real pricing leverage.`;
+  } else if(verdict === 'Buy'){
+    line = otherBuys > 0
+      ? `Best of <b>${otherBuys + 1}</b> Buy deals in ${cityLabel} today.`
+      : `Best deal in ${cityLabel} today — solid, no Strong Buys yet.`;
+    if(motivated > 0) line += ` ${motivated} motivated seller${motivated > 1 ? 's' : ''}.`;
+  } else {
+    line = `Top of the watch list in ${cityLabel}. Quiet day — fresh inventory after the nightly refresh.`;
+  }
+  return line;
+}
+
+// Convert verdict signal to the canonical tier class (matches the
+// .rmark + .hd-verdict CSS suffixes shared with onboarding).
+function tierClass(score){
+  return score >= 75 ? 'sb' : score >= 60 ? 'buy' : score >= 45 ? 'wat' : 'pas';
+}
+
+const HERO_SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>`;
+const HERO_RANK_MARK_SVG = `<svg class="rmark-svg" viewBox="0 0 40 40">
+  <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+  <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+</svg>`;
+
+function renderHero(deals){
+  const heroSection = document.getElementById('heroSection');
+  const heroEl = document.getElementById('heroDeal');
+  if(!heroEl || !deals.length){
+    if(heroSection) heroSection.style.display = 'none';
+    return;
+  }
+  const lead = deals[0];
+  const score = lead.rankScore || 0;
+  const cl = tierClass(score);
+  const verdict = scoreSignal(score);
+  const fin = lead.reportData?.financials || {};
+  const addrShort = (lead.address || 'Unknown').split(',').slice(0, 2).join(',');
+  const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+  const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+  const meta = [
+    lead.units ? `${lead.units} units` : null,
+    fmtPrice(lead.askingPrice),
+    lead.daysOnMarket != null ? `listed ${lead.daysOnMarket} day${lead.daysOnMarket===1?'':'s'} ago` : null,
+  ].filter(Boolean).join(' · ');
+  const brief = buildHeroAnalystLine(lead, deals);
+  heroEl.innerHTML = `
+    <div class="hero-deal" onclick="openDeal('${lead.id}',event)">
+      <div class="hd-head">
+        <span class="hd-verdict ${cl}">${verdict}</span>
+        <div class="hd-score-slot">
+          <div class="rmark ${cl}" title="${verdict} · ${score} / 100">
+            ${HERO_RANK_MARK_SVG}
+            <div class="rmark-num">${score || '—'}</div>
+          </div>
+        </div>
+      </div>
+      <h2 class="hd-addr">${addrShort}</h2>
+      <div class="hd-numbers">
+        ${cf != null ? `<div class="hd-num">
+          <span class="hd-num-val">${cf < 0 ? '-' : ''}$${Math.abs(cf).toLocaleString()}</span>
+          <span class="hd-num-label">/mo cashflow</span>
+        </div>` : ''}
+        ${coc != null ? `<div class="hd-num">
+          <span class="hd-num-val">${coc}%</span>
+          <span class="hd-num-label">cash-on-cash</span>
+        </div>` : ''}
+      </div>
+      <div class="hd-meta">${meta}</div>
+      <div class="hd-fresh">
+        <span class="hd-fresh-dot" aria-hidden="true"></span>
+        Scored nightly · at today's Freddie rate (6.50%)
+      </div>
+      <div class="hd-brief">
+        <span class="hd-brief-spark" aria-hidden="true">${HERO_SPARKLE_SVG}</span>
+        <span class="hd-brief-text">${brief}</span>
+      </div>
+      <div class="hd-action">
+        <span>Open the full breakdown</span>
+        <span class="hd-action-arrow" aria-hidden="true">→</span>
+      </div>
+    </div>
+  `;
+  heroSection.style.display = '';
+}
+
+function renderRunners(deals){
+  const sect = document.getElementById('runnersSection');
+  const list = document.getElementById('runnersList');
+  if(!list){ return; }
+  // Positions 2-4 (under the hero). 3 runners is the sweet spot —
+  // not so few it looks empty, not so many they compete with the
+  // hero or with the rest-of-feed below.
+  const runners = deals.slice(1, 4);
+  if(!runners.length){ sect.style.display = 'none'; return; }
+  list.innerHTML = runners.map(d => {
+    const score = d.rankScore || 0;
+    const cl = tierClass(score);
+    const verdict = scoreSignal(score);
+    const fin = d.reportData?.financials || {};
+    const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+    const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+    const addrShort = (d.address || 'Unknown').split(',').slice(0, 2).join(',');
+    return `
+      <button class="runner-row" onclick="openDeal('${d.id}',event)">
+        <div class="rmark ${cl}" title="${verdict} · ${score} / 100">
+          ${HERO_RANK_MARK_SVG}
+          <div class="rmark-num">${score || '—'}</div>
+        </div>
+        <span class="runner-addr">${addrShort}</span>
+        <span class="runner-nums">
+          ${cf != null ? `<span class="runner-cf">${cf < 0 ? '-' : ''}$${Math.abs(cf).toLocaleString()}/mo</span>` : ''}
+          ${cf != null && coc != null ? '<span>·</span>' : ''}
+          ${coc != null ? `<span>${coc}% CoC</span>` : ''}
+        </span>
+      </button>
+    `;
+  }).join('');
+  sect.style.display = '';
+}
+
+function openLensSheet(){
+  // V1 polish placeholder — lens pills are now collapsed behind a
+  // single View ▾ trigger. Until the sheet is built, just cycle to
+  // the next lens so the user can still switch.
+  // TODO: build a proper bottom-sheet picker for lenses.
+  const lenses = ['curated', 'new', 'fresh', 'standouts', 'movefast', 'negotiation', 'earners'];
+  const i = lenses.indexOf(activeLens);
+  applyLens(lenses[(i + 1) % lenses.length] || 'curated');
+}
+
 // ── BRIEF PICKS (3 horizontal mini-cards inside the dark card) ──────
 function renderBriefPicks(){
   // In the picks-first layout, picks render OUTSIDE the brief — above it,
@@ -1554,16 +1752,22 @@ function applyLens(id){
   }
   activeLens = id;
   currentLensDeals = lens.apply(pool);
-  // Update section header
+  // V1 polish: hero + runners come from the same lens-filtered pool
+  // so when you switch lens, the hero updates too. Below them, the
+  // rich-card list shows positions 4+ ("Rest of feed").
+  renderHero(currentLensDeals);
+  renderRunners(currentLensDeals);
+  // Active lens label in the View ▾ row
+  const viewRow = document.getElementById('viewRow');
+  const viewLbl = document.getElementById('viewActiveLabel');
+  if(viewRow) viewRow.style.display = currentLensDeals.length ? 'flex' : 'none';
+  if(viewLbl) viewLbl.textContent = `${lens.sectionEyebrow}${activeCity ? ' · ' + activeCity : ''}`;
+  // Rest-of-feed section header (was "Today's picks", now "Rest of feed")
   const picksHead = document.getElementById('picksHead');
-  if(picksHead) picksHead.style.display = currentLensDeals.length ? 'flex' : 'none';
-  document.getElementById('picksEyebrow').textContent = lens.sectionEyebrow;
-  document.getElementById('picksTitle').textContent = lens.sectionTitle;
-  document.getElementById('picksCount').textContent = currentLensDeals.length
-    ? `${Math.min(currentLensDeals.length, 5)}${currentLensDeals.length > 5 ? ' of ' + currentLensDeals.length : ''}`
-    : '';
+  if(picksHead) picksHead.style.display = currentLensDeals.length > 4 ? 'flex' : 'none';
+  const restCount = Math.max(0, currentLensDeals.length - 4);
+  document.getElementById('picksCount').textContent = restCount ? `${restCount} more` : '';
   renderDeals(currentLensDeals);
-  renderFollowups(); // re-render so the active lens drops out of the follow-up list
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1581,10 +1785,14 @@ function renderDeals(deals){
     moreSection.classList.remove('open');
     return;
   }
-  const TOP = 5;
-  const top = deals.slice(0, TOP);
+  // V1 polish: positions 0-3 live in the hero + runners above.
+  // Rich cards start at position 4 ("Rest of feed"). Cap the
+  // first chunk at 5 cards before the Show-more / Pro lock kicks in.
+  const REST_START = 4;
+  const TOP = REST_START + 5;
+  const top = deals.slice(REST_START, TOP);
   const rest = deals.slice(TOP);
-  list.innerHTML = top.map((d, i) => richCard(d, i)).join('');
+  list.innerHTML = top.map((d, i) => richCard(d, i + REST_START)).join('');
   if(rest.length){
     moreBtn.style.display = 'flex';
     moreBtn.classList.remove('open');
@@ -1652,10 +1860,8 @@ function richCard(d, i){
   const on = WatchlistAPI.has(d.id);
   const pct = getPercentile(score, allDeals);
   const take = dealTake(d, fin, score);
-  const isPick = i < 3 && score >= 60;
-  const pickBadge = isPick
-    ? `<span class="dpick" title="Analyst's pick"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Pick</span>`
-    : '';
+  // V1 polish: PICK badge removed — picks now live in the hero + runners
+  // above. A badge here would just repeat what the layout already says.
   return `<div class="deal ${cl}" style="animation-delay:${Math.min(i*.04,.4)}s" onclick="openDeal('${d.id}',event)">
     <div class="rmark ${cl}" title="${score||'—'} / 100">
       <svg class="rmark-svg" viewBox="0 0 40 40">
@@ -1667,7 +1873,7 @@ function richCard(d, i){
       <div class="rmark-num">${score||'—'}</div>
     </div>
     <div class="dbody">
-      <div class="daddr">${pickBadge}<span class="daddr-text">${d.address||'Unknown'}</span></div>
+      <div class="daddr"><span class="daddr-text">${d.address||'Unknown'}</span></div>
       <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
       <div class="dkpis">
         ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
