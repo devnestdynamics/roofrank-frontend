@@ -2471,3 +2471,30 @@ Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db
 **Why it matters:** Users typing the wrong password think the page is broken. Also breaks the `auth.spec.ts` wrong-password test (currently skipped).
 
 **Re-evaluate when:** Before launch — this is a UX bug that will hit every user who mistypes a password.
+
+---
+
+### 186. BUG-004 · Ingestion never deactivates deals after status change (launch-blocker)
+
+**What:** RentCast (and likely all ingestion sources) only update the row when a listing is *visible* to them. When a property goes under contract / pending / off-market / contingent, our DB still has `status='active'` and the deal stays in the feed.
+
+**Verified on prod 2026-05-19:** Ali cross-referenced our prod Lynn deals against a Redfin MLS export. Of the 4 deals we showed that Redfin didn't:
+- `273 And 273r Euclid Ave` — under contract
+- `504 Summer St` — off market
+- `345 Western Ave` — contingent
+- `136-141A Franklin St` — pending
+
+All 4 were stale. Manually deleted from prod via one-off ECS task. Lynn went from 31 → 27 (vs Redfin's 25), at parity.
+
+**Why it matters:** Users will click into a deal, find out it's not available, lose trust. Especially bad for the onboarding flow where the featured tile is supposed to be the wow moment.
+
+**Fix sketch:**
+1. Detect drop-off: if a previously-ingested `externalId` is missing from the latest RentCast pull for that market, mark it `status='archived'` (or `'inactive'` — match whatever the schema uses for "no longer for sale").
+2. Or query RentCast's `status` field per listing if they expose one, and mirror it in our `status` column.
+3. Worth adding a daily "stale-deals" cleanup pass that runs after ingestion: for any deal not seen in the last N days (3?), mark inactive.
+
+**Where:**
+- `src/workers/ingestionWorker.ts` — add the drop-off detection step at the end of each market's ingest.
+- `src/db/schema.ts` — confirm `status` enum includes a "no-longer-available" value distinct from `'active'` and `'archived'`.
+
+**Re-evaluate when:** Before launch. This will affect every user who clicks a featured deal.
