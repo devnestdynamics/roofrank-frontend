@@ -380,14 +380,39 @@ const State = {
 // TODO BACKEND: Replace with GET /listings/markets — for now hardcoded per
 // mvp-launch-markets memory (Lynn, Worcester live; Salem/Revere/Framingham
 // pending scoring engine — see backlog #179).
+// Initial counts are intentionally null — refreshMarketCounts() below
+// populates them from /feed/public on load. Showing a stale hardcoded
+// number while the live count fetches would mislead users (it has —
+// see commit history of this file pre-2026-05-19).
 const MARKETS = [
-  { id:'lynn',       city:'Lynn',       region:'North Shore',  activeCount:18, live:true  },
-  { id:'salem',      city:'Salem',      region:'North Shore',  activeCount:9,  live:false },
-  { id:'revere',     city:'Revere',     region:'North Shore',  activeCount:11, live:false },
-  { id:'worcester',  city:'Worcester',  region:'Central MA',   activeCount:12, live:true  },
-  { id:'framingham', city:'Framingham', region:'MetroWest',    activeCount:7,  live:false },
-  { id:'all',        city:'All 5 cities', region:'Multi-market', activeCount:57, live:true, multi:true },
+  { id:'lynn',       city:'Lynn',       region:'North Shore',  activeCount:null, live:true  },
+  { id:'salem',      city:'Salem',      region:'North Shore',  activeCount:null, live:false },
+  { id:'revere',     city:'Revere',     region:'North Shore',  activeCount:null, live:false },
+  { id:'worcester',  city:'Worcester',  region:'Central MA',   activeCount:null, live:true  },
+  { id:'framingham', city:'Framingham', region:'MetroWest',    activeCount:null, live:false },
+  { id:'all',        city:'All 5 cities', region:'Multi-market', activeCount:null, live:true, multi:true },
 ];
+
+// Pull real per-market counts from /feed/public in parallel. Each /public
+// response includes market.activeCount for that market; for the "all" tile
+// we sum the individual counts (the all-market /public call would also
+// work but doing it client-side avoids a 6th request).
+async function refreshMarketCounts() {
+  const cityMarkets = MARKETS.filter(m => !m.multi);
+  const results = await Promise.allSettled(
+    cityMarkets.map(m => FeedAPI.public(m.id, 1))
+  );
+  let total = 0;
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled' && r.value && r.value.market) {
+      cityMarkets[i].activeCount = r.value.market.activeCount;
+      total += r.value.market.activeCount || 0;
+    }
+  });
+  const allTile = MARKETS.find(m => m.multi);
+  if (allTile) allTile.activeCount = total;
+  renderMarkets();
+}
 
 // Trim backend's full address ("58 Laighton St, Lynn, MA 01902") to the
 // short format the UI uses ("58 Laighton St, Lynn"). Real ingested deals
@@ -435,12 +460,14 @@ function updateStepDots(panelN) {
 
 function renderMarkets() {
   const grid = document.getElementById('mktGrid');
-  grid.innerHTML = MARKETS.map(m => `
+  grid.innerHTML = MARKETS.map(m => {
+    const countLabel = m.activeCount == null ? '… active' : `${m.activeCount} active`;
+    return `
     <button class="mkt-card" onclick="selectMarket('${m.id}')" data-id="${m.id}">
       ${m.multi ? `<div class="mkt-region" style="color:var(--forest);margin-bottom:.3rem">${m.region}</div><div class="mkt-city" style="font-size:.9rem">${m.city}</div>`
-                : `<div class="mkt-city">${m.city}</div><div class="mkt-region">${m.region}</div><div class="mkt-count">${m.activeCount} active</div>`}
-    </button>
-  `).join('');
+                : `<div class="mkt-city">${m.city}</div><div class="mkt-region">${m.region}</div><div class="mkt-count">${countLabel}</div>`}
+    </button>`;
+  }).join('');
 }
 
 async function selectMarket(id) {
@@ -702,6 +729,7 @@ function showToast(message, type = 'success') {
 // ═══════════════════════════════════════════════════════════════════
 
 renderMarkets();
+refreshMarketCounts();  // overrides the "… active" placeholders with real numbers
 
 // If returning from a previous session with a market saved, deep-link to feed
 const savedMarket = localStorage.getItem('rr_pre_market');
