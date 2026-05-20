@@ -96,6 +96,10 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 @keyframes hdSparkPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.92)}}
 .hd-brief-text{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink-2);line-height:1.5;flex:1}
 .hd-brief-text strong{font-weight:600;color:var(--forest);font-style:normal}
+.hd-action{margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--cream-3);display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--forest);letter-spacing:.02em;cursor:pointer;transition:color .15s}
+.hero-deal:hover .hd-action{color:var(--forest-2)}
+.hd-action-arrow{font-size:1.1rem;line-height:1;transition:transform .15s}
+.hero-deal:hover .hd-action-arrow{transform:translateX(3px)}
 
 .runners-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;padding-left:.2rem}
 .runners-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
@@ -122,11 +126,15 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 .feed-cta{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.85rem;box-shadow:0 -4px 14px rgba(28,31,28,.04)}
 .feed-cta-text{font-size:.82rem;color:var(--muted);line-height:1.45;flex:1;min-width:0}
 .feed-cta-text strong{color:var(--ink);font-weight:600}
+.feed-cta-action{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;flex-shrink:0}
+.feed-cta-sub{font-family:var(--mono);font-size:.66rem;color:var(--muted);letter-spacing:.04em;display:none}
 .feed-cta-btn{background:var(--forest);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:.88rem;padding:.7rem 1.1rem;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .feed-cta-btn:hover{background:var(--forest-2);transform:translateY(-1px)}
 @media(max-width:560px){
-  .feed-cta{position:sticky;bottom:.85rem;z-index:5}
+  .feed-cta{position:sticky;bottom:.85rem;z-index:5;flex-direction:column;align-items:stretch;padding:.85rem 1rem;gap:.55rem}
   .feed-cta-text{display:none}
+  .feed-cta-action{align-items:stretch;gap:.4rem;width:100%}
+  .feed-cta-sub{display:block;text-align:center}
   .feed-cta-btn{width:100%;padding:.85rem;font-size:.95rem}
 }
 
@@ -263,7 +271,10 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 
       <div class="feed-cta">
         <div class="feed-cta-text">Want to <strong>open the full math</strong> or get pinged when a new Strong Buy hits?</div>
-        <button class="feed-cta-btn" onclick="triggerSignup('save')">Save & continue →</button>
+        <div class="feed-cta-action">
+          <div class="feed-cta-sub">Save <span id="ctaMarketLabel">Lynn</span> · get pinged on new Strong Buys</div>
+          <button class="feed-cta-btn" onclick="triggerSignup('save')">Save & continue →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -436,7 +447,9 @@ async function selectMarket(id) {
   try { localStorage.setItem('rr_pre_market', id); } catch (e) {}
 
   // Show market label immediately while feed loads (avoids flash of stale data)
-  document.getElementById('feedMarket').textContent = market.multi ? 'All 5 cities' : market.city;
+  const marketLabel = market.multi ? 'All 5 cities' : market.city;
+  document.getElementById('feedMarket').textContent = marketLabel;
+  document.getElementById('ctaMarketLabel').textContent = marketLabel;
   document.getElementById('feedCount').textContent = '…';
   document.getElementById('dealList').innerHTML = '';
   goPanel(2);
@@ -519,6 +532,10 @@ function renderHeroCard(deal) {
           <span class="hd-brief-text">${State.brief}</span>
         </div>
       ` : ''}
+      <div class="hd-action">
+        <span>Open the full breakdown</span>
+        <span class="hd-action-arrow" aria-hidden="true">→</span>
+      </div>
     </div>
   `;
 }
