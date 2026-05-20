@@ -2547,3 +2547,21 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 - Frontend: wire the four chips to live values in `roofrank-landing.html` (the existing fetcher is set up for it — just add four more `set()` calls).
 
 **Re-evaluate when:** After BUG-004 (stale deals) is fixed — that's the bigger landing trust issue. This is polish.
+
+---
+
+### 190. Landing "Why X scored" section should adopt the canonical RankMark
+
+**What:** After commits `ce6475d` (landing hero) + `929693e` (onboarding), every scoring surface uses the canonical `.rmark` system (Deckers roof + 3 floor bars, tier-colored via `sb`/`buy`/`wat`/`pas`) EXCEPT the landing's `#metrics → .metrics-verdict-mark` block. That one still uses its own SVG with hardcoded forest colors.
+
+**Why it doesn't break today:** the receipt-init fetcher filters to `verdict === 'Strong Buy'` so the mark always renders as a Strong Buy, which happens to match the forest hardcoding.
+
+**Why it WILL break:** the moment we widen the fetcher to pick top-scored regardless of tier (e.g. when Lynn gets a Buy at score 70 that beats Worcester's available Strong Buys), the mark in this section will say "Strong Buy" visually even when the deal is a Buy or Watch. Dishonest.
+
+**Fix:** migrate `.metrics-verdict-mark` to the `.rmark` system (already defined globally on landing as of `ce6475d`). The animation `.metrics-verdict.visible .mk-floor-{1,2,3}{...}` should switch to applying `sb`/`buy`/`wat`/`pas` classes via JS based on the live deal, then re-derive transitions from there.
+
+**Where:**
+- `roofrank-landing.html:481-490` (`.metrics-verdict-mark` CSS rules)
+- `roofrank-landing.html` receipt-init fetcher — extend `swapTier()` to also target the metrics-verdict block.
+
+**Re-evaluate when:** widening the live-deal picker beyond Strong Buy, OR when tackling #189 (exposing Cap Rate / NOI / DSCR / GRM on /public).
