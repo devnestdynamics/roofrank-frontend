@@ -2565,3 +2565,45 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 - `roofrank-landing.html` receipt-init fetcher — extend `swapTier()` to also target the metrics-verdict block.
 
 **Re-evaluate when:** widening the live-deal picker beyond Strong Buy, OR when tackling #189 (exposing Cap Rate / NOI / DSCR / GRM on /public).
+
+---
+
+### 191. "Signals" — V2 inbox idea as a standalone feature, not a dashboard replacement
+
+**What:** Ali (2026-05-20 overnight) proposed taking the V2 inbox mockup (`dashboard-mockup-v2-inbox.html`) and shipping it as its own feature, "almost like market news," rather than replacing the dashboard. This preserves the inbox value (decision moments, signals, market activity) without forcing the daily browse-my-deals flow into a different mental model.
+
+**Naming:** "Inbox" reads as email (newsletter vibe, bad per [[feedback-positioning-decision-tool]]). Better options: **Signals** (analyst term, concrete), **Pulse** (concise), **What's moving** (descriptive). Recommended: **Signals**.
+
+**Where it slots:**
+- Bottom nav post-V1: `Today · Watching · Analyst · More` (4 tabs after dropping the center [+] in dashboard V1).
+- Add Signals: `Today · Watching · Signals · Analyst` (Signals between Watching and Analyst — sits between "deals I care about" and "ask the analyst").
+- Could also surface as a top-nav bell icon with unread count for a more passive entry.
+
+**What's on the screen (per the V2 mockup):**
+- New Strong Buys this week
+- Watchlist score shifts (deal X dropped 4 pts, deal Y gained 3)
+- Sellers moving (price drops > 5% in last 48h)
+- Lens hits ("4 deals in Worcester now match your Move fast lens")
+- Quiet markets (no false urgency; "nothing scoring above Buy today")
+
+**Doubles as:** the daily 7am email body (already listed as a Pro feature on landing + pricing). One backend computes signals, two surfaces (in-app + email).
+
+**Backend needs:**
+- Either an `events` table that records add / score-change / price-change / watchlist-move / etc.
+- Or computed on-the-fly from existing tables (lastSeenAt deltas, snapshot diffs of rankScore + askingPrice).
+- MVP path: compute on-the-fly using nightly snapshots (similar to the existing `RR_SNAPSHOT_KEY` "since last visit" pattern on dashboard).
+
+**Implementation cost estimate:**
+- Frontend (Signals page): ~1 day using the V2 mockup as the design.
+- Backend (signals computation + endpoint): ~2 days for MVP using snapshot diffs; ~5 days if we go the events-table route.
+- Wiring email: bonus day if the existing email pipeline is solid.
+
+**Pro gating:** Probably a Pro feature with a sample (last 3 signals) free for Starter, full feed for Pro. Aligns with the existing pricing.
+
+**Why this is the right framing:**
+- Dashboard stays the trusted "browse my markets" surface (V1 polish makes it cleaner).
+- Signals is the *new* surface that earns its own real estate — fresh value the user opens specifically to act.
+- Each works on its own; neither has to convince a skeptical user that the other is gone.
+- Easier to A/B test usage and trim if it underperforms.
+
+**Re-evaluate when:** After Dashboard V1 lands (next session) and BUG-004 (stale deals) is fixed so the signal data is trustworthy.
