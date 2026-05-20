@@ -5,7 +5,7 @@
 - **Suite:** 102 passing / 0 failing / 1 skipped (started at 99/0/3).
 - **3 launch-blocker bugs fixed** (BUG-001 + BUG-003 + landing scoring inconsistency #190).
 - **Dashboard V1 polish landed** — same simplification pattern that bumped onboarding from C to A− is now applied to the dashboard.
-- **8 commits to main**, all auto-deployed via Netlify + ECS.
+- **9 substantive commits to main** (10 with the report itself), all auto-deployed via Netlify + ECS.
 - **No prod data touched** overnight. Only code + tests.
 
 ---
@@ -94,6 +94,8 @@ Hero, runner rows, and rich rest-of-feed cards weren't reliably showing city. Th
 - `ca3553c` landing: #190 — metrics section adopts canonical RankMark
 - `55050fc` backlog: #191 — "Signals" as a standalone feature
 - `e1c77b0` dashboard: V1 polish — hero card + runners + view chip
+- `0c30c1d` dashboard: always show city next to address on every card
+- `f4b74f1` docs: this overnight report
 
 Every commit deployed automatically (Netlify auto-deploys main; backend `deploy.yml` triggers ECR build → migrate → ECS deploy on main pushes).
 
