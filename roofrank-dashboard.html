@@ -1551,6 +1551,18 @@ function tierClass(score){
   return score >= 75 ? 'sb' : score >= 60 ? 'buy' : score >= 45 ? 'wat' : 'pas';
 }
 
+// Always-shows-city address formatter. Real RentCast deals include
+// "Street, City, State Zip"; seed deals only carry the street. The
+// rich card's text-ellipsis was hiding the city on long addresses,
+// and seed deals had no city in the string at all. This trims to
+// "Street, City" using deal.city as fallback.
+function shortAddr(d){
+  if(!d || !d.address) return d?.city || 'Unknown';
+  const parts = d.address.split(',').map(p => p.trim()).filter(Boolean);
+  if(parts.length >= 2) return `${parts[0]}, ${parts[1]}`;
+  return d.city ? `${parts[0]}, ${d.city}` : parts[0];
+}
+
 const HERO_SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>`;
 const HERO_RANK_MARK_SVG = `<svg class="rmark-svg" viewBox="0 0 40 40">
   <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
@@ -1571,7 +1583,7 @@ function renderHero(deals){
   const cl = tierClass(score);
   const verdict = scoreSignal(score);
   const fin = lead.reportData?.financials || {};
-  const addrShort = (lead.address || 'Unknown').split(',').slice(0, 2).join(',');
+  const addrShort = shortAddr(lead);
   const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
   const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
   const meta = [
@@ -1636,7 +1648,7 @@ function renderRunners(deals){
     const fin = d.reportData?.financials || {};
     const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
     const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
-    const addrShort = (d.address || 'Unknown').split(',').slice(0, 2).join(',');
+    const addrShort = shortAddr(d);
     return `
       <button class="runner-row" onclick="openDeal('${d.id}',event)">
         <div class="rmark ${cl}" title="${verdict} · ${score} / 100">
@@ -1873,8 +1885,8 @@ function richCard(d, i){
       <div class="rmark-num">${score||'—'}</div>
     </div>
     <div class="dbody">
-      <div class="daddr"><span class="daddr-text">${d.address||'Unknown'}</span></div>
-      <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
+      <div class="daddr"><span class="daddr-text">${shortAddr(d)}</span></div>
+      <div class="dmeta">${d.state || 'MA'} · ${d.units||'—'} units${d.propertyType?' · '+d.propertyType:''}</div>
       <div class="dkpis">
         ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
         ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
