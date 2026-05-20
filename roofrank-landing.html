@@ -506,15 +506,16 @@ section{padding:5rem 0}
 .metric-chip-check svg{width:8px;height:8px;stroke:var(--forest);fill:none;stroke-width:2.5}
 
 .metrics-verdict{background:#fff;border:1px solid var(--border);border-radius:18px;padding:2.25rem 2rem 1.85rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;box-shadow:0 12px 36px rgba(28,74,53,.06);max-width:340px;width:100%}
-.metrics-verdict-mark{width:84px;height:84px;display:block;overflow:visible}
-.metrics-verdict-mark .mk-roof{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
-.metrics-verdict-mark .mk-floor{fill:var(--cream-3);transition:fill .8s ease-out,opacity .8s ease-out}
-.metrics-verdict.visible .mk-floor-1{fill:var(--forest);opacity:.45;transition-delay:.4s}
-.metrics-verdict.visible .mk-floor-2{fill:var(--forest);opacity:.7;transition-delay:.55s}
-.metrics-verdict.visible .mk-floor-3{fill:var(--forest);opacity:1;transition-delay:.7s}
-.metrics-verdict-tier{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);line-height:1;letter-spacing:-.01em;margin-top:.3rem}
-.metrics-verdict-score{font-family:var(--mono);font-size:.82rem;color:var(--muted);letter-spacing:.02em}
-.metrics-verdict-addr{font-size:.66rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:.3rem}
+/* Large RankMark variant for this card — same .rmark system, bigger.
+   Tier-adaptive via sb/buy/wat/pas classes applied by the JS swap. */
+.metrics-verdict .rmark{width:84px}
+.metrics-verdict .rmark-num{font-size:1.25rem;margin-top:6px;font-weight:500}
+.metrics-verdict-tier{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);line-height:1;letter-spacing:-.01em;margin-top:.4rem}
+.metrics-verdict.sb .metrics-verdict-tier{color:var(--strong-buy)}
+.metrics-verdict.buy .metrics-verdict-tier{color:var(--forest-3)}
+.metrics-verdict.wat .metrics-verdict-tier{color:var(--watch)}
+.metrics-verdict.pas .metrics-verdict-tier{color:var(--muted)}
+.metrics-verdict-addr{font-size:.66rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:.15rem}
 
 @media(max-width:860px){.metrics-chips{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:420px){.metrics-chips{grid-template-columns:1fr}}
@@ -892,15 +893,17 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Why <span id="mxAddrShort">139 Vernon</span><br><em>scored a Strong Buy.</em></h2>
 
     <div class="metrics-engine">
-      <div class="metrics-verdict fade-up" style="transition-delay:.1s">
-        <svg class="metrics-verdict-mark" viewBox="0 0 40 40">
-          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
-          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
-          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
-          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
-        </svg>
+      <div class="metrics-verdict fade-up sb" id="metricsVerdict" style="transition-delay:.1s">
+        <div class="rmark sb" id="mxMark" title="Strong Buy · 92 / 100">
+          <svg class="rmark-svg" viewBox="0 0 40 40">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+          </svg>
+          <div class="rmark-num" id="mxScore">92</div>
+        </div>
         <div class="metrics-verdict-tier" id="mxVerdict">Strong Buy</div>
-        <div class="metrics-verdict-score" id="mxScore">92 / 100</div>
         <div class="metrics-verdict-addr" id="mxAddr">139 Vernon St · Worcester</div>
       </div>
 
@@ -1193,13 +1196,17 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       const cityOnly   = parts[1] || best.city;  // "Worcester"
       set('mxAddrShort', streetOnly.replace(/\s+(St|Ave|Rd|Blvd|Ln|Pl|Pk|Ct|Dr|Hwy|Way|Ter|Sq)\b\.?/i, ''));
       set('mxVerdict', best.verdict);
-      set('mxScore', `${best.score} / 100`);
+      // The RankMark now sits inside the verdict card — set just the number
+      // (was "92 / 100" inline text; now the rmark-num element).
+      set('mxScore', String(best.score));
       set('mxAddr', `${streetOnly} · ${cityOnly}`);
       set('mxCoc', `${best.coc}%`);
       if (best.units) {
         const ppu = best.price / best.units;
         set('mxPpu', ppu >= 1e6 ? `$${(ppu/1e6).toFixed(2)}M` : `$${Math.round(ppu/1000)}K`);
       }
+      swapTier('mxMark');
+      swapTier('metricsVerdict');
 
       const receipt = document.getElementById('heroReceipt');
       if (receipt) {
