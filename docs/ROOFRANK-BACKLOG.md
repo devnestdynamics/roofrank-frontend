@@ -2398,3 +2398,27 @@ Below every deal card: *"Download the proforma →"* User gets a 1-page PDF with
 - Behavioral persona derivation — implied v1.1, no separate backlog entry yet
 
 Related: [[mvp-launch-markets]], strategic review's "Out of scope for 90 days" list.
+
+### 182. Full-opex cashflow toggle on deal-detail
+**Priority:** 🟡 Phase 2 / post-onboarding launch · **Effort:** S · **Source:** Decided 2026-05-18 during PITI cashflow unification
+
+The new default everywhere is **PITI cashflow** (rent − mortgage − taxes − insurance), which is what investors actually decide on when buying. But the more conservative **full-opex cashflow** (also subtracts vacancy, management, maintenance, utilities, CapEx) is useful as a "stress-test" view — what's left after every realistic expense.
+
+**Data is already in place:**
+- `seed.ts` writes `monthlyCashFlowFullOpex` to `reportData.financials`
+- `lib/scoringEngine.ts` (production) writes the same field with estimated typical opex
+- API `/api/feed/public` could surface this field with a small change
+
+**UI work needed:**
+- On `roofrank-deal-detail.html`, add a small segmented toggle: `[ PITI · default ] [ After all opex ]`
+- Toggle updates the displayed cashflow (and possibly CoC) to read from `monthlyCashFlowFullOpex` instead of `monthlyCashFlow`
+- Small tooltip explaining the difference
+- Keep PITI as the score/CoC basis (don't recompute score per toggle — too confusing)
+
+**Why deferred from current sprint:**
+- Onboarding launch first. This is a refinement for power users.
+- The conservative view is most valuable for institutional investors / lenders, not the primary MVP audience (3-5 building individual investor) who is comfortable with PITI math.
+
+**Re-evaluate when:** Post-launch, if active investors ask for it. Or before pitching brokers/agents who may want the more conservative number.
+
+Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db/seed.ts:calcFinancials`)

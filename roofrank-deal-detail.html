@@ -1265,7 +1265,10 @@ function computeScenarioFin(d, fin, state){
   const closing = price * 0.014;
   const totalCash = dp + closing;
   const monthlyPI = pmt(state.rate/12, 360, loan);
-  const monthlyRent = fin.grossRentalIncome / 12;
+  // Use effective gross income (after 5% vacancy) when available so this
+  // local PITI recompute matches the backend's scoringEngine.ts. Falling back
+  // to raw gross would overstate cashflow vs the card on the dashboard.
+  const monthlyRent = (fin.effectiveGrossIncome ?? fin.grossRentalIncome) / 12;
   const monthlyTax = fin.annualTaxes ? fin.annualTaxes/12 : price*0.012/12;
   const monthlyIns = fin.annualInsurance ? fin.annualInsurance/12 : price*0.004/12;
   const monthlyCf = monthlyRent - monthlyPI - monthlyTax - monthlyIns;
