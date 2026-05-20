@@ -1081,6 +1081,13 @@ let activeLens = 'curated';
 // City filter — null means "all markets". Initialized in boot() from URL/localStorage.
 let activeCity = null;
 const CITY_STORAGE_KEY = 'rr_active_city';
+// MVP markets are all MA. When activeCity is set, we scope the feed request by
+// (city,state) on the server so the user sees the real count, not a slice of
+// the global top-N. Update this list (or thread state per-city) when we expand.
+const MVP_STATE = 'MA';
+// Per-market totals (active deal counts) — populated from /feed/stats/markets
+// so chip labels show real totals instead of being capped by the loaded page.
+let marketStats = null;
 // Returns the subset of allDeals matching the active city filter. Everything
 // downstream (brief, picks, lenses, feed) should consume this instead of
 // allDeals directly, so a single switch reshapes the whole page.
@@ -1096,16 +1103,31 @@ function renderCityChips(){
   const wrap = document.getElementById('cityChips');
   const row = document.getElementById('cityRow');
   if(!wrap || !row) return;
-  if(!allDeals.length){ row.style.display = 'none'; return; }
 
-  const counts = {};
-  for(const d of allDeals){ if(d.city) counts[d.city] = (counts[d.city] || 0) + 1; }
+  // Prefer real per-market totals from /feed/stats/markets so chip counts
+  // reflect the full DB, not just what survived the loaded page's score cut.
+  // Fall back to allDeals-derived counts on the first paint, before stats land.
+  let counts = {};
+  let totalAll = 0;
+  if(marketStats && marketStats.length){
+    for(const r of marketStats){
+      if(!r.city) continue;
+      const n = Number(r.total_listings || 0);
+      counts[r.city] = n;
+      totalAll += n;
+    }
+  } else {
+    for(const d of allDeals){ if(d.city) counts[d.city] = (counts[d.city] || 0) + 1; }
+    totalAll = allDeals.length;
+  }
+
+  if(!Object.keys(counts).length){ row.style.display = 'none'; return; }
   const cities = Object.entries(counts).sort((a,b) => b[1] - a[1]);
   // Only show the chip row if there's more than one city; otherwise it's noise.
   if(cities.length < 2){ row.style.display = 'none'; return; }
 
   const chips = [
-    `<button class="city-chip${activeCity ? '' : ' active'}" type="button" onclick="setActiveCity(null)">All <span class="city-chip-count">${allDeals.length}</span></button>`,
+    `<button class="city-chip${activeCity ? '' : ' active'}" type="button" onclick="setActiveCity(null)">All <span class="city-chip-count">${totalAll}</span></button>`,
     ...cities.map(([city, count]) =>
       `<button class="city-chip${activeCity === city ? ' active' : ''}" type="button" onclick="setActiveCity('${city.replace(/'/g, "\\'")}')">${city} <span class="city-chip-count">${count}</span></button>`
     ),
@@ -1129,12 +1151,9 @@ function setActiveCity(city){
     else url.searchParams.delete('city');
     window.history.replaceState(null, '', url.toString());
   } catch {}
-  // Re-render everything downstream of the city filter
-  renderCityChips();
-  renderBriefBody();
-  renderBriefPicks();
-  renderFollowups();
-  applyLens(activeLens);
+  // Refetch — the server scopes by city when activeCity is set, so the user
+  // gets the real per-city list (capped at the server's max page size).
+  loadFeed();
 }
 let currentLensDeals = [];
 
@@ -1214,13 +1233,31 @@ async function loadFeed(){
   const list = document.getElementById('dealList');
   list.innerHTML = renderSkeletons(3);
   try {
-    const data = await FeedAPI.list({ page:1, limit:30, sort:'score' });
+    // Two fetches in parallel:
+    //   1. The deal list — scoped to activeCity if one is chosen so we get the
+    //      full per-city catalog (up to the server's 50/page cap) instead of a
+    //      slice of the global top-30.
+    //   2. /feed/stats/markets — gives us real per-market totals for the chip
+    //      labels regardless of which city we're currently scoped to.
+    const listReq = activeCity
+      ? FeedAPI.list({ page:1, limit:50, sort:'score', city: activeCity, state: MVP_STATE })
+      : FeedAPI.list({ page:1, limit:30, sort:'score' });
+    const [data, stats] = await Promise.all([
+      listReq,
+      FeedAPI.marketStats().catch(() => null),
+    ]);
     allDeals = data.deals || [];
-    // Reconcile the saved city filter: if no deals in that city anymore, drop it.
-    if(activeCity && !allDeals.some(d => d.city === activeCity)){
+    if(stats) marketStats = Array.isArray(stats) ? stats : (stats.rows || stats.data || null);
+
+    // Reconcile a saved city that no longer has any deals — drop the filter
+    // and refetch globally so the user isn't staring at an empty page.
+    if(activeCity && allDeals.length === 0){
       activeCity = null;
       try { localStorage.removeItem(CITY_STORAGE_KEY); } catch {}
+      const fallback = await FeedAPI.list({ page:1, limit:30, sort:'score' });
+      allDeals = fallback.deals || [];
     }
+
     renderCityChips();
     renderBriefHead();
     renderBriefBody();
