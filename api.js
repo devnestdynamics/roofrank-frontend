@@ -15,6 +15,26 @@ const Auth = {
 
 let _refreshPromise = null;
 
+// Public (no-auth) fetch — used by pre-auth onboarding endpoints
+// (/feed/public, /auth/magic-link/*). Skips the auth header + refresh-on-401
+// retry logic so anonymous traffic doesn't trigger a redirect to login.
+async function publicFetch(path, opts = {}) {
+  const res = await fetch(BASE_URL + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(opts.headers || {}),
+    },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.error || data.message || `Request failed: ${res.status}`);
+    err.status = res.status; err.code = data.code; err.data = data;
+    throw err;
+  }
+  return data;
+}
+
 async function apiFetch(path, opts = {}, retry = true) {
   const token = Auth.getToken();
   const res = await fetch(BASE_URL + path, {
@@ -77,6 +97,19 @@ const AuthAPI = {
   forgotPassword(email)       { return apiFetch('/auth/forgot-password', { method:'POST', body: JSON.stringify({ email }) }); },
   resetPassword(token, pw)    { return apiFetch('/auth/reset-password',  { method:'POST', body: JSON.stringify({ token, password: pw }) }); },
   verifyEmail(token)          { return apiFetch('/auth/verify-email',    { method:'POST', body: JSON.stringify({ token }) }); },
+  // Magic link (passwordless) — public endpoints, no auth header.
+  requestMagicLink(email, returnTo) {
+    return publicFetch('/auth/magic-link/request', {
+      method: 'POST',
+      body: JSON.stringify({ email, ...(returnTo && { returnTo }) }),
+    });
+  },
+  async verifyMagicLink(token) {
+    const data = await publicFetch(`/auth/magic-link/verify?token=${encodeURIComponent(token)}`);
+    Auth.setToken(data.accessToken);
+    if (data.refreshToken) Auth.setRefresh(data.refreshToken);
+    return data;
+  },
   logout() {
     const r = Auth.getRefresh();
     if (r) apiFetch('/auth/logout', { method:'POST', body: JSON.stringify({ refreshToken: r }) }).catch(()=>{});
@@ -94,6 +127,11 @@ const FeedAPI = {
   marketStats()      { return apiFetch('/feed/stats/markets'); },
   saveMarket(c,s)    { return apiFetch('/feed/markets', { method:'POST', body: JSON.stringify({city:c,state:s}) }); },
   triggerRefresh()   { return apiFetch('/feed/refresh', { method:'POST' }); },
+  // Pre-auth deal feed for the new onboarding flow (no auth header).
+  public(market, limit=4) {
+    const p = new URLSearchParams({ market, limit: String(limit) });
+    return publicFetch(`/feed/public?${p}`);
+  },
 };
 
 const ReportsAPI = {
