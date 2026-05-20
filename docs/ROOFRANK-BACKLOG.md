@@ -2498,3 +2498,52 @@ All 4 were stale. Manually deleted from prod via one-off ECS task. Lynn went fro
 - `src/db/schema.ts` — confirm `status` enum includes a "no-longer-available" value distinct from `'active'` and `'archived'`.
 
 **Re-evaluate when:** Before launch. This will affect every user who clicks a featured deal.
+
+---
+
+### 187. Landing OG image still shows 58 Laighton St
+
+**What:** `og-image.png` (and the matching Twitter card) was generated when 58 Laighton was the proof example. That deal is now purged from prod (BUG-004 stale, see commit `f34b0de`), so social link previews — Slack, iMessage, X, LinkedIn — still surface a property our system no longer knows about. Anyone who copies a roofrank.io link to a chat sees the wrong house.
+
+**Fix:** Re-export the OG image to feature 139 Vernon St, Worcester (the current static fallback) — Strong Buy · 92/100 · $2,165/mo · 19.2% CoC. Or, longer-term, make the OG image template-driven so we can refresh it whenever the featured deal changes.
+
+**Where:**
+- `og-image.png` (and any other social image variants — favicon set was regen'd recently in `63f1472`; this looks like it was missed)
+- `<meta property="og:image">` in `roofrank-landing.html:~30-40` if pointing at a specific filename
+
+**Why it matters:** First impression of every shared link, and harder to catch than on-page copy because it only renders when the URL is unfurled.
+
+**Re-evaluate when:** Before any organized launch push that involves people sharing the link.
+
+---
+
+### 188. Landing "brief mockup" section still references 58 Laighton
+
+**What:** Below the metrics section, there's a "What you'd see in your dashboard" mockup featuring a hardcoded brief, a pick card, and a chat Q&A. All three still name 58 Laighton St with specific numbers (11.4% CoC, $2,180/mo, $645K).
+
+**Found at:**
+- `roofrank-landing.html:824` — brief body: *"The standout's 58 Laighton St in Lynn — 11.4% cash-on-cash, $2,180/mo coming in."*
+- `roofrank-landing.html:828` — pick card address: *"58 Laighton St"*
+- `roofrank-landing.html:842` — chat Q mockup: *"Is $645K a fair price on 58 Laighton?"*
+
+**Fix options:**
+1. Swap all three to 139 Vernon St with matching numbers (same deal as hero receipt + metrics section).
+2. Make it data-driven via the same fetcher used by the hero receipt and metrics section — single source of truth.
+
+Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
+
+**Re-evaluate when:** Same window as #187 — anything that draws attention to the landing.
+
+---
+
+### 189. Expose Cap Rate / NOI / DSCR / GRM on /feed/public
+
+**What:** The landing's "scoring engine" section shows 8 metric chips. After commit `ef67a43`, four of them (Cash-on-Cash, Price/Unit, Verdict, Score) are live from `/feed/public`. The other four — **Cap Rate, NOI, DSCR, GRM** — are static illustrative numbers because the public endpoint doesn't surface them. CapEx and Neighborhood are also static (different reason — those are tier labels, not computed values).
+
+**Why this matters:** The whole point of the section is "this is what the engine produces for one real deal." Four of the eight chips claiming static numbers when the others are live creates a subtle inconsistency. Sharp users may notice the static four don't update when the live four do.
+
+**Fix:**
+- Backend: add `capRate`, `noi`, `dscr`, `grm` to the per-deal response in `src/routes/feed.ts → /public`. The scoring engine already computes these (`ComputedFinancials` in `src/lib/scoringEngine.ts`); just thread them through.
+- Frontend: wire the four chips to live values in `roofrank-landing.html` (the existing fetcher is set up for it — just add four more `set()` calls).
+
+**Re-evaluate when:** After BUG-004 (stale deals) is fixed — that's the bigger landing trust issue. This is polish.
