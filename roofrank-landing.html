@@ -724,8 +724,12 @@ footer{background:var(--ink);padding:4rem 0 2rem}
     </h1>
     <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
 
-    <!-- 30-second proof receipt — what RoofRank returns when you open it -->
-    <div class="hero-receipt" role="img" aria-label="Example 30-second analysis: 58 Laighton St in Lynn, Strong Buy, 87 out of 100, $2,180 monthly cashflow, 11.4% cash-on-cash at today's Freddie Mac rate.">
+    <!-- 30-second proof receipt — what RoofRank returns when you open it.
+         Initial HTML is a static fallback using the current real top deal so
+         the page paints with accurate values even before JS runs (and stays
+         accurate if the fetch fails). hero-receipt-init() below swaps in a
+         live pick on load. -->
+    <div class="hero-receipt" id="heroReceipt" role="img" aria-label="Live 30-second analysis: 139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
       <span class="hero-receipt-30s">in 30 sec</span>
       <div class="hero-receipt-head">
         <div class="hero-receipt-mark" aria-hidden="true">
@@ -736,18 +740,18 @@ footer{background:var(--ink);padding:4rem 0 2rem}
             <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
           </svg>
         </div>
-        <span class="hero-receipt-verdict">Strong Buy</span>
-        <span class="hero-receipt-addr">58 Laighton St, Lynn</span>
-        <span class="hero-receipt-score">87/100</span>
+        <span class="hero-receipt-verdict" id="hrVerdict">Strong Buy</span>
+        <span class="hero-receipt-addr" id="hrAddr">139 Vernon St, Worcester</span>
+        <span class="hero-receipt-score" id="hrScore">92/100</span>
       </div>
       <div class="hero-receipt-body">
-        <span class="hero-receipt-cf">$2,180</span><span class="hero-receipt-cf-label">/mo cashflow</span>
+        <span class="hero-receipt-cf" id="hrCf">$2,165</span><span class="hero-receipt-cf-label">/mo cashflow</span>
         <span class="hero-receipt-divider">·</span>
-        <span class="hero-receipt-coc">11.4% CoC</span>
+        <span class="hero-receipt-coc" id="hrCoc">19.2% CoC</span>
       </div>
       <div class="hero-receipt-foot">
         <span class="hero-receipt-foot-dot"></span>
-        at today's Freddie rate · 4 units · $645K
+        <span id="hrFoot">at today's Freddie rate · 3 units · $500K</span>
       </div>
     </div>
 
@@ -1097,6 +1101,52 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 </footer>
 
 <script>
+// ── Hero receipt — swap static fallback for the current top live deal ────
+// Worcester has the deepest pool of real Strong Buys right now (Lynn has
+// none after the 2026-05-19 stale-deal cleanup; Salem/Revere/Framingham
+// are seed-only until ingestion is wired). When those markets fill out,
+// widen this to query market=all once /public is allowed past limit=10.
+(function() {
+  const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000/api'
+    : 'https://api.roofrank.io/api';
+  fetch(API + '/feed/public?market=worcester&limit=10')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.deals) return;
+      const real = data.deals.filter(d =>
+        d.score && d.verdict === 'Strong Buy' &&
+        d.monthlyCashflow != null && d.coc != null &&
+        d.address && d.address.includes(',')   // real (rentcast) listing
+      );
+      if (!real.length) return;
+      const best = real.sort((a, b) => b.score - a.score)[0];
+
+      // Trim "Street, City, State Zip" → "Street, City"
+      const parts = best.address.split(',').map(s => s.trim());
+      const shortAddr = parts.length >= 2 ? `${parts[0]}, ${parts[1]}` : best.address;
+      const priceStr = best.price >= 1e6
+        ? `$${(best.price / 1e6).toFixed(2)}M`
+        : `$${Math.round(best.price / 1000)}K`;
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      set('hrVerdict', best.verdict);
+      set('hrAddr', shortAddr);
+      set('hrScore', `${best.score}/100`);
+      set('hrCf', `$${best.monthlyCashflow.toLocaleString()}`);
+      set('hrCoc', `${best.coc}% CoC`);
+      set('hrFoot', `at today's Freddie rate · ${best.units} units · ${priceStr}`);
+
+      const receipt = document.getElementById('heroReceipt');
+      if (receipt) {
+        receipt.setAttribute('aria-label',
+          `Live 30-second analysis: ${shortAddr}, ${best.verdict}, ${best.score} out of 100, ` +
+          `$${best.monthlyCashflow.toLocaleString()} monthly cashflow, ${best.coc}% cash-on-cash at today's Freddie Mac rate.`);
+      }
+    })
+    .catch(() => {});  // Static fallback stays — no broken receipt on network failure.
+})();
+
 // Nav scroll
 const nav = document.getElementById('navbar');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10));
