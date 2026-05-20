@@ -74,22 +74,61 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 
 .hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.5rem 1.4rem;box-shadow:0 10px 32px rgba(28,74,53,.09);margin-bottom:1.5rem;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative}
 .hero-deal:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(28,74,53,.12)}
-.hd-head{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:.95rem}
+.hd-head{display:flex;align-items:center;gap:.85rem;margin-bottom:.95rem}
 .hd-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:5px;flex-shrink:0;line-height:1}
 .hd-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22)}
 .hd-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
-.hd-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
-.hd-score{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;line-height:1}
-.hd-score-num{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--strong-buy);letter-spacing:-.01em}
-.hd-score-num.buy{color:var(--buy)}
-.hd-score-num.watch{color:var(--watch)}
-.hd-score-of{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem}
+.hd-verdict.wat{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.hd-score-slot{margin-left:auto;display:flex;align-items:center}
+
+/* RankMark — Deckers logo as the canonical scoring icon, color-shifts
+   by tier. Lifted from roofrank-dashboard.html so all surfaces (dashboard
+   cards, onboarding hero, onboarding runner rows) render the score the
+   same way. The hero uses a larger variant; runners use a small variant. */
+.rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.rmark-svg{width:100%;aspect-ratio:1;display:block;overflow:visible}
+.rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage);transition:stroke .3s}
+.rmark-svg .mk-floor{transition:fill .3s,opacity .3s;fill:var(--cream-3)}
+.rmark.sb  .mk-roof{stroke:var(--forest)}
+.rmark.sb  .mk-floor-1{fill:var(--forest);opacity:.45}
+.rmark.sb  .mk-floor-2{fill:var(--forest);opacity:.7}
+.rmark.sb  .mk-floor-3{fill:var(--forest);opacity:1}
+.rmark.buy .mk-roof{stroke:var(--forest-3)}
+.rmark.buy .mk-floor-1{fill:var(--sage);opacity:.55}
+.rmark.buy .mk-floor-2{fill:var(--sage);opacity:.9}
+.rmark.buy .mk-floor-3{fill:var(--forest-3);opacity:1}
+.rmark.wat .mk-roof{stroke:var(--watch)}
+.rmark.wat .mk-floor-1{fill:var(--cream-3);opacity:1}
+.rmark.wat .mk-floor-2{fill:var(--watch);opacity:.55}
+.rmark.wat .mk-floor-3{fill:var(--watch);opacity:.95}
+.rmark.pas .mk-roof{stroke:var(--faint)}
+.rmark.pas .mk-floor-1{fill:var(--cream-3);opacity:1}
+.rmark.pas .mk-floor-2{fill:var(--cream-3);opacity:1}
+.rmark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
+.rmark-num{font-family:var(--mono);font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.rmark.sb  .rmark-num{color:var(--forest)}
+.rmark.buy .rmark-num{color:var(--forest-3)}
+.rmark.wat .rmark-num{color:var(--watch)}
+.rmark.pas .rmark-num{color:var(--muted)}
+/* Hero variant — large, prominent (svg + number stacked). */
+.hd-score-slot .rmark{width:62px}
+.hd-score-slot .rmark-num{font-size:1rem;margin-top:2px}
+/* Runner variant — compact inline (small svg + number side by side).
+   Verdict tier comes through the rmark colors, so we drop the
+   redundant verdict text from runners and let icon + number + finance
+   numbers carry the scan. */
+.runner-row .rmark{flex-direction:row;gap:.4rem;align-items:center}
+.runner-row .rmark-svg{width:22px;height:22px;flex-shrink:0}
+.runner-row .rmark-num{font-size:.82rem}
 .hd-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.95rem;letter-spacing:-.01em}
 .hd-numbers{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:.85rem;flex-wrap:wrap}
 .hd-num{display:flex;flex-direction:column;line-height:1}
 .hd-num-val{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);letter-spacing:-.01em}
 .hd-num-label{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
-.hd-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.hd-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:.5rem}
+.hd-fresh{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.45rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.hd-fresh-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:hdFreshPulse 1.8s ease-in-out infinite;flex-shrink:0}
+@keyframes hdFreshPulse{0%,100%{opacity:1}50%{opacity:.35}}
 .hd-brief{display:flex;align-items:flex-start;gap:.7rem}
 .hd-brief-spark{width:18px;height:18px;color:var(--sage);flex-shrink:0;margin-top:.15rem}
 .hd-brief-spark svg{width:100%;height:100%;fill:currentColor;display:block;animation:hdSparkPulse 2.4s ease-in-out infinite}
@@ -103,13 +142,8 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 
 .runners-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;padding-left:.2rem}
 .runners-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
-.runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.85rem 1rem;display:flex;align-items:center;gap:.7rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.85rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
 .runner-row:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
-.runner-verdict{font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 7px;border-radius:4px;flex-shrink:0;line-height:1}
-.runner-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08)}
-.runner-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07)}
-.runner-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07)}
-.runner-score{font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--ink);flex-shrink:0;min-width:1.7rem}
 .runner-addr{font-family:var(--serif);font-size:.92rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .runner-nums{font-family:var(--mono);font-size:.74rem;color:var(--muted);flex-shrink:0;display:flex;gap:.45rem;align-items:baseline}
 .runner-cf{color:var(--forest);font-weight:500}
@@ -497,21 +531,36 @@ function renderDealList() {
 // dashboard's .brief-mark and the landing's "✦ Ask the analyst" copy).
 const SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>`;
 
+// Canonical Deckers SVG (roof + 3 floor bars) used as the RankMark on
+// every score surface. Kept verbatim to match roofrank-dashboard.html.
+const RANK_MARK_SVG = `<svg class="rmark-svg" viewBox="0 0 40 40">
+  <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+  <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+</svg>`;
+
+// Verdict → tier class. Uses the same suffixes as the dashboard
+// (`sb` / `buy` / `wat` / `pas`) so .rmark and .hd-verdict CSS rules
+// line up across both surfaces.
 function verdictClass(v) {
-  return v === 'Strong Buy' ? 'sb' : v === 'Buy' ? 'buy' : v === 'Watch' ? 'watch' : 'pass';
+  return v === 'Strong Buy' ? 'sb' : v === 'Buy' ? 'buy' : v === 'Watch' ? 'wat' : 'pas';
 }
 
 function renderHeroCard(deal) {
   const vc = verdictClass(deal.verdict);
   // State.brief is HTML from the backend (already includes <strong> tags),
   // so we trust and inject. It names the lead deal — same one as this hero.
+  const rateLabel = (deal.scoring && deal.scoring.rate) || '6.50%';
   return `
     <div class="hero-deal" onclick="triggerSignup('open-deal', '${deal.id}')">
       <div class="hd-head">
         <span class="hd-verdict ${vc}">${deal.verdict}</span>
-        <div class="hd-score">
-          <span class="hd-score-num ${vc}">${deal.score}</span>
-          <span class="hd-score-of">out of 100</span>
+        <div class="hd-score-slot">
+          <div class="rmark ${vc}" title="${deal.verdict} · ${deal.score} / 100">
+            ${RANK_MARK_SVG}
+            <div class="rmark-num">${deal.score}</div>
+          </div>
         </div>
       </div>
       <h2 class="hd-addr">${deal.address}</h2>
@@ -525,7 +574,11 @@ function renderHeroCard(deal) {
           <span class="hd-num-label">cash-on-cash</span>
         </div>
       </div>
-      <div class="hd-meta">${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days ago · at today's Freddie rate</div>
+      <div class="hd-meta">${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days ago</div>
+      <div class="hd-fresh">
+        <span class="hd-fresh-dot" aria-hidden="true"></span>
+        Scored nightly · at today's Freddie rate (${rateLabel})
+      </div>
       ${State.brief ? `
         <div class="hd-brief">
           <span class="hd-brief-spark" aria-hidden="true">${SPARKLE_SVG}</span>
@@ -542,10 +595,13 @@ function renderHeroCard(deal) {
 
 function renderRunner(deal) {
   const vc = verdictClass(deal.verdict);
+  // No separate verdict pill — the rmark's color tier carries it.
   return `
     <button class="runner-row" onclick="triggerSignup('open-deal', '${deal.id}')">
-      <span class="runner-verdict ${vc}">${deal.verdict}</span>
-      <span class="runner-score">${deal.score}</span>
+      <div class="rmark ${vc}" title="${deal.verdict} · ${deal.score} / 100">
+        ${RANK_MARK_SVG}
+        <div class="rmark-num">${deal.score}</div>
+      </div>
       <span class="runner-addr">${deal.address}</span>
       <span class="runner-nums">
         <span class="runner-cf">$${deal.monthlyCashflow.toLocaleString()}/mo</span>
