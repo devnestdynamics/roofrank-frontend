@@ -62,104 +62,78 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 .mkt-no-market:hover{color:var(--forest)}
 .mkt-no-market u{text-decoration:underline;text-underline-offset:3px}
 
-/* ── Panel 2: Live feed ────────────────────────────────────────────── */
+/* ── Panel 2 — simplified feed (the WOW moment) ────────────────────
+   Single visual language: one hero card + a clean runners-up list +
+   sticky CTA. The brief copy lives INSIDE the hero card as an
+   italicized analyst line — no separate dark tile, no restated
+   headline, no "TOP PICK ·" floating banner. */
+.feed-ctx{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.feed-ctx-city{color:var(--ink);font-weight:500;letter-spacing:.02em}
+.feed-ctx-change{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:.74rem;cursor:pointer;padding:4px 8px;border-radius:5px;transition:all .15s}
+.feed-ctx-change:hover{color:var(--forest);background:var(--sage-dim)}
+
+.hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.5rem 1.4rem;box-shadow:0 10px 32px rgba(28,74,53,.09);margin-bottom:1.5rem;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative}
+.hero-deal:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(28,74,53,.12)}
+.hd-head{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:.95rem}
+.hd-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:5px;flex-shrink:0;line-height:1}
+.hd-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22)}
+.hd-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.hd-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
+.hd-score{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.hd-score-num{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--strong-buy);letter-spacing:-.01em}
+.hd-score-num.buy{color:var(--buy)}
+.hd-score-num.watch{color:var(--watch)}
+.hd-score-of{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem}
+.hd-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.95rem;letter-spacing:-.01em}
+.hd-numbers{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+.hd-num{display:flex;flex-direction:column;line-height:1}
+.hd-num-val{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);letter-spacing:-.01em}
+.hd-num-label{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.hd-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.hd-brief{display:flex;align-items:flex-start;gap:.7rem}
+.hd-brief-spark{width:18px;height:18px;color:var(--sage);flex-shrink:0;margin-top:.15rem}
+.hd-brief-spark svg{width:100%;height:100%;fill:currentColor;display:block;animation:hdSparkPulse 2.4s ease-in-out infinite}
+@keyframes hdSparkPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.92)}}
+.hd-brief-text{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink-2);line-height:1.5;flex:1}
+.hd-brief-text strong{font-weight:600;color:var(--forest);font-style:normal}
+
+.runners-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;padding-left:.2rem}
+.runners-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
+.runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.85rem 1rem;display:flex;align-items:center;gap:.7rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.runner-row:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+.runner-verdict{font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 7px;border-radius:4px;flex-shrink:0;line-height:1}
+.runner-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08)}
+.runner-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07)}
+.runner-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07)}
+.runner-score{font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--ink);flex-shrink:0;min-width:1.7rem}
+.runner-addr{font-family:var(--serif);font-size:.92rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.runner-nums{font-family:var(--mono);font-size:.74rem;color:var(--muted);flex-shrink:0;display:flex;gap:.45rem;align-items:baseline}
+.runner-cf{color:var(--forest);font-weight:500}
+.runner-nums-coc{color:var(--muted)}
+@media(max-width:480px){
+  .runner-nums{display:none}
+  .runner-row::after{content:'›';color:var(--faint);font-size:1.2rem;line-height:1;margin-left:.2rem}
+}
+
+.feed-empty{background:var(--white);border:1px dashed var(--border-2);border-radius:14px;padding:2rem 1.4rem;text-align:center;color:var(--muted);font-family:var(--serif);font-style:italic;font-size:.92rem;margin-bottom:1.25rem}
+
+/* Sticky CTA on mobile so the button is always reachable. On desktop
+   it sits naturally at the bottom of the content. */
+.feed-cta{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.85rem;box-shadow:0 -4px 14px rgba(28,31,28,.04)}
+.feed-cta-text{font-size:.82rem;color:var(--muted);line-height:1.45;flex:1;min-width:0}
+.feed-cta-text strong{color:var(--ink);font-weight:600}
+.feed-cta-btn{background:var(--forest);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:.88rem;padding:.7rem 1.1rem;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.feed-cta-btn:hover{background:var(--forest-2);transform:translateY(-1px)}
+@media(max-width:560px){
+  .feed-cta{position:sticky;bottom:.85rem;z-index:5}
+  .feed-cta-text{display:none}
+  .feed-cta-btn{width:100%;padding:.85rem;font-size:.95rem}
+}
+
+/* ── Panel 2: Live feed (simplified WOW; new classes are above this) ──
+   The old .feed-brief / .featured-tile / .ft-* / .sc-* system was
+   replaced 2026-05-19 — see comment block at top of Panel 2 styles. */
 .feed-wrap{width:100%;max-width:600px}
-.feed-brief{background:linear-gradient(180deg,#1d2420 0%,#14201a 100%);color:#fff;border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.85rem}
-.brief-mark{width:30px;height:30px;border-radius:8px;background:rgba(122,170,143,.15);border:1px solid rgba(122,170,143,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage)}
-.brief-mark svg{width:18px;height:18px;animation:briefSpin 16s linear infinite}
-@keyframes briefSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.brief-content{flex:1;min-width:0}
-.brief-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
-.brief-label-dot{width:5px;height:5px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:briefDot 1.8s ease-in-out infinite}
-@keyframes briefDot{0%,100%{opacity:1}50%{opacity:.3}}
-.brief-text{font-family:var(--serif);font-size:1rem;color:#fff;line-height:1.55;font-weight:400;font-style:italic}
-.brief-text strong{font-weight:600;color:var(--sage);font-style:normal}
-
-.feed-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.feed-h{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--ink)}
-.feed-h em{color:var(--forest);font-style:italic}
-.feed-change{font-size:.78rem;color:var(--muted);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--sans);padding:4px 8px;border-radius:5px;transition:all .15s}
-.feed-change:hover{color:var(--forest);background:var(--sage-dim)}
-
-/* Featured tile */
-.featured-tile{background:var(--white);border:2px solid var(--sage-border);border-radius:16px;padding:1.5rem;box-shadow:0 8px 28px rgba(28,74,53,.08);margin-bottom:1.5rem;position:relative;cursor:pointer;transition:transform .15s}
-.featured-tile:hover{transform:translateY(-1px)}
-.featured-tile::before{content:attr(data-label);position:absolute;top:-10px;left:1.2rem;font-size:.6rem;font-weight:700;letter-spacing:.16em;color:#fff;background:var(--forest);padding:4px 10px;border-radius:5px}
-.ft-engine{background:var(--cream-2);border:1px solid var(--cream-3);border-radius:12px;padding:1.2rem 1.35rem;display:flex;flex-direction:column;gap:.75rem;font-family:var(--mono);margin-top:.5rem}
-.ft-engine-label{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
-.ft-step,.sc-step{display:flex;align-items:center;gap:.7rem;opacity:0;transform:translateY(4px);transition:all .35s;font-size:.86rem;color:var(--ink-2)}
-.ft-step.in,.sc-step.in{opacity:1;transform:none}
-.ft-step-dot,.sc-step-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border-2);background:var(--white);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .35s}
-.ft-step.done .ft-step-dot,.sc-step.done .sc-step-dot{background:var(--sage);border-color:var(--forest)}
-.ft-step.done .ft-step-dot::after,.sc-step.done .sc-step-dot::after{content:'✓';color:var(--forest);font-weight:700;font-size:.7rem;line-height:1}
-.ft-step.active .ft-step-dot,.sc-step.active .sc-step-dot{border-color:var(--forest);border-top-color:transparent;animation:ftSpin .8s linear infinite}
-@keyframes ftSpin{to{transform:rotate(360deg)}}
-.ft-step-label,.sc-step-label{flex:1;line-height:1.4}
-.ft-step-val,.sc-step-val{margin-left:auto;font-weight:500;color:var(--forest);opacity:0;transition:opacity .35s;font-size:.82rem;text-align:right}
-.ft-step.done .ft-step-val,.sc-step.done .sc-step-val{opacity:1}
-.ft-step.analyst .ft-step-val,.sc-step.analyst .sc-step-val{font-family:var(--serif);font-style:italic;color:var(--forest);font-size:.84rem;font-weight:500}
-.featured-tile.engine-hidden .ft-engine{display:none}
-.featured-tile.engine-hidden .ft-reveal{margin-top:0;padding-top:0;border-top:none}
-
-.ft-reveal{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--cream-3);opacity:0;transform:translateY(8px);transition:all .55s cubic-bezier(.22,1,.36,1)}
-.ft-reveal.in{opacity:1;transform:none}
-.ft-verdict-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.85rem}
-.ft-verdict-circle{width:54px;height:54px;border-radius:50%;background:rgba(28,74,53,.08);border:2.5px solid var(--strong-buy);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
-.ft-verdict-num{font-family:var(--mono);font-size:1.15rem;font-weight:500;color:var(--strong-buy);line-height:1}
-.ft-verdict-of{font-size:.5rem;color:var(--muted);letter-spacing:.05em}
-.ft-verdict-info{flex:1}
-.ft-verdict-tier{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--strong-buy);line-height:1.15;letter-spacing:-.01em}
-.ft-verdict-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-top:.2rem}
-.ft-body{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.85rem}
-.ft-cf{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--forest);line-height:1}
-.ft-cf-l{font-size:.85rem;color:var(--muted)}
-.ft-divider{color:var(--faint);font-size:.95rem}
-.ft-coc{font-family:var(--mono);font-size:1rem;color:var(--ink);font-weight:500}
-.ft-foot{display:flex;align-items:center;justify-content:space-between;gap:.85rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);flex-wrap:wrap}
-.ft-foot-meta{display:flex;align-items:center;gap:.45rem}
-.ft-foot-meta-dot{width:5px;height:5px;border-radius:50%;background:var(--sage)}
-.ft-replay,.sc-hide{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:.7rem;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;padding:3px 6px;border-radius:5px;transition:all .15s}
-.ft-replay:hover,.sc-hide:hover{color:var(--forest);background:var(--sage-dim)}
-
-/* Small cards */
-.small-cards{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem}
-.sc-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1rem 1.15rem;display:flex;flex-direction:column;gap:.5rem;transition:all .15s}
-.sc-card:not(.expanded):hover{border-color:var(--sage-border);box-shadow:0 4px 14px rgba(28,31,28,.05);transform:translateY(-1px);cursor:pointer}
-.sc-card.expanded{border-color:var(--sage-border);box-shadow:0 6px 20px rgba(28,74,53,.07);background:linear-gradient(180deg,rgba(122,170,143,.04) 0%,var(--white) 100%)}
-.sc-row1{display:flex;align-items:center;gap:.6rem}
-.sc-mark{width:24px;height:24px;border-radius:6px;background:var(--forest);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sc-mark.watch{background:var(--watch)}
-.sc-mark svg{width:14px;height:14px}
-.sc-verdict{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:2px 7px;border-radius:5px;flex-shrink:0}
-.sc-verdict.sb{color:var(--strong-buy);background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.2)}
-.sc-verdict.buy{color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
-.sc-verdict.watch{color:var(--watch);background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18)}
-.sc-addr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-score{font-family:var(--mono);font-size:.74rem;color:var(--muted);font-weight:500;flex-shrink:0}
-.sc-row2{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
-.sc-cf{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--forest);line-height:1}
-.sc-cf.watch{color:var(--watch)}
-.sc-cf-l{font-size:.7rem;color:var(--muted)}
-.sc-divider{color:var(--faint)}
-.sc-coc{font-family:var(--mono);font-size:.8rem;color:var(--ink);font-weight:500}
-.sc-row3{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.66rem;color:var(--muted)}
-.sc-meta-dot{width:4px;height:4px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:.4rem;vertical-align:middle}
-.sc-meta-dot.watch{background:var(--watch)}
-.sc-howscore{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:.65rem;cursor:pointer;display:inline-flex;align-items:center;gap:.25rem;padding:2px 5px;border-radius:4px;transition:all .15s}
-.sc-howscore:hover{color:var(--forest);background:var(--sage-dim)}
-.sc-engine{display:none;margin-top:.5rem;padding-top:.75rem;border-top:1px solid var(--cream-3);flex-direction:column;gap:.6rem;font-family:var(--mono)}
-.sc-card.expanded .sc-engine{display:flex}
-.sc-engine-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.sc-step{font-size:.78rem}
-.sc-step-val{font-size:.74rem}
-.sc-engine-foot{display:flex;justify-content:flex-end;margin-top:.5rem;opacity:0;transition:opacity .4s}
-.sc-engine-foot.in{opacity:1}
-
-.feed-cta-bar{width:100%;background:var(--forest);border-radius:14px;padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.feed-cta-text{color:rgba(255,255,255,.95);font-size:.92rem;font-family:var(--serif);font-style:italic;flex:1}
-.feed-cta-text strong{font-weight:600;font-style:normal;color:#fff}
-.feed-cta-btn{background:#fff;color:var(--forest);border:none;padding:.6rem 1.1rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap}
-.feed-cta-btn:hover{background:var(--cream-2)}
 
 /* ── Panel 3: Magic link wall ──────────────────────────────────────── */
 .wall-triggered-by{width:100%;max-width:440px;margin-bottom:1.25rem;display:flex;align-items:center;gap:.65rem;padding:.7rem .85rem;background:var(--cream-2);border:1px solid var(--cream-3);border-radius:10px;font-size:.78rem;color:var(--muted)}
@@ -205,9 +179,9 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
 @media(max-width:560px){
   main{padding:2.5rem 1rem 4rem}
   .mkt-grid{grid-template-columns:repeat(2,1fr)}
-  .featured-tile{padding:1.25rem 1rem}
-  .ft-engine{padding:1rem .9rem}
-  .ft-step{font-size:.78rem;gap:.55rem}
+  .hero-deal{padding:1.25rem 1.1rem}
+  .hd-addr{font-size:1.2rem}
+  .hd-num-val{font-size:1.55rem}
 }
 
 /* Legal footer */
@@ -270,36 +244,24 @@ main{flex:1;padding:3rem 2rem 5rem;display:flex;flex-direction:column;align-item
   </div>
 
   <!-- ═════════════════════════════════════════════════════════════════
-       PANEL 2 — Live deal feed
+       PANEL 2 — Live deal feed (simplified WOW)
+       One hero card (verdict + score + cashflow + CoC + brief inside) +
+       a quiet runners-up list + sticky CTA. The brief copy folds into
+       the hero card; no separate dark tile, no restated headline.
        ═════════════════════════════════════════════════════════════════ -->
   <div class="panel" id="panel2" data-step="2">
     <div class="feed-wrap">
 
-      <!-- Brief voice card -->
-      <div class="feed-brief">
-        <div class="brief-mark" aria-hidden="true">
-          <svg viewBox="0 0 30 30" fill="none">
-            <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
-            <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
-            <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
-          </svg>
-        </div>
-        <div class="brief-content">
-          <div class="brief-label"><span class="brief-label-dot"></span>Analyst · Today in <span id="briefMarket">Lynn</span></div>
-          <div class="brief-text" id="briefText">…</div>
-        </div>
+      <!-- Compact context line: city + change link, no dark tile -->
+      <div class="feed-ctx">
+        <span class="feed-ctx-city"><span id="feedMarket">Lynn</span> — <span id="feedCount">…</span> scored today</span>
+        <button class="feed-ctx-change" onclick="goPanel(1)">← change market</button>
       </div>
 
-      <div class="feed-header-row">
-        <div class="feed-h"><em id="feedCount">4 deals</em> in <span id="feedMarket">Lynn</span> worth opening today.</div>
-        <button class="feed-change" onclick="goPanel(1)">← change market</button>
-      </div>
-
-      <!-- Featured tile + small cards rendered by JS -->
+      <!-- Hero + runners-up rendered by renderDealList(). -->
       <div id="dealList"></div>
 
-      <div class="feed-cta-bar">
+      <div class="feed-cta">
         <div class="feed-cta-text">Want to <strong>open the full math</strong> or get pinged when a new Strong Buy hits?</div>
         <button class="feed-cta-btn" onclick="triggerSignup('save')">Save & continue →</button>
       </div>
@@ -426,11 +388,6 @@ function shortAddress(full, fallbackCity) {
   return fallbackCity ? `${parts[0]}, ${fallbackCity}` : parts[0];
 }
 
-// Default analyst note shown when backend hasn't populated one yet
-// (Phase 1B Claude batch ships these). Keeps the W8 engine animation
-// visually complete even before per-deal narratives are live.
-const PENDING_ANALYST_NOTE = 'Open the deal for the full analyst breakdown';
-
 // ═══════════════════════════════════════════════════════════════════
 // PANEL NAVIGATION
 // ═══════════════════════════════════════════════════════════════════
@@ -479,9 +436,7 @@ async function selectMarket(id) {
   try { localStorage.setItem('rr_pre_market', id); } catch (e) {}
 
   // Show market label immediately while feed loads (avoids flash of stale data)
-  document.getElementById('briefMarket').textContent = market.multi ? 'your markets' : market.city;
-  document.getElementById('feedMarket').textContent = market.multi ? 'all 5 cities' : market.city;
-  document.getElementById('briefText').innerHTML = '<em style="color:rgba(255,255,255,.55)">Pulling fresh deals…</em>';
+  document.getElementById('feedMarket').textContent = market.multi ? 'All 5 cities' : market.city;
   document.getElementById('feedCount').textContent = '…';
   document.getElementById('dealList').innerHTML = '';
   goPanel(2);
@@ -489,116 +444,99 @@ async function selectMarket(id) {
   // Fetch real pre-auth feed from backend (no auth required).
   try {
     const feed = await FeedAPI.public(id, 4);
-    // Normalize backend response to UI shape — addresses are trimmed,
-    // missing analyst notes get the soft CTA fallback. Mark the first
-    // deal as featured (backend also sets featured=true on idx 0; we
-    // defensively re-derive to handle either case).
-    // Drop unscored / unenriched rows before featuring — rentcast sometimes
-    // surfaces a listing before the scoring pipeline has run, leaving score,
-    // monthlyCashflow, units, etc. null. Featuring one of those crashes the
-    // renderer on `null.toLocaleString()`. Backend filter on /public is the
-    // long-term home of this guard; this is the defensive client copy.
+    // Drop unscored rows so we never feature a deal that crashes the
+    // renderer on null.toLocaleString(). Backend /public also filters
+    // these out (commit 373dce6), but defense in depth is cheap.
     State.deals = (feed.deals || [])
       .filter(d => d.score != null && d.monthlyCashflow != null && d.coc != null)
-      .map((d, idx) => ({
-      ...d,
-      featured: d.featured === true || idx === 0,
-      address: shortAddress(d.address, d.city),
-      analystNote: d.analystNote || PENDING_ANALYST_NOTE,
-      // Backend sometimes returns null tax/rent until propertyData is enriched.
-      // Replace nulls with generic strings so the W8 animation reads clean.
-      scoring: {
-        rate: d.scoring?.rate || '6.50% · estimate',
-        tax:  d.scoring?.tax  || 'Pending — open deal for details',
-        rent: d.scoring?.rent || 'Pending — open deal for details',
-      },
-    }));
+      .map(d => ({ ...d, address: shortAddress(d.address, d.city) }));
     State.brief = feed.brief || '';
-    document.getElementById('briefText').innerHTML = State.brief;
-    document.getElementById('feedCount').textContent = `${State.deals.length} deal${State.deals.length === 1 ? '' : 's'}`;
+    const n = State.deals.length;
+    document.getElementById('feedCount').textContent = `${n} deal${n === 1 ? '' : 's'}`;
     renderDealList();
   } catch (err) {
     console.error('[onboard] feed load failed', err);
-    document.getElementById('briefText').innerHTML = '<em style="color:rgba(255,255,255,.55)">Couldn\'t load deals — try again or pick another market.</em>';
-    document.getElementById('feedCount').textContent = '0';
+    document.getElementById('feedCount').textContent = '0 deals';
+    document.getElementById('dealList').innerHTML = '<div class="feed-empty">Couldn\'t load deals — try another market or check your connection.</div>';
     showToast('Couldn\'t load deals. Check your connection and retry.', 'error');
   }
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// PANEL 2: Live feed rendering + W8 engine animation
+// PANEL 2: simplified feed rendering — one hero card + runners list
 // ═══════════════════════════════════════════════════════════════════
 
 function renderDealList() {
   const list = document.getElementById('dealList');
-  list.innerHTML = State.deals.map(deal => deal.featured ? renderFeaturedTile(deal) : renderSmallCard(deal)).join('');
+  if (State.deals.length === 0) {
+    list.innerHTML = '<div class="feed-empty">No scored deals in this market right now. Try another or join the waitlist.</div>';
+    return;
+  }
+  const [hero, ...runners] = State.deals;
+  list.innerHTML = renderHeroCard(hero) +
+    (runners.length ? `
+      <div class="runners-label">Also worth opening</div>
+      <div class="runners-list">${runners.map(renderRunner).join('')}</div>
+    ` : '');
 }
 
-function renderFeaturedTile(deal) {
-  // W8 "scoring live" engine intentionally not rendered here. The brief above
-  // the tile already tells the user which deal leads and why; the engine on
-  // this screen was redundant and read as "pending — we won't show you"
-  // when the underlying data wasn't fully enriched yet. The deeper engine
-  // animation still lives on the deal-detail page post-signup.
+// Sparkle SVG used everywhere we attribute analyst voice (matches the
+// dashboard's .brief-mark and the landing's "✦ Ask the analyst" copy).
+const SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>`;
+
+function verdictClass(v) {
+  return v === 'Strong Buy' ? 'sb' : v === 'Buy' ? 'buy' : v === 'Watch' ? 'watch' : 'pass';
+}
+
+function renderHeroCard(deal) {
+  const vc = verdictClass(deal.verdict);
+  // State.brief is HTML from the backend (already includes <strong> tags),
+  // so we trust and inject. It names the lead deal — same one as this hero.
   return `
-    <div class="featured-tile" id="featTile" data-label="TOP PICK · ${deal.address.toUpperCase()}" onclick="triggerSignup('open-deal', '${deal.id}')">
-      <div class="ft-reveal in" id="ftReveal">
-        <div class="ft-verdict-row">
-          <div class="ft-verdict-circle"><div class="ft-verdict-num">${deal.score}</div><div class="ft-verdict-of">/ 100</div></div>
-          <div class="ft-verdict-info"><div class="ft-verdict-tier">${deal.verdict}</div><div class="ft-verdict-meta">${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days ago</div></div>
-        </div>
-        <div class="ft-body">
-          <span class="ft-cf">$${deal.monthlyCashflow.toLocaleString()}</span><span class="ft-cf-l">/mo cashflow</span>
-          <span class="ft-divider">·</span>
-          <span class="ft-coc">${deal.coc}% CoC</span>
-        </div>
-        <div class="ft-foot">
-          <span class="ft-foot-meta"><span class="ft-foot-meta-dot"></span>at today's Freddie rate</span>
+    <div class="hero-deal" onclick="triggerSignup('open-deal', '${deal.id}')">
+      <div class="hd-head">
+        <span class="hd-verdict ${vc}">${deal.verdict}</span>
+        <div class="hd-score">
+          <span class="hd-score-num ${vc}">${deal.score}</span>
+          <span class="hd-score-of">out of 100</span>
         </div>
       </div>
+      <h2 class="hd-addr">${deal.address}</h2>
+      <div class="hd-numbers">
+        <div class="hd-num">
+          <span class="hd-num-val">$${deal.monthlyCashflow.toLocaleString()}</span>
+          <span class="hd-num-label">/mo cashflow</span>
+        </div>
+        <div class="hd-num">
+          <span class="hd-num-val">${deal.coc}%</span>
+          <span class="hd-num-label">cash-on-cash</span>
+        </div>
+      </div>
+      <div class="hd-meta">${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days ago · at today's Freddie rate</div>
+      ${State.brief ? `
+        <div class="hd-brief">
+          <span class="hd-brief-spark" aria-hidden="true">${SPARKLE_SVG}</span>
+          <span class="hd-brief-text">${State.brief}</span>
+        </div>
+      ` : ''}
     </div>
   `;
 }
 
-function renderSmallCard(deal) {
-  const vClass = deal.verdict === 'Strong Buy' ? 'sb' : deal.verdict === 'Buy' ? 'buy' : 'watch';
-  const watch = deal.verdict === 'Watch';
+function renderRunner(deal) {
+  const vc = verdictClass(deal.verdict);
   return `
-    <div class="sc-card" id="card-${deal.id}" onclick="triggerSignup('open-deal', '${deal.id}')">
-      <div class="sc-row1">
-        <div class="sc-mark${watch ? ' watch' : ''}">${deckersMarkSvg(watch ? '#fff' : '#7aaa8f')}</div>
-        <span class="sc-verdict ${vClass}">${deal.verdict}</span>
-        <span class="sc-addr">${deal.address}</span>
-        <span class="sc-score">${deal.score}/100</span>
-      </div>
-      <div class="sc-row2">
-        <span class="sc-cf${watch ? ' watch' : ''}">$${deal.monthlyCashflow.toLocaleString()}</span>
-        <span class="sc-cf-l">/mo cashflow</span>
-        <span class="sc-divider">·</span>
-        <span class="sc-coc">${deal.coc}% CoC</span>
-      </div>
-      <div class="sc-row3">
-        <span><span class="sc-meta-dot${watch ? ' watch' : ''}"></span>${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days</span>
-        <button class="sc-howscore" onclick="event.stopPropagation();playSmallCard('${deal.id}')">↻ how was this scored?</button>
-      </div>
-      <div class="sc-engine">
-        <div class="sc-engine-label">Scoring · ${deal.address}</div>
-        <div class="sc-step" data-step="0"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling Freddie Mac mortgage rate</span><span class="sc-step-val">${deal.scoring.rate}</span></div>
-        <div class="sc-step" data-step="1"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling ATTOM property tax</span><span class="sc-step-val">${deal.scoring.tax}</span></div>
-        <div class="sc-step" data-step="2"><span class="sc-step-dot"></span><span class="sc-step-label">Pulling per-unit rents (HUD)</span><span class="sc-step-val">${deal.scoring.rent}</span></div>
-        <div class="sc-step analyst" data-step="3"><span class="sc-step-dot"></span><span class="sc-step-label">Analyst take</span><span class="sc-step-val">${escapeHtml(deal.analystNote)}</span></div>
-        <div class="sc-engine-foot"><button class="sc-hide" onclick="event.stopPropagation();hideSmallCard('${deal.id}')">↑ hide</button></div>
-      </div>
-    </div>
+    <button class="runner-row" onclick="triggerSignup('open-deal', '${deal.id}')">
+      <span class="runner-verdict ${vc}">${deal.verdict}</span>
+      <span class="runner-score">${deal.score}</span>
+      <span class="runner-addr">${deal.address}</span>
+      <span class="runner-nums">
+        <span class="runner-cf">$${deal.monthlyCashflow.toLocaleString()}/mo</span>
+        <span>·</span>
+        <span class="runner-nums-coc">${deal.coc}% CoC</span>
+      </span>
+    </button>
   `;
-}
-
-function deckersMarkSvg(strokeColor) {
-  return `<svg viewBox="0 0 30 30" fill="none"><path d="M5 12 L15 6 L25 12" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="${strokeColor}"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="${strokeColor}" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="${strokeColor}" opacity=".4"/></svg>`;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
 function fmtPrice(n) {
@@ -607,38 +545,8 @@ function fmtPrice(n) {
   return '$' + n;
 }
 
-// W8 animation — shared timing (~5 sec, 4 steps)
-function buildTimings(steps, revealCallback) {
-  return [
-    { delay: 300,  fn: () => steps[0].classList.add('in', 'active') },
-    { delay: 1100, fn: () => { steps[0].classList.remove('active'); steps[0].classList.add('done'); } },
-    { delay: 1300, fn: () => steps[1].classList.add('in', 'active') },
-    { delay: 2100, fn: () => { steps[1].classList.remove('active'); steps[1].classList.add('done'); } },
-    { delay: 2300, fn: () => steps[2].classList.add('in', 'active') },
-    { delay: 3100, fn: () => { steps[2].classList.remove('active'); steps[2].classList.add('done'); } },
-    { delay: 3300, fn: () => steps[3].classList.add('in', 'active') },
-    { delay: 4200, fn: () => { steps[3].classList.remove('active'); steps[3].classList.add('done'); } },
-    { delay: 4800, fn: revealCallback },
-  ];
-}
-
-function playSmallCard(id) {
-  const card = document.getElementById('card-' + id);
-  if (!card) return;
-  card.classList.add('expanded');
-  const steps = card.querySelectorAll('.sc-step');
-  const foot = card.querySelector('.sc-engine-foot');
-  steps.forEach(s => s.classList.remove('in', 'active', 'done'));
-  if (foot) foot.classList.remove('in');
-  buildTimings(steps, () => foot && foot.classList.add('in'))
-    .forEach(({ delay, fn }) => setTimeout(fn, delay));
-  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function hideSmallCard(id) {
-  const card = document.getElementById('card-' + id);
-  if (!card) return;
-  card.classList.remove('expanded');
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
 // ═══════════════════════════════════════════════════════════════════
