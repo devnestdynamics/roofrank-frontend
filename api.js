@@ -46,7 +46,12 @@ async function apiFetch(path, opts = {}, retry = true) {
     },
   });
 
-  if (res.status === 401 && retry) {
+  // The 401-redirect interceptor only applies when we attached a token —
+  // i.e. an authenticated call whose token was rejected. For unauth'd
+  // calls (no token attached, e.g. /auth/login on the login page), let
+  // the 401 fall through to the normal error throw so the caller can
+  // surface its own message (BUG-003: wrong-password silent redirect).
+  if (res.status === 401 && retry && token) {
     const refreshToken = Auth.getRefresh();
     if (refreshToken) {
       if (!_refreshPromise) {
