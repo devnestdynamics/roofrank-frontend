@@ -849,11 +849,18 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   </div>
 </section>
 
-<!-- METRICS — verdict-first scoring engine, tied to 58 Laighton from the brief above -->
+<!-- METRICS — verdict-first scoring engine, tied to the live top deal that
+     the hero receipt above also features. Static fallback values are
+     accurate to the current top Worcester Strong Buy (139 Vernon St) at
+     commit time; the hero-receipt fetch will swap in fresher values for
+     verdict/score/address/CoC/Price-per-Unit when it lands.
+     The Cap Rate / NOI / DSCR / GRM chips remain illustrative — the
+     /feed/public endpoint doesn't surface those today; full breakdown is
+     on the deal page post-signup. -->
 <section id="metrics" style="background:var(--cream)">
   <div class="inner">
     <div class="eyebrow fade-up" style="text-align:center">The Scoring Engine</div>
-    <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Why 58 Laighton<br><em>scored a Strong Buy.</em></h2>
+    <h2 class="section-h2 fade-up" style="text-align:center;margin-left:auto;margin-right:auto">Why <span id="mxAddrShort">139 Vernon</span><br><em>scored a Strong Buy.</em></h2>
 
     <div class="metrics-engine">
       <div class="metrics-verdict fade-up" style="transition-delay:.1s">
@@ -863,9 +870,9 @@ footer{background:var(--ink);padding:4rem 0 2rem}
           <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
           <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
         </svg>
-        <div class="metrics-verdict-tier">Strong Buy</div>
-        <div class="metrics-verdict-score">87 / 100</div>
-        <div class="metrics-verdict-addr">58 Laighton St · Lynn</div>
+        <div class="metrics-verdict-tier" id="mxVerdict">Strong Buy</div>
+        <div class="metrics-verdict-score" id="mxScore">92 / 100</div>
+        <div class="metrics-verdict-addr" id="mxAddr">139 Vernon St · Worcester</div>
       </div>
 
       <!-- Definition display — default is the section caption; morphs to active metric definition on hover/tap -->
@@ -876,32 +883,32 @@ footer{background:var(--ink);padding:4rem 0 2rem}
       <div class="metrics-chips">
         <div class="metric-chip fade-up" style="transition-delay:.55s" data-tip="Annual pre-tax cash flow ÷ cash invested" aria-label="Cash-on-Cash: Annual pre-tax cash flow ÷ cash invested">
           <div class="metric-chip-name">Cash-on-Cash</div>
-          <div class="metric-chip-val">11.4%</div>
+          <div class="metric-chip-val" id="mxCoc">19.2%</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:.63s" data-tip="NOI ÷ purchase price" aria-label="Cap Rate: NOI ÷ purchase price">
           <div class="metric-chip-name">Cap Rate</div>
-          <div class="metric-chip-val">8.3%</div>
+          <div class="metric-chip-val">8.0%</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:.71s" data-tip="Effective gross income minus operating expenses" aria-label="NOI: Effective gross income minus operating expenses">
           <div class="metric-chip-name">NOI</div>
-          <div class="metric-chip-val">$24.5K</div>
+          <div class="metric-chip-val">$40K</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:.79s" data-tip="NOI ÷ annual debt service. Lenders typically require ≥ 1.25" aria-label="DSCR: NOI ÷ annual debt service. Lenders typically require ≥ 1.25">
           <div class="metric-chip-name">DSCR</div>
-          <div class="metric-chip-val">1.47</div>
+          <div class="metric-chip-val">1.41</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:.87s" data-tip="Price ÷ annual gross rent. Quick overpay check" aria-label="GRM: Price ÷ annual gross rent">
           <div class="metric-chip-name">GRM</div>
-          <div class="metric-chip-val">8.2×</div>
+          <div class="metric-chip-val">8.3×</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:.95s" data-tip="Total acquisition cost ÷ number of units, market-calibrated" aria-label="Price per Unit">
           <div class="metric-chip-name">Price/Unit</div>
-          <div class="metric-chip-val">$161K</div>
+          <div class="metric-chip-val" id="mxPpu">$167K</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
         <div class="metric-chip fade-up" style="transition-delay:1.03s" data-tip="Capital reserve estimate based on year built, roof, HVAC, 10-yr hold" aria-label="CapEx Reserve">
@@ -911,7 +918,7 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         </div>
         <div class="metric-chip fade-up" style="transition-delay:1.11s" data-tip="Walk score, schools, crime, rent-growth trajectory by ZIP" aria-label="Neighborhood Grade">
           <div class="metric-chip-name">Neighborhood</div>
-          <div class="metric-chip-val">A−</div>
+          <div class="metric-chip-val">B+</div>
           <div class="metric-chip-check"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></div>
         </div>
       </div>
@@ -1130,12 +1137,28 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         : `$${Math.round(best.price / 1000)}K`;
 
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      // Hero receipt
       set('hrVerdict', best.verdict);
       set('hrAddr', shortAddr);
       set('hrScore', `${best.score}/100`);
       set('hrCf', `$${best.monthlyCashflow.toLocaleString()}`);
       set('hrCoc', `${best.coc}% CoC`);
       set('hrFoot', `at today's Freddie rate · ${best.units} units · ${priceStr}`);
+
+      // "Why X scored a Strong Buy" metrics section — keeps the case-study
+      // anchored to the same live deal as the receipt above. Cap Rate / NOI
+      // / DSCR / GRM stay static (illustrative — not exposed by /public).
+      const streetOnly = parts[0];               // "139 Vernon St"
+      const cityOnly   = parts[1] || best.city;  // "Worcester"
+      set('mxAddrShort', streetOnly.replace(/\s+(St|Ave|Rd|Blvd|Ln|Pl|Pk|Ct|Dr|Hwy|Way|Ter|Sq)\b\.?/i, ''));
+      set('mxVerdict', best.verdict);
+      set('mxScore', `${best.score} / 100`);
+      set('mxAddr', `${streetOnly} · ${cityOnly}`);
+      set('mxCoc', `${best.coc}%`);
+      if (best.units) {
+        const ppu = best.price / best.units;
+        set('mxPpu', ppu >= 1e6 ? `$${(ppu/1e6).toFixed(2)}M` : `$${Math.round(ppu/1000)}K`);
+      }
 
       const receipt = document.getElementById('heroReceipt');
       if (receipt) {
