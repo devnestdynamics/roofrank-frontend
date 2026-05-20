@@ -2607,3 +2607,100 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 - Easier to A/B test usage and trim if it underperforms.
 
 **Re-evaluate when:** After Dashboard V1 lands (next session) and BUG-004 (stale deals) is fixed so the signal data is trustworthy.
+
+---
+
+### 192. Watchlist page audit + hero-DNA pass
+
+**Why:** `roofrank-watchlist.html` is the second-most-visited daily surface after Today. Probably has its own visual language that hasn't been brought in line with the new `.hero-deal` / `.rmark` system that landing + onboarding + dashboard now share. If watched deals are presented with a different DNA than the dashboard cards, users feel two products instead of one.
+
+**Plan:**
+1. Read the file end-to-end; document the current layout (header, list format, empty state, sort/filter UI, signals strip).
+2. Identify all places using non-canonical visual tokens (different card chrome, different score renderings, different verdict styling).
+3. Apply the same simplification lens used on dashboard V1: cut visual languages, promote signals (score shifts + price drops on watched deals), reuse the hero pattern for the "lead" watched deal if there is one.
+4. Ensure RankMark is the sole scoring icon.
+5. Update any related tests (`feed.spec.ts` might or might not cover watchlist).
+
+**Estimated:** 3-4 hours including tests.
+
+**Re-evaluate when:** Before any launch push that drives signups — watchlist is a daily retention surface.
+
+---
+
+### 193. Analyst chat — wire backend or label "Coming soon"
+
+**Why:** `roofrank-analyst.html` is in the bottom nav as a primary tab. The frontend chat UI is built, but backend `/ai/analyst` endpoint is noted as "not wired yet" in code comments. Today users tap Analyst and either get nothing or a stub error. That's a broken UX promise.
+
+**Two options:**
+- **(a) Wire it.** OpenAI or Anthropic API call with system prompt + deal context. Probably 1-2 days for MVP (rate limiting, cost tracking, conversation persistence, deal-context injection). Pro feature per pricing.
+- **(b) Label it.** Add a "Coming soon" badge on the tab + an inline message on the page ("AI analyst chat ships in Pro, coming this month"). 30 min. Honest about the gap.
+
+**Decision driver:** if Pro is launching this quarter, ship (a). If it's a Q3+ feature, ship (b) and put the Analyst tab behind a "Coming soon" pill so users don't repeatedly tap a dead link.
+
+**Re-evaluate when:** Pro launch sequencing is decided.
+
+---
+
+### 194. Pricing page design audit
+
+**Why:** `roofrank-pricing.html` exists but hasn't been reviewed with the same UX lens used on landing/onboarding/dashboard. Per the recent inconsistency review, its CONTENT disagrees with the landing tier section (Starter limits etc.). DESIGN audit is separate from content fix — does the page itself feel like the same product? Does it use the canonical typographic tokens, colors, and patterns? Are the plan cards clean or busy?
+
+**Plan:**
+1. Read top-to-bottom. Note typography, color usage, card chrome consistency with landing.
+2. Run the same A+/B+/C scoring with specific items.
+3. Recommend trims. The FAQ at the bottom is probably long — does it need to be? Could 2-3 inline tooltips on the price cards replace it?
+4. Verify the page handles a logged-in user correctly (don't show "Get Started Free" if they're already on Pro).
+5. Cross-check pricing data matches the post-#194 source of truth (logged separately as the pricing-consistency item).
+
+**Estimated:** 1-2 hours.
+
+**Re-evaluate when:** Before driving any paid acquisition or upgrade-link traffic to it.
+
+---
+
+### 195. Account / billing / settings surfaces audit
+
+**Why:** Boring but real. When a Starter user clicks the dashboard's `Upgrade` link, do they actually reach a working Stripe checkout? Can they cancel? Where do they update their email or password? Is there a settings page at all? These all live (or should live) somewhere — the "More" tab on the bottom nav opens a sheet but I haven't traced what's inside.
+
+**Plan:**
+1. Map every "More" / account-link path. Document what page they go to (or don't).
+2. Specifically verify: upgrade flow, cancel flow, email change, password change, log out, delete account.
+3. If any are missing/broken, prioritize: upgrade > log out > cancel > everything else.
+4. For each existing surface, run the brand-DNA check (typography, RankMark, page chrome).
+
+**Estimated:** Variable. Audit ~2 hours; fixes could be hours to days depending on findings.
+
+**Re-evaluate when:** Before any acquisition push or before the first Pro upgrade attempt.
+
+---
+
+### 196. Empty + error states sweep
+
+**Why:** We've fixed some empty/error states ad-hoc but haven't done a deliberate sweep. Loading skeletons, network failures, "no deals in this market," 401/403/500 responses, slow API calls — every page has these states and most are unstyled or absent.
+
+**Plan:**
+1. Per page, deliberately trigger: loading state (throttle network), empty state (filter to zero results), error state (kill backend), unauthorized state (clear token).
+2. Document what happens in each scenario.
+3. Designate canonical patterns: loading = skeleton matching the final layout, empty = sage-bordered card with action-CTA, error = same with retry button.
+4. Apply to landing, onboarding, dashboard, watchlist, deal-detail, analyst, pricing.
+
+**Estimated:** 1 day across all surfaces.
+
+**Re-evaluate when:** After any major page refactor — easier to do once than per-page.
+
+---
+
+### 197. Mobile testing on real devices
+
+**Why:** All recent design work was done in DevTools at 430px viewport (iPhone 14 Pro Max). Real Safari iOS, real Chrome Android, real older devices can surprise. Tap targets, scroll inertia, sticky positioning, viewport units, font rendering — DevTools approximates but doesn't replicate.
+
+**Plan:**
+1. Get hands on: an iPhone (any model from last 3 years), an Android (Pixel or Samsung), an iPad if possible.
+2. Visit landing → onboarding → magic-link inbox → dashboard happy path.
+3. Verify: tap targets ≥44px, sticky CTA doesn't drift on scroll, hero card padding looks right, RankMark renders crisply at 1x and 2x DPI, keyboard doesn't cover important UI.
+4. Test the analyst chat input keyboard behavior specifically — historically painful on mobile.
+5. Document findings per device per page.
+
+**Estimated:** 2-3 hours including writeup.
+
+**Re-evaluate when:** Before any launch. Ideally tested AFTER #193 (analyst) is decided so we know what to test on the Analyst tab.
