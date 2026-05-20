@@ -390,12 +390,15 @@ const MARKETS = [
 ];
 
 // Trim backend's full address ("58 Laighton St, Lynn, MA 01902") to the
-// short format the UI uses ("58 Laighton St, Lynn"). Backend returns the
-// full address for accuracy; this is purely a display concern.
-function shortAddress(full) {
-  if (!full) return '';
+// short format the UI uses ("58 Laighton St, Lynn"). Real ingested deals
+// include city in the address string; seed deals don't, so we fall back
+// to the deal's separate `city` field to guarantee the user always sees
+// which market the property is in.
+function shortAddress(full, fallbackCity) {
+  if (!full) return fallbackCity || '';
   const parts = full.split(',').map(p => p.trim()).filter(Boolean);
-  return parts.length >= 2 ? `${parts[0]}, ${parts[1]}` : full;
+  if (parts.length >= 2) return `${parts[0]}, ${parts[1]}`;
+  return fallbackCity ? `${parts[0]}, ${fallbackCity}` : parts[0];
 }
 
 // Default analyst note shown when backend hasn't populated one yet
@@ -466,7 +469,7 @@ async function selectMarket(id) {
     State.deals = (feed.deals || []).map((d, idx) => ({
       ...d,
       featured: d.featured === true || idx === 0,
-      address: shortAddress(d.address),
+      address: shortAddress(d.address, d.city),
       analystNote: d.analystNote || PENDING_ANALYST_NOTE,
       // Backend sometimes returns null tax/rent until propertyData is enriched.
       // Replace nulls with generic strings so the W8 animation reads clean.
@@ -480,8 +483,6 @@ async function selectMarket(id) {
     document.getElementById('briefText').innerHTML = State.brief;
     document.getElementById('feedCount').textContent = `${State.deals.length} deal${State.deals.length === 1 ? '' : 's'}`;
     renderDealList();
-    // Auto-trigger W8 animation after panel render — only if we have a featured tile to play.
-    if (State.deals.length > 0) setTimeout(playFeaturedEngine, 600);
   } catch (err) {
     console.error('[onboard] feed load failed', err);
     document.getElementById('briefText').innerHTML = '<em style="color:rgba(255,255,255,.55)">Couldn\'t load deals — try again or pick another market.</em>';
@@ -500,16 +501,14 @@ function renderDealList() {
 }
 
 function renderFeaturedTile(deal) {
+  // W8 "scoring live" engine intentionally not rendered here. The brief above
+  // the tile already tells the user which deal leads and why; the engine on
+  // this screen was redundant and read as "pending — we won't show you"
+  // when the underlying data wasn't fully enriched yet. The deeper engine
+  // animation still lives on the deal-detail page post-signup.
   return `
     <div class="featured-tile" id="featTile" data-label="TOP PICK · ${deal.address.toUpperCase()}" onclick="triggerSignup('open-deal', '${deal.id}')">
-      <div class="ft-engine">
-        <div class="ft-engine-label">Scoring live · pulling fresh data</div>
-        <div class="ft-step" data-step="0"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling Freddie Mac mortgage rate</span><span class="ft-step-val">${deal.scoring.rate}</span></div>
-        <div class="ft-step" data-step="1"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling ATTOM property tax</span><span class="ft-step-val">${deal.scoring.tax}</span></div>
-        <div class="ft-step" data-step="2"><span class="ft-step-dot"></span><span class="ft-step-label">Pulling per-unit rents (HUD)</span><span class="ft-step-val">${deal.scoring.rent}</span></div>
-        <div class="ft-step analyst" data-step="3"><span class="ft-step-dot"></span><span class="ft-step-label">Analyst take</span><span class="ft-step-val">${escapeHtml(deal.analystNote)}</span></div>
-      </div>
-      <div class="ft-reveal" id="ftReveal">
+      <div class="ft-reveal in" id="ftReveal">
         <div class="ft-verdict-row">
           <div class="ft-verdict-circle"><div class="ft-verdict-num">${deal.score}</div><div class="ft-verdict-of">/ 100</div></div>
           <div class="ft-verdict-info"><div class="ft-verdict-tier">${deal.verdict}</div><div class="ft-verdict-meta">${deal.units} units · ${fmtPrice(deal.price)} · listed ${deal.daysListed} days ago</div></div>
@@ -521,10 +520,6 @@ function renderFeaturedTile(deal) {
         </div>
         <div class="ft-foot">
           <span class="ft-foot-meta"><span class="ft-foot-meta-dot"></span>at today's Freddie rate</span>
-          <span style="display:flex;gap:.35rem">
-            <button class="ft-replay" onclick="event.stopPropagation();playFeaturedEngine()">↻ replay</button>
-            <button class="ft-replay" onclick="event.stopPropagation();toggleFeatEngine()" id="featToggleBtn">↑ hide scoring</button>
-          </span>
         </div>
       </div>
     </div>
@@ -591,29 +586,6 @@ function buildTimings(steps, revealCallback) {
     { delay: 4200, fn: () => { steps[3].classList.remove('active'); steps[3].classList.add('done'); } },
     { delay: 4800, fn: revealCallback },
   ];
-}
-
-function playFeaturedEngine() {
-  const tile = document.getElementById('featTile');
-  if (!tile) return;
-  tile.classList.remove('engine-hidden');
-  const btn = document.getElementById('featToggleBtn');
-  if (btn) btn.textContent = '↑ hide scoring';
-
-  const steps = tile.querySelectorAll('.ft-step');
-  const reveal = document.getElementById('ftReveal');
-  steps.forEach(s => s.classList.remove('in', 'active', 'done'));
-  if (reveal) reveal.classList.remove('in');
-  buildTimings(steps, () => reveal && reveal.classList.add('in'))
-    .forEach(({ delay, fn }) => setTimeout(fn, delay));
-}
-
-function toggleFeatEngine() {
-  const tile = document.getElementById('featTile');
-  const btn = document.getElementById('featToggleBtn');
-  if (!tile || !btn) return;
-  const hidden = tile.classList.toggle('engine-hidden');
-  btn.textContent = hidden ? '↓ show scoring' : '↑ hide scoring';
 }
 
 function playSmallCard(id) {
