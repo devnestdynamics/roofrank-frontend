@@ -2996,6 +2996,28 @@ This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate 
 
 ---
 
+### 208. Photos — DEFERRED · launching without them
+
+**Status:** 🟢 Deferred to post-launch (decision locked 2026-05-21).
+
+**Decision context:** Every legitimate MLS-photo feed (ATTOM photo tier, SimplyRETS, ListHub, MLS Grid, direct broker feed) requires broker sponsorship in MA. Ali confirmed this with both ATTOM ("MLS feeds with photos require you to be a broker/realtor in the markets") and RentCast. Without a broker sponsor, every photo path is blocked at the same gate. Google Street View Static API was rejected earlier (resolves to neighboring buildings — validated on Ali's own house).
+
+**Launch posture:** Ship without photos. Own the absence in the UX instead of hiding it:
+- Deal-detail page renders a "View listing & photos on Zillow" CTA card in the slot where photos would be, with positioning copy: "We focus on the math — the listing's where the photos live." (frontend commit lands with this entry).
+- Landing hero tag: "Multifamily · 2–6 units · Numbers first, photos one click away" — explicit positioning that photos are external by design.
+
+**Post-launch paths (in priority order if/when we find a broker):**
+1. **Broker partnership** — a sponsoring broker authorizes RoofRank to use their MLS credentials. Then ANY of the photo vendors unlocks. Operationally a 1-2 week sales cycle. Targets: an investment-focused broker, a PropTech-friendly MA brokerage, or a personal connection.
+2. **Ali gets his MA real-estate license** — ~40 hours of class + ~$400 + exam. Then he IS the sponsor. Long-term ownership but real time commitment.
+
+When either path lands, the photo strip on deal-detail flips from the no-photos CTA to actual images automatically (the render code checks `listingData.photos` first; the CTA only renders when the array is empty).
+
+Closes / supersedes:
+- Item #198 photos investigation
+- Earlier SimplyRETS / ListHub eval threads
+
+---
+
 ### 207. ATTOM API key returning 401 in prod — enrichment is silently failing
 
 **Status:** 🔴 Critical · data quality regression in prod.
