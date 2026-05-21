@@ -98,11 +98,16 @@ nav.top{
 .hero{text-align:left; padding-top:1.25rem}
 .hero-ring-wrap{display:none}  /* legacy centered wrap — replaced by .dd-hero-head */
 
-.dd-hero-head{display:flex;align-items:center;gap:.95rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.dd-hero-head{display:flex;align-items:flex-start;gap:.95rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.dd-hero-rmark-col{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.4rem}
 .dd-hero-head .hero-rmark{flex-shrink:0;width:72px}
 .dd-hero-head .hero-rmark svg{width:72px;height:72px}
 .dd-hero-head .hero-rmark-num{font-size:1.45rem}
 .dd-hero-head .hero-rmark-out{font-size:.55rem;color:var(--faint);margin-top:1px}
+/* "How is this calculated?" — small inline hint attached to the score
+   it explains, not dangling at the bottom of the hero. */
+.hero-rmark-hint{background:none;border:none;padding:0;font-family:var(--mono);font-size:.6rem;color:var(--muted);cursor:pointer;letter-spacing:.04em;text-align:center;line-height:1.3;max-width:84px}
+.hero-rmark-hint:hover{color:var(--forest)}
 .dd-hero-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
 .dd-hero-info .hero-signal{display:inline-flex;align-items:center;align-self:flex-start;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:5px;line-height:1;margin:0}
 .dd-hero-info .hero-signal.sb{background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest)}
@@ -838,15 +843,18 @@ nav.top{
        wow doesn't get pushed below the fold when photos render. -->
   <section class="hero">
     <div class="dd-hero-head">
-      <div class="hero-rmark" id="heroRmark" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
-        <svg viewBox="0 0 40 40" aria-hidden="true">
-          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
-          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
-          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
-          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
-        </svg>
-        <div class="hero-rmark-num" id="hrNum">—</div>
-        <div class="hero-rmark-out">/ 100</div>
+      <div class="dd-hero-rmark-col">
+        <div class="hero-rmark" id="heroRmark" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+          </svg>
+          <div class="hero-rmark-num" id="hrNum">—</div>
+          <div class="hero-rmark-out">/ 100</div>
+        </div>
+        <button type="button" class="hero-rmark-hint" onclick="openScoreExplain()">How is this scored? ›</button>
       </div>
       <div class="dd-hero-info">
         <span class="hero-signal" id="heroSignal">—</span>
@@ -892,11 +900,8 @@ nav.top{
       </a>
     </div>
 
-    <button type="button" class="hero-explain-link" onclick="openScoreExplain()">
-      How is this calculated?
-      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-    </button>
-
+    <!-- "How is this calculated?" moved up next to the RankMark in the
+         head row — it explains the score, so it should live next to it. -->
     <div class="hero-badges" id="heroBadges"></div>
   </section>
 

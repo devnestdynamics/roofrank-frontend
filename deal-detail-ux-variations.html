@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deal-detail UX variations — 5 mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- 6 phone frames (current + 5 variations) showing the deal-detail
+     hero region with the same data (40 Hamilton Ave, Lynn). Static
+     mockups — not wired to backend. -->
+
+<style>
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030; --amber:#a06a00;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --r:10px; --r-lg:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#3a3e39;font-family:var(--sans);color:#fff;min-height:100vh}
+.page-head{max-width:1400px;margin:0 auto;padding:2rem 1.5rem 1.5rem}
+.page-head h1{font-family:var(--serif);font-size:1.7rem;font-weight:500;margin-bottom:.35rem;letter-spacing:-.01em}
+.page-head p{color:rgba(255,255,255,.65);font-size:.92rem;line-height:1.55;max-width:620px}
+.grid{max-width:1400px;margin:0 auto;padding:0 1.5rem 3rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:2.25rem}
+
+/* per-variation card wrapper */
+.vcard{display:flex;flex-direction:column;gap:.95rem}
+.vlabel{padding:0 .35rem}
+.vlabel-num{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.18em;color:var(--sage);text-transform:uppercase;margin-bottom:.35rem;display:block}
+.vlabel-title{font-family:var(--serif);font-size:1.15rem;font-weight:500;margin-bottom:.35rem;letter-spacing:-.01em}
+.vlabel-desc{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.55}
+.vlabel-tradeoff{font-family:var(--mono);font-size:.68rem;color:var(--sage);margin-top:.4rem;letter-spacing:.04em}
+
+/* phone frame */
+.phone{background:var(--cream);border-radius:22px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.4);max-width:430px}
+.phone-inner{background:var(--cream);min-height:760px;position:relative;color:var(--ink);font-size:14px;line-height:1.55;padding-bottom:84px}
+
+/* shared deal-detail bits — scoped under .pi to avoid leaking */
+.pi{color:var(--ink);font-family:var(--sans)}
+.pi-topnav{display:flex;align-items:center;gap:.65rem;padding:.95rem 1.1rem .55rem;background:var(--cream)}
+.pi-topnav-back{width:30px;height:30px;border-radius:50%;background:var(--white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;font-size:.95rem}
+.pi-topnav-addr{font-family:var(--mono);font-size:.78rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.pi-topnav-icon{width:32px;height:32px;border-radius:8px;background:var(--white);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pi-topnav-export{font-family:var(--sans);font-size:.74rem;font-weight:600;color:#fff;background:var(--forest);border:none;padding:.4rem .75rem;border-radius:7px;flex-shrink:0}
+
+.pi-photo-4x3{aspect-ratio:4/3;background:#444 center/cover no-repeat;position:relative}
+.pi-photo-16x9{aspect-ratio:16/9;background:#444 center/cover no-repeat;position:relative}
+.pi-photo-badge{position:absolute;top:.7rem;right:.85rem;background:rgba(28,31,28,.78);color:#fff;font-family:var(--mono);font-size:.62rem;font-weight:500;padding:.22rem .55rem;border-radius:5px;letter-spacing:.04em;backdrop-filter:blur(4px)}
+.pi-thumbs-strip{display:flex;gap:.4rem;padding:.55rem 1.1rem 0}
+.pi-thumb{flex:1;aspect-ratio:1;border-radius:7px;background:#555 center/cover no-repeat;border:1px solid var(--border)}
+
+.pi-hero{padding:1rem 1.1rem 1.25rem}
+.pi-head{display:flex;align-items:center;gap:.85rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(--cream-3)}
+.pi-rmark{flex-shrink:0;width:64px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.pi-rmark svg{width:64px;height:64px;display:block;overflow:visible}
+.pi-rmark .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest-3)}
+.pi-rmark .mk-floor-1{fill:var(--sage);opacity:.55}
+.pi-rmark .mk-floor-2{fill:var(--sage);opacity:.9}
+.pi-rmark .mk-floor-3{fill:var(--forest-3);opacity:1}
+.pi-rmark-num{font-family:var(--mono);font-size:1.3rem;font-weight:500;color:var(--forest-3);line-height:1;margin-top:2px}
+.pi-rmark-out{font-family:var(--mono);font-size:.55rem;color:var(--faint);letter-spacing:.04em}
+.pi-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.pi-verdict{align-self:flex-start;font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest-3);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18);padding:3px 8px;border-radius:5px;line-height:1}
+.pi-addr{font-family:var(--serif);font-size:1.15rem;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-.01em}
+.pi-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.4}
+
+.pi-cf{background:var(--forest);color:#fff;border-radius:12px;padding:1.15rem 1.15rem;position:relative;overflow:hidden}
+.pi-cf::before{content:'';position:absolute;top:-40%;right:-20%;width:200px;height:200px;pointer-events:none;background:radial-gradient(circle,rgba(122,170,143,.18),transparent 65%)}
+.pi-cf-label{font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.4rem;position:relative}
+.pi-cf-val{font-family:var(--serif);font-size:2.4rem;font-weight:400;line-height:1;color:#fff;margin-bottom:.4rem;position:relative}
+.pi-cf-val .u{font-size:.95rem;color:rgba(255,255,255,.55);margin-left:.25rem}
+.pi-cf-sub{font-size:.82rem;color:rgba(255,255,255,.78);position:relative;line-height:1.5}
+.pi-cf-sub b{color:#fff;font-weight:600}
+
+.pi-fresh{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.45rem;margin-top:.9rem}
+.pi-fresh-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:pulse 1.8s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.pi-price{display:flex;align-items:baseline;gap:.5rem;margin-top:.95rem;flex-wrap:wrap;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.pi-price-amt{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--ink)}
+.pi-price-lbl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.pi-loc{display:flex;align-items:center;gap:.4rem;margin-top:.65rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.pi-loc a{color:var(--forest);text-decoration:none}
+.pi-explain{display:inline-flex;align-items:center;gap:.3rem;background:none;border:none;padding:0;margin-top:.7rem;font-family:var(--mono);font-size:.68rem;color:var(--muted);cursor:pointer;letter-spacing:.02em}
+
+/* Bottom nav */
+.pi-bnav{position:absolute;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:.55rem .5rem .8rem;display:flex;justify-content:space-around;align-items:center}
+.pi-bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--muted);text-decoration:none;font-size:.6rem;font-weight:500;letter-spacing:.04em;padding:.3rem 0;font-family:var(--sans)}
+.pi-bn-tab.active{color:var(--forest)}
+.pi-bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* V4 — chip score (replaces .pi-head's RankMark with inline chip) */
+.pi-head-chip{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(--cream-3)}
+.pi-score-chip{display:inline-flex;align-items:center;gap:.45rem;background:var(--white);border:1.5px solid var(--sage-border);padding:.35rem .7rem;border-radius:20px;flex-shrink:0}
+.pi-score-chip-num{font-family:var(--mono);font-size:.95rem;font-weight:600;color:var(--forest-3);line-height:1}
+.pi-score-chip-divider{color:var(--faint);font-size:.7rem}
+.pi-score-chip-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest-3);line-height:1}
+.pi-addr-only{font-family:var(--serif);font-size:1.2rem;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-.01em;flex:1;min-width:0}
+
+/* V3 — sticky top bar */
+.pi-sticky-top{position:sticky;top:0;background:rgba(247,244,239,.94);backdrop-filter:blur(10px);z-index:5;border-bottom:1px solid var(--border)}
+
+/* V5 — dual-action footer (replaces bnav on this page) */
+.pi-dual{position:absolute;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:.8rem .95rem 1rem;display:flex;gap:.55rem}
+.pi-dual-save{flex:0 0 auto;background:var(--white);color:var(--forest);border:1.5px solid var(--sage-border);font-family:var(--sans);font-weight:600;font-size:.85rem;padding:.7rem 1rem;border-radius:9px;display:inline-flex;align-items:center;gap:.4rem}
+.pi-dual-primary{flex:1;background:var(--forest);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:.9rem;padding:.7rem 1rem;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+
+.fade{color:rgba(28,31,28,.45)}
+.note{padding:1rem 1.1rem;color:var(--muted);font-size:.74rem;font-style:italic;border-top:1px dashed var(--cream-3);margin-top:.5rem}
+
+.mockup-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;color:var(--sage);background:rgba(122,170,143,.15);border:1px solid rgba(122,170,143,.3);padding:3px 9px;border-radius:5px;display:inline-block;margin-bottom:.4rem;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Deal-detail · 5 UX variations</h1>
+  <p>Mocked against 40 Hamilton Ave, Lynn (BUY · 68 · +$1,955/mo). Compare against the current shipped version on the top-left, then pick the ones to ship.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CURRENT (reference)
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">Current · live in prod</span>
+      <div class="vlabel-title">As shipped</div>
+      <div class="vlabel-desc">Photos 4:3 · horizontal hero head · cashflow above the fold · 5-tab bottom nav.</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <div class="pi-topnav-icon">♡</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-4x3" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/600')">
+            <div class="pi-photo-badge">Demo · 3 photos</div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head">
+              <div class="pi-rmark">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <div class="pi-rmark-num">68</div>
+                <div class="pi-rmark-out">/ 100</div>
+              </div>
+              <div class="pi-info">
+                <span class="pi-verdict">Buy</span>
+                <div class="pi-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+                <div class="pi-meta">3 Units · Multi-Family · Built 1918 · 13d on market</div>
+              </div>
+            </div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · at today's Freddie rate (6.50%)</div>
+            <div class="pi-price"><span class="pi-price-lbl">Asking</span><span class="pi-price-amt">$1M</span><span>· $333K / unit</span></div>
+            <div class="pi-loc"><span>📍</span><a href="#">View on map</a></div>
+            <button class="pi-explain">How is this calculated? ›</button>
+          </div>
+        </div>
+        <nav class="pi-bnav">
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg><span>Today</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg><span>Watching</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>+</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg><span>Analyst</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       V1 — Shorter photos (16:9)
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">V1 · Shorter photos</span>
+      <div class="vlabel-title">16:9 photos instead of 4:3</div>
+      <div class="vlabel-desc">Single change: reduce photo aspect ratio. Saves ~120px of vertical real estate, so cashflow lands even higher on first scroll.</div>
+      <div class="vlabel-tradeoff">Tradeoff: less photo impact</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <div class="pi-topnav-icon">♡</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-16x9" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/450')">
+            <div class="pi-photo-badge">Demo · 3 photos</div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head">
+              <div class="pi-rmark">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <div class="pi-rmark-num">68</div>
+                <div class="pi-rmark-out">/ 100</div>
+              </div>
+              <div class="pi-info">
+                <span class="pi-verdict">Buy</span>
+                <div class="pi-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+                <div class="pi-meta">3 Units · Multi-Family · Built 1918 · 13d</div>
+              </div>
+            </div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · at today's Freddie rate (6.50%)</div>
+            <div class="pi-price"><span class="pi-price-lbl">Asking</span><span class="pi-price-amt">$1M</span><span>· $333K / unit</span></div>
+            <div class="pi-loc"><span>📍</span><a href="#">View on map</a></div>
+            <button class="pi-explain">How is this calculated? ›</button>
+          </div>
+        </div>
+        <nav class="pi-bnav">
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg><span>Today</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg><span>Watching</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>+</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg><span>Analyst</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       V2 — Hero photo + thumbnail strip
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">V2 · Hero + thumbnails</span>
+      <div class="vlabel-title">One hero photo + 4 thumbnails below</div>
+      <div class="vlabel-desc">Replaces horizontal-scroll photo carousel with one anchor photo + a row of smaller tappable thumbs. Same total height, all photos visible.</div>
+      <div class="vlabel-tradeoff">Tradeoff: each thumbnail is small</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <div class="pi-topnav-icon">♡</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-16x9" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/450')">
+            <div class="pi-photo-badge">1 / 5</div>
+          </div>
+          <div class="pi-thumbs-strip">
+            <div class="pi-thumb" style="background-image:url('https://picsum.photos/seed/40hamilton-2/200/200')"></div>
+            <div class="pi-thumb" style="background-image:url('https://picsum.photos/seed/40hamilton-3/200/200')"></div>
+            <div class="pi-thumb" style="background-image:url('https://picsum.photos/seed/40hamilton-4/200/200')"></div>
+            <div class="pi-thumb" style="background-image:url('https://picsum.photos/seed/40hamilton-5/200/200')"></div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head">
+              <div class="pi-rmark">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <div class="pi-rmark-num">68</div>
+                <div class="pi-rmark-out">/ 100</div>
+              </div>
+              <div class="pi-info">
+                <span class="pi-verdict">Buy</span>
+                <div class="pi-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+                <div class="pi-meta">3 Units · Multi-Family · Built 1918 · 13d</div>
+              </div>
+            </div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · 6.50% Freddie rate</div>
+          </div>
+        </div>
+        <nav class="pi-bnav">
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg><span>Today</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg><span>Watching</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>+</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg><span>Analyst</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       V3 — Sticky top with Save/Export
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">V3 · Sticky top bar</span>
+      <div class="vlabel-title">Address + Save + Export stick while scrolling</div>
+      <div class="vlabel-desc">Mobile blur-backdrop sticky header. The address, ♡ Save and Export buttons stay reachable while the user scrolls through the analyst card / cash flow waterfall / score breakdown below.</div>
+      <div class="vlabel-tradeoff">Tradeoff: more visual chrome at top</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav pi-sticky-top">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <div class="pi-topnav-icon">♡</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-4x3" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/600')">
+            <div class="pi-photo-badge">Demo · 3 photos</div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head">
+              <div class="pi-rmark">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <div class="pi-rmark-num">68</div>
+                <div class="pi-rmark-out">/ 100</div>
+              </div>
+              <div class="pi-info">
+                <span class="pi-verdict">Buy</span>
+                <div class="pi-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+                <div class="pi-meta">3 Units · Multi-Family · Built 1918 · 13d</div>
+              </div>
+            </div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · at today's Freddie rate (6.50%)</div>
+            <div class="note">↓ Top bar stays visible as user scrolls through Analyst card, Cash flow waterfall, Score breakdown…</div>
+          </div>
+        </div>
+        <nav class="pi-bnav">
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg><span>Today</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg><span>Watching</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>+</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg><span>Analyst</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       V4 — Score chip instead of RankMark icon
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">V4 · Chip score</span>
+      <div class="vlabel-title">Inline score chip — no RankMark icon</div>
+      <div class="vlabel-desc">Score becomes a tiny inline pill ("68 · BUY"). Address gets the full width. Saves another ~50px above the fold. Most aggressive compression.</div>
+      <div class="vlabel-tradeoff">Tradeoff: loses the iconic Deckers visual</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <div class="pi-topnav-icon">♡</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-4x3" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/600')">
+            <div class="pi-photo-badge">Demo · 3 photos</div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head-chip">
+              <div class="pi-score-chip">
+                <span class="pi-score-chip-num">68</span>
+                <span class="pi-score-chip-divider">·</span>
+                <span class="pi-score-chip-verdict">Buy</span>
+              </div>
+              <div class="pi-addr-only">40 Hamilton Ave, Lynn, MA 01902</div>
+            </div>
+            <div class="pi-meta" style="margin-top:-0.6rem;margin-bottom:1rem;padding-bottom:0;border:none">3 Units · Multi-Family · Built 1918 · 13d on market · Beats 68% of Lynn listings</div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · at today's Freddie rate (6.50%)</div>
+            <div class="pi-price"><span class="pi-price-lbl">Asking</span><span class="pi-price-amt">$1M</span><span>· $333K / unit</span></div>
+            <div class="pi-loc"><span>📍</span><a href="#">View on map</a></div>
+            <button class="pi-explain">How is this calculated? ›</button>
+          </div>
+        </div>
+        <nav class="pi-bnav">
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg><span>Today</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg><span>Watching</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>+</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg><span>Analyst</span></a>
+          <a class="pi-bn-tab"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>More</span></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       V5 — Dual-action footer (replaces bnav on this page)
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="vcard">
+    <div class="vlabel">
+      <span class="vlabel-num">V5 · Dual-action footer</span>
+      <div class="vlabel-title">Save + Open in Analyzer replaces the bottom nav</div>
+      <div class="vlabel-desc">On this specific page (the decision moment), the bottom nav is replaced with two action buttons: ♡ Save + Open in Analyzer →. Other tabs reached via top-left back arrow.</div>
+      <div class="vlabel-tradeoff">Tradeoff: navigation inconsistency vs other pages</div>
+    </div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="pi">
+          <div class="pi-topnav">
+            <div class="pi-topnav-back">‹</div>
+            <div class="pi-topnav-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+            <button class="pi-topnav-export">Export</button>
+          </div>
+          <div class="pi-photo-4x3" style="background-image:url('https://picsum.photos/seed/40hamilton-1/800/600')">
+            <div class="pi-photo-badge">Demo · 3 photos</div>
+          </div>
+          <div class="pi-hero">
+            <div class="pi-head">
+              <div class="pi-rmark">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 17 L20 7 L35 17"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <div class="pi-rmark-num">68</div>
+                <div class="pi-rmark-out">/ 100</div>
+              </div>
+              <div class="pi-info">
+                <span class="pi-verdict">Buy</span>
+                <div class="pi-addr">40 Hamilton Ave, Lynn, MA 01902</div>
+                <div class="pi-meta">3 Units · Multi-Family · Built 1918 · 13d</div>
+              </div>
+            </div>
+            <div class="pi-cf">
+              <div class="pi-cf-label">Projected monthly cash flow</div>
+              <div class="pi-cf-val">+$1,955<span class="u">/mo</span></div>
+              <div class="pi-cf-sub"><b>$23,460</b>/yr · <b>8.7%</b> cash-on-cash · on <b>$250K</b> cash invested</div>
+            </div>
+            <div class="pi-fresh"><span class="pi-fresh-dot"></span>Scored nightly · at today's Freddie rate (6.50%)</div>
+            <div class="pi-price"><span class="pi-price-lbl">Asking</span><span class="pi-price-amt">$1M</span><span>· $333K / unit</span></div>
+          </div>
+        </div>
+        <div class="pi-dual">
+          <button class="pi-dual-save">♡ Save</button>
+          <button class="pi-dual-primary">Open in Analyzer →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
