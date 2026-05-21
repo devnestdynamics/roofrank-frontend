@@ -2746,3 +2746,43 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 **Estimated:** 30 min investigation, ~1 hr fix depending on scope.
 
 **Re-evaluate when:** Pre-launch sweep, or before sharing deal URLs externally for any reason.
+
+---
+
+### 200. BUG-005 · `report_data` stored as JSON-encoded string, not as JSONB object
+
+**What:** Both local DB (39/39 active rows) and prod (127/127) have `deal_feed.report_data` stored as JSONB STRING scalars instead of proper JSONB OBJECTS. Discovered 2026-05-20 while building `/feed/stats/markets` averages — `report_data->'financials'` returned null on every row because you can't navigate into a string.
+
+**Schema is correct:** `reportData: jsonb('report_data')` in `src/db/schema.ts`. So the bug is at the write side — somewhere `JSON.stringify(reportData)` is called before passing to Drizzle, and Drizzle then re-encodes that string into JSONB (storing as a quoted JSON scalar).
+
+**Impact:**
+- `/feed/stats/markets` per-metric averages required a workaround CTE: `(report_data #>> '{}')::jsonb` to unwrap. Works but ugly.
+- Any future SQL that wants to JOIN/AGGREGATE over `reportData` paths needs the same unwrap.
+- Postgres can't INDEX into the nested fields properly because they're string-wrapped.
+
+**Verify the bug:**
+```sql
+SELECT jsonb_typeof(report_data), count(*) FROM deal_feed
+WHERE status='active' AND report_data IS NOT NULL GROUP BY 1;
+-- expect 'object'; currently 'string' for all rows.
+```
+
+**Where to look for the cause:**
+- `src/db/seed.ts` line 237 + 243 — passes `reportData` as an object literal. Should be fine.
+- `src/workers/ingestionWorker.ts` — also writes `reportData`. Check both insert + update paths.
+- Possible middleware / Drizzle config doing automatic stringification.
+- Possible historical migration that text-cast the column then back.
+
+**Fix:**
+1. Find the source of the double-encode.
+2. Write a one-off migration to unwrap existing rows:
+   ```sql
+   UPDATE deal_feed
+   SET report_data = (report_data #>> '{}')::jsonb
+   WHERE jsonb_typeof(report_data) = 'string';
+   ```
+3. Drop the CTE workaround in `/feed/stats/markets` once data is clean.
+
+**Estimated:** 1-2 hours including the migration + verifying nightly ingestion writes clean shape going forward.
+
+**Re-evaluate when:** Before any other SQL feature that touches `reportData` paths (e.g. backlog #189 exposing more metrics on `/feed/public`, or any analytics query over scored deals).
