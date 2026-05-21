@@ -2719,13 +2719,21 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 - **(a) ListHub / MLS Grid** — direct MLS feed providers. Real photos. Requires brokerage partnership + ~$200-500/mo + RESO compliance. Months to set up.
 - **(b) Zillow API / Realtor.com API** — both require partnership programs that aren't generally accessible to startups.
 - **(c) Bridge Interactive (RESO Web API)** — similar gating.
-- **(d) Scrape** — legal grey area, breakable, not advisable.
+- **(d) SimplyRETS** ($49–$199/mo + $99 one-time setup) — RESO Web API wrapper over your MLS RETS feed. Returns photos in the standard RESO `media[]` field. **You bring the MLS credentials**, they expose them as a clean API. Still needs MLS access (real estate license, broker affiliation, or IDX vendor sponsorship) — but if any of those exist, SimplyRETS is the cheapest "real photos in our API" path. https://simplyrets.com
+- **(e) Scrape** — legal grey area, breakable, not advisable.
 
-**Current best-effort:** Frontend constructs a Zillow search URL from the address as a fallback ("Find on Zillow · MLS XXXXX →"). Lands on Zillow's listing page or search — user sees photos / contacts agent there.
+**Middle paths worth considering (no MLS access required):**
+- **Google Street View Static API** — exterior building photos keyed off lat/lon (we already have lat/lon from RentCast). ~$7 per 1,000 images. Legally clean, decent quality for "what does this building look like." No interiors. Could ship in ~½ day — just construct a URL like `https://maps.googleapis.com/maps/api/streetview?size=800x450&location={lat},{lon}&key={KEY}` and slot it into the photos array as the first/only photo.
+- **User-uploaded photos** — Pro feature ("upload your tour photos to your watchlist"). Different value prop, but unblocks the "no photos" gap for engaged users without us needing MLS access. Storage = S3.
 
-**Recommendation:** Live without photos for MVP. Use the Zillow fallback. Revisit only if user feedback signals it as a deal-breaker, or once we have brokerage relationships that justify ListHub setup.
+**Current best-effort:** Frontend constructs a Zillow search URL from the address as a fallback ("Find on Zillow · MLS XXXXX →"). Lands on Zillow's listing page or search — user sees photos / contacts agent there. **Behind a feature toggle, default OFF** (`localStorage.setItem('rr_mls_link', '1')` to enable). Frontend `rr_demo_photos` toggle (default ON) shows Picsum placeholders so the UX renders complete.
 
-**Re-evaluate when:** First-week-of-launch user feedback. If "no photos" comes up as the #1 friction, prioritize. If not, defer — RoofRank's value-add is the math, not the photos.
+**Recommendation order (cheapest → most ambitious):**
+1. **Now**: Google Street View Static API for exterior photos. ~½ day work, ~$0 at MVP volume. Single legal-clean image per deal, no MLS access needed.
+2. **Next 3 months**: SimplyRETS if Ali (or a broker partner) can get MLS credentials. Real interior photos.
+3. **Long-term**: ListHub or direct MLS partnership once we have brokerage relationships.
+
+**Re-evaluate when:** First-week-of-launch user feedback. If "no photos" is the #1 friction, prioritize Google Street View immediately.
 
 ---
 
