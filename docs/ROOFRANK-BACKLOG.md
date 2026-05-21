@@ -2926,3 +2926,33 @@ Then show me the last few git commits on both repos so I can see where we left o
 - SMS: bigger ask. Twilio = ~$0.01/SMS US, requires 10DLC registration for app-to-person sends. Probably defer to v1.1 unless Strong Buy alerts via SMS are a Pro differentiator we want at launch.
 
 **Recommendation:** Verify Resend in prod TODAY. Push notifications + daily email in pre-launch sprint. SMS = post-launch experiment.
+
+---
+
+### 204. Condition-aware rent (kill the "HUD FMR = truth" assumption)
+
+**Status:** 🔴 Important · revisit after Pro gating + Pro features wired.
+
+**The problem (raised by Ali 2026-05-21):** HUD Fair Market Rent is the rent for *decent, safe, sanitary* housing — a C-class floor. A gut-renovated 2BR in Lynn pulls $300-500 *over* FMR; a tired 1970s unit with original kitchens/baths sits $200-400 *under*. Our scoring engine treats both identically. Every downstream metric (cap rate, CoC, DSCR, PITI cashflow) is therefore wrong for both. The user's mental adjustment ("I can tell from the photos whether this will pull expected rent") is not encoded anywhere in the product.
+
+**The build (in order of leverage):**
+
+1. **Condition lens on deal-detail (~1 day).** Three-position slider: *As-is / Updated / Renovated*, mapped to ±10-15% on the rent assumption. Score and all PITI cashflow metrics recompute live (same pattern as the scenario lens already shipped). Mirrors how serious investors actually evaluate a deal.
+
+2. **Auto-set starting position from listing description (~½ day).** RentCast ships description text. Keyword detection sets the starting slider position:
+   - Renovated: "newly renovated," "fully gutted," "stainless," "quartz," "luxury," "turnkey"
+   - As-is: "investor special," "needs TLC," "as-is," "cash only," "fixer," "handyman"
+   - Updated: "updated kitchen," "updated bath," "new flooring"
+   - User can always override; this just sets the initial position.
+
+3. **Show rent as a range, not a point (~½ day).** Instead of "Expected rent: $2,100/unit," show "$1,790 – $2,415 (As-is → Renovated)." Verdict can read: "Strong Buy at As-is rent, Pass at Renovated assumption." Front-loads the uncertainty rather than hiding it.
+
+4. **(Later, separate item) RentCast `/avm/rent` for comp-based estimates.** Replaces HUD FMR entirely with actual recent comparable rents. The "right" long-term answer; requires the right RentCast tier — needs cost review.
+
+5. **(Later, blocked) Vision read on listing photos.** When we have a real photo source (post-SimplyRETS / MLS Grid), Claude vision rates condition 1-5. Blocked until photos exist.
+
+**Pro tier story:** Condition-aware scoring fits naturally as a Pro wedge. Free tier could show HUD FMR as a single number; Pro tier shows the range + the lens + the description-based auto-detection. This is exactly the judgment layer that justifies $49/mo — the product reads the deal *with* you.
+
+**Tradeoff to acknowledge:** Adding a condition lens means the score isn't a single objective number — it depends partially on user input. That's actually more honest and matches how experienced investors think, but it kills the "one-shot black-box AI score" framing in marketing. Update positioning to "scoring engine + condition judgment, together" rather than "AI tells you the answer."
+
+**Cadence:** Build after Pro gating (#58-64) + first round of Pro features are in. Ali flagged this as "important but not before everything else gets wired."
