@@ -289,6 +289,12 @@ nav.top{
 .narr-body.teaser-rest{filter:blur(4px);user-select:none;color:var(--muted)}
 .narr-foot{margin-top:.7rem;padding-top:.55rem;font-size:.7rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .narr-foot a{color:var(--forest);text-decoration:underline;text-underline-offset:2px;font-weight:500}
+/* Pro-only follow-up CTA — replaces the Pro-upgrade narrFoot for paid
+   callers. Points at the standalone "Ask the Analyst" chat block lower
+   on the page (smooth scroll). Quieter visually than the upgrade CTA
+   since it's not selling anything. */
+.narr-ask-cta{margin-top:.7rem;padding:.55rem .85rem;background:rgba(122,170,143,.07);border:1px solid var(--sage-border);border-radius:6px;font-size:.74rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.narr-ask-cta a{color:var(--forest);text-decoration:underline;text-underline-offset:2px;font-weight:500}
 @media(max-width:640px){.narr-grid{grid-template-columns:1fr}}
 
 /* ── HERO CASH FLOW — THE HOOK ─────────────────────────────────────────── */
@@ -1023,96 +1029,36 @@ nav.top{
         <div class="narr-body" id="narrBear">—</div>
       </div>
     </div>
+    <!-- "Ask the analyst" CTA — only fills for Pro callers, points at
+         the chat block lower on the page. Free users see the upgrade
+         narrFoot above; Pro users see this instead. -->
+    <div class="narr-ask-cta" id="narrAskCta" style="display:none">
+      <span>Want to dig in on this deal?</span>
+      <a href="#analystSection" onclick="document.getElementById('analystSection')?.scrollIntoView({behavior:'smooth'});return false;">Ask the analyst →</a>
+    </div>
     <div class="narr-foot" id="narrFoot" style="display:none">
       <span>AI deal narrative · Pro feature</span>
       <a href="roofrank-pricing.html">Unlock with Pro →</a>
     </div>
   </section>
 
-  <!-- ── COMPARABLES — peer deals in the same city (item 6 of audit).
-       Hidden by default; renderComparables() shows it when ≥1 peer
-       deal is found in the same city via FeedAPI.list(). -->
-  <section id="comparablesSection" style="display:none">
-    <div class="comp-card">
-      <div class="comp-head">
-        <span class="comp-eyebrow" id="compEyebrow">Comparable deals</span>
-        <span class="comp-meta" id="compMeta"></span>
-      </div>
-      <div class="comp-list" id="compList"></div>
-    </div>
-  </section>
+  <!-- ───────── IA RE-FLOW (2026-05-21) ─────────────────────────────────
+       Section order on this page used to zig-zag between "this deal"
+       and "other context." Restructured per mockup-detail-page-ia.html
+       to a single forward flow:
+         hero → analyst note → THE MATH → rent assumptions →
+                 comparables → ask the analyst → score breakdown
+       Comparables now lives AFTER the math + rent (so the user has
+       formed a verdict on this deal before being shown peers).
+       The chat lives at the bottom under "Ask the analyst" since
+       it's a take-action surface, not a read surface.
+       The 8-metric grid (svMetrics) moved out of the analyst card
+       and into the math section so all the numbers live together.
+  -->
 
-  <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
-  <section id="rentEstimateSection" style="display:none">
-    <div class="rent-card">
-      <div class="rent-head">
-        <div class="rent-eyebrow">Rent estimate</div>
-        <div class="rent-headline" id="rentHeadline">—</div>
-        <div class="rent-sub" id="rentSub">—</div>
-      </div>
-      <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
-        Use your own numbers
-        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="rent-form" id="rentForm" style="display:none">
-        <div class="rent-form-header">
-          <span class="rent-form-label">Per-unit rent</span>
-          <span class="rent-form-hint">your numbers</span>
-        </div>
-        <div id="rentUnitInputs"></div>
-        <div class="rent-form-totals">
-          <span>Total gross</span>
-          <span id="rentFormTotal" class="rent-form-total-val">—</span>
-        </div>
-        <div class="rent-form-actions">
-          <button class="rent-apply" type="button" onclick="applyRentOverride()">Apply →</button>
-          <button class="rent-revert" type="button" onclick="revertRentOverride()" id="rentRevertBtn" style="display:none">Revert to HUD</button>
-        </div>
-        <div class="rent-form-status" id="rentFormStatus"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── ANALYST CARD (verdict + metrics + chat — single AI identity) ── -->
-  <section id="analystSection">
-    <div class="analyst-card">
-      <div class="analyst-head">
-        <div class="analyst-dot"></div>
-        <div class="analyst-title">RoofRank Analyst</div>
-        <div class="analyst-badge">AI</div>
-      </div>
-      <div class="analyst-verdict" id="analystVerdict">—</div>
-      <div id="svMetrics"></div>
-      <div class="sv-watch" id="svWatch" style="display:none"></div>
-      <div class="sv-urgency" id="svUrgency" style="display:none"></div>
-
-      <div class="analyst-chat-divider"></div>
-      <!-- Chat ships in Pro · backend /ai/analyst not wired yet (#193).
-           Suggestions become non-interactive previews + input is
-           disabled with a "Coming soon" badge so users don't tap
-           into a dead-end. -->
-      <div class="analyst-chat-prompt">
-        Ask a follow-up
-        <span class="analyst-chat-soon">Coming soon · Pro</span>
-      </div>
-      <div class="ai-suggestions" id="aiSuggestions">
-        <span class="ai-suggestion is-preview">Biggest risk?</span>
-        <span class="ai-suggestion is-preview">What should I offer?</span>
-        <span class="ai-suggestion is-preview">Would you buy this?</span>
-        <span class="ai-suggestion is-preview">Good for first-timers?</span>
-      </div>
-      <div class="ai-messages" id="aiMessages"></div>
-      <div class="ai-input-row is-disabled">
-        <input class="ai-input" id="aiInput" type="text" placeholder="Chat with the analyst ships in Pro — coming soon" disabled>
-        <button class="ai-send" id="aiSend" disabled>Ask →</button>
-      </div>
-      <div class="ai-foot">AI-generated · Not financial advice · Always do your own due diligence</div>
-    </div>
-  </section>
-
-  <!-- ── CASH FLOW WATERFALL — "the math" (free, the value moment) ── -->
+  <!-- ── THE MATH — cashflow waterfall + 8-metric grid ─────────────── -->
   <section id="cfSection" style="display:none">
-    <div class="section-title">Cash flow <span class="meta">where every rent dollar goes</span></div>
+    <div class="section-title">The math <span class="meta">cashflow + the 8 metrics behind the score</span></div>
     <div class="cf-assum">
       <span>Assumes</span>
       <button type="button" class="cf-chip" id="cfChipDp">25% down</button>
@@ -1146,6 +1092,95 @@ nav.top{
     <div class="cf-upfront" id="cfUpfront" style="display:none">
       <span class="cf-upfront-k">Total Cash to Close</span>
       <span class="cf-upfront-v" id="cfUpfrontVal">—</span>
+    </div>
+    <!-- 8-metric grid moved here from the (old) analyst card. The
+         analyst-verdict templated line that used to lead this grid
+         is hidden — the AI bull/bear narrative above replaces it. -->
+    <div id="svMetrics"></div>
+    <div class="sv-watch" id="svWatch" style="display:none"></div>
+    <div class="sv-urgency" id="svUrgency" style="display:none"></div>
+  </section>
+
+  <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
+  <section id="rentEstimateSection" style="display:none">
+    <div class="rent-card">
+      <div class="rent-head">
+        <div class="rent-eyebrow">Rent estimate</div>
+        <div class="rent-headline" id="rentHeadline">—</div>
+        <div class="rent-sub" id="rentSub">—</div>
+      </div>
+      <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
+        Use your own numbers
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="rent-form" id="rentForm" style="display:none">
+        <div class="rent-form-header">
+          <span class="rent-form-label">Per-unit rent</span>
+          <span class="rent-form-hint">your numbers</span>
+        </div>
+        <div id="rentUnitInputs"></div>
+        <div class="rent-form-totals">
+          <span>Total gross</span>
+          <span id="rentFormTotal" class="rent-form-total-val">—</span>
+        </div>
+        <div class="rent-form-actions">
+          <button class="rent-apply" type="button" onclick="applyRentOverride()">Apply →</button>
+          <button class="rent-revert" type="button" onclick="revertRentOverride()" id="rentRevertBtn" style="display:none">Revert to HUD</button>
+        </div>
+        <div class="rent-form-status" id="rentFormStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMPARABLES — peer deals in the same city (item 6 of audit).
+       Hidden by default; renderComparables() shows it when ≥1 peer
+       deal is found in the same city via FeedAPI.list().
+       Lives AFTER the math + rent so the user has formed a verdict
+       on this deal before being shown peers. -->
+  <section id="comparablesSection" style="display:none">
+    <div class="comp-card">
+      <div class="comp-head">
+        <span class="comp-eyebrow" id="compEyebrow">Comparable deals</span>
+        <span class="comp-meta" id="compMeta"></span>
+      </div>
+      <div class="comp-list" id="compList"></div>
+    </div>
+  </section>
+
+  <!-- ── ASK THE ANALYST (chat) ───────────────────────────────────────
+       Only the chat surface now — the templated verdict line that used
+       to live here is hidden (AI bull/bear at the top replaces it),
+       and the 8-metric grid moved up into "The math". This stays as
+       a standalone take-action surface so users can scroll back from
+       the narrative's "Ask the analyst →" CTA.
+       Chat backend not wired yet (#193) — input stays disabled with
+       a "Coming soon · Pro" badge so users don't tap into a dead end. -->
+  <section id="analystSection">
+    <div class="analyst-card">
+      <div class="analyst-head">
+        <div class="analyst-dot"></div>
+        <div class="analyst-title">Ask the Analyst</div>
+        <div class="analyst-badge">AI</div>
+      </div>
+      <!-- Templated verdict line — kept hidden so JS that fills it
+           via setHTML('analystVerdict',…) doesn't error. -->
+      <div class="analyst-verdict" id="analystVerdict" style="display:none">—</div>
+      <div class="analyst-chat-prompt">
+        Ask a follow-up
+        <span class="analyst-chat-soon">Coming soon · Pro</span>
+      </div>
+      <div class="ai-suggestions" id="aiSuggestions">
+        <span class="ai-suggestion is-preview">Biggest risk?</span>
+        <span class="ai-suggestion is-preview">What should I offer?</span>
+        <span class="ai-suggestion is-preview">Would you buy this?</span>
+        <span class="ai-suggestion is-preview">Good for first-timers?</span>
+      </div>
+      <div class="ai-messages" id="aiMessages"></div>
+      <div class="ai-input-row is-disabled">
+        <input class="ai-input" id="aiInput" type="text" placeholder="Chat with the analyst ships in Pro — coming soon" disabled>
+        <button class="ai-send" id="aiSend" disabled>Ask →</button>
+      </div>
+      <div class="ai-foot">AI-generated · Not financial advice · Always do your own due diligence</div>
     </div>
   </section>
 
@@ -1992,12 +2027,19 @@ function renderDeal(d){
         bullEl.innerHTML = `${escapeHtml(n.bull || '')} <span class="narr-body teaser-rest" style="display:inline">${FILLER_BULL}</span>`;
         bearEl.innerHTML = `<span class="narr-body teaser-rest" style="display:inline">${FILLER_BEAR}</span>`;
         if (foot) foot.style.display = '';
+        const ask = document.getElementById('narrAskCta');
+        if (ask) ask.style.display = 'none';
         if (meta) meta.textContent = '';
         sec.style.display = '';
       } else {
         bullEl.textContent = n.bull || '';
         bearEl.textContent = n.bear || '';
         if (foot) foot.style.display = 'none';
+        // Pro callers see the "Ask the analyst" follow-up CTA instead
+        // of the Pro-upgrade narrFoot. Points at the standalone chat
+        // block lower on the page.
+        const ask = document.getElementById('narrAskCta');
+        if (ask) ask.style.display = '';
         if (meta && n.generatedAt) {
           const dt = new Date(n.generatedAt);
           meta.textContent = isFinite(+dt) ? `Generated ${dt.toLocaleDateString(undefined,{month:'short',day:'numeric'})}` : '';
