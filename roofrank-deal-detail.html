@@ -1999,28 +1999,15 @@ function renderDeal(d){
   if(_hb) _hb.innerHTML = '';
 
   // ── Property photos ──────────────────────────────────────────────────
-  // Real photos come from listingData.photos[] / .images[]. RentCast's
-  // Property Listings API doesn't ship media (confirmed via their schema
-  // docs 2026-05-20), so the real path needs a different data provider
-  // (ListHub / MLS Grid). Until then, deterministic Picsum placeholders
-  // fill the strip so the UX feels complete. Real photos always win
-  // when present; placeholders only show as a fallback.
-  // Opt out: localStorage.setItem('rr_demo_photos', '0')
+  // Photos only render when real ones are present in listingData. We
+  // previously used Picsum placeholders as a stopgap, but those were
+  // killed 2026-05-21 — the Zillow link below is the source of truth
+  // until we have a clean media feed (ListHub / MLS Grid / SimplyRETS).
+  // Google Street View Static API was evaluated and rejected: it
+  // resolves to the wrong building too often to be trustworthy.
   try {
-    const DEMO_PHOTOS_DISABLED = (() => {
-      try { return localStorage.getItem('rr_demo_photos') === '0'; } catch { return false; }
-    })();
     const ld = d.listingData || {};
-    let photos = (ld.photos || ld.images || []).filter(p => p && (typeof p === 'string' || p.url));
-    let isDemo = false;
-    if (!photos.length && !DEMO_PHOTOS_DISABLED && d.id) {
-      photos = [
-        `https://picsum.photos/seed/${d.id}-1/800/450`,
-        `https://picsum.photos/seed/${d.id}-2/800/450`,
-        `https://picsum.photos/seed/${d.id}-3/800/450`,
-      ];
-      isDemo = true;
-    }
+    const photos = (ld.photos || ld.images || []).filter(p => p && (typeof p === 'string' || p.url));
     const photosSection = document.getElementById('photosSection');
     const photosStrip   = document.getElementById('photosStrip');
     if (photos.length && photosSection && photosStrip) {
@@ -2028,7 +2015,7 @@ function renderDeal(d){
         const src = typeof p === 'string' ? p : p.url;
         const isFirst = i === 0 ? ' first' : '';
         const badge   = i === 0 && photos.length > 1
-          ? `<div class="photo-count">${isDemo ? 'Demo · ' : ''}${photos.length} photos</div>`
+          ? `<div class="photo-count">${photos.length} photos</div>`
           : '';
         return `<div class="photo-tile${isFirst}"><img src="${src}" alt="${d.address || 'Property photo'} — image ${i+1}" loading="lazy">${badge}</div>`;
       }).join('');
@@ -2036,45 +2023,41 @@ function renderDeal(d){
     }
   } catch (e) { console.warn('photos render failed:', e); }
 
-  // ── External listing URL (View on MLS) ───────────────────────────────
-  // Behind a feature toggle (default OFF) because the Zillow-fallback URL
-  // path is technically ToS-grey. Enable with:
-  //   localStorage.setItem('rr_mls_link', '1')
-  // When we have a clean upstream URL (direct from RentCast listingUrl,
-  // or a real ListHub/MLS Grid integration), the toggle can flip to on
-  // by default and the Zillow fallback becomes irrelevant.
+  // ── External listing URL (View on MLS / Find on Zillow) ─────────────
+  // Prefers a direct upstream URL (RentCast `listingUrl`, agent URL).
+  // Falls back to a Zillow search slug when only address is known —
+  // technically ToS-grey but the link just opens a search query, no
+  // scraping. Real photos + a clean upstream URL come once we wire
+  // SimplyRETS / ListHub. Opt out with localStorage.rr_mls_link = '0'.
   try {
-    const MLS_LINK_ENABLED = (() => {
-      try { return localStorage.getItem('rr_mls_link') === '1'; } catch { return false; }
+    const MLS_LINK_DISABLED = (() => {
+      try { return localStorage.getItem('rr_mls_link') === '0'; } catch { return false; }
     })();
-    // Off by default. When the toggle is off, skip rendering — but
-    // we MUST NOT `return` here; that'd exit the whole renderDeal()
-    // function and the mainLayout reveal below would never run.
-    if (MLS_LINK_ENABLED) {
-    const ld = d.listingData || {};
-    const directUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
-    const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
-    const mlsRow  = document.getElementById('heroMlsRow');
-    const mlsLink = document.getElementById('heroMlsLink');
-    const mlsText = document.getElementById('heroMlsText');
-    if (!mlsRow || !mlsLink || !mlsText) return;
-
-    let href = directUrl;
-    let label = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
-    if (!href && d.address && d.city && d.state) {
-      const slug = `${d.address}-${d.city}-${d.state}${d.zipCode ? '-' + d.zipCode : ''}`
-        .replace(/[^a-zA-Z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-');
-      href = `https://www.zillow.com/homes/${slug}_rb/`;
-      label = mlsNumber ? `Find on Zillow · MLS ${mlsNumber}` : 'Find on Zillow';
+    if (!MLS_LINK_DISABLED) {
+      const ld = d.listingData || {};
+      const directUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
+      const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
+      const mlsRow  = document.getElementById('heroMlsRow');
+      const mlsLink = document.getElementById('heroMlsLink');
+      const mlsText = document.getElementById('heroMlsText');
+      if (mlsRow && mlsLink && mlsText) {
+        let href = directUrl;
+        let label = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
+        if (!href && d.address && d.city && d.state) {
+          const slug = `${d.address}-${d.city}-${d.state}${d.zipCode ? '-' + d.zipCode : ''}`
+            .replace(/[^a-zA-Z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+          href = `https://www.zillow.com/homes/${slug}_rb/`;
+          label = mlsNumber ? `Find on Zillow · MLS ${mlsNumber}` : 'Find on Zillow';
+        }
+        if (href) {
+          mlsLink.href = href;
+          mlsText.textContent = label;
+          mlsRow.style.display = '';
+        }
+      }
     }
-    if (href) {
-      mlsLink.href = href;
-      mlsText.textContent = label;
-      mlsRow.style.display = '';
-    }
-    }  // end if (MLS_LINK_ENABLED)
   } catch (e) { console.warn('mls link render failed:', e); }
 
   // ── Neighborhood + map link ──────────────────────────────────────────
