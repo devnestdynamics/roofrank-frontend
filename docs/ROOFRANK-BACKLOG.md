@@ -2979,3 +2979,20 @@ This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate 
 3. **Two-phase: migrate-forward → deploy → migrate-finalize.** Overkill for this stage.
 
 **Recommendation:** Option 2. The migrate step's `--overrides` already takes a JSON; add `"image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"` to the container override. Pre-launch task — when we have real users, a silent migration skip would be catastrophic.
+
+---
+
+### 206. Migrate AI calls from `claude-sonnet-4-20250514` → `claude-sonnet-4-6`
+
+**Status:** 🟡 Pre-2026-06-15 (model EOL date).
+
+**The signal:** Anthropic deprecation warning surfaced 2026-05-21 during the AI narrative backfill: `claude-sonnet-4-20250514` reaches end-of-life on **June 15, 2026**. Currently used in two places:
+
+- `src/services/narrativeService.ts` — deal narrative generation (V2 bull + bear).
+- `src/routes/ai.ts` — Ask-the-Analyst chat endpoint.
+
+**The fix:** Both files have the model id hardcoded as `'claude-sonnet-4-20250514'`. Per the latest Claude 4.X family, the replacement is `'claude-sonnet-4-6'` (or `'claude-haiku-4-5-20251001'` if we want to drop cost for narratives specifically). Both call sites should be migrated to the same model so tone stays consistent.
+
+**Re-validation needed after swap:** Voice could shift between model versions. Generate ~5 narratives on the new model and eyeball them against the current set before backfilling production deals again with `--force`.
+
+**Recommendation:** Lift the model id to a single constant (e.g. `src/lib/aiModels.ts`) so the swap is one-line. Do this in the same change as the migration to keep future swaps cheap. Run before June 15 — Anthropic will start returning errors after that date.
