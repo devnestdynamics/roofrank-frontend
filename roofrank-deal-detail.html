@@ -88,6 +88,17 @@ nav.top{
   font-family:var(--sans); font-size:.75rem; font-weight:400;
   color:var(--muted); margin-left:.5rem;
 }
+/* Sub-header inside a section — used for the "Score breakdown" group
+   that now lives under "The math" (was a standalone section). */
+.cf-subhead{
+  font-family:var(--serif); font-size:.92rem; font-weight:500;
+  margin-top:1.4rem; margin-bottom:.55rem;
+  padding-top:.85rem; border-top:1px solid var(--cream-3);
+}
+.cf-subhead .cf-subhead-meta{
+  font-family:var(--sans); font-size:.68rem; font-weight:400;
+  color:var(--muted); margin-left:.45rem;
+}
 
 /* ── HERO ──────────────────────────────────────────────────────────────── */
 /* V2 layout (2026-05-20) — compact horizontal head puts the score
@@ -1099,6 +1110,18 @@ nav.top{
     <div id="svMetrics"></div>
     <div class="sv-watch" id="svWatch" style="display:none"></div>
     <div class="sv-urgency" id="svUrgency" style="display:none"></div>
+
+    <!-- Score breakdown — moved up from the (old) standalone "Why this
+         score" section per IA consolidation (2026-05-21). Same data,
+         one home: numbers above show "how does this metric compare to
+         the market"; bars below show "how much did this metric weigh
+         in the final score". -->
+    <div class="cf-subhead">Score breakdown <span class="cf-subhead-meta">how we got to <span id="bdScore">—</span></span></div>
+    <div id="scoreBreakdownPublic"></div>
+    <a class="pro-quiet-link" href="roofrank-pricing.html" id="proQuietLink">
+      <span>4 more metrics in Pro — CapEx, Neighborhood grade, Price-per-Unit benchmarks</span>
+      <span class="pro-quiet-arrow" aria-hidden="true">→</span>
+    </a>
   </section>
 
   <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
@@ -1184,17 +1207,10 @@ nav.top{
     </div>
   </section>
 
-  <!-- ── SCORE BREAKDOWN — "why this score" — partially locked, closing section -->
-  <section>
-    <div class="section-title">Why this score <span class="meta">how we got to <span id="bdScore">—</span></span></div>
-    <div id="scoreBreakdownPublic"></div>
-    <!-- Pro lock — quiet inline link (was a loud overlay/billboard).
-         Same upgrade-tone rule we applied to the dashboard. -->
-    <a class="pro-quiet-link" href="roofrank-pricing.html" id="proQuietLink">
-      <span>4 more metrics in Pro — CapEx, Neighborhood grade, Price-per-Unit benchmarks</span>
-      <span class="pro-quiet-arrow" aria-hidden="true">→</span>
-    </a>
-  </section>
+  <!-- "Why this score" section consolidated into "The math" above
+       (2026-05-21). Both surfaces showed overlapping metric data —
+       svMetrics with deltas vs market, scoreBreakdownPublic with
+       contribution bars — now co-located in one section. -->
 
 </main>
 
