@@ -480,6 +480,15 @@ nav.top{
 .analyst-card .ai-input-row.is-disabled .ai-input,
 .analyst-card .ai-input-row.is-disabled .ai-send{cursor:not-allowed}
 
+/* Analyst chat "Coming soon" state — /ai/analyst backend isn't wired
+   yet (#193). Suggestions become non-interactive previews + the input
+   row dims. Visual badge next to "Ask a follow-up" makes it clear. */
+.analyst-chat-soon{display:inline-flex;align-items:center;margin-left:.55rem;font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);background:rgba(122,170,143,.12);border:1px solid rgba(122,170,143,.3);padding:2px 7px;border-radius:5px;line-height:1;vertical-align:middle}
+.analyst-card .ai-suggestion.is-preview{opacity:.5;cursor:not-allowed;pointer-events:none}
+.analyst-card .ai-input-row.is-disabled{opacity:.5}
+.analyst-card .ai-input-row.is-disabled .ai-input{cursor:not-allowed}
+.analyst-card .ai-input-row.is-disabled .ai-send{cursor:not-allowed;opacity:.7}
+
 .analyst-chat-prompt{
   display:flex; align-items:center; gap:.5rem;
   font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
@@ -950,17 +959,24 @@ nav.top{
       <div class="sv-urgency" id="svUrgency" style="display:none"></div>
 
       <div class="analyst-chat-divider"></div>
-      <div class="analyst-chat-prompt">Ask a follow-up</div>
+      <!-- Chat ships in Pro · backend /ai/analyst not wired yet (#193).
+           Suggestions become non-interactive previews + input is
+           disabled with a "Coming soon" badge so users don't tap
+           into a dead-end. -->
+      <div class="analyst-chat-prompt">
+        Ask a follow-up
+        <span class="analyst-chat-soon">Coming soon · Pro</span>
+      </div>
       <div class="ai-suggestions" id="aiSuggestions">
-        <span class="ai-suggestion" onclick="askSuggestion(this)">Biggest risk?</span>
-        <span class="ai-suggestion" onclick="askSuggestion(this)">What should I offer?</span>
-        <span class="ai-suggestion" onclick="askSuggestion(this)">Would you buy this?</span>
-        <span class="ai-suggestion" onclick="askSuggestion(this)">Good for first-timers?</span>
+        <span class="ai-suggestion is-preview">Biggest risk?</span>
+        <span class="ai-suggestion is-preview">What should I offer?</span>
+        <span class="ai-suggestion is-preview">Would you buy this?</span>
+        <span class="ai-suggestion is-preview">Good for first-timers?</span>
       </div>
       <div class="ai-messages" id="aiMessages"></div>
-      <div class="ai-input-row">
-        <input class="ai-input" id="aiInput" type="text" placeholder="Ask anything about this deal…" onkeydown="if(event.key==='Enter') sendAiMessage()">
-        <button class="ai-send" id="aiSend" onclick="sendAiMessage()">Ask →</button>
+      <div class="ai-input-row is-disabled">
+        <input class="ai-input" id="aiInput" type="text" placeholder="Chat with the analyst ships in Pro — coming soon" disabled>
+        <button class="ai-send" id="aiSend" disabled>Ask →</button>
       </div>
       <div class="ai-foot">AI-generated · Not financial advice · Always do your own due diligence</div>
     </div>
