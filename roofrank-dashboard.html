@@ -1151,19 +1151,27 @@ function renderCityChips(){
   const row = document.getElementById('cityRow');
   if(!wrap || !row) return;
 
-  // Prefer real per-market totals from /feed/stats/markets so chip counts
-  // reflect the full DB, not just what survived the loaded page's score cut.
-  // Fall back to allDeals-derived counts on the first paint, before stats land.
+  // Chip list is anchored to the cities present in allDeals (which the
+  // backend has already filtered by the user's saved-markets cap on free
+  // tier). marketStats supplies the accurate count for each chip so the
+  // number isn't truncated by the loaded page's score cut.
+  // Pro/Team see all launched-market cities; free tier sees only their
+  // saved markets here — no orphan chips that yield empty results.
+  const presentCities = new Set();
+  for(const d of allDeals){ if(d.city) presentCities.add(d.city); }
   let counts = {};
   let totalAll = 0;
   if(marketStats && marketStats.length){
     for(const r of marketStats){
-      if(!r.city) continue;
+      if(!r.city || !presentCities.has(r.city)) continue;
       const n = Number(r.total_listings || 0);
       counts[r.city] = n;
       totalAll += n;
     }
-  } else {
+  }
+  // Fall back to allDeals-derived counts when marketStats is absent
+  // or doesn't cover a city the user has deals in.
+  if(!Object.keys(counts).length){
     for(const d of allDeals){ if(d.city) counts[d.city] = (counts[d.city] || 0) + 1; }
     totalAll = allDeals.length;
   }
@@ -1990,13 +1998,21 @@ function openDeal(id, e){
 async function toggleW(id, e){
   e.stopPropagation();
   const btn = e.currentTarget;
-  const on = await WatchlistAPI.toggle(id);
-  if(btn){
-    btn.className = 'wbtn' + (on ? ' on' : '');
-    const svg = btn.querySelector('svg');
-    if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+  try {
+    const on = await WatchlistAPI.toggle(id);
+    if(btn){
+      btn.className = 'wbtn' + (on ? ' on' : '');
+      const svg = btn.querySelector('svg');
+      if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+    }
+    syncWatchBadge();
+  } catch (err) {
+    if (err?.code === 'WATCHLIST_LIMIT_EXCEEDED' || err?.status === 402) {
+      openProModal({ title: 'Watchlist full', sub: err?.message || 'Free plan caps your watchlist at 5 deals. Upgrade to Pro for unlimited.' });
+    } else {
+      console.warn('watchlist toggle failed:', err?.message || err);
+    }
   }
-  syncWatchBadge();
 }
 
 function syncWatchBadge(){

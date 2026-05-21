@@ -204,9 +204,21 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 <script>
 requireAuth();
 
+// Plan-aware cap (filled from /api/billing/subscription). starter caps
+// the watchlist at 5; pro/team is effectively unlimited (99999 in
+// PLAN_LIMITS). UI hides the "of N" suffix once we know the user is Pro.
+let WL_CAP = 5;
+let IS_PRO = false;
+
 async function boot(){
   document.getElementById('list').innerHTML=skels(3);
   await WatchlistAPI.loadIds();
+  // Resolve plan first so the count label is correct on first paint.
+  try {
+    const sub = await BillingAPI.getSubscription();
+    const plan = (sub?.plan || '').toLowerCase();
+    IS_PRO = plan === 'pro' || plan === 'team';
+  } catch {}
   try{
     const items = await apiFetch('/watchlist');
     renderItems(items.map(i=>i.deal).filter(Boolean));
@@ -222,7 +234,17 @@ async function boot(){
 
 function renderItems(deals){
   document.getElementById('tbSub').textContent=`${deals.length} saved deal${deals.length!==1?'s':''}`;
-  document.getElementById('countLbl').textContent=`${deals.length} ${deals.length===1?'property':'properties'}`;
+  // Count label shows "X of N" for free, raw count for Pro/Team. At cap
+  // we append a quiet upgrade hint so the wall is visible.
+  const noun = deals.length === 1 ? 'property' : 'properties';
+  const cl = document.getElementById('countLbl');
+  if (IS_PRO) {
+    cl.innerHTML = `${deals.length} ${noun}`;
+  } else if (deals.length >= WL_CAP) {
+    cl.innerHTML = `${deals.length} of ${WL_CAP} · <a href="roofrank-pricing.html" style="color:var(--forest);text-decoration:underline;text-underline-offset:2px">Upgrade for unlimited</a>`;
+  } else {
+    cl.innerHTML = `${deals.length} of ${WL_CAP} ${noun}`;
+  }
   const list=document.getElementById('list');
   if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Tap the heart icon on any deal in the feed to save it here.</div><button class="empty-btn" onclick="location.href='roofrank-dashboard.html'">Browse Deals →</button></div>`;return;}
   list.innerHTML=deals.map(d=>{
@@ -258,7 +280,7 @@ function renderItems(deals){
 
 async function remove(id,e){
   e.stopPropagation();
-  await WatchlistAPI.toggle(id);
+  try { await WatchlistAPI.toggle(id); } catch (err) { console.warn('remove failed:', err?.message || err); }
   boot();
 }
 

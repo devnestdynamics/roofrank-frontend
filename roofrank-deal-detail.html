@@ -2176,10 +2176,18 @@ function renderDeal(d){
 
 async function toggleWatch(){
   if(!fid) return;
-  const on = await WatchlistAPI.toggle(fid);
-  const b = document.getElementById('wbtn');
-  if(b) b.classList.toggle('on', on);
-  showToast(on ? 'Added to watchlist' : 'Removed from watchlist');
+  try {
+    const on = await WatchlistAPI.toggle(fid);
+    const b = document.getElementById('wbtn');
+    if(b) b.classList.toggle('on', on);
+    showToast(on ? 'Added to watchlist' : 'Removed from watchlist');
+  } catch (err) {
+    if (err?.code === 'WATCHLIST_LIMIT_EXCEEDED' || err?.status === 402) {
+      showToast('Watchlist full (5/5 on free plan). <a href="roofrank-pricing.html" style="color:rgba(255,255,255,.85);text-decoration:underline">Upgrade →</a>', 'warning', 5000);
+    } else {
+      showToast('Could not save — try again', 'error', 3000);
+    }
+  }
 }
 
 // Sync the heart's visual state to whether this deal is currently in the watchlist.

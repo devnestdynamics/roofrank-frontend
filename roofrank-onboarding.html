@@ -298,8 +298,20 @@ function useExample(){
 }
 
 function skipToFeed(){
-  // Save with default Boston market and go straight to dashboard
-  OrgAPI.saveOnboarding([{city:'Boston',state:'MA'}]).catch(()=>{});
+  // Save with the user's pre-auth market pick (or Lynn as a sensible
+  // default MVP market) and go straight to dashboard.
+  let pre = null;
+  try { pre = localStorage.getItem('rr_pre_market'); } catch {}
+  const MVP = {
+    lynn:       [{city:'Lynn',       state:'MA'}],
+    salem:      [{city:'Salem',      state:'MA'}],
+    revere:     [{city:'Revere',     state:'MA'}],
+    worcester:  [{city:'Worcester',  state:'MA'}],
+    framingham: [{city:'Framingham', state:'MA'}],
+    all:        [{city:'Lynn',       state:'MA'}, {city:'Worcester', state:'MA'}],
+  };
+  const picks = (pre && MVP[pre]) || MVP.lynn;
+  OrgAPI.saveOnboarding(picks).catch(()=>{});
   location.href='roofrank-dashboard.html';
 }
 
@@ -411,9 +423,26 @@ function showScoreResult(deal){
 }
 
 async function saveOnboarding(){
-  // Save markets from the old step 2 (skipped) — default to all markets
-  try{ await OrgAPI.saveOnboarding([{city:'Boston',state:'MA'},{city:'Providence',state:'RI'},{city:'Hartford',state:'CT'},{city:'Worcester',state:'MA'},{city:'Manchester',state:'NH'},{city:'New Haven',state:'CT'},{city:'Springfield',state:'MA'},{city:'Bridgeport',state:'CT'},{city:'Lowell',state:'MA'}]); }
-  catch{}
+  // Use the market the user picked in the pre-auth onboard flow if
+  // we have it (stored in rr_pre_market localStorage). Falls back to
+  // the 2 MVP markets with real data so a free-tier user always lands
+  // on a feed with deals. Backend truncates to the plan's cap (2 for
+  // starter) so passing more than that is safe — just wastes the call.
+  let pre = null;
+  try { pre = localStorage.getItem('rr_pre_market'); } catch {}
+  // id → (city, state) for the 5 MVP launch markets. 'all' fans out
+  // to the 2 with the most data (Lynn + Worcester); the rest are
+  // single-market picks.
+  const MVP = {
+    lynn:       [{city:'Lynn',       state:'MA'}],
+    salem:      [{city:'Salem',      state:'MA'}],
+    revere:     [{city:'Revere',     state:'MA'}],
+    worcester:  [{city:'Worcester',  state:'MA'}],
+    framingham: [{city:'Framingham', state:'MA'}],
+    all:        [{city:'Lynn',       state:'MA'}, {city:'Worcester', state:'MA'}],
+  };
+  const picks = (pre && MVP[pre]) || MVP.lynn;
+  try { await OrgAPI.saveOnboarding(picks); } catch {}
   advance(3);
 }
 

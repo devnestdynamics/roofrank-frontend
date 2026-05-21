@@ -172,17 +172,29 @@ const WatchlistAPI = {
   },
   has(id)   { return (this._ids || new Set(JSON.parse(localStorage.getItem('rr_watch')||'[]'))).has(id); },
   count()   { return (this._ids || new Set(JSON.parse(localStorage.getItem('rr_watch')||'[]'))).size; },
+  // Returns the NEW saved-state (true = now saved) on success.
+  // Throws on server error so callers can show the right message —
+  // critically the WATCHLIST_LIMIT_EXCEEDED 402 from the free-tier
+  // cap, which should surface as an upgrade prompt, not silent no-op.
+  // Local cache is reverted on failure so UI state stays consistent.
   async toggle(dealFeedId) {
     const was = this.has(dealFeedId);
     if (!this._ids) this._ids = new Set(JSON.parse(localStorage.getItem('rr_watch')||'[]'));
+    // Optimistic local update first so UI feels instant.
     was ? this._ids.delete(dealFeedId) : this._ids.add(dealFeedId);
     localStorage.setItem('rr_watch', JSON.stringify([...this._ids]));
     try {
       was
         ? await apiFetch(`/watchlist/${dealFeedId}`, { method:'DELETE' })
         : await apiFetch('/watchlist', { method:'POST', body: JSON.stringify({ dealFeedId }) });
-    } catch {}
-    return !was;
+      return !was;
+    } catch (err) {
+      // Revert local cache and re-throw so caller can show the
+      // upgrade prompt (or whatever error path is appropriate).
+      was ? this._ids.add(dealFeedId) : this._ids.delete(dealFeedId);
+      localStorage.setItem('rr_watch', JSON.stringify([...this._ids]));
+      throw err;
+    }
   },
 };
 

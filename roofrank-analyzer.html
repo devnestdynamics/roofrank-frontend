@@ -286,6 +286,9 @@ nav{background:initial;border:none;padding:0;height:auto;position:static}  /* ov
     </div>
     <button class="ad-btn-primary" type="submit" id="qSubmit">Analyze this deal →</button>
     <div class="ad-form-foot">Defaults: 25% down · 6.5% rate · 30yr · PITI baseline</div>
+    <!-- Monthly report usage for free tier. Hidden by default; populated
+         in the boot() block below once we know plan + reportsUsed. -->
+    <div class="ad-form-foot" id="usageFoot" style="display:none;margin-top:.35rem"></div>
   </form>
 </section>
 
@@ -939,6 +942,21 @@ document.getElementById('dp').addEventListener('input',function(){
       const isPro = plan === 'pro' || plan === 'team';
       const el = document.getElementById('rhPro');
       if(el) el.style.display = isPro ? '' : 'none';
+      // Free tier: usage indicator under the submit button.
+      const foot = document.getElementById('usageFoot');
+      if(foot && !isPro){
+        const used  = Number(sub?.reportsUsed);
+        const limit = Number(sub?.reportLimit);
+        if(Number.isFinite(used) && Number.isFinite(limit) && limit > 0){
+          const remaining = Math.max(0, limit - used);
+          if(remaining === 0){
+            foot.innerHTML = `<span style="color:#a06a00">${used} of ${limit} reports used this month · <a href="roofrank-pricing.html" style="color:var(--forest);text-decoration:underline;text-underline-offset:2px">Upgrade for unlimited</a></span>`;
+          } else {
+            foot.innerHTML = `${used} of ${limit} reports used this month · <a href="roofrank-pricing.html" style="color:var(--forest);text-decoration:underline;text-underline-offset:2px">Upgrade</a> for unlimited`;
+          }
+          foot.style.display = '';
+        }
+      }
     }).catch(() => {});
   }
 })();
