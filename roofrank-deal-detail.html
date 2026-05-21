@@ -1222,20 +1222,23 @@ nav.top{
       <!-- Templated verdict line — kept hidden so JS that fills it
            via setHTML('analystVerdict',…) doesn't error. -->
       <div class="analyst-verdict" id="analystVerdict" style="display:none">—</div>
-      <div class="analyst-chat-prompt">
+      <!-- Chat state is plan-aware. Free callers see a non-interactive
+           preview with the "Pro" badge; Pro callers see a fully wired
+           input. setChatEnabled() flips the state in applyProUnlocks. -->
+      <div class="analyst-chat-prompt" id="analystChatPrompt">
         Ask a follow-up
-        <span class="analyst-chat-soon">Coming soon · Pro</span>
+        <span class="analyst-chat-soon" id="analystChatSoon">Pro feature</span>
       </div>
       <div class="ai-suggestions" id="aiSuggestions">
-        <span class="ai-suggestion is-preview">Biggest risk?</span>
-        <span class="ai-suggestion is-preview">What should I offer?</span>
-        <span class="ai-suggestion is-preview">Would you buy this?</span>
-        <span class="ai-suggestion is-preview">Good for first-timers?</span>
+        <span class="ai-suggestion is-preview" onclick="askSuggestion(this)">Biggest risk?</span>
+        <span class="ai-suggestion is-preview" onclick="askSuggestion(this)">What should I offer?</span>
+        <span class="ai-suggestion is-preview" onclick="askSuggestion(this)">Would you buy this?</span>
+        <span class="ai-suggestion is-preview" onclick="askSuggestion(this)">Good for first-timers?</span>
       </div>
       <div class="ai-messages" id="aiMessages"></div>
-      <div class="ai-input-row is-disabled">
-        <input class="ai-input" id="aiInput" type="text" placeholder="Chat with the analyst ships in Pro — coming soon" disabled>
-        <button class="ai-send" id="aiSend" disabled>Ask →</button>
+      <div class="ai-input-row is-disabled" id="aiInputRow">
+        <input class="ai-input" id="aiInput" type="text" placeholder="Ask the analyst about this deal — Pro feature" disabled>
+        <button class="ai-send" id="aiSend" disabled onclick="sendAiMessage()">Ask →</button>
       </div>
       <div class="ai-foot">AI-generated · Not financial advice · Always do your own due diligence</div>
     </div>
@@ -1503,6 +1506,33 @@ function applyProUnlocks(){
   // Upgrade CTA at the bottom of the math section — free only.
   const proLink = document.getElementById('proQuietLink');
   if (proLink) proLink.style.display = isPro ? 'none' : '';
+  // Ask-the-Analyst chat — interactive for Pro, preview for free.
+  setChatEnabled(isPro);
+}
+
+// Flip the chat surface between preview (free) and live (Pro).
+// Pro state: input enabled with friendly placeholder, suggestion chips
+// clickable, "Pro feature" badge hidden. Free state: locked-back to the
+// disabled preview with the upgrade hint.
+function setChatEnabled(enabled){
+  const input  = document.getElementById('aiInput');
+  const send   = document.getElementById('aiSend');
+  const row    = document.getElementById('aiInputRow');
+  const badge  = document.getElementById('analystChatSoon');
+  const sugRow = document.getElementById('aiSuggestions');
+  if (input)  input.disabled  = !enabled;
+  if (send)   send.disabled   = !enabled;
+  if (row)    row.classList.toggle('is-disabled', !enabled);
+  if (input)  input.placeholder = enabled
+    ? 'Ask anything about this deal…'
+    : 'Ask the analyst about this deal — Pro feature';
+  if (badge)  badge.style.display = enabled ? 'none' : '';
+  if (sugRow) {
+    sugRow.querySelectorAll('.ai-suggestion').forEach(el => {
+      el.classList.toggle('is-preview', !enabled);
+      el.style.cursor = enabled ? 'pointer' : 'default';
+    });
+  }
 }
 
 // ── Comparable deals strip (item 6 of deal-detail audit) ─────────────────
@@ -2617,6 +2647,16 @@ async function sendAiMessage(){
       if(loadingEl){ loadingEl.textContent='Your session has expired. Redirecting to sign-in…'; loadingEl.classList.remove('loading'); }
       if(typeof Auth !== 'undefined' && Auth.clear) Auth.clear();
       setTimeout(()=>{ window.location.href = 'roofrank-login.html'; }, 1200);
+      send.disabled = false; return;
+    }
+    // 402 = PRO_FEATURE_REQUIRED. UI normally prevents free users from
+    // ever firing this request (input is disabled), but defense in depth:
+    // a clear upgrade prompt instead of "AI service unavailable."
+    if(res.status === 402){
+      if(loadingEl){
+        loadingEl.innerHTML='Ask the Analyst is a Pro feature. <a href="roofrank-pricing.html" style="color:var(--sage);text-decoration:underline;text-underline-offset:2px">Upgrade →</a>';
+        loadingEl.classList.remove('loading');
+      }
       send.disabled = false; return;
     }
     if(!res.ok){
