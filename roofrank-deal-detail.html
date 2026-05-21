@@ -1781,7 +1781,11 @@ function renderAnalystMetrics(d, sFin, avgs){
       const delta=hi?val-avg:avg-val;
       const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
       const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
-      const dTxt=dCls==='flat'?'flat':`${arrow} ${Math.abs(delta)<10?Math.abs(delta).toFixed(1):Math.round(Math.abs(delta))}`;
+      // Format the delta with the same fmt function as the value so
+      // dollar amounts get the $NK treatment (was rendering raw "41873"
+      // for Price/Unit deltas — looked like a random number). Percent
+      // and DSCR formatters handle their own decimals correctly.
+      const dTxt=dCls==='flat'?'flat':`${arrow} ${fmt(Math.abs(delta))}`;
       deltaPart=`<span class="sv-metric-delta ${dCls}">${dTxt}</span>`;
     }
     let vCls='n';
