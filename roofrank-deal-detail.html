@@ -283,6 +283,17 @@ nav.top{
 .hero-mls-link:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
 .hero-mls-link svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
+/* ── NEIGHBORHOOD + MAP LINK ───────────────────────────────────────────
+   Tight inline location row under the city line. Neighborhood (if we
+   have it from ATTOM enrichment) + "View on map →" that opens Google
+   Maps with the address. Builds buyer confidence without a heavy embed. */
+.hero-loc-row{display:flex;justify-content:center;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.hero-loc-neighborhood{color:var(--ink);font-weight:500}
+.hero-loc-sep{color:var(--faint)}
+.hero-loc-map{display:inline-flex;align-items:center;gap:.3rem;color:var(--forest);text-decoration:none;padding:2px 4px;border-radius:4px;transition:all .15s}
+.hero-loc-map:hover{background:var(--sage-dim)}
+.hero-loc-map svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* ── PRO QUIET LINK ────────────────────────────────────────────────────
    Replaces the old loud Pro lock overlay (billboard with green button).
    Same upgrade-tone rule we applied to dashboard's top-right Upgrade link. */
@@ -429,6 +440,15 @@ nav.top{
 
 /* ── ANALYST CHAT (chat lives inside the analyst card now) ────────────── */
 .analyst-chat-divider{height:1px; background:rgba(255,255,255,.08); margin:1.25rem 0 1rem}
+/* Analyst chat "Coming soon" state — backend /ai/analyst isn't wired
+   yet (#193). Suggestions become non-interactive previews + the input
+   row dims to signal it's not live yet. Keeps the design honest. */
+.analyst-chat-soon{display:inline-flex;align-items:center;margin-left:.55rem;font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);background:rgba(122,170,143,.12);border:1px solid rgba(122,170,143,.3);padding:2px 7px;border-radius:5px;line-height:1}
+.analyst-card .ai-suggestion.is-preview{opacity:.55;cursor:default;pointer-events:none}
+.analyst-card .ai-input-row.is-disabled{opacity:.55}
+.analyst-card .ai-input-row.is-disabled .ai-input,
+.analyst-card .ai-input-row.is-disabled .ai-send{cursor:not-allowed}
+
 .analyst-chat-prompt{
   display:flex; align-items:center; gap:.5rem;
   font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
@@ -820,6 +840,18 @@ nav.top{
       <a class="hero-mls-link" id="heroMlsLink" href="#" target="_blank" rel="noopener noreferrer">
         <span id="heroMlsText">View on MLS</span>
         <svg viewBox="0 0 24 24"><path d="M7 17 L17 7 M9 7 H17 V15"/></svg>
+      </a>
+    </div>
+
+    <!-- Neighborhood + map link. Always shows the map link (we have
+         lat/lon from RentCast on every deal). Neighborhood appears
+         only when ATTOM enrichment fills it in. -->
+    <div class="hero-loc-row" id="heroLocRow" style="display:none">
+      <span class="hero-loc-neighborhood" id="heroLocNeighborhood" style="display:none">—</span>
+      <span class="hero-loc-sep" id="heroLocSep" style="display:none">·</span>
+      <a class="hero-loc-map" id="heroLocMap" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M12 22 C12 22 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 22 12 22 Z"/><circle cx="12" cy="9" r="2"/></svg>
+        View on map
       </a>
     </div>
 
@@ -1730,19 +1762,38 @@ function renderDeal(d){
   const _hb=document.getElementById('heroBadges');
   if(_hb) _hb.innerHTML = '';
 
-  // ── Property photos (from RentCast listingData) ──────────────────────
-  // RentCast returns photos as listingData.photos[] OR listingData.images[].
-  // Try both keys defensively; hide section if neither has anything.
+  // ── Property photos ──────────────────────────────────────────────────
+  // Real photos come from listingData.photos[] / .images[]. RentCast's
+  // Property Listings API doesn't ship media (confirmed via their schema
+  // docs 2026-05-20), so the real path needs a different data provider
+  // (ListHub / MLS Grid). Until then, deterministic Picsum placeholders
+  // fill the strip so the UX feels complete. Real photos always win
+  // when present; placeholders only show as a fallback.
+  // Opt out: localStorage.setItem('rr_demo_photos', '0')
   try {
+    const DEMO_PHOTOS_DISABLED = (() => {
+      try { return localStorage.getItem('rr_demo_photos') === '0'; } catch { return false; }
+    })();
     const ld = d.listingData || {};
-    const photos = (ld.photos || ld.images || []).filter(p => p && (typeof p === 'string' || p.url));
+    let photos = (ld.photos || ld.images || []).filter(p => p && (typeof p === 'string' || p.url));
+    let isDemo = false;
+    if (!photos.length && !DEMO_PHOTOS_DISABLED && d.id) {
+      photos = [
+        `https://picsum.photos/seed/${d.id}-1/800/600`,
+        `https://picsum.photos/seed/${d.id}-2/800/600`,
+        `https://picsum.photos/seed/${d.id}-3/800/600`,
+      ];
+      isDemo = true;
+    }
     const photosSection = document.getElementById('photosSection');
     const photosStrip   = document.getElementById('photosStrip');
     if (photos.length && photosSection && photosStrip) {
       photosStrip.innerHTML = photos.slice(0, 12).map((p, i) => {
         const src = typeof p === 'string' ? p : p.url;
         const isFirst = i === 0 ? ' first' : '';
-        const badge   = i === 0 && photos.length > 1 ? `<div class="photo-count">${photos.length} photos</div>` : '';
+        const badge   = i === 0 && photos.length > 1
+          ? `<div class="photo-count">${isDemo ? 'Demo · ' : ''}${photos.length} photos</div>`
+          : '';
         return `<div class="photo-tile${isFirst}"><img src="${src}" alt="${d.address || 'Property photo'} — image ${i+1}" loading="lazy">${badge}</div>`;
       }).join('');
       photosSection.style.display = '';
@@ -1750,12 +1801,20 @@ function renderDeal(d){
   } catch (e) { console.warn('photos render failed:', e); }
 
   // ── External listing URL (View on MLS) ───────────────────────────────
-  // RentCast usually returns mlsNumber + agent details but NOT a direct
-  // listingUrl. If we have one, use it; otherwise construct a Zillow
-  // search URL from the address (their URL pattern redirects to the
-  // listing page if found, or shows search results). Either way the
-  // user gets out to a place where they can see photos / contact agent.
+  // Behind a feature toggle (default OFF) because the Zillow-fallback URL
+  // path is technically ToS-grey. Enable with:
+  //   localStorage.setItem('rr_mls_link', '1')
+  // When we have a clean upstream URL (direct from RentCast listingUrl,
+  // or a real ListHub/MLS Grid integration), the toggle can flip to on
+  // by default and the Zillow fallback becomes irrelevant.
   try {
+    const MLS_LINK_ENABLED = (() => {
+      try { return localStorage.getItem('rr_mls_link') === '1'; } catch { return false; }
+    })();
+    // Off by default. When the toggle is off, skip rendering — but
+    // we MUST NOT `return` here; that'd exit the whole renderDeal()
+    // function and the mainLayout reveal below would never run.
+    if (MLS_LINK_ENABLED) {
     const ld = d.listingData || {};
     const directUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
     const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
@@ -1766,8 +1825,6 @@ function renderDeal(d){
 
     let href = directUrl;
     let label = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
-    // Fallback: Zillow search URL from address. Pattern:
-    // https://www.zillow.com/homes/<address-with-dashes>_rb/
     if (!href && d.address && d.city && d.state) {
       const slug = `${d.address}-${d.city}-${d.state}${d.zipCode ? '-' + d.zipCode : ''}`
         .replace(/[^a-zA-Z0-9\s-]/g, '')
@@ -1781,7 +1838,37 @@ function renderDeal(d){
       mlsText.textContent = label;
       mlsRow.style.display = '';
     }
+    }  // end if (MLS_LINK_ENABLED)
   } catch (e) { console.warn('mls link render failed:', e); }
+
+  // ── Neighborhood + map link ──────────────────────────────────────────
+  // Map link works on every deal (we always have address + usually lat/lon
+  // from RentCast). Neighborhood line only shows if ATTOM enrichment
+  // surfaced one (sometimes RentCast's `county` is the only locality field).
+  try {
+    const ld = d.listingData || {};
+    const pd = d.propertyData || {};
+    const lat = ld.latitude || pd.latitude;
+    const lon = ld.longitude || pd.longitude;
+    const neighborhood = pd.neighborhood || pd.subdivision || ld.subdivision || null;
+    const locRow = document.getElementById('heroLocRow');
+    const locN   = document.getElementById('heroLocNeighborhood');
+    const locSep = document.getElementById('heroLocSep');
+    const locMap = document.getElementById('heroLocMap');
+    if (locRow && locMap) {
+      if (neighborhood && locN) {
+        locN.textContent = neighborhood;
+        locN.style.display = '';
+        if (locSep) locSep.style.display = '';
+      }
+      // Prefer lat/lon for a specific pin; fall back to address query.
+      const mapHref = (lat != null && lon != null)
+        ? `https://www.google.com/maps?q=${lat},${lon}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.address || '')}`;
+      locMap.href = mapHref;
+      locRow.style.display = '';
+    }
+  } catch (e) { console.warn('map link render failed:', e); }
 
   // ── Freshness signal — use the live Freddie rate if we have it ──────
   try {
