@@ -797,11 +797,12 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 
 </section>
 
-<!-- STAT BAR -->
+<!-- STAT BAR — first cell is live, populated by sb-init script below.
+     Static fallback ("100+") covers the case where the fetch fails. -->
 <div class="stat-bar">
   <div class="stat-cell">
-    <div class="stat-cell-val">30</div>
-    <div class="stat-cell-label">Active listings · Lynn · Worcester</div>
+    <div class="stat-cell-val" id="sbActiveCount">100+</div>
+    <div class="stat-cell-label" id="sbActiveLabel">Active listings scored nightly</div>
   </div>
   <div class="stat-cell">
     <div class="stat-cell-val">$0</div>
@@ -851,26 +852,26 @@ footer{background:var(--ink);padding:4rem 0 2rem}
         <span class="bm-sep">·</span>
         <span class="bm-live">Live · 2h ago</span>
       </div>
-      <p class="bm-body">I'm watching <b>4 Strong Buys</b> across Lynn and Worcester right now. The standout's <b>58 Laighton St</b> in Lynn — <b>11.4% cash-on-cash</b>, <b>$2,180/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
-      <div class="bm-picks">
-        <div class="bm-pick">
-          <div class="bm-pick-head"><div class="bm-pick-score">87</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">58 Laighton St</div>
-          <div class="bm-pick-meta">Lynn, MA · 4 units · 12d</div>
-          <div class="bm-pick-cf">+$2,180/mo</div>
+      <p class="bm-body" id="bmBody">I'm watching <b>4 Strong Buys</b> across Lynn and Worcester right now. The standout's <b>58 Laighton St</b> in Lynn — <b>11.4% cash-on-cash</b>, <b>$2,180/mo</b> coming in. <b>3 sellers</b> have sat 60+ days — that's real pricing leverage if you act on it.</p>
+      <div class="bm-picks" id="bmPicks">
+        <div class="bm-pick" id="bmPick1">
+          <div class="bm-pick-head"><div class="bm-pick-score" id="bmPick1Score">87</div><div class="bm-pick-sig" id="bmPick1Sig">Strong Buy</div></div>
+          <div class="bm-pick-addr" id="bmPick1Addr">58 Laighton St</div>
+          <div class="bm-pick-meta" id="bmPick1Meta">Lynn, MA · 4 units · 12d</div>
+          <div class="bm-pick-cf" id="bmPick1Cf">+$2,180/mo</div>
         </div>
-        <div class="bm-pick">
-          <div class="bm-pick-head"><div class="bm-pick-score">82</div><div class="bm-pick-sig">Strong Buy</div></div>
-          <div class="bm-pick-addr">12 Howard St</div>
-          <div class="bm-pick-meta">Worcester, MA · 6 units · 64d</div>
-          <div class="bm-pick-cf">+$1,940/mo</div>
+        <div class="bm-pick" id="bmPick2">
+          <div class="bm-pick-head"><div class="bm-pick-score" id="bmPick2Score">82</div><div class="bm-pick-sig" id="bmPick2Sig">Strong Buy</div></div>
+          <div class="bm-pick-addr" id="bmPick2Addr">12 Howard St</div>
+          <div class="bm-pick-meta" id="bmPick2Meta">Worcester, MA · 6 units · 64d</div>
+          <div class="bm-pick-cf" id="bmPick2Cf">+$1,940/mo</div>
         </div>
       </div>
 
       <div class="bm-chat">
         <div class="bm-chat-prefix fade-up">Ask the analyst</div>
-        <div class="bm-chat-q fade-up" style="transition-delay:.2s">Is $645K a fair price on 58 Laighton?</div>
-        <div class="bm-chat-a fade-up" style="transition-delay:1.1s">At today's rate it pencils to 11.4% CoC — solid for Lynn. Comparable 4-units have closed $590–680K in the last 90 days, so $645K is in range. My read: start at $610K, walk above $625K.</div>
+        <div class="bm-chat-q fade-up" id="bmChatQ" style="transition-delay:.2s">Is $645K a fair price on 58 Laighton?</div>
+        <div class="bm-chat-a fade-up" id="bmChatA" style="transition-delay:1.1s">At today's rate it pencils to 11.4% CoC — solid for Lynn. Comparable 4-units have closed $590–680K in the last 90 days, so $645K is in range. My read: start at $610K, walk above $625K.</div>
         <div class="fade-up" style="transition-delay:1.4s;font-size:.7rem;color:rgba(255,255,255,.4);font-style:italic;text-align:right;margin-top:.65rem;letter-spacing:.02em">↳ Lives on every deal-detail page · coming with your account</div>
       </div>
     </div>
@@ -1140,15 +1141,87 @@ footer{background:var(--ink);padding:4rem 0 2rem}
 </footer>
 
 <script>
+const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+
+// ── Stat bar + brief mockup — fetch all 5 markets in parallel, populate
+// the live counts + pick the top 2 Strong Buys across all of them for
+// the dashboard preview. Static fallback stays if any fetch fails.
+(async function populateLiveLanding() {
+  try {
+    const markets = ['lynn', 'salem', 'revere', 'worcester', 'framingham'];
+    const all = await Promise.allSettled(markets.map(m =>
+      fetch(`${API}/feed/public?market=${m}&limit=10`).then(r => r.ok ? r.json() : null)
+    ));
+    let totalActive = 0;
+    const realDeals = [];
+    for (const r of all) {
+      if (r.status !== 'fulfilled' || !r.value) continue;
+      totalActive += r.value.market?.activeCount || 0;
+      const deals = (r.value.deals || []).filter(d =>
+        d.score && d.verdict === 'Strong Buy' &&
+        d.monthlyCashflow != null && d.coc != null &&
+        d.address && d.address.includes(',')   // real rentcast, not seed
+      );
+      realDeals.push(...deals);
+    }
+
+    // Stat bar: live total active count
+    if (totalActive > 0) {
+      const el = document.getElementById('sbActiveCount');
+      if (el) el.textContent = String(totalActive);
+    }
+
+    // Brief mockup: pick top 2 Strong Buys by score
+    realDeals.sort((a, b) => b.score - a.score);
+    const top2 = realDeals.slice(0, 2);
+    if (top2.length >= 1) {
+      const fmtCf = (cf) => `+$${Math.round(cf).toLocaleString()}/mo`;
+      const fillPick = (i, d) => {
+        const parts = (d.address || '').split(',').map(s => s.trim());
+        const street = parts[0] || d.address;
+        const city = parts[1] || d.city || '';
+        const meta = `${city}, ${d.state || 'MA'} · ${d.units || '?'} units${d.daysListed != null ? ` · ${d.daysListed}d` : ''}`;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set(`bmPick${i}Score`, d.score);
+        set(`bmPick${i}Sig`, d.verdict);
+        set(`bmPick${i}Addr`, street);
+        set(`bmPick${i}Meta`, meta);
+        set(`bmPick${i}Cf`, fmtCf(d.monthlyCashflow));
+      };
+      fillPick(1, top2[0]);
+      if (top2[1]) fillPick(2, top2[1]);
+    }
+
+    // Brief body — name the lead deal honestly + count of standout deals.
+    if (top2.length >= 1) {
+      const lead = top2[0];
+      const leadStreet = (lead.address || '').split(',')[0].trim();
+      const leadCity = (lead.address || '').split(',')[1]?.trim() || lead.city;
+      const bodyEl = document.getElementById('bmBody');
+      if (bodyEl) {
+        const sbCount = realDeals.length;
+        bodyEl.innerHTML = `I'm watching <b>${sbCount} Strong Buy${sbCount === 1 ? '' : 's'}</b> across your markets right now. The standout's <b>${leadStreet}</b> in ${leadCity} — <b>${lead.coc}% cash-on-cash</b>, <b>$${Math.round(lead.monthlyCashflow).toLocaleString()}/mo</b> coming in.`;
+      }
+      // Update the chat Q/A to reference the same lead deal
+      const priceK = lead.price >= 1e6
+        ? `$${(lead.price / 1e6).toFixed(2)}M`
+        : `$${Math.round(lead.price / 1000)}K`;
+      const qEl = document.getElementById('bmChatQ');
+      const aEl = document.getElementById('bmChatA');
+      if (qEl) qEl.textContent = `Is ${priceK} a fair price on ${leadStreet}?`;
+      if (aEl) aEl.textContent = `At today's rate it pencils to ${lead.coc}% CoC — solid for ${leadCity}. Comparable ${lead.units}-units in this market run a similar range. My read: anchor your offer below ask and walk based on inspection.`;
+    }
+  } catch (e) { console.warn('landing live-data fetch failed:', e); }
+})();
+
 // ── Hero receipt — swap static fallback for the current top live deal ────
 // Worcester has the deepest pool of real Strong Buys right now (Lynn has
 // none after the 2026-05-19 stale-deal cleanup; Salem/Revere/Framingham
 // are seed-only until ingestion is wired). When those markets fill out,
 // widen this to query market=all once /public is allowed past limit=10.
 (function() {
-  const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-    ? 'http://localhost:3000/api'
-    : 'https://api.roofrank.io/api';
   fetch(API + '/feed/public?market=worcester&limit=10')
     .then(r => r.ok ? r.json() : null)
     .then(data => {
