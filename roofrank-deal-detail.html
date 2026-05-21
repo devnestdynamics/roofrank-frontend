@@ -1075,6 +1075,10 @@ nav.top{
 
 <script>
 const fid = new URLSearchParams(location.search).get('fid');
+// MARKET_AVGS — kept as the fallback when the live market-stats fetch
+// hasn't completed yet (or fails). Live averages from
+// /api/feed/stats/markets win when present — see getMarketAvgs() below.
+// (backlog #98)
 const MARKET_AVGS = {
   'Boston':{capRate:5.8,coc:4.2,ppu:380000,dscr:1.12},'Providence':{capRate:6.1,coc:4.8,ppu:290000,dscr:1.14},
   'Hartford':{capRate:6.4,coc:5.1,ppu:220000,dscr:1.15},'Worcester':{capRate:6.2,coc:4.9,ppu:240000,dscr:1.13},
@@ -1082,6 +1086,63 @@ const MARKET_AVGS = {
   'Springfield':{capRate:6.8,coc:5.5,ppu:160000,dscr:1.16},'Bridgeport':{capRate:6.5,coc:5.2,ppu:190000,dscr:1.15},
   'Lowell':{capRate:6.3,coc:4.9,ppu:200000,dscr:1.13},'default':{capRate:6.1,coc:4.8,ppu:280000,dscr:1.13},
 };
+
+// Live market averages — fetched once on page load from /feed/stats/markets,
+// cached in sessionStorage with a 10-min TTL. Keyed by city name.
+// {capRate, coc, dscr, ppu} per city — same shape as MARKET_AVGS.
+let LIVE_MARKET_AVGS = {};
+const LIVE_AVGS_CACHE_KEY = 'rr_market_avgs_v1';
+const LIVE_AVGS_TTL_MS = 10 * 60 * 1000;
+
+(function loadCachedLiveAvgs(){
+  try {
+    const raw = sessionStorage.getItem(LIVE_AVGS_CACHE_KEY);
+    if (!raw) return;
+    const cached = JSON.parse(raw);
+    if (Date.now() - cached.ts < LIVE_AVGS_TTL_MS) LIVE_MARKET_AVGS = cached.data || {};
+  } catch {}
+})();
+
+async function refreshLiveMarketAvgs(){
+  try {
+    const rows = await FeedAPI.marketStats();
+    if (!Array.isArray(rows)) return;
+    const next = {};
+    for (const r of rows) {
+      if (!r || !r.city) continue;
+      const cap  = r.avg_cap_rate != null ? parseFloat(r.avg_cap_rate) : null;
+      const coc  = r.avg_coc != null ? parseFloat(r.avg_coc) : null;
+      const dscr = r.avg_dscr != null ? parseFloat(r.avg_dscr) : null;
+      const ppu  = r.avg_price_per_unit != null ? parseFloat(r.avg_price_per_unit) : null;
+      // Only keep markets where we have at least one real metric
+      if (cap == null && coc == null && dscr == null && ppu == null) continue;
+      next[r.city] = {
+        capRate: cap != null && !isNaN(cap) ? cap : undefined,
+        coc:     coc != null && !isNaN(coc) ? coc : undefined,
+        dscr:    dscr != null && !isNaN(dscr) ? dscr : undefined,
+        ppu:     ppu != null && !isNaN(ppu) ? ppu : undefined,
+      };
+    }
+    LIVE_MARKET_AVGS = next;
+    try { sessionStorage.setItem(LIVE_AVGS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: next })); } catch {}
+    // Trigger a re-render so any open deal-detail picks up the live numbers
+    if (typeof applyScenario === 'function' && _deal) applyScenario();
+  } catch (e) { console.warn('refreshLiveMarketAvgs failed:', e?.message || e); }
+}
+
+// Returns live averages for a city, falling back to hardcoded MARKET_AVGS
+// (and finally MARKET_AVGS.default) per-field. Per-field fallback means
+// a market with partial live data still uses live values where available.
+function getMarketAvgs(city){
+  const live = LIVE_MARKET_AVGS[city] || {};
+  const seed = MARKET_AVGS[city] || MARKET_AVGS['default'];
+  return {
+    capRate: live.capRate != null ? live.capRate : seed.capRate,
+    coc:     live.coc     != null ? live.coc     : seed.coc,
+    dscr:    live.dscr    != null ? live.dscr    : seed.dscr,
+    ppu:     live.ppu     != null ? live.ppu     : seed.ppu,
+  };
+}
 function fmt$(n){return n!=null?'$'+Math.round(Math.abs(n)).toLocaleString():'—';}
 function fmtK(n){return n!=null?(n>=1e6?'$'+(n/1e6).toFixed(2)+'M':n>=1000?'$'+Math.round(n/1000)+'K':'$'+n):'—';}
 function scoreColor(s){return s>=75?'#1c4a35':s>=60?'#3e8160':s>=45?'#a06a00':'#a03030';}
@@ -1592,7 +1653,7 @@ function applyScenario(){
   if(!_deal) return;
   const d = _deal;
   const fin = (d.reportData||{}).financials || {};
-  const avgs = MARKET_AVGS[d.city] || MARKET_AVGS['default'];
+  const avgs = getMarketAvgs(d.city);
   const sFin = computeScenarioFin(d, fin, scenario);
   try {
     const score = d.rankScore || 0;
@@ -1696,7 +1757,7 @@ function renderDeal(d){
   const signal=(d.reportData||{}).signal||scoreSignal(score);
   const c=scoreColor(score);
   const cls=score>=75?'sb':score>=60?'buy':score>=45?'wat':'pas';
-  const avgs=MARKET_AVGS[d.city]||MARKET_AVGS['default'];
+  const avgs = getMarketAvgs(d.city);
 
   // Seed scenario from the backend's implied rate if we can derive it from the deal
   // (loan = price × .75, annualDebtService given → solve for rate). Skip if data missing.
@@ -2045,6 +2106,9 @@ async function boot(){
   } catch(e){ document.getElementById('loading').textContent='Could not load deal: '+e.message; }
 }
 document.addEventListener('DOMContentLoaded', boot);
+// Kick off the live-averages fetch in parallel with deal load — first render
+// uses cached/hardcoded values, gets re-rendered when the fetch resolves.
+document.addEventListener('DOMContentLoaded', () => { refreshLiveMarketAvgs(); });
 
 function openInAnalyzer(){
   const d = window._dealData;
