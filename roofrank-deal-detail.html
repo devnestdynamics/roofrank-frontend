@@ -1750,16 +1750,35 @@ function renderDeal(d){
   } catch (e) { console.warn('photos render failed:', e); }
 
   // ── External listing URL (View on MLS) ───────────────────────────────
+  // RentCast usually returns mlsNumber + agent details but NOT a direct
+  // listingUrl. If we have one, use it; otherwise construct a Zillow
+  // search URL from the address (their URL pattern redirects to the
+  // listing page if found, or shows search results). Either way the
+  // user gets out to a place where they can see photos / contact agent.
   try {
     const ld = d.listingData || {};
-    const listingUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
+    const directUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
     const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
     const mlsRow  = document.getElementById('heroMlsRow');
     const mlsLink = document.getElementById('heroMlsLink');
     const mlsText = document.getElementById('heroMlsText');
-    if (listingUrl && mlsRow && mlsLink && mlsText) {
-      mlsLink.href = listingUrl;
-      mlsText.textContent = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
+    if (!mlsRow || !mlsLink || !mlsText) return;
+
+    let href = directUrl;
+    let label = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
+    // Fallback: Zillow search URL from address. Pattern:
+    // https://www.zillow.com/homes/<address-with-dashes>_rb/
+    if (!href && d.address && d.city && d.state) {
+      const slug = `${d.address}-${d.city}-${d.state}${d.zipCode ? '-' + d.zipCode : ''}`
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+      href = `https://www.zillow.com/homes/${slug}_rb/`;
+      label = mlsNumber ? `Find on Zillow · MLS ${mlsNumber}` : 'Find on Zillow';
+    }
+    if (href) {
+      mlsLink.href = href;
+      mlsText.textContent = label;
       mlsRow.style.display = '';
     }
   } catch (e) { console.warn('mls link render failed:', e); }
