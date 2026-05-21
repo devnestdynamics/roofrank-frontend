@@ -99,15 +99,24 @@ nav.top{
 .hero-ring-wrap{display:none}  /* legacy centered wrap — replaced by .dd-hero-head */
 
 .dd-hero-head{display:flex;align-items:flex-start;gap:.95rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
-.dd-hero-rmark-col{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.dd-hero-rmark-col{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.3rem}
 .dd-hero-head .hero-rmark{flex-shrink:0;width:72px}
 .dd-hero-head .hero-rmark svg{width:72px;height:72px}
-.dd-hero-head .hero-rmark-num{font-size:1.45rem}
-.dd-hero-head .hero-rmark-out{font-size:.55rem;color:var(--faint);margin-top:1px}
+/* Eyebrow above the score number — tells the reader what they're looking
+   at before they read the digits. Mono + small caps for the
+   instrument-panel feel. */
+.dd-hero-head .hero-rmark-eyebrow{font-family:var(--mono);font-size:.55rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:2px}
+/* Inline "78 /100" — denominator stays visible (was .55rem ≈ 8.8px, easy
+   to miss). Number stays big + colored; denom keeps the muted treatment. */
+.dd-hero-head .hero-rmark-num{font-size:1.45rem;display:inline-flex;align-items:baseline;gap:2px}
+.dd-hero-head .hero-rmark-num .hr-denom{font-family:var(--mono);font-size:.62rem;color:var(--faint);font-weight:400;letter-spacing:.02em}
+.dd-hero-head .hero-rmark-out{display:none}  /* replaced by inline denom above */
 /* "How is this calculated?" — small inline hint attached to the score
-   it explains, not dangling at the bottom of the hero. */
-.hero-rmark-hint{background:none;border:none;padding:0;font-family:var(--mono);font-size:.6rem;color:var(--muted);cursor:pointer;letter-spacing:.04em;text-align:center;line-height:1.3;max-width:84px}
-.hero-rmark-hint:hover{color:var(--forest)}
+   it explains, not dangling at the bottom of the hero. Bumped from
+   .6rem (~9.6px) to .68rem (~10.9px) + underline so it reads as an
+   action, not decoration. */
+.hero-rmark-hint{background:none;border:none;padding:2px 4px;font-family:var(--sans);font-size:.68rem;color:var(--forest);cursor:pointer;letter-spacing:.01em;text-align:center;line-height:1.3;max-width:96px;text-decoration:underline;text-underline-offset:2px;text-decoration-color:rgba(28,74,53,.35)}
+.hero-rmark-hint:hover{color:var(--forest-2);text-decoration-color:var(--forest-2)}
 .dd-hero-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
 .dd-hero-info .hero-signal{display:inline-flex;align-items:center;align-self:flex-start;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:5px;line-height:1;margin:0}
 .dd-hero-info .hero-signal.sb{background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest)}
@@ -253,7 +262,13 @@ nav.top{
 /* Per-unit + DOM trailing pills */
 .hero-price-pill{display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; color:var(--muted); padding:.18rem .55rem; background:var(--cream-2); border:1px solid var(--border); border-radius:6px}
 
-.hero-badges{display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center; margin-bottom:1.5rem}
+/* hero-badges container is reserved for future "Fresh listing", "Price
+   drop", etc. badges; the score-explain hint used to live here but
+   moved up next to the RankMark. Empty-state margin trimmed so the
+   gap to the next section isn't a yawning 1.5rem of nothing. When
+   we ship badges back, restore the bottom margin or use :empty. */
+.hero-badges{display:flex; flex-wrap:wrap; gap:.4rem; justify-content:center}
+.hero-badges:not(:empty){margin-bottom:1.5rem}
 .badge{
   font-size:.72rem; padding:.3rem .65rem; border-radius:6px;
   border:1px solid var(--border); color:var(--muted); background:var(--white);
@@ -933,10 +948,10 @@ nav.top{
             <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
             <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
           </svg>
-          <div class="hero-rmark-num" id="hrNum">—</div>
-          <div class="hero-rmark-out">/ 100</div>
+          <div class="hero-rmark-num"><span id="hrNum">—</span><span class="hr-denom">/100</span></div>
         </div>
-        <button type="button" class="hero-rmark-hint" onclick="openScoreExplain()">How is this scored? ›</button>
+        <div class="hero-rmark-eyebrow">RoofRank Score</div>
+        <button type="button" class="hero-rmark-hint" onclick="openScoreExplain()">How is this scored?</button>
       </div>
       <div class="dd-hero-info">
         <span class="hero-signal" id="heroSignal">—</span>
