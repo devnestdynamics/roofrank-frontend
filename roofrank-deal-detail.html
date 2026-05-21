@@ -325,6 +325,47 @@ nav.top{
 .hero-loc-map:hover{background:var(--sage-dim)}
 .hero-loc-map svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
+/* ── COMPARABLES STRIP (item 6 of deal-detail audit) ──────────────────
+   Peer deals in the same city — same DNA as the dashboard rows.
+   Mini-RankMark on the left, address + verdict on the right, $cashflow
+   trailing. Tap a row to navigate to that deal's detail page. */
+.comp-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.comp-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.75rem;gap:.6rem;flex-wrap:wrap}
+.comp-eyebrow{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.comp-meta{font-family:var(--mono);font-size:.66rem;color:var(--faint)}
+.comp-list{display:flex;flex-direction:column;gap:.4rem}
+.comp-row{background:var(--cream-2);border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;display:flex;align-items:center;gap:.7rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.comp-row:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+.comp-rmark{flex-shrink:0;display:flex;align-items:center;gap:.35rem}
+.comp-rmark svg{width:22px;height:22px;display:block;overflow:visible}
+.comp-rmark .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage);transition:stroke .3s}
+.comp-rmark .mk-floor{fill:var(--cream-3);transition:fill .3s,opacity .3s}
+.comp-rmark.sb  .mk-roof{stroke:var(--forest)}
+.comp-rmark.sb  .mk-floor-1{fill:var(--forest);opacity:.45}
+.comp-rmark.sb  .mk-floor-2{fill:var(--forest);opacity:.7}
+.comp-rmark.sb  .mk-floor-3{fill:var(--forest);opacity:1}
+.comp-rmark.buy .mk-roof{stroke:var(--forest-3)}
+.comp-rmark.buy .mk-floor-1{fill:var(--sage);opacity:.55}
+.comp-rmark.buy .mk-floor-2{fill:var(--sage);opacity:.9}
+.comp-rmark.buy .mk-floor-3{fill:var(--forest-3);opacity:1}
+.comp-rmark.wat .mk-roof{stroke:var(--amber)}
+.comp-rmark.wat .mk-floor-2{fill:var(--amber);opacity:.55}
+.comp-rmark.wat .mk-floor-3{fill:var(--amber);opacity:.95}
+.comp-rmark.pas .mk-roof{stroke:var(--faint)}
+.comp-rmark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
+.comp-rmark-num{font-family:var(--mono);font-size:.82rem;font-weight:500;color:var(--ink);line-height:1}
+.comp-rmark.sb  .comp-rmark-num{color:var(--forest)}
+.comp-rmark.buy .comp-rmark-num{color:var(--forest-3)}
+.comp-rmark.wat .comp-rmark-num{color:var(--amber)}
+.comp-rmark.pas .comp-rmark-num{color:var(--muted)}
+.comp-addr{font-family:var(--serif);font-size:.9rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comp-nums{font-family:var(--mono);font-size:.72rem;color:var(--muted);flex-shrink:0;display:flex;gap:.4rem}
+.comp-cf{color:var(--forest);font-weight:500}
+@media(max-width:430px){
+  .comp-nums{display:none}
+  .comp-row::after{content:'›';color:var(--faint);font-size:1.1rem;margin-left:.2rem}
+}
+
 /* ── PRO QUIET LINK ────────────────────────────────────────────────────
    Replaces the old loud Pro lock overlay (billboard with green button).
    Same upgrade-tone rule we applied to dashboard's top-right Upgrade link. */
@@ -914,6 +955,19 @@ nav.top{
     <div class="hero-badges" id="heroBadges"></div>
   </section>
 
+  <!-- ── COMPARABLES — peer deals in the same city (item 6 of audit).
+       Hidden by default; renderComparables() shows it when ≥1 peer
+       deal is found in the same city via FeedAPI.list(). -->
+  <section id="comparablesSection" style="display:none">
+    <div class="comp-card">
+      <div class="comp-head">
+        <span class="comp-eyebrow" id="compEyebrow">Comparable deals</span>
+        <span class="comp-meta" id="compMeta"></span>
+      </div>
+      <div class="comp-list" id="compList"></div>
+    </div>
+  </section>
+
   <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
   <section id="rentEstimateSection" style="display:none">
     <div class="rent-card">
@@ -1280,6 +1334,74 @@ const _forcedFree = new URLSearchParams(window.location.search).get('free') === 
 let isPro = false;
 function applyProUnlocks(){
   document.querySelectorAll('.pro-locked').forEach(el => el.classList.toggle('pro-unlocked', isPro));
+}
+
+// ── Comparable deals strip (item 6 of deal-detail audit) ─────────────────
+// Pulls peers in the same city via FeedAPI.list(), excludes the current
+// deal, prefers same unit count (better comps). Renders a quiet horizontal
+// list of mini-RankMarks + addresses + cashflow under the hero. Each row
+// navigates to that deal's detail page. Fail-soft — hides the section if
+// no peers found or if the fetch fails.
+const COMP_RMARK_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true">
+  <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+  <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+  <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+</svg>`;
+
+async function renderComparables(d){
+  const section = document.getElementById('comparablesSection');
+  const list    = document.getElementById('compList');
+  const eyebrow = document.getElementById('compEyebrow');
+  const meta    = document.getElementById('compMeta');
+  if (!section || !list || !d || !d.city || !d.state) return;
+
+  let peers = [];
+  try {
+    const resp = await FeedAPI.list({ city: d.city, state: d.state, limit: 50, sort: 'score' });
+    const all = (resp && resp.deals) || [];
+    // Exclude the current deal, then prefer same unit count (better comps)
+    // when we have at least 3 same-unit candidates; otherwise mix everything.
+    const others = all.filter(x => x.id !== d.id && x.rankScore != null);
+    const sameUnit = d.units ? others.filter(x => x.units === d.units) : [];
+    const pool = (sameUnit.length >= 3) ? sameUnit : others;
+    peers = pool.slice(0, 4);
+  } catch (e) {
+    console.warn('comparables fetch failed:', e?.message || e);
+  }
+  if (!peers.length) { section.style.display = 'none'; return; }
+
+  const cityShort = d.city || 'this market';
+  const unitLabel = d.units ? `${d.units}-unit` : '';
+  if (eyebrow) eyebrow.textContent = unitLabel
+    ? `Other ${unitLabel} deals in ${cityShort}`
+    : `Other deals in ${cityShort}`;
+  if (meta) meta.textContent = `${peers.length} comp${peers.length===1?'':'s'}`;
+
+  list.innerHTML = peers.map(p => {
+    const score = p.rankScore || 0;
+    const cl = score >= 75 ? 'sb' : score >= 60 ? 'buy' : score >= 45 ? 'wat' : 'pas';
+    const verdict = score >= 75 ? 'Strong Buy' : score >= 60 ? 'Buy' : score >= 45 ? 'Watch' : 'Pass';
+    const fin = (p.reportData || {}).financials || {};
+    const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+    const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+    const addrShort = (p.address || 'Unknown').split(',').slice(0, 2).join(',');
+    return `
+      <button class="comp-row" type="button" onclick="window.location.href='roofrank-deal-detail.html?fid=${p.id}'" title="${verdict} · ${score}/100">
+        <div class="comp-rmark ${cl}">
+          ${COMP_RMARK_SVG}
+          <span class="comp-rmark-num">${score}</span>
+        </div>
+        <span class="comp-addr">${addrShort}</span>
+        <span class="comp-nums">
+          ${cf != null ? `<span class="comp-cf">${cf < 0 ? '-' : '+'}$${Math.abs(cf).toLocaleString()}/mo</span>` : ''}
+          ${cf != null && coc != null ? '<span>·</span>' : ''}
+          ${coc != null ? `<span>${coc}% CoC</span>` : ''}
+        </span>
+      </button>
+    `;
+  }).join('');
+  section.style.display = '';
 }
 
 // ── Per-unit rent override (backlog #79) ─────────────────────────────────
@@ -1767,6 +1889,9 @@ function renderDeal(d){
   window._dealData = d;
   // Per-unit rent override section (idempotent — safe to call on every renderDeal)
   try { renderRentEstimate(d); } catch (e) { console.warn('rent estimate render failed', e); }
+  // Comparable deals — async, fail-soft. Lives outside the main render
+  // path so a slow fetch doesn't block the page reveal.
+  try { renderComparables(d); } catch (e) { console.warn('comparables render failed', e); }
   const fin=(d.reportData||{}).financials||{};
   const sc=(d.reportData||{}).scores||{};
   const score=d.rankScore||0;
