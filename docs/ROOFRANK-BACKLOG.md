@@ -2993,3 +2993,35 @@ This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate 
 **Re-validation needed after swap:** Voice could shift between model versions. Generate ~5 narratives on the new model and eyeball them against the current set before backfilling production deals again with `--force`.
 
 **Recommendation:** Lift the model id to a single constant (e.g. `src/lib/aiModels.ts`) so the swap is one-line. Do this in the same change as the migration to keep future swaps cheap. Run before June 15 — Anthropic will start returning errors after that date.
+
+---
+
+### 207. ATTOM API key returning 401 in prod — enrichment is silently failing
+
+**Status:** 🔴 Critical · data quality regression in prod.
+
+**Caught 2026-05-21** during the Salem/Revere/Framingham ingest. Every ATTOM property detail call returns:
+```
+ATTOM 401: {"Response":{"status":{"code":"401","msg":"Unauthorized"}}}
+```
+
+44 new deals were ingested across 3 markets, but ATTOM enrichment (neighborhood grade, tax assessment, property type classification) fell through to the fallback path on every one. Lynn + Worcester deals from the nightly cron likely have the same problem — needs verification.
+
+**Impact:**
+- Deal records lack ATTOM neighborhood grade → defaults to `B` for all new deals
+- Lack ATTOM tax assessments → falls back to market-default effective tax rates (which the recent market-assumptions changes cover, but is less accurate than per-property data)
+- Property type classification (`proptype`) returns null → ingestion treats this as "skip ATTOM enrichment" and still saves the deal, but the catalog quality drops over time as fresh deals lack the data older ones have
+
+**Likely causes (most → least probable):**
+1. ATTOM API key rotated or expired and the new value never got into the ECS task definition env.
+2. Account quota exceeded — ATTOM has monthly call limits on their lower tiers.
+3. Account billing issue.
+4. ATTOM deprecated the endpoint version we're calling.
+
+**Diagnosis steps:**
+1. Pull current `ATTOM_API_KEY` from the prod ECS task definition.
+2. Test it directly against `https://api.attomdata.com/propertyapi/v1.0.0/property/detail?address1=<addr>` with curl + the same headers our backend sends.
+3. If the key returns 200 in curl, the issue is in how we're passing it (header name, env var loading, etc.).
+4. If the key returns 401 in curl, log into the ATTOM dashboard and check quota / billing / key status.
+
+**Fix:** Rotate the key + update ECS task definition + redeploy. Until then, ATTOM-dependent fields keep defaulting silently. Should also add a Sentry/CloudWatch alarm so a future 401 spike doesn't go unnoticed for weeks.
