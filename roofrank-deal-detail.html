@@ -879,6 +879,21 @@ nav.top{
 
 <main class="brief" id="mainLayout" style="display:none">
 
+  <!-- ── DAILY LIMIT BANNER ─────────────────────────────────────────
+       Free tier sees the 4th+ deal-detail view of the day with a
+       persistent banner. Backend returns dailyLimitExceeded:true on
+       GET /feed/:id once the user is past their plan's cap. Hidden
+       by default; toggled in renderDeal() when the flag is set. -->
+  <section id="dailyLimitBanner" style="display:none;background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.2);border-radius:10px;padding:.85rem 1.1rem;margin:.4rem 0 .9rem;display:none">
+    <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:space-between">
+      <div style="flex:1;min-width:240px">
+        <div style="font-size:.78rem;font-weight:600;color:#a06a00;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px">Daily view limit reached</div>
+        <div style="font-size:.78rem;color:#6b7168;line-height:1.5" id="dailyLimitBannerBody">You've opened <strong id="dlbCap">3</strong> deals today on the free plan. Upgrade to Pro for unlimited views, AI deal narratives, and the full 8-metric breakdown.</div>
+      </div>
+      <a href="roofrank-pricing.html" style="font-size:.78rem;font-weight:600;color:#fff;background:#1c4a35;padding:.45rem .95rem;border-radius:8px;text-decoration:none;white-space:nowrap">Upgrade →</a>
+    </div>
+  </section>
+
   <!-- ── PROPERTY PHOTOS ───────────────────────────────────────────
        Populated from listingData.photos if RentCast returns them;
        hidden otherwise. Transforms the page from spreadsheet to
@@ -1887,6 +1902,20 @@ function setupScenarioControls(){
 function renderDeal(d){
   _deal = d;
   window._dealData = d;
+  // Daily-view limit banner — show when backend flags dailyLimitExceeded:true.
+  // The cap number comes back as dailyViewLimit (null for Pro/Team).
+  try {
+    const banner = document.getElementById('dailyLimitBanner');
+    if (banner) {
+      if (d.dailyLimitExceeded) {
+        const capEl = document.getElementById('dlbCap');
+        if (capEl && d.dailyViewLimit != null) capEl.textContent = d.dailyViewLimit;
+        banner.style.display = '';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+  } catch (e) { console.warn('daily limit banner render failed', e); }
   // Per-unit rent override section (idempotent — safe to call on every renderDeal)
   try { renderRentEstimate(d); } catch (e) { console.warn('rent estimate render failed', e); }
   // Comparable deals — async, fail-soft. Lives outside the main render
