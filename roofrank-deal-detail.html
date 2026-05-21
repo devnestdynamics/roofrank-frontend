@@ -432,9 +432,13 @@ nav.top{
 
 /* ── RENT ESTIMATE CARD (per-unit override) ──────────────────────────── */
 #rentEstimateSection{padding:.5rem 0 1rem}
+/* Was a stark #fff box that read as foreign against the cream page bg.
+   Cream-2 + sage-border places it in the same warm palette as the
+   rest of the page while still popping enough to read as an
+   "interactive input" surface (vs the read-only comp listings). */
 .rent-card{
-  background:#fff; border:1px solid var(--border); border-radius:var(--r-lg);
-  padding:1.1rem 1.1rem 1rem; box-shadow:0 1px 2px rgba(28,31,28,.03);
+  background:var(--cream-2); border:1px solid var(--sage-border); border-radius:var(--r-lg);
+  padding:1.1rem 1.1rem 1rem; box-shadow:none;
 }
 .rent-head{margin-bottom:.85rem}
 .rent-eyebrow{font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--forest); margin-bottom:.4rem}
@@ -1054,18 +1058,44 @@ nav.top{
   </section>
 
   <!-- ───────── IA RE-FLOW (2026-05-21) ─────────────────────────────────
-       Section order on this page used to zig-zag between "this deal"
-       and "other context." Restructured per mockup-detail-page-ia.html
-       to a single forward flow:
-         hero → analyst note → THE MATH → rent assumptions →
-                 comparables → ask the analyst → score breakdown
-       Comparables now lives AFTER the math + rent (so the user has
-       formed a verdict on this deal before being shown peers).
-       The chat lives at the bottom under "Ask the analyst" since
-       it's a take-action surface, not a read surface.
-       The 8-metric grid (svMetrics) moved out of the analyst card
-       and into the math section so all the numbers live together.
+       hero → analyst note → RENT ASSUMPTIONS → the math → comparables
+            → ask the analyst → score breakdown
+       Rent moved up directly under the analyst note (2026-05-21 II) —
+       per-unit rent is the first input most users want to challenge
+       once they've read the verdict; pushing it to the bottom made it
+       feel like a footnote.
   -->
+
+  <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
+  <section id="rentEstimateSection" style="display:none">
+    <div class="rent-card">
+      <div class="rent-head">
+        <div class="rent-eyebrow">Rent estimate</div>
+        <div class="rent-headline" id="rentHeadline">—</div>
+        <div class="rent-sub" id="rentSub">—</div>
+      </div>
+      <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
+        Use your own numbers
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="rent-form" id="rentForm" style="display:none">
+        <div class="rent-form-header">
+          <span class="rent-form-label">Per-unit rent</span>
+          <span class="rent-form-hint">your numbers</span>
+        </div>
+        <div id="rentUnitInputs"></div>
+        <div class="rent-form-totals">
+          <span>Total gross</span>
+          <span id="rentFormTotal" class="rent-form-total-val">—</span>
+        </div>
+        <div class="rent-form-actions">
+          <button class="rent-apply" type="button" onclick="applyRentOverride()">Apply →</button>
+          <button class="rent-revert" type="button" onclick="revertRentOverride()" id="rentRevertBtn" style="display:none">Revert to HUD</button>
+        </div>
+        <div class="rent-form-status" id="rentFormStatus"></div>
+      </div>
+    </div>
+  </section>
 
   <!-- ── THE MATH — cashflow waterfall + 8-metric grid ─────────────── -->
   <section id="cfSection" style="display:none">
@@ -1122,37 +1152,6 @@ nav.top{
       <span>4 more metrics in Pro — CapEx, Neighborhood grade, Price-per-Unit benchmarks</span>
       <span class="pro-quiet-arrow" aria-hidden="true">→</span>
     </a>
-  </section>
-
-  <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
-  <section id="rentEstimateSection" style="display:none">
-    <div class="rent-card">
-      <div class="rent-head">
-        <div class="rent-eyebrow">Rent estimate</div>
-        <div class="rent-headline" id="rentHeadline">—</div>
-        <div class="rent-sub" id="rentSub">—</div>
-      </div>
-      <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
-        Use your own numbers
-        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="rent-form" id="rentForm" style="display:none">
-        <div class="rent-form-header">
-          <span class="rent-form-label">Per-unit rent</span>
-          <span class="rent-form-hint">your numbers</span>
-        </div>
-        <div id="rentUnitInputs"></div>
-        <div class="rent-form-totals">
-          <span>Total gross</span>
-          <span id="rentFormTotal" class="rent-form-total-val">—</span>
-        </div>
-        <div class="rent-form-actions">
-          <button class="rent-apply" type="button" onclick="applyRentOverride()">Apply →</button>
-          <button class="rent-revert" type="button" onclick="revertRentOverride()" id="rentRevertBtn" style="display:none">Revert to HUD</button>
-        </div>
-        <div class="rent-form-status" id="rentFormStatus"></div>
-      </div>
-    </div>
   </section>
 
   <!-- ── COMPARABLES — peer deals in the same city (item 6 of audit).
