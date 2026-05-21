@@ -2757,9 +2757,13 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 200. BUG-005 · `report_data` stored as JSON-encoded string, not as JSONB object
+### 200. ~~BUG-005~~ ✅ FIXED 2026-05-21 · `report_data` stored as JSON-encoded string, not as JSONB object
 
-**What:** Both local DB (39/39 active rows) and prod (127/127) have `deal_feed.report_data` stored as JSONB STRING scalars instead of proper JSONB OBJECTS. Discovered 2026-05-20 while building `/feed/stats/markets` averages — `report_data->'financials'` returned null on every row because you can't navigate into a string.
+**RESOLUTION (2026-05-21):** Drizzle's stock `jsonb()` column type was wrapping values in JSON.stringify before sending to postgres-js, which combined with postgres-js's own encoding caused the value to be stored as a JSONB STRING SCALAR instead of a proper OBJECT. Fixed by replacing the stock `jsonb` import in `src/db/schema.ts` with a `customType` whose `toDriver` returns the value unchanged — letting postgres-js handle native JSONB encoding. `dataType()` stays `'jsonb'` so no Postgres column migration was needed. Backend commit `88b04d4`. Local DB re-seeded cleanly; prod data unwrap migration run via ECS task on the same date. CTE workaround in `/feed/stats/markets` removed; data accessed directly via `report_data->'financials'->>'capRate'`. The historical detail below kept for reference.
+
+---
+
+**Historical** — what:** Both local DB (39/39 active rows) and prod (127/127) had `deal_feed.report_data` stored as JSONB STRING scalars instead of proper JSONB OBJECTS. Discovered 2026-05-20 while building `/feed/stats/markets` averages — `report_data->'financials'` returned null on every row because you can't navigate into a string.
 
 **Schema is correct:** `reportData: jsonb('report_data')` in `src/db/schema.ts`. So the bug is at the write side — somewhere `JSON.stringify(reportData)` is called before passing to Drizzle, and Drizzle then re-encodes that string into JSONB (storing as a quoted JSON scalar).
 
