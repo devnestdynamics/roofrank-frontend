@@ -2939,11 +2939,8 @@ Then show me the last few git commits on both repos so I can see where we left o
 
 1. **Condition lens on deal-detail (~1 day).** Three-position slider: *As-is / Updated / Renovated*, mapped to ±10-15% on the rent assumption. Score and all PITI cashflow metrics recompute live (same pattern as the scenario lens already shipped). Mirrors how serious investors actually evaluate a deal.
 
-2. **Auto-set starting position from listing description (~½ day).** RentCast ships description text. Keyword detection sets the starting slider position:
-   - Renovated: "newly renovated," "fully gutted," "stainless," "quartz," "luxury," "turnkey"
-   - As-is: "investor special," "needs TLC," "as-is," "cash only," "fixer," "handyman"
-   - Updated: "updated kitchen," "updated bath," "new flooring"
-   - User can always override; this just sets the initial position.
+2. **Auto-set starting position from listing description (BLOCKED).** Original plan was to keyword-detect from RentCast listing description text. Verified empirically on 2026-05-21: **RentCast does NOT ship listing description in its Property Listings API response.** The returned shape (MLSPIN as upstream) includes `id, city, price, state, county, status, history, lotSize, mlsName, zipCode, bedrooms, latitude, bathrooms, longitude, mlsNumber, stateFips, yearBuilt, countyFips, listedDate, createdDate, listingType, removedDate, addressLine1, addressLine2, daysOnMarket, lastSeenDate, listingAgent, propertyType, listingOffice, squareFootage, formattedAddress` — facts and metadata only, no description, no features, no condition, no remarks.
+   To unblock keyword auto-detection we need a richer data source — SimplyRETS, ListHub, MLS Grid, or direct broker arrangements — all gated by broker sponsorship or MLS membership. **Until then, the manual condition lens (step 1) is the realistic MVP path.**
 
 3. **Show rent as a range, not a point (~½ day).** Instead of "Expected rent: $2,100/unit," show "$1,790 – $2,415 (As-is → Renovated)." Verdict can read: "Strong Buy at As-is rent, Pass at Renovated assumption." Front-loads the uncertainty rather than hiding it.
 
