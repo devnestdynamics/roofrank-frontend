@@ -2956,3 +2956,26 @@ Then show me the last few git commits on both repos so I can see where we left o
 **Tradeoff to acknowledge:** Adding a condition lens means the score isn't a single objective number — it depends partially on user input. That's actually more honest and matches how experienced investors think, but it kills the "one-shot black-box AI score" framing in marketing. Update positioning to "scoring engine + condition judgment, together" rather than "AI tells you the answer."
 
 **Cadence:** Build after Pro gating (#58-64) + first round of Pro features are in. Ali flagged this as "important but not before everything else gets wired."
+
+---
+
+### 205. CI BUG · deploy.yml runs migrate BEFORE the new image is deployed
+
+**Status:** 🔴 Pre-launch fix needed.
+
+**The bug (caught 2026-05-21 during tier rename):**
+The deploy workflow at `.github/workflows/deploy.yml` runs jobs in this order:
+1. `build` — pushes new image to ECR (`:commit-sha` + `:latest` tags)
+2. `migrate` — runs `aws ecs run-task --task-definition roofrank` with command `node dist/db/migrate.js`
+3. `deploy` — updates the task definition to use the new image, rolls service
+
+The `migrate` task pulls whatever image the *currently active* task definition points to. That's the OLD image (the one that was active before this deploy). The old image's `drizzle/` folder doesn't contain the new SQL file, so Drizzle's migrator reads its journal, sees nothing new, prints "Migrations complete", exits 0. CI reports green; the migration never ran.
+
+This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate task exited 0 in CI but the prod enum still had the old values. Required a manual `aws ecs run-task` re-run after the deploy step landed the new task definition.
+
+**Fix options:**
+1. **Reorder: deploy → migrate.** Risky — new code is running against unmigrated DB during the gap. Bad for any forward-compatible change.
+2. **Pin migrate task to the new image tag.** Override the container's image in the `--overrides` JSON, pointing to `:commit-sha`. This is the clean fix — the migrate task uses the new code without changing the task definition.
+3. **Two-phase: migrate-forward → deploy → migrate-finalize.** Overkill for this stage.
+
+**Recommendation:** Option 2. The migrate step's `--overrides` already takes a JSON; add `"image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"` to the container override. Pre-launch task — when we have real users, a silent migration skip would be catastrophic.
