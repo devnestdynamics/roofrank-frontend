@@ -2826,3 +2826,99 @@ SELECT rd->'financials'->>'capRate' FROM unwrapped ...
 See `src/routes/feed.ts` `/stats/markets` for the live example.
 
 **Re-evaluate when:** Before any other SQL feature that touches `reportData` paths (e.g. backlog #189 exposing more metrics on `/feed/public`, or any analytics query over scored deals).
+
+---
+
+### 201. Recurring strategic review prompt (run periodically)
+
+**Use this prompt at major milestones (weekly during pre-launch, monthly after) to keep the product honest:**
+
+```
+Review everything for clarity, simplification, ease of use, user experience, CTAs. Specifically:
+- Do we have enough places to convert to Pro?
+- Are we showing enough info to make Pro look valuable?
+- Are we showing TOO much, such that there's no reason to convert?
+- Is the AI experience visible enough? Would people find it useful?
+- Does the Analyst page work as a destination, or is it just a tab that exists?
+- Does the "+ add your property" button have clarity? What does it do, why would I tap it?
+- Walk every page (landing, onboarding, dashboard, deal-detail, watchlist, analyst, pricing, account/billing) and grade each on:
+  1. First-impression clarity (what is this, in 3 seconds)
+  2. CTA visibility (what should I do next)
+  3. Pro upsell appropriateness (right amount, right moment)
+  4. Empty/error/loading states
+  5. Mobile rendering at 430px and 360px
+- Compare against the current launch plan ([[launch-plan-90-day]]) and flag drift.
+- What's blocking launch? What's MVP creep that should be cut?
+```
+
+**Cadence:** Run weekly during pre-launch (Mondays). Run monthly post-launch. Save each review's output as a dated `docs/STRATEGIC-REVIEW-YYYY-MM-DD.md`.
+
+---
+
+### 202. Session-recall prompt (use if we lose this session)
+
+**Drop this into a fresh Claude session to spin up with full context:**
+
+```
+I'm Ali, the solo founder of RoofRank — an AI analyst for 2-6 unit multifamily property investors. You're picking up an in-progress build. Before responding, please load these:
+
+1. Read the user-memory index at ~/.claude/projects/-Users-ali-sheikh-Code-roofrank-frontend/memory/MEMORY.md and any individual memory files it references.
+
+2. Read these project docs (most relevant first):
+   - ~/Code/roofrank-frontend/docs/ROOFRANK-BACKLOG.md (huge — grep for specifics, don't read top-to-bottom)
+   - ~/Code/roofrank-frontend/docs/OVERNIGHT-REPORT-2026-05-20-PART2.md (last full status)
+   - ~/Code/roofrank-frontend/docs/OVERNIGHT-REPORT-2026-05-20.md (morning session)
+   - ~/Code/roofrank-frontend/docs/OVERNIGHT-REPORT-2026-05-19.md (PITI unification day)
+   - ~/Code/roofrank-frontend/docs/ROOFRANK-STRATEGIC-REVIEW.md (positioning, wedges)
+   - ~/Code/roofrank-backend/docs/DATA-SOURCES.md (RentCast + ATTOM + HUD + Freddie)
+
+3. Key facts you MUST internalize:
+   - I prefer direct pushback over hedging. Don't ask permission to disagree.
+   - I work ~10-15 hrs/week. Make each session count.
+   - Every workflow gets to A+ before moving on (see [[feedback-a-plus-per-workflow]]).
+   - Positioning is "decision tool, not newsletter" (see [[feedback-positioning-decision-tool]]).
+   - 5 MVP markets: Lynn, Worcester, Salem, Revere, Framingham (all MA). Lynn + Worcester have real RentCast data; Salem/Revere/Framingham are seed-only (see [[project-prod-market-data-gap]]).
+   - Target launch ~2026-08-14 (see [[launch-plan-90-day]]).
+   - I use the devnestdynamics GitHub org, not my personal alijsheikh.
+
+4. Active known issues (highest priority first):
+   - BUG-004: stale RentCast deals — partial fix shipped (freshness sweep), status-field check TBD.
+   - BUG-005: report_data stored as JSONB string scalars instead of objects (Drizzle + postgres-js double-encoding). Workaround CTE in /feed/stats/markets.
+   - Salem/Revere/Framingham still seed-only data.
+   - BUG-002 (CORS unknown Origin → 500) is logged but low priority.
+
+5. Current architecture summary:
+   - 3 repos under devnestdynamics: roofrank-frontend (vanilla HTML), roofrank-backend (Express + Drizzle + Postgres), roofrank-infra.
+   - Frontend deploys to Netlify on push to main.
+   - Backend deploys to ECS via .github/workflows/deploy.yml on push to main.
+   - Local dev: docker-compose up (postgres + redis) → cd backend; npm run dev → cd frontend; python3 -m http.server 8765.
+   - Tests: bash ~/Code/roofrank-backend/tests/run-local.sh (Playwright suite, ~30s).
+
+6. The product, in 30 seconds:
+   - Pick a market → see all active multifamily 2-6 unit listings → each is scored 0-100 on 8 weighted metrics (CoC, Cap Rate, NOI, DSCR, GRM, Price/Unit, CapEx Reserve, Neighborhood Grade) → verdicts are Strong Buy / Buy / Watch / Pass.
+   - PITI cashflow (P+I+T+I) is the canonical cashflow shown everywhere.
+   - "RankMark" is the canonical scoring icon (Deckers shape: roof + 3 floor bars, tier-colored).
+   - The hero-card pattern (.hero-deal + .hd-* + .rmark) is consistent across landing hero, onboarding hero, dashboard hero, and deal-detail hero.
+
+Then show me the last few git commits on both repos so I can see where we left off, and ask what to do next.
+```
+
+**Cadence:** No cadence — use only if I'm starting a new session and need fast context restore.
+
+---
+
+### 203. SMS + email integration before MVP
+
+**What:** Pre-launch we need at least:
+- **Magic-link email** (Resend) — already wired, needs prod key verified.
+- **Strong Buy alert push notifications** — partially scaffolded (`src/services/pushService.ts`).
+- **Daily morning brief email** (Pro feature, advertised on landing + pricing).
+- **SMS optional** — for Strong Buy alerts on Pro? Twilio?
+
+**Open questions:**
+- Resend API key set in ECS task definition env? (Last flagged 2026-05-19, still unverified.)
+- Push notifications: backend scaffolded but client-side service-worker hooks need final test. Real iOS push needs APNs cert via Apple Developer + manifest.json wired.
+- Daily brief email: backend cron + email template. Body could be the brief copy + top picks (basically the dashboard hero exported to email).
+- SMS: bigger ask. Twilio = ~$0.01/SMS US, requires 10DLC registration for app-to-person sends. Probably defer to v1.1 unless Strong Buy alerts via SMS are a Pro differentiator we want at launch.
+
+**Recommendation:** Verify Resend in prod TODAY. Push notifications + daily email in pre-launch sprint. SMS = post-launch experiment.
