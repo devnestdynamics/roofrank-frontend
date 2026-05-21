@@ -2704,3 +2704,42 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 **Estimated:** 2-3 hours including writeup.
 
 **Re-evaluate when:** Before any launch. Ideally tested AFTER #193 (analyst) is decided so we know what to test on the Analyst tab.
+
+---
+
+### 198. Property photos on deal-detail (pre-launch nice-to-have)
+
+**What:** Deal-detail's photos strip is wired and ready, but RentCast's basic plan doesn't return media. Every deal in prod currently shows no photos.
+
+**Three paths:**
+- **(a) Upgrade RentCast plan** — their "Sale Listings Pro" tier includes media for ~$50-200/mo depending on usage. Photos just start appearing; frontend already handles them. Cleanest.
+- **(b) Different listings API** — Zillow / Realtor.com APIs require partnerships/licensing. Won't get us there before launch.
+- **(c) Pro-only feature** — when (a) is in, gate photos behind Pro as a paid differentiator.
+
+**ATTOM does NOT have photos.** ATTOM is property records (owner, tax, history), not active listings. Already confirmed.
+
+**Why it matters:** A real-estate listing without photos reads as a spreadsheet. We currently surface a "Find on Zillow" fallback link so users can see photos elsewhere, but having them in-app is a meaningful trust/wow lift.
+
+**Estimated:** ~30 min to wire if we upgrade RentCast (just verify the `listingData.photos[]` field flows through). Frontend is ready.
+
+**Re-evaluate when:** Pricing the RentCast upgrade, or any time we're spending on conversion/onboarding optimization. Photos move the needle.
+
+---
+
+### 199. Audit auth gating on deal-detail (security review)
+
+**What:** Ali confirmed deal-detail rendered for him in an incognito Chrome window — no login required, just a direct URL with `?fid=<deal-id>`. The dashboard requires auth (login redirect), but deal-detail apparently doesn't, OR the magic-link state from a previous session is persisting via cookies somewhere.
+
+**Why this matters:**
+- If intentional (public read for SEO / share links), it should be documented as a feature with appropriate gating (e.g. blur Pro-only sections, hide the analyst chat input).
+- If unintentional, it's a security gap — anyone with a deal ID URL can see prod deal data, including the user-specific rent override section + analyst chat history.
+
+**Plan:**
+1. Investigate: clear cookies + incognito + direct deal-detail URL. Does it really render? What's exposed?
+2. Check route guards: backend `GET /api/feed/:id` is `requireAuth`. Frontend should redirect to login if `Auth.isLoggedIn()` is false.
+3. If unintentional: add an auth check at the top of deal-detail's boot, redirect to onboard/login.
+4. If intentional public-read: define what's public vs private (verdict + headline = OK; rent overrides + chat history = NOT OK), gate the sensitive sections.
+
+**Estimated:** 30 min investigation, ~1 hr fix depending on scope.
+
+**Re-evaluate when:** Pre-launch sweep, or before sharing deal URLs externally for any reason.
