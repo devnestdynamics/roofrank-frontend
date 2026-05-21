@@ -479,6 +479,20 @@ nav.top{
   background:var(--cream-2); border:1px solid var(--sage-border); border-radius:var(--r-lg);
   padding:1.1rem 1.1rem 1rem; box-shadow:none;
 }
+/* Condition lens (backlog #204). Three-position toggle that dials the
+   HUD-FMR rent assumption ±15% based on property condition. */
+.cond-row{margin-bottom:.85rem;padding-bottom:.85rem;border-bottom:1px dashed var(--sage-border)}
+.cond-row-label{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;margin-bottom:.45rem}
+.cond-label{font-size:.66rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--forest)}
+.cond-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+.cond-toggle{display:inline-flex;gap:0;background:#fff;border:1px solid var(--border-2);border-radius:8px;padding:2px;width:100%}
+.cond-btn{flex:1;background:none;border:none;font-family:var(--sans);font-size:.74rem;color:var(--muted);padding:.45rem .65rem;border-radius:6px;cursor:pointer;transition:all .15s}
+.cond-btn:hover{color:var(--ink)}
+.cond-btn.active{background:var(--forest);color:#fff}
+.cond-row.locked .cond-toggle{opacity:.5;pointer-events:none}
+.cond-lock{margin-top:.5rem;font-size:.62rem;text-align:center}
+.cond-lock-pill{display:inline-flex;align-items:center;gap:.3rem;background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest);padding:3px 9px;border-radius:14px;font-weight:600;letter-spacing:.05em;font-size:.6rem;text-transform:uppercase;text-decoration:none}
+.cond-lock-pill:hover{background:rgba(122,170,143,.18)}
 .rent-head{margin-bottom:.85rem}
 .rent-eyebrow{font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--forest); margin-bottom:.4rem}
 .rent-headline{font-family:var(--mono); font-size:1.25rem; font-weight:500; color:var(--ink); line-height:1.15}
@@ -1113,6 +1127,24 @@ nav.top{
         <div class="rent-headline" id="rentHeadline">—</div>
         <div class="rent-sub" id="rentSub">—</div>
       </div>
+      <!-- Condition lens (backlog #204). HUD FMR assumes C-class condition;
+           this slider lets the user dial the rent assumption ±15% based on
+           property condition. Score + cashflow recompute live. Pro feature
+           — free callers see the row with a single lock pill. -->
+      <div class="cond-row" id="condRow">
+        <div class="cond-row-label">
+          <span class="cond-label">Property condition</span>
+          <span class="cond-meta" id="condMeta">+0% on HUD baseline</span>
+        </div>
+        <div class="cond-toggle" id="condToggle">
+          <button type="button" class="cond-btn" data-mult="0.85" onclick="setCondition(0.85)">As-is</button>
+          <button type="button" class="cond-btn active" data-mult="1.00" onclick="setCondition(1.00)">Updated</button>
+          <button type="button" class="cond-btn" data-mult="1.15" onclick="setCondition(1.15)">Renovated</button>
+        </div>
+        <div class="cond-lock" id="condLock" style="display:none">
+          <span class="cond-lock-pill">🔒 Pro · condition-aware scoring</span>
+        </div>
+      </div>
       <button class="rent-toggle" type="button" id="rentToggleBtn" onclick="toggleRentOverride()">
         Use your own numbers
         <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
@@ -1508,6 +1540,8 @@ function applyProUnlocks(){
   if (proLink) proLink.style.display = isPro ? 'none' : '';
   // Ask-the-Analyst chat — interactive for Pro, preview for free.
   setChatEnabled(isPro);
+  // Condition lens — Pro can dial As-is / Updated / Renovated.
+  if (typeof setConditionEnabled === 'function') setConditionEnabled(isPro);
 }
 
 // Flip the chat surface between preview (free) and live (Pro).
@@ -1772,7 +1806,11 @@ async function revertRentOverride(){
     status.textContent = 'Could not revert — try again';
   }
 }
-const SCEN_DEFAULT = { dpPct: 0.25, rate: 0.065 };
+// SCEN_DEFAULT: condMult of 1.0 = no rent multiplier (HUD FMR baseline).
+// Setting condMult to 0.85 (As-is) or 1.15 (Renovated) scales the assumed
+// rent up or down and cascades through cashflow, CoC, DSCR, GRM, etc.
+// This is the MVP of backlog #204 — closes the "HUD FMR = truth" gap.
+const SCEN_DEFAULT = { dpPct: 0.25, rate: 0.065, condMult: 1.0 };
 let scenario = { ...SCEN_DEFAULT };
 
 // Compute a fin object overridden by current scenario state
@@ -1784,10 +1822,11 @@ function computeScenarioFin(d, fin, state){
   const closing = price * 0.014;
   const totalCash = dp + closing;
   const monthlyPI = pmt(state.rate/12, 360, loan);
-  // Use effective gross income (after 5% vacancy) when available so this
-  // local PITI recompute matches the backend's scoringEngine.ts. Falling back
-  // to raw gross would overstate cashflow vs the card on the dashboard.
-  const monthlyRent = (fin.effectiveGrossIncome ?? fin.grossRentalIncome) / 12;
+  // Apply the condition-lens rent multiplier (defaults to 1.0). Use
+  // effective gross income (after 5% vacancy) when available so this
+  // local PITI recompute matches the backend's scoringEngine.ts.
+  const condMult = state.condMult || 1.0;
+  const monthlyRent = ((fin.effectiveGrossIncome ?? fin.grossRentalIncome) / 12) * condMult;
   const monthlyTax = fin.annualTaxes ? fin.annualTaxes/12 : price*0.012/12;
   const monthlyIns = fin.annualInsurance ? fin.annualInsurance/12 : price*0.004/12;
   const monthlyCf = monthlyRent - monthlyPI - monthlyTax - monthlyIns;
@@ -1795,16 +1834,66 @@ function computeScenarioFin(d, fin, state){
   const coc = totalCash>0 ? (annualCf/totalCash)*100 : null;
   const noi = (monthlyRent - monthlyTax - monthlyIns) * 12; // PITI-consistent NOI (no opex/vacancy)
   const dscr = monthlyPI>0 ? noi/(monthlyPI*12) : null;
+  // Re-derive cap rate + GRM under the new rent assumption so the
+  // condition lens affects ALL downstream metrics, not just cashflow.
+  const annualRent = monthlyRent * 12;
+  const capRate = price>0 ? (noi/price)*100 : null;
+  const grm = annualRent>0 ? price/annualRent : null;
   return {
     ...fin,
     cashOnCashReturn: coc,
     dscr: dscr,
+    capRate: capRate,
+    grm: grm,
+    noi: noi,
+    grossRentalIncome: annualRent,  // for downstream consumers
     monthlyCashFlow: monthlyCf,
     annualDebtService: monthlyPI*12,
     totalCashToClose: totalCash,
     downPayment: dp,
     _monthlyPI: monthlyPI, _monthlyTax: monthlyTax, _monthlyIns: monthlyIns, _monthlyRent: monthlyRent,
   };
+}
+
+// Condition lens setter — called from the As-is / Updated / Renovated
+// buttons. Updates the multiplier and re-runs applyScenario() so the
+// score tile + cashflow + analyst metrics all recompute. Pro-only
+// (gated via setConditionEnabled in applyProUnlocks).
+function setCondition(mult){
+  scenario.condMult = Number(mult) || 1.0;
+  // Sync active state on the buttons
+  document.querySelectorAll('.cond-btn').forEach(btn => {
+    const m = Number(btn.getAttribute('data-mult')) || 1.0;
+    btn.classList.toggle('active', Math.abs(m - scenario.condMult) < 0.001);
+  });
+  // Update the meta label so the user sees the multiplier they picked
+  const meta = document.getElementById('condMeta');
+  if (meta) {
+    const pct = Math.round((scenario.condMult - 1) * 100);
+    meta.textContent = (pct >= 0 ? '+' : '') + pct + '% on HUD baseline';
+  }
+  if (typeof applyScenario === 'function') applyScenario();
+}
+
+// Pro gates the condition lens. Free callers see the row but the
+// toggle is disabled + a "Pro · condition-aware scoring" pill appears
+// below. Called from applyProUnlocks alongside other Pro toggles.
+function setConditionEnabled(enabled){
+  const row  = document.getElementById('condRow');
+  const lock = document.getElementById('condLock');
+  if (row)  row.classList.toggle('locked', !enabled);
+  if (lock) lock.style.display = enabled ? 'none' : '';
+  // If a non-Pro user previously had a non-default condMult set
+  // (e.g. via devtools), force back to neutral when locking.
+  if (!enabled && scenario.condMult !== 1.0) {
+    scenario.condMult = 1.0;
+    document.querySelectorAll('.cond-btn').forEach(btn => {
+      const m = Number(btn.getAttribute('data-mult')) || 1.0;
+      btn.classList.toggle('active', Math.abs(m - 1.0) < 0.001);
+    });
+    const meta = document.getElementById('condMeta');
+    if (meta) meta.textContent = '+0% on HUD baseline';
+  }
 }
 
 // ── Scenario-dependent renderers (called by both initial render and applyScenario)
