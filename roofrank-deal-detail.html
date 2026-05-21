@@ -2177,7 +2177,7 @@ async function boot(){
     BillingAPI.getSubscription().then(sub => {
       const plan = (sub?.plan || '').toLowerCase();
       console.log('[RoofRank] subscription plan:', plan || '(none)');
-      isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+      isPro = plan === 'pro' || plan === 'team';
       applyProUnlocks();
     }).catch(e => console.warn('[RoofRank] could not load subscription:', e?.message));
   }

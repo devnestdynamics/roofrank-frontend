@@ -1260,7 +1260,7 @@ async function boot(){
     BillingAPI.getSubscription().then(sub => {
       const plan = (sub?.plan || '').toLowerCase();
       console.log('[RoofRank] subscription plan:', plan || '(none)');
-      isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+      isPro = plan === 'pro' || plan === 'team';
       syncProBadge();
       if(isPro && currentLensDeals.length){
         // Re-render the rest-of-feed without Pro locks (hero + runners

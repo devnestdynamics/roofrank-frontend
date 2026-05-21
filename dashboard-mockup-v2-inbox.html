@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard mockup — V2 Inbox (bigger idea)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Mockup file. NOT wired to backend. Static data showing the
+     "morning inbox" alternative — dashboard reframed as a stack of
+     decision moments instead of a list of deals. -->
+
+<style>
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030;
+  --rose:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#3a3e39;min-height:100vh;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.viewport{max-width:430px;margin:1.5rem auto;background:var(--cream);min-height:100vh;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;padding-bottom:88px}
+.mockup-label{text-align:center;color:#fff;padding:1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem .6rem;gap:.6rem}
+.brand{display:flex;align-items:center;gap:.5rem}
+.brand-mark{width:28px;height:28px;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:18px;height:18px}
+.brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink)}
+.top-actions{display:flex;align-items:center;gap:.85rem}
+.upgrade-link{font-family:var(--sans);font-size:.74rem;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:5px;font-weight:500}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
+
+/* GREETING — context, not chrome */
+.greeting{padding:.4rem 1.2rem 1.2rem}
+.greeting-h{font-family:var(--serif);font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.15;letter-spacing:-.01em;margin-bottom:.3rem}
+.greeting-h em{font-style:italic;color:var(--forest)}
+.greeting-sub{font-family:var(--mono);font-size:.74rem;color:var(--muted);display:flex;align-items:center;gap:.45rem}
+.greeting-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* MOMENT CARDS — each is one decision to make */
+.moments{display:flex;flex-direction:column;gap:.6rem;padding:0 1.2rem 1.5rem}
+.moment{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.05rem 1.15rem;display:flex;flex-direction:column;gap:.55rem;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.moment:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(28,31,28,.06)}
+.moment.priority{border-color:var(--sage-border);border-width:1.5px;box-shadow:0 8px 24px rgba(28,74,53,.08)}
+
+.moment-head{display:flex;align-items:center;gap:.55rem}
+.moment-icon{width:28px;height:28px;border-radius:8px;background:var(--sage-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--forest)}
+.moment-icon.alert{background:rgba(28,74,53,.08);color:var(--forest)}
+.moment-icon.shift{background:rgba(160,106,0,.07);color:var(--watch)}
+.moment-icon.drop{background:rgba(160,48,48,.07);color:var(--rose)}
+.moment-icon.lens{background:var(--sage-dim);color:var(--forest)}
+.moment-icon.quiet{background:var(--cream-2);color:var(--muted)}
+.moment-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.moment-icon.alert svg{fill:currentColor;stroke:none}
+.moment-eyebrow{font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);flex:1}
+.moment-arrow{font-size:1.1rem;color:var(--faint);line-height:1}
+
+.moment-h{font-family:var(--serif);font-size:1.1rem;font-weight:500;color:var(--ink);line-height:1.3;letter-spacing:-.005em}
+.moment-h strong{font-weight:600;color:var(--forest)}
+.moment-body{font-family:var(--mono);font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.55rem;align-items:baseline}
+.moment-body .v{color:var(--forest);font-weight:500}
+.moment-body .neg{color:var(--watch)}
+.moment-body .sep{color:var(--faint)}
+
+.moment-cta{font-family:var(--mono);font-size:.74rem;font-weight:500;color:var(--forest);margin-top:.3rem;display:flex;align-items:center;gap:.35rem}
+.moment-cta-arrow{font-size:1rem;line-height:1}
+
+/* Mini RankMark used inside moments */
+.mini-rmark{flex-shrink:0;display:flex;align-items:center;gap:.35rem}
+.mini-rmark-svg{width:20px;height:20px;display:block;overflow:visible}
+.mini-rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.mini-rmark-svg .mk-floor-1{fill:var(--forest);opacity:.45}
+.mini-rmark-svg .mk-floor-2{fill:var(--forest);opacity:.7}
+.mini-rmark-svg .mk-floor-3{fill:var(--forest);opacity:1}
+.mini-rmark-num{font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--forest);line-height:1}
+
+/* FOOTER — secondary navigation to traditional list view */
+.list-link{margin:1.5rem 1.2rem 0;padding:.85rem 1.1rem;border:1px dashed var(--border-2);border-radius:11px;display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.78rem;color:var(--muted);cursor:pointer;background:none;width:calc(100% - 2.4rem)}
+.list-link:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:absolute;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:.55rem .5rem .8rem;display:flex;justify-content:space-around;align-items:center}
+.bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--muted);text-decoration:none;font-size:.62rem;font-weight:500;letter-spacing:.04em;padding:.3rem 0;cursor:pointer;background:none;border:none;font-family:var(--sans)}
+.bn-tab.active{color:var(--forest)}
+.bn-tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="mockup-label">DASHBOARD V2 — Morning Inbox (bigger idea)</div>
+
+<div class="viewport">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="brand-name">RoofRank</span>
+    </div>
+    <div class="top-actions">
+      <a href="#" class="upgrade-link">Upgrade</a>
+      <div class="avatar">A</div>
+    </div>
+  </div>
+
+  <!-- GREETING — sets the stage like a morning briefing -->
+  <div class="greeting">
+    <h1 class="greeting-h">Wednesday morning, <em>Ali.</em></h1>
+    <div class="greeting-sub">
+      <span class="greeting-dot"></span>
+      4 things waiting · across Lynn + Worcester
+    </div>
+  </div>
+
+  <!-- MOMENT 1 — new strong buy (highest priority) -->
+  <div class="moments">
+    <button class="moment priority">
+      <div class="moment-head">
+        <div class="moment-icon alert">
+          <svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+        </div>
+        <span class="moment-eyebrow">New Strong Buy · Worcester</span>
+        <span class="moment-arrow">›</span>
+      </div>
+      <div class="moment-h">First Strong Buy in Worcester this week — <strong>139 Vernon St</strong></div>
+      <div class="moment-body">
+        <div class="mini-rmark">
+          <svg class="mini-rmark-svg" viewBox="0 0 40 40">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+          </svg>
+          <span class="mini-rmark-num">92</span>
+        </div>
+        <span class="sep">·</span>
+        <span class="v">$2,165/mo</span>
+        <span class="sep">·</span>
+        <span>19.2% CoC</span>
+        <span class="sep">·</span>
+        <span>3u · $500K</span>
+      </div>
+      <div class="moment-cta">Open the brief <span class="moment-cta-arrow">→</span></div>
+    </button>
+
+    <!-- MOMENT 2 — watchlist score shifts -->
+    <button class="moment">
+      <div class="moment-head">
+        <div class="moment-icon shift">
+          <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+        </div>
+        <span class="moment-eyebrow">Watchlist · 3 score changes</span>
+        <span class="moment-arrow">›</span>
+      </div>
+      <div class="moment-h">Three of your watched deals moved overnight.</div>
+      <div class="moment-body">
+        <span><strong style="color:var(--ink)">52 Hamilton</strong></span>
+        <span class="neg">-2</span>
+        <span class="sep">·</span>
+        <span><strong style="color:var(--ink)">88 Howard</strong></span>
+        <span class="neg">-4</span>
+        <span class="sep">·</span>
+        <span><strong style="color:var(--ink)">32 Vinal</strong></span>
+        <span class="v">+3</span>
+      </div>
+      <div class="moment-cta">Review the changes <span class="moment-cta-arrow">→</span></div>
+    </button>
+
+    <!-- MOMENT 3 — sellers moving -->
+    <button class="moment">
+      <div class="moment-head">
+        <div class="moment-icon drop">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="6 13 12 19 18 13"/></svg>
+        </div>
+        <span class="moment-eyebrow">Sellers moving · 2 deals</span>
+        <span class="moment-arrow">›</span>
+      </div>
+      <div class="moment-h">Two sellers dropped price more than 5% in the last 48h.</div>
+      <div class="moment-body">
+        <span><strong style="color:var(--ink)">190 Washington St</strong></span>
+        <span class="v">-$75K</span>
+        <span class="sep">·</span>
+        <span><strong style="color:var(--ink)">433 Chatham</strong></span>
+        <span class="v">-$100K</span>
+      </div>
+      <div class="moment-cta">See what changed <span class="moment-cta-arrow">→</span></div>
+    </button>
+
+    <!-- MOMENT 4 — lens hit -->
+    <button class="moment">
+      <div class="moment-head">
+        <div class="moment-icon lens">
+          <svg viewBox="0 0 24 24"><polyline points="3 12 7 12 9 6 15 18 17 12 21 12"/></svg>
+        </div>
+        <span class="moment-eyebrow">Lens · Move fast</span>
+        <span class="moment-arrow">›</span>
+      </div>
+      <div class="moment-h"><strong>4 deals</strong> in Worcester now match your Move fast lens.</div>
+      <div class="moment-body">
+        <span>All listed &lt; 7 days</span>
+        <span class="sep">·</span>
+        <span>Score 75+</span>
+        <span class="sep">·</span>
+        <span class="v">Avg 18.1% CoC</span>
+      </div>
+      <div class="moment-cta">Open the lens <span class="moment-cta-arrow">→</span></div>
+    </button>
+
+    <!-- MOMENT 5 — quiet market (no false urgency) -->
+    <button class="moment">
+      <div class="moment-head">
+        <div class="moment-icon quiet">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        </div>
+        <span class="moment-eyebrow">Quiet · Lynn</span>
+        <span class="moment-arrow">›</span>
+      </div>
+      <div class="moment-h">Nothing scoring above Buy in Lynn today.</div>
+      <div class="moment-body">
+        <span>Top current: <strong style="color:var(--ink)">52 Hamilton</strong></span>
+        <div class="mini-rmark" style="--forest:var(--forest-3)">
+          <svg class="mini-rmark-svg" viewBox="0 0 40 40">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17" stroke="var(--forest-3)"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5" fill="var(--forest-3)"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5" fill="var(--sage)" opacity=".9"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5" fill="var(--sage)" opacity=".55"/>
+          </svg>
+          <span class="mini-rmark-num" style="color:var(--forest-3)">69</span>
+        </div>
+      </div>
+      <div class="moment-cta">Browse Lynn anyway <span class="moment-cta-arrow">→</span></div>
+    </button>
+  </div>
+
+  <!-- ESCAPE HATCH — for users who want the old list view -->
+  <button class="list-link">
+    <span>Or browse the full feed (129)</span>
+    <span>→</span>
+  </button>
+
+  <!-- BOTTOM NAV — same 4 icons -->
+  <div class="bottom-nav">
+    <button class="bn-tab active">
+      <svg viewBox="0 0 24 24"><path d="M4 4 L20 4 L20 8 L4 8 Z M4 11 L20 11 L20 15 L4 15 Z M4 18 L20 18 L20 22 L4 22 Z"/></svg>
+      Today
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg>
+      Watching
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg>
+      Analyst
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+      More
+    </button>
+  </div>
+</div>
+</body>
+</html>

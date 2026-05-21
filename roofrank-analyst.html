@@ -379,7 +379,7 @@ if(typeof AuthAPI !== 'undefined' && AuthAPI.me){
 if(typeof BillingAPI !== 'undefined' && BillingAPI.getSubscription){
   BillingAPI.getSubscription().then(sub => {
     const plan = (sub?.plan || '').toLowerCase();
-    const isPro = plan === 'pro' || plan === 'team' || plan === 'enterprise';
+    const isPro = plan === 'pro' || plan === 'team';
     const el = document.getElementById('rhPro');
     if(el) el.style.display = isPro ? '' : 'none';
   }).catch(() => {});

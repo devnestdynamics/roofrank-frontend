@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard mockup — V1 Polished (incremental)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Mockup file. NOT wired to backend. Static data showing what V1
+     would look like once items 1-8 from the UX deep-dive land. -->
+
+<style>
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5; --white:#fff;
+  --ink:#1c1f1c; --ink-2:#3a3e39; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.1); --sage-border:rgba(122,170,143,.25);
+  --strong-buy:#1c4a35; --buy:#2d6448; --watch:#a06a00; --pass:#a03030;
+  --border:#e0d9cf; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#3a3e39;min-height:100vh;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.viewport{max-width:430px;margin:1.5rem auto;background:var(--cream);min-height:100vh;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;padding-bottom:88px}
+.mockup-label{text-align:center;color:#fff;padding:1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em}
+
+/* ── TOP BAR — RoofRank + quiet upgrade text + avatar ────────────── */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem .6rem;gap:.6rem}
+.brand{display:flex;align-items:center;gap:.5rem}
+.brand-mark{width:28px;height:28px;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:18px;height:18px}
+.brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink)}
+.top-actions{display:flex;align-items:center;gap:.85rem}
+.upgrade-link{font-family:var(--sans);font-size:.74rem;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:5px;font-weight:500}
+.upgrade-link:hover{color:var(--forest);background:var(--sage-dim)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
+
+/* ── CITY CHIPS ──────────────────────────────────────────────────── */
+.city-row{display:flex;gap:.4rem;padding:.4rem 1.2rem .9rem;overflow-x:auto;scrollbar-width:none}
+.city-row::-webkit-scrollbar{display:none}
+.city-chip{flex-shrink:0;background:var(--white);border:1px solid var(--border);border-radius:18px;padding:.4rem .85rem;font-family:var(--mono);font-size:.72rem;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:.35rem}
+.city-chip.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+.city-chip-count{font-size:.62rem;opacity:.7}
+
+/* ── HERO DEAL CARD (merged brief + top pick) ────────────────────── */
+.hero-deal{margin:0 1.2rem 1.25rem;background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09)}
+.hd-head{display:flex;align-items:center;gap:.85rem;margin-bottom:.9rem}
+.hd-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:5px;color:var(--buy);background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18)}
+.hd-score-slot{margin-left:auto}
+.rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:62px}
+.rmark-svg{width:100%;aspect-ratio:1;display:block;overflow:visible}
+.rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest-3)}
+.rmark-svg .mk-floor{fill:var(--sage);opacity:.55}
+.rmark-svg .mk-floor-2{fill:var(--sage);opacity:.9}
+.rmark-svg .mk-floor-3{fill:var(--forest-3);opacity:1}
+.rmark-num{font-family:var(--mono);font-weight:500;font-size:1rem;color:var(--forest-3);margin-top:2px;line-height:1}
+
+.hd-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.95rem;letter-spacing:-.01em}
+.hd-numbers{display:flex;gap:1.6rem;margin-bottom:.85rem}
+.hd-num{display:flex;flex-direction:column;line-height:1}
+.hd-num-val{font-family:var(--serif);font-size:1.85rem;font-weight:500;color:var(--forest);letter-spacing:-.01em}
+.hd-num-label{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.hd-meta{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-bottom:.5rem}
+.hd-fresh{font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.45rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.hd-fresh-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);box-shadow:0 0 6px var(--sage);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hd-brief{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:1.1rem}
+.hd-brief-spark{width:18px;height:18px;color:var(--sage);flex-shrink:0;margin-top:.15rem}
+.hd-brief-spark svg{width:100%;height:100%;fill:currentColor;animation:pulse 2.4s ease-in-out infinite}
+.hd-brief-text{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink-2);line-height:1.5}
+.hd-brief-text strong{font-weight:600;color:var(--forest);font-style:normal}
+.hd-action{padding-top:1rem;border-top:1px solid var(--cream-3);display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--forest)}
+.hd-action-arrow{font-size:1.1rem;line-height:1}
+
+/* ── RUNNERS-UP ──────────────────────────────────────────────────── */
+.runners-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 1.2rem .7rem;padding-left:.2rem}
+.runners-list{display:flex;flex-direction:column;gap:.4rem;margin:0 1.2rem 1.25rem}
+.runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.85rem;cursor:pointer}
+.runner-row .rmark{flex-direction:row;width:auto;gap:.4rem;align-items:center}
+.runner-row .rmark-svg{width:22px;height:22px}
+.runner-row .rmark-num{font-size:.82rem;margin-top:0}
+.runner-row.buy .rmark-svg .mk-roof{stroke:var(--forest-3)}
+.runner-row.buy .rmark-num{color:var(--forest-3)}
+.runner-addr{font-family:var(--serif);font-size:.92rem;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.runner-nums{font-family:var(--mono);font-size:.74rem;color:var(--muted);flex-shrink:0;display:flex;gap:.45rem}
+.runner-cf{color:var(--forest);font-weight:500}
+
+/* ── VIEW SHEET TRIGGER (lens pills consolidated behind one chip) ── */
+.view-row{display:flex;gap:.5rem;align-items:center;margin:0 1.2rem 1rem;padding-top:1rem;border-top:1px dashed var(--cream-3)}
+.view-trigger{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:.45rem .9rem .45rem .85rem;font-family:var(--mono);font-size:.72rem;color:var(--ink);display:flex;align-items:center;gap:.4rem;cursor:pointer}
+.view-trigger-caret{font-size:.6rem;color:var(--muted)}
+.view-active-eyebrow{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.3rem}
+
+/* ── REST OF FEED — just compact rows in same DNA, no PICK badges ── */
+.rest-label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 1.2rem .7rem;padding-left:.2rem;display:flex;justify-content:space-between;align-items:baseline}
+.rest-label-count{font-weight:500;letter-spacing:.02em;text-transform:none;color:var(--faint);font-size:.7rem}
+.rest-list{display:flex;flex-direction:column;gap:.4rem;margin:0 1.2rem 1.25rem}
+
+/* ── BOTTOM NAV — 4 icons, no center [+], no ask-bar ─────────────── */
+.bottom-nav{position:absolute;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:.55rem .5rem .8rem;display:flex;justify-content:space-around;align-items:center}
+.bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--muted);text-decoration:none;font-size:.62rem;font-weight:500;letter-spacing:.04em;padding:.3rem 0;cursor:pointer;background:none;border:none;font-family:var(--sans)}
+.bn-tab.active{color:var(--forest)}
+.bn-tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="mockup-label">DASHBOARD V1 — polished incremental (items 1-8 applied)</div>
+
+<div class="viewport">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 30 30" fill="none">
+          <path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/>
+          <rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/>
+          <rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="brand-name">RoofRank</span>
+    </div>
+    <div class="top-actions">
+      <a href="#" class="upgrade-link">Upgrade</a>
+      <div class="avatar">A</div>
+    </div>
+  </div>
+
+  <!-- CITY CHIPS -->
+  <div class="city-row">
+    <button class="city-chip">All <span class="city-chip-count">129</span></button>
+    <button class="city-chip">Worcester <span class="city-chip-count">72</span></button>
+    <button class="city-chip active">Lynn <span class="city-chip-count">26</span></button>
+    <button class="city-chip">Boston <span class="city-chip-count">6</span></button>
+  </div>
+
+  <!-- HERO DEAL — brief folded in, RankMark, freshness signal -->
+  <div class="hero-deal">
+    <div class="hd-head">
+      <span class="hd-verdict">Buy</span>
+      <div class="hd-score-slot">
+        <div class="rmark">
+          <svg class="rmark-svg" viewBox="0 0 40 40">
+            <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+            <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+            <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+          </svg>
+          <div class="rmark-num">69</div>
+        </div>
+      </div>
+    </div>
+    <h2 class="hd-addr">52 Hamilton Ave, Lynn</h2>
+    <div class="hd-numbers">
+      <div class="hd-num">
+        <span class="hd-num-val">$1,391</span>
+        <span class="hd-num-label">/mo cashflow</span>
+      </div>
+      <div class="hd-num">
+        <span class="hd-num-val">9.1%</span>
+        <span class="hd-num-label">cash-on-cash</span>
+      </div>
+    </div>
+    <div class="hd-meta">2 units · $680K · listed 7 days ago</div>
+    <div class="hd-fresh">
+      <span class="hd-fresh-dot"></span>
+      Scored nightly · at today's Freddie rate (6.50%)
+    </div>
+    <div class="hd-brief">
+      <span class="hd-brief-spark">
+        <svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
+      </span>
+      <span class="hd-brief-text">4 deals scoring Buy in Lynn — <strong>52 Hamilton</strong> leads. 3 more worth opening, 5 sellers sitting 60+ days.</span>
+    </div>
+    <div class="hd-action">
+      <span>Open the full breakdown</span>
+      <span class="hd-action-arrow">→</span>
+    </div>
+  </div>
+
+  <!-- RUNNERS-UP — same DNA, smaller -->
+  <div class="runners-label">Also worth opening</div>
+  <div class="runners-list">
+    <button class="runner-row buy">
+      <div class="rmark">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="rmark-num">68</div>
+      </div>
+      <span class="runner-addr">40 Hamilton Ave, Lynn</span>
+      <span class="runner-nums">
+        <span class="runner-cf">$1,955/mo</span><span>·</span><span>8.7% CoC</span>
+      </span>
+    </button>
+    <button class="runner-row buy">
+      <div class="rmark">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="rmark-num">67</div>
+      </div>
+      <span class="runner-addr">244 Ocean St, Lynn</span>
+      <span class="runner-nums">
+        <span class="runner-cf">$2,375/mo</span><span>·</span><span>8.8% CoC</span>
+      </span>
+    </button>
+  </div>
+
+  <!-- VIEW SHEET TRIGGER — lens pills hidden behind a single chip -->
+  <div class="view-row">
+    <button class="view-trigger">View <span class="view-trigger-caret">▾</span></button>
+    <span class="view-active-eyebrow">Curated · Lynn</span>
+  </div>
+
+  <!-- REST OF FEED -->
+  <div class="rest-label">
+    Rest of Lynn
+    <span class="rest-label-count">23 more</span>
+  </div>
+  <div class="rest-list">
+    <button class="runner-row buy">
+      <div class="rmark">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="rmark-num">60</div>
+      </div>
+      <span class="runner-addr">7 Ward St, Lynn</span>
+      <span class="runner-nums">
+        <span class="runner-cf">$1,411/mo</span><span>·</span><span>6.7% CoC</span>
+      </span>
+    </button>
+    <button class="runner-row buy">
+      <div class="rmark">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="rmark-num">55</div>
+      </div>
+      <span class="runner-addr">141 Essex St, Lynn</span>
+      <span class="runner-nums">
+        <span class="runner-cf">$925/mo</span><span>·</span><span>5.9% CoC</span>
+      </span>
+    </button>
+  </div>
+
+  <!-- BOTTOM NAV — 4 icons (Today / Watching / Analyst / More), no center [+], no ask-bar -->
+  <div class="bottom-nav">
+    <button class="bn-tab active">
+      <svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg>
+      Today
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg>
+      Watching
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg>
+      Analyst
+    </button>
+    <button class="bn-tab">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+      More
+    </button>
+  </div>
+</div>
+</body>
+</html>
