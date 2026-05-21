@@ -90,8 +90,34 @@ nav.top{
 }
 
 /* ── HERO ──────────────────────────────────────────────────────────────── */
-.hero{text-align:center; padding-top:2.25rem}
-.hero-ring-wrap{display:flex; justify-content:center; margin-bottom:1.25rem;flex-direction:column;align-items:center}
+/* V2 layout (2026-05-20) — compact horizontal head puts the score
+   icon LEFT, verdict + address RIGHT, then promotes the cashflow
+   block directly under the head. Old poster-style centered layout
+   pushed the cashflow below the fold once photos rendered.
+   The old .hero-ring-wrap container is retained but restyled. */
+.hero{text-align:left; padding-top:1.25rem}
+.hero-ring-wrap{display:none}  /* legacy centered wrap — replaced by .dd-hero-head */
+
+.dd-hero-head{display:flex;align-items:center;gap:.95rem;margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3)}
+.dd-hero-head .hero-rmark{flex-shrink:0;width:72px}
+.dd-hero-head .hero-rmark svg{width:72px;height:72px}
+.dd-hero-head .hero-rmark-num{font-size:1.45rem}
+.dd-hero-head .hero-rmark-out{font-size:.55rem;color:var(--faint);margin-top:1px}
+.dd-hero-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35rem}
+.dd-hero-info .hero-signal{display:inline-flex;align-items:center;align-self:flex-start;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:5px;line-height:1;margin:0}
+.dd-hero-info .hero-signal.sb{background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest)}
+.dd-hero-info .hero-signal.buy{background:rgba(45,100,72,.07);border:1px solid rgba(45,100,72,.18);color:var(--forest-3)}
+.dd-hero-info .hero-signal.wat{background:rgba(160,106,0,.07);border:1px solid rgba(160,106,0,.18);color:var(--amber)}
+.dd-hero-info .hero-signal.pas{background:rgba(160,48,48,.07);border:1px solid rgba(160,48,48,.18);color:var(--rose)}
+.dd-hero-info .hero-addr{font-family:var(--serif);font-size:1.2rem;font-weight:500;line-height:1.2;margin:0;letter-spacing:-.01em}
+.dd-hero-info .hero-city{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin:0;line-height:1.4}
+
+.hero-explain-link{display:inline-flex;align-items:center;gap:.3rem;background:none;border:none;padding:0;margin-top:.65rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);cursor:pointer;letter-spacing:.02em}
+.hero-explain-link:hover{color:var(--forest)}
+.hero-explain-link svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.legacy-hero-orig{display:none}  /* legacy hero blocks we keep in DOM but hide */
+
 /* RankMark — brand primitive doubling as the hero score viz. Roof + 3 horizontal floor bars, tier-colored. */
 .hero-rmark{position:relative; cursor:pointer; transition:transform .2s; display:flex; flex-direction:column; align-items:center; gap:.45rem}
 .hero-rmark:hover{transform:scale(1.025)}
@@ -806,9 +832,12 @@ nav.top{
     <div class="photos-strip" id="photosStrip"></div>
   </section>
 
-  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <!-- ── HERO (V2 layout 2026-05-20) ─────────────────────────────────
+       Compact horizontal head puts the score icon LEFT, verdict +
+       address RIGHT. Cashflow promoted directly underneath so the
+       wow doesn't get pushed below the fold when photos render. -->
   <section class="hero">
-    <div class="hero-ring-wrap">
+    <div class="dd-hero-head">
       <div class="hero-rmark" id="heroRmark" onclick="openScoreExplain()" role="button" tabindex="0" aria-label="See how this score is calculated">
         <svg viewBox="0 0 40 40" aria-hidden="true">
           <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
@@ -819,23 +848,34 @@ nav.top{
         <div class="hero-rmark-num" id="hrNum">—</div>
         <div class="hero-rmark-out">/ 100</div>
       </div>
-      <button type="button" class="hero-ring-hint" onclick="openScoreExplain()">
-        How is this calculated?
-        <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-      </button>
+      <div class="dd-hero-info">
+        <span class="hero-signal" id="heroSignal">—</span>
+        <h1 class="hero-addr" id="heroAddr">—</h1>
+        <p class="hero-city" id="heroCity">—</p>
+      </div>
     </div>
-    <span class="hero-signal" id="heroSignal">—</span>
-    <h1 class="hero-addr" id="heroAddr">—</h1>
-    <p class="hero-city" id="heroCity">—</p>
 
+    <!-- Cashflow PROMOTED to second position — the wow lives above the fold. -->
+    <div class="hero-cf" id="heroCf">
+      <div class="hero-cf-label" id="heroCfLabel">Projected monthly cash flow</div>
+      <div class="hero-cf-val" id="heroCfVal">—</div>
+      <div class="hero-cf-sub" id="heroCfSub">—</div>
+    </div>
+
+    <!-- Freshness signal — pulsing sage dot + Freddie rate. -->
+    <div class="hd-fresh" id="heroFresh">
+      <span class="hd-fresh-dot" aria-hidden="true"></span>
+      <span id="heroFreshText">Scored nightly · at today's Freddie rate (6.50%)</span>
+    </div>
+
+    <!-- Secondary facts — price, MLS link, map, "how is this calculated?"
+         all sit below the cashflow now. -->
     <div class="hero-price-row" id="heroPriceRow">
       <span class="hero-price-label">Asking</span>
       <span class="hero-price-val" id="heroPriceVal">—</span>
       <span class="hero-price-meta" id="heroPricePerUnit"></span>
     </div>
 
-    <!-- External link to the original MLS / RentCast listing (photos,
-         agent, tour scheduling). Hidden if listingUrl isn't on the deal. -->
     <div class="hero-mls-row" id="heroMlsRow" style="display:none">
       <a class="hero-mls-link" id="heroMlsLink" href="#" target="_blank" rel="noopener noreferrer">
         <span id="heroMlsText">View on MLS</span>
@@ -843,9 +883,6 @@ nav.top{
       </a>
     </div>
 
-    <!-- Neighborhood + map link. Always shows the map link (we have
-         lat/lon from RentCast on every deal). Neighborhood appears
-         only when ATTOM enrichment fills it in. -->
     <div class="hero-loc-row" id="heroLocRow" style="display:none">
       <span class="hero-loc-neighborhood" id="heroLocNeighborhood" style="display:none">—</span>
       <span class="hero-loc-sep" id="heroLocSep" style="display:none">·</span>
@@ -855,20 +892,12 @@ nav.top{
       </a>
     </div>
 
+    <button type="button" class="hero-explain-link" onclick="openScoreExplain()">
+      How is this calculated?
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+
     <div class="hero-badges" id="heroBadges"></div>
-
-    <div class="hero-cf" id="heroCf">
-      <div class="hero-cf-label" id="heroCfLabel">Projected monthly cash flow</div>
-      <div class="hero-cf-val" id="heroCfVal">—</div>
-      <div class="hero-cf-sub" id="heroCfSub">—</div>
-    </div>
-
-    <!-- Freshness signal — pulsing sage dot + Freddie rate. Same DNA as
-         the other product heroes. -->
-    <div class="hd-fresh" id="heroFresh">
-      <span class="hd-fresh-dot" aria-hidden="true"></span>
-      <span id="heroFreshText">Scored nightly · at today's Freddie rate (6.50%)</span>
-    </div>
   </section>
 
   <!-- ── RENT ESTIMATE — per-unit override (backlog #79) ─────────────── -->
