@@ -2775,6 +2775,20 @@ WHERE status='active' AND report_data IS NOT NULL GROUP BY 1;
 -- expect 'object'; currently 'string' for all rows.
 ```
 
+**Reproduced 2026-05-21 with a clean Drizzle insert:**
+```ts
+await db.insert(dealFeed).values({
+  externalId: 'test-DELETEME',
+  source: 'seed',
+  reportData: { hello: 'world', n: 42 },  // plain object
+  // ...other required fields
+});
+// Stored value: "\"{\\\"hello\\\":\\\"world\\\",\\\"n\\\":42}\""
+// jsonb_typeof: 'string' (should be 'object')
+```
+
+So the bug is not in our application code (no `JSON.stringify` anywhere on the write path) — it's in the Drizzle + postgres-js chain. Drizzle's jsonb column or postgres-js's JSONB encoding is doing the stringify, and Postgres is then storing the string as a JSONB scalar instead of parsing it as an object.
+
 **Where to look for the cause:**
 - `src/db/seed.ts` line 237 + 243 — passes `reportData` as an object literal. Should be fine.
 - `src/workers/ingestionWorker.ts` — also writes `reportData`. Check both insert + update paths.
@@ -2782,15 +2796,33 @@ WHERE status='active' AND report_data IS NOT NULL GROUP BY 1;
 - Possible historical migration that text-cast the column then back.
 
 **Fix:**
-1. Find the source of the double-encode.
-2. Write a one-off migration to unwrap existing rows:
+1. Investigate Drizzle config (`drizzle-orm/postgres-js`) for the right jsonb encoding pattern. Options to try:
+   - Switch schema from `jsonb('report_data')` to `json('report_data')`
+   - Add a custom column type with explicit `.toDriver` that bypasses Drizzle's stringify
+   - Use the postgres-js `json` helper (`sql.json(obj)`) in the insert
+   - Check if pinning to a specific Drizzle version helps (some versions have known fixes)
+2. Once write path is correct, write a one-off migration to unwrap existing rows:
    ```sql
    UPDATE deal_feed
    SET report_data = (report_data #>> '{}')::jsonb
    WHERE jsonb_typeof(report_data) = 'string';
    ```
-3. Drop the CTE workaround in `/feed/stats/markets` once data is clean.
+3. **Important**: only run the migration AFTER fixing the write path — otherwise the next nightly ingestion overwrites the unwrapped data with strings again.
+4. Drop the CTE workaround in `/feed/stats/markets` once data is clean.
+5. Add a regression test that inserts a sample object and asserts `jsonb_typeof(report_data) = 'object'` after the roundtrip.
 
-**Estimated:** 1-2 hours including the migration + verifying nightly ingestion writes clean shape going forward.
+**Estimated:** 2-3 hours including library investigation + migration + verifying nightly ingestion writes clean shape going forward.
+
+**Until fixed:** every new SQL feature that reads `reportData` paths MUST use the CTE unwrap pattern:
+```sql
+WITH unwrapped AS (
+  SELECT *, CASE
+    WHEN jsonb_typeof(report_data) = 'string' THEN (report_data #>> '{}')::jsonb
+    ELSE report_data
+  END AS rd FROM deal_feed
+)
+SELECT rd->'financials'->>'capRate' FROM unwrapped ...
+```
+See `src/routes/feed.ts` `/stats/markets` for the live example.
 
 **Re-evaluate when:** Before any other SQL feature that touches `reportData` paths (e.g. backlog #189 exposing more metrics on `/feed/public`, or any analytics query over scored deals).
