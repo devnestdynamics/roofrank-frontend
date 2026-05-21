@@ -2005,9 +2005,12 @@ function syncWatchBadge(){
   if(top){ top.textContent = n ? '(' + n + ')' : ''; top.style.display = n ? 'inline' : 'none'; }
 }
 function syncProBadge(){
+  // V1 polish flipped rhPro from a "you're Pro" badge of honor to a
+  // quiet "Upgrade" text-link. Logic inverts: show ONLY to non-pro
+  // users. Pro users should see no upgrade prompt in the header.
   const el = document.getElementById('rhPro');
   if(!el) return;
-  el.style.display = isPro ? '' : 'none';
+  el.style.display = isPro ? 'none' : '';
 }
 
 // ── PRO UPGRADE MODAL ──────────────────────────────────────────────────
