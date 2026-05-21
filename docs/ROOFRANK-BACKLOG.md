@@ -2707,22 +2707,25 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 198. Property photos on deal-detail (pre-launch nice-to-have)
+### 198. Property photos on deal-detail (needs a different data provider)
 
-**What:** Deal-detail's photos strip is wired and ready, but RentCast's basic plan doesn't return media. Every deal in prod currently shows no photos.
+**What:** Deal-detail's photos strip is wired (frontend supports `listingData.photos[]`), but **RentCast's Property Listings API does not include media at any tier** — confirmed via their schema docs (2026-05-20). Ali's current API Foundation plan ($74/mo) is not the limitation; photos simply aren't in the response shape RentCast ships.
 
-**Three paths:**
-- **(a) Upgrade RentCast plan** — their "Sale Listings Pro" tier includes media for ~$50-200/mo depending on usage. Photos just start appearing; frontend already handles them. Cleanest.
-- **(b) Different listings API** — Zillow / Realtor.com APIs require partnerships/licensing. Won't get us there before launch.
-- **(c) Pro-only feature** — when (a) is in, gate photos behind Pro as a paid differentiator.
+**RentCast schema returns** (confirmed): address, lat/lon, property details, listing status/price/DOM, MLS name + number, agent + office contact info (name/phone/email/website — but website goes to the agent's general site, not the specific listing), sale + price history. **No media, no listingUrl, no source URL.**
 
-**ATTOM does NOT have photos.** ATTOM is property records (owner, tax, history), not active listings. Already confirmed.
+**ATTOM does NOT have photos either** — already confirmed. ATTOM is property records (owner, tax, history), not active listings.
 
-**Why it matters:** A real-estate listing without photos reads as a spreadsheet. We currently surface a "Find on Zillow" fallback link so users can see photos elsewhere, but having them in-app is a meaningful trust/wow lift.
+**Real paths if we want photos in-app:**
+- **(a) ListHub / MLS Grid** — direct MLS feed providers. Real photos. Requires brokerage partnership + ~$200-500/mo + RESO compliance. Months to set up.
+- **(b) Zillow API / Realtor.com API** — both require partnership programs that aren't generally accessible to startups.
+- **(c) Bridge Interactive (RESO Web API)** — similar gating.
+- **(d) Scrape** — legal grey area, breakable, not advisable.
 
-**Estimated:** ~30 min to wire if we upgrade RentCast (just verify the `listingData.photos[]` field flows through). Frontend is ready.
+**Current best-effort:** Frontend constructs a Zillow search URL from the address as a fallback ("Find on Zillow · MLS XXXXX →"). Lands on Zillow's listing page or search — user sees photos / contacts agent there.
 
-**Re-evaluate when:** Pricing the RentCast upgrade, or any time we're spending on conversion/onboarding optimization. Photos move the needle.
+**Recommendation:** Live without photos for MVP. Use the Zillow fallback. Revisit only if user feedback signals it as a deal-breaker, or once we have brokerage relationships that justify ListHub setup.
+
+**Re-evaluate when:** First-week-of-launch user feedback. If "no photos" comes up as the #1 friction, prioritize. If not, defer — RoofRank's value-add is the math, not the photos.
 
 ---
 
