@@ -100,6 +100,45 @@ nav.top{
   color:var(--muted); margin-left:.45rem;
 }
 
+/* ── Unified score tile (replaces sv-metric cards + bd-row bars) ──
+   One tile per metric: label + target threshold + value + market delta
+   + contribution bar + weight % + badge. Same data the page used to
+   render in two surfaces (card grid + bar grid), now co-located. */
+.utile{background:#fafaf7;border:1px solid var(--cream-3);border-radius:8px;padding:.65rem .8rem;margin-bottom:.45rem;position:relative}
+.utile-row1{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;margin-bottom:.35rem}
+.utile-lbl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.utile-tgt{font-size:.58rem;color:var(--faint);font-family:var(--mono)}
+.utile-row2{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;margin-bottom:.4rem}
+.utile-val{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1}
+.utile-val.g{color:var(--forest)}
+.utile-val.r{color:var(--rose)}
+.utile-delta{font-family:var(--mono);font-size:.66rem}
+.utile-delta.up{color:var(--forest)}
+.utile-delta.down{color:var(--rose)}
+.utile-delta-avg{font-size:.58rem;color:var(--faint);margin-left:.3rem;font-family:var(--sans)}
+.utile-bar-row{display:flex;align-items:center;gap:.55rem}
+.utile-bar-wrap{flex:1;height:5px;background:var(--cream-3);border-radius:3px;overflow:hidden}
+.utile-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.utile-bar-meta{font-size:.55rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+.utile-badge{font-size:.5rem;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.utile-badge.great{background:var(--sage-dim);color:var(--forest)}
+.utile-badge.good{background:rgba(62,129,96,.07);color:var(--forest-3)}
+.utile-badge.watch{background:rgba(160,106,0,.08);color:var(--amber)}
+.utile-badge.poor{background:rgba(160,48,48,.08);color:var(--rose)}
+/* Locked variant for free tier — blurs the data without putting a
+   badge on every tile. The single lock indicator lives on the
+   .locked-divider above the locked group. */
+.utile.locked .utile-val,
+.utile.locked .utile-delta,
+.utile.locked .utile-delta-avg,
+.utile.locked .utile-bar-wrap,
+.utile.locked .utile-badge{filter:blur(3.5px);user-select:none}
+/* Section divider between unlocked and locked tiles — single lock
+   indicator with count, no per-tile badges below. */
+.locked-divider{display:flex;align-items:center;gap:.5rem;margin:.85rem 0 .55rem}
+.locked-divider::before,.locked-divider::after{content:'';flex:1;height:1px;background:var(--cream-3)}
+.locked-divider-pill{display:inline-flex;align-items:center;gap:.3rem;background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest);padding:3px 9px;border-radius:14px;font-weight:600;letter-spacing:.05em;font-size:.6rem;text-transform:uppercase}
+
 /* ── HERO ──────────────────────────────────────────────────────────────── */
 /* V2 layout (2026-05-20) — compact horizontal head puts the score
    icon LEFT, verdict + address RIGHT, then promotes the cashflow
@@ -1134,22 +1173,18 @@ nav.top{
       <span class="cf-upfront-k">Total Cash to Close</span>
       <span class="cf-upfront-v" id="cfUpfrontVal">—</span>
     </div>
-    <!-- 8-metric grid moved here from the (old) analyst card. The
-         analyst-verdict templated line that used to lead this grid
-         is hidden — the AI bull/bear narrative above replaces it. -->
-    <div id="svMetrics"></div>
+    <!-- Unified score tiles. Replaces the prior dual surfaces
+         (svMetrics cards + scoreBreakdownPublic bars) — same data
+         in one rich tile per metric: label, target threshold, value,
+         market delta, contribution bar, weight %, badge.
+         Free tier sees top-3-by-weight unlocked + single lock indicator
+         + 5 blurred tiles. Pro sees all 8 unlocked. -->
+    <div class="cf-subhead">Score breakdown <span class="cf-subhead-meta">how this scored <span id="bdScore">—</span> · vs <span id="bdMarket">market</span> avg</span></div>
+    <div id="scoreTiles"></div>
     <div class="sv-watch" id="svWatch" style="display:none"></div>
     <div class="sv-urgency" id="svUrgency" style="display:none"></div>
-
-    <!-- Score breakdown — moved up from the (old) standalone "Why this
-         score" section per IA consolidation (2026-05-21). Same data,
-         one home: numbers above show "how does this metric compare to
-         the market"; bars below show "how much did this metric weigh
-         in the final score". -->
-    <div class="cf-subhead">Score breakdown <span class="cf-subhead-meta">how we got to <span id="bdScore">—</span></span></div>
-    <div id="scoreBreakdownPublic"></div>
     <a class="pro-quiet-link" href="roofrank-pricing.html" id="proQuietLink">
-      <span>4 more metrics in Pro — CapEx, Neighborhood grade, Price-per-Unit benchmarks</span>
+      <span>5 more metrics unlocked with Pro</span>
       <span class="pro-quiet-arrow" aria-hidden="true">→</span>
     </a>
   </section>
@@ -1458,6 +1493,16 @@ const _forcedFree = new URLSearchParams(window.location.search).get('free') === 
 let isPro = false;
 function applyProUnlocks(){
   document.querySelectorAll('.pro-locked').forEach(el => el.classList.toggle('pro-unlocked', isPro));
+  // Score-tile lock state lives in the rendered HTML rather than a CSS
+  // toggle, so re-run applyScenario() to re-emit tiles with the current
+  // sFin (scenario-adjusted financials) and the new isPro state.
+  if (_deal) {
+    try { if (typeof applyScenario === 'function') applyScenario(); }
+    catch (e) { console.warn('score tile re-render failed:', e); }
+  }
+  // Upgrade CTA at the bottom of the math section — free only.
+  const proLink = document.getElementById('proQuietLink');
+  if (proLink) proLink.style.display = isPro ? 'none' : '';
 }
 
 // ── Comparable deals strip (item 6 of deal-detail audit) ─────────────────
@@ -1770,39 +1815,77 @@ function buildAnalystVerdict(d, sFin, score){
   return lead + follow;
 }
 
-function renderAnalystMetrics(d, sFin, avgs){
-  const _svMetrics=document.getElementById('svMetrics');
-  if(!_svMetrics) return;
-  const svMetric=(label,val,avg,target,targetLabel,hi,fmt)=>{
-    if(val==null) return '';
-    let deltaPart='';
-    if(avg!=null){
-      const delta=hi?val-avg:avg-val;
-      const dCls=Math.abs(delta)<0.05*Math.abs(avg||1)?'flat':delta>0?'up':'down';
-      const arrow=dCls==='up'?'↑':dCls==='down'?'↓':'→';
-      // Format the delta with the same fmt function as the value so
-      // dollar amounts get the $NK treatment (was rendering raw "41873"
-      // for Price/Unit deltas — looked like a random number). Percent
-      // and DSCR formatters handle their own decimals correctly.
-      const dTxt=dCls==='flat'?'flat':`${arrow} ${fmt(Math.abs(delta))}`;
-      deltaPart=`<span class="sv-metric-delta ${dCls}">${dTxt}</span>`;
+// Unified score tiles — replaces the old sv-metric card grid AND the
+// scoreBreakdownPublic bar grid. One tile per metric carries: label,
+// target threshold, value, market delta vs city avg, contribution bar,
+// weight %, badge. Free tier sees the 3 highest-weight metrics unlocked
+// (CoC + Cap + DSCR = 65% of the score), the remaining 5 blurred, with
+// a single lock indicator at the section divider — no per-tile badges.
+function renderScoreTiles(d, sFin, avgs){
+  const host = document.getElementById('scoreTiles');
+  if (!host) return;
+  const sc = (d.reportData || {}).scores || {};
+  const fmtPct  = v => v.toFixed(1)+'%';
+  const fmtX    = v => v.toFixed(2);
+  const fmtMult = v => v.toFixed(1)+'×';
+  const fmtKv   = v => '$'+Math.round(v/1000)+'K';
+  const fmtKvNoi = v => v>=1000 ? '$'+Math.round(v/1000)+'K' : '$'+Math.round(v);
+  const passthru = v => v;
+  // tile data — ordered by WEIGHT desc so the highest-impact metrics
+  // appear first. Free tier unlocks the first 3 (CoC/Cap/DSCR = 65%
+  // of score), Pro unlocks all 8.
+  const tiles = [
+    { id:'coc',  label:'Cash-on-Cash',   target:'target ≥ 8%',     val:sFin.cashOnCashReturn, avg:avgs.coc,     scorePct:sc.cashOnCash       || Math.min(100,(sFin.cashOnCashReturn||0)/12*100),       weight:25, hi:true,  fmt:fmtPct },
+    { id:'cap',  label:'Cap Rate',       target:'target ≥ 6.5%',   val:sFin.capRate,          avg:avgs.capRate, scorePct:sc.capRate          || Math.min(100,(sFin.capRate||0)/8.5*100),                 weight:20, hi:true,  fmt:fmtPct },
+    { id:'dscr', label:'DSCR',           target:'lender ≥ 1.25',   val:sFin.dscr,             avg:avgs.dscr,    scorePct:sc.dscr             || Math.min(100,((sFin.dscr||0)-0.8)/0.8*100),              weight:20, hi:true,  fmt:fmtX },
+    { id:'grm',  label:'GRM',            target:'lower is better', val:sFin.grm,              avg:null,         scorePct:sc.grm              || Math.min(100,((15-(sFin.grm||15))/7)*100),               weight:10, hi:false, fmt:fmtMult },
+    { id:'ppu',  label:'Price / Unit',   target:'lower is better', val:sFin.pricePerUnit,     avg:avgs.ppu,     scorePct:sc.pricePerUnit     || Math.min(100,(500000-(sFin.pricePerUnit||500000))/3000), weight:10, hi:false, fmt:fmtKv },
+    { id:'noi',  label:'NOI',            target:'higher is better',val:sFin.noi,              avg:null,         scorePct:sc.noi              || Math.min(100,(sFin.noi||0)/150000*100),                  weight:5,  hi:true,  fmt:fmtKvNoi },
+    { id:'cpx',  label:'CapEx Reserve',  target:'% of NOI',         val:'Moderate',           avg:null,         scorePct:sc.capexReserve     || 65,                                                      weight:5,  hi:true,  fmt:passthru },
+    { id:'nbhd', label:'Neighborhood',   target:'A → C grade',      val:(d.reportData||{}).neighborhoodGrade || 'B', avg:null, scorePct:sc.neighborhoodGrade || 65, weight:5, hi:true, fmt:passthru },
+  ];
+  const renderTile = (t, locked) => {
+    if (t.val == null) return '';
+    const v = typeof t.val === 'number' ? t.fmt(t.val) : t.val;
+    // Market delta (only when we have a city avg for this metric)
+    let deltaHtml = '';
+    if (t.avg != null && typeof t.val === 'number') {
+      const delta = t.hi ? t.val - t.avg : t.avg - t.val;
+      const dCls = Math.abs(delta) < 0.05*Math.abs(t.avg||1) ? 'flat' : delta>0 ? 'up' : 'down';
+      const arrow = dCls==='up' ? '↑' : dCls==='down' ? '↓' : '→';
+      const dTxt = dCls==='flat' ? 'flat' : `${arrow} ${t.fmt(Math.abs(delta))}`;
+      const avgTxt = `vs ${d.city||'market'} ${t.fmt(t.avg)}`;
+      deltaHtml = `<span><span class="utile-delta ${dCls}">${dTxt}</span><span class="utile-delta-avg">${avgTxt}</span></span>`;
     }
-    let vCls='n';
-    if(target!=null){
-      const hits=hi?val>=target:val<=target;
-      const tooFar=hi?val<target*0.7:val>target*1.3;
-      vCls=hits?'g':tooFar?'r':'a';
-    }
-    const metaTxt = avg!=null ? `${fmt(avg)} ${d.city||'market'} avg` : '';
-    return`<div class="sv-metric"><div class="sv-metric-left"><div class="sv-metric-lbl">${label}</div>${targetLabel?`<div class="sv-metric-tgt">${targetLabel}</div>`:''}</div><div class="sv-metric-right"><div class="sv-metric-val-row"><span class="sv-metric-val ${vCls}">${fmt(val)}</span>${deltaPart}</div>${metaTxt?`<div class="sv-metric-meta"><span class="sv-metric-avg">${metaTxt}</span></div>`:''}</div></div>`;
+    // Bar fill + color tier
+    const p   = Math.max(0, Math.min(100, t.scorePct || 0));
+    const bc  = p>=75 ? 'var(--forest)' : p>=55 ? 'var(--forest-3)' : p>=35 ? 'var(--amber)' : 'var(--rose)';
+    const bn  = p>=75 ? 'great' : p>=55 ? 'good' : p>=35 ? 'watch' : 'poor';
+    const bnT = p>=75 ? 'Great' : p>=55 ? 'Good' : p>=35 ? 'Watch' : 'Poor';
+    // Value-color cue when we have a numeric val
+    let vCls = '';
+    if (typeof t.val === 'number') vCls = p>=55 ? ' g' : p<35 ? ' r' : '';
+    return `<div class="utile${locked?' locked':''}">
+      <div class="utile-row1"><span class="utile-lbl">${t.label}</span><span class="utile-tgt">${t.target}</span></div>
+      <div class="utile-row2"><span class="utile-val${vCls}">${v}</span>${deltaHtml}</div>
+      <div class="utile-bar-row"><div class="utile-bar-wrap"><div class="utile-bar-fill" style="width:${p}%;background:${bc}"></div></div><span class="utile-bar-meta">${t.weight}% of score</span><span class="utile-badge ${bn}">${bnT}</span></div>
+    </div>`;
   };
-  _svMetrics.innerHTML=[
-    svMetric('Cash-on-Cash', sFin.cashOnCashReturn, avgs.coc,      8,    'target ≥ 8%',   true,  v=>v.toFixed(1)+'%'),
-    svMetric('Cap Rate',     sFin.capRate,          avgs.capRate,  6.5,  'target ≥ 6.5%', true,  v=>v.toFixed(1)+'%'),
-    svMetric('DSCR',         sFin.dscr,             avgs.dscr,     1.25, 'lender ≥ 1.25', true,  v=>v.toFixed(2)),
-    svMetric('Price / Unit', sFin.pricePerUnit,     avgs.ppu,      null, '',              false, v=>'$'+Math.round(v/1000)+'K'),
-  ].filter(Boolean).join('');
+  if (isPro) {
+    host.innerHTML = tiles.map(t => renderTile(t, false)).join('');
+  } else {
+    const unlocked = tiles.slice(0, 3);
+    const locked   = tiles.slice(3);
+    const dividerHtml = locked.length
+      ? `<div class="locked-divider"><span class="locked-divider-pill">🔒 ${locked.length} more in Pro</span></div>`
+      : '';
+    host.innerHTML = unlocked.map(t => renderTile(t, false)).join('')
+                   + dividerHtml
+                   + locked.map(t => renderTile(t, true)).join('');
+  }
 }
+// Backwards-compat alias — older boot path still calls renderAnalystMetrics.
+function renderAnalystMetrics(d, sFin, avgs){ renderScoreTiles(d, sFin, avgs); }
 function renderAnalystWatch(d, sFin){
   const _svWatch=document.getElementById('svWatch');
   if(!_svWatch) return;
@@ -2294,31 +2377,13 @@ function renderDeal(d){
     if (freshTextEl) freshTextEl.textContent = `Scored nightly · at today's Freddie rate (${rateStr})`;
   } catch (e) { console.warn('freshness label render failed:', e); }
 
-  // ── Score breakdown
-  const bars=[
-    ['Cash-on-Cash Return', sc.cashOnCash || Math.min(100,(fin.cashOnCashReturn||0)/12*100), fin.cashOnCashReturn!=null?fin.cashOnCashReturn.toFixed(1)+'%':'—'],
-    ['Cap Rate', sc.capRate || Math.min(100,(fin.capRate||0)/8.5*100), fin.capRate!=null?fin.capRate.toFixed(1)+'%':'—'],
-    ['DSCR', sc.dscr || Math.min(100,((fin.dscr||0)-0.8)/0.8*100), fin.dscr!=null?fin.dscr.toFixed(2):'—'],
-    ['Gross Rent Multiplier', sc.grm || Math.min(100,((15-(fin.grm||15))/7)*100), fin.grm!=null?fin.grm.toFixed(1)+'×':'—'],
-    ['Price / Unit', sc.pricePerUnit || Math.min(100,(500000-(fin.pricePerUnit||500000))/3000), fmtK(fin.pricePerUnit)],
-    ['Net Operating Income', sc.noi || Math.min(100,(fin.noi||0)/150000*100), fmt$(fin.noi)],
-    ['CapEx Reserve', sc.capexReserve||65, 'Moderate'],
-    ['Neighborhood Grade', sc.neighborhoodGrade||65, (d.reportData||{}).neighborhoodGrade||'B'],
-  ];
-  // Score breakdown: split into public teaser (top 2 strongest + 1 weakest) and locked
-  const renderBar = ([name,pct,label]) => {
-    const p = Math.max(0,Math.min(100, pct||0));
-    const bc = p>=75?'var(--forest)':p>=50?'var(--forest-3)':p>=30?'var(--amber)':'var(--rose)';
-    const bn = p>=75?'great':p>=55?'good':p>=35?'watch':'poor';
-    const bnTxt = p>=75?'Great':p>=55?'Good':p>=35?'Watch':'Poor';
-    return `<div class="bd-row"><div class="bd-name">${name}</div><div class="bd-bar-wrap"><div class="bd-bar-fill" style="width:${p}%;background:${bc}"></div></div><div class="bd-val">${label}</div><span class="bd-badge ${bn}">${bnTxt}</span></div>`;
-  };
-  const sorted = [...bars].map((b,i)=>({b, pct:b[1]||0, i})).sort((a,b)=>b.pct-a.pct);
-  const topNames = new Set([sorted[0]?.b[0], sorted[1]?.b[0], sorted[sorted.length-1]?.b[0]].filter(Boolean));
-  const publicBars = bars.filter(b=>topNames.has(b[0]));
-  const lockedBars = bars.filter(b=>!topNames.has(b[0]));
-  setHTML('scoreBreakdownPublic', publicBars.map(renderBar).join(''));
-  setHTML('scoreBreakdownLocked', lockedBars.map(renderBar).join(''));
+  // Score breakdown bars are now emitted by renderScoreTiles() as part
+  // of the unified per-metric tile (label + value + market delta +
+  // contribution bar + weight + badge). The old bd-row rendering was
+  // killed 2026-05-21 — see commit history. Tiles also surface the
+  // "% of score" weight, which the old bars buried.
+  // Bars rendered as unified tiles in renderScoreTiles (called from
+  // applyScenario via the existing svMetrics path).
 
   // ── Sticky bottom bar (mobile only — CSS handles display); score & signal are static
   const sNum=document.getElementById('stickyNum');
