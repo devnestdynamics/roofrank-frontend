@@ -1261,7 +1261,9 @@ async function boot(){
       const plan = (sub?.plan || '').toLowerCase();
       console.log('[RoofRank] subscription plan:', plan || '(none)');
       isPro = plan === 'pro' || plan === 'team';
-      syncProBadge();
+      // Feed report usage into the upgrade prompt — "Upgrade · 1 of 3 left"
+      // is louder once the user is close to the cap.
+      syncProBadge({ used: sub?.reportsUsed, limit: sub?.reportLimit });
       if(isPro && currentLensDeals.length){
         // Re-render the rest-of-feed without Pro locks (hero + runners
         // are unchanged by Pro state — they were never gated).
@@ -2004,13 +2006,34 @@ function syncWatchBadge(){
   const top = document.getElementById('navWatchBadge');
   if(top){ top.textContent = n ? '(' + n + ')' : ''; top.style.display = n ? 'inline' : 'none'; }
 }
-function syncProBadge(){
+function syncProBadge(opts){
   // V1 polish flipped rhPro from a "you're Pro" badge of honor to a
   // quiet "Upgrade" text-link. Logic inverts: show ONLY to non-pro
   // users. Pro users should see no upgrade prompt in the header.
+  //
+  // For free users, layer in report-usage context. The label gets louder
+  // as remaining hits zero so the upgrade nudge tracks the actual pain:
+  //   plenty left  → "Upgrade"
+  //   close to cap → "Upgrade · 1 of 3 reports left"
+  //   at cap       → "Reports used up · Upgrade →"
   const el = document.getElementById('rhPro');
   if(!el) return;
   el.style.display = isPro ? 'none' : '';
+  if(isPro) return;
+  const used  = Number(opts?.used);
+  const limit = Number(opts?.limit);
+  if(!Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0){
+    el.textContent = 'Upgrade';
+    return;
+  }
+  const remaining = Math.max(0, limit - used);
+  if(remaining === 0){
+    el.textContent = 'Reports used up · Upgrade →';
+  } else if(remaining <= Math.max(1, Math.floor(limit / 3))){
+    el.textContent = `Upgrade · ${remaining} of ${limit} reports left`;
+  } else {
+    el.textContent = 'Upgrade';
+  }
 }
 
 // ── PRO UPGRADE MODAL ──────────────────────────────────────────────────
