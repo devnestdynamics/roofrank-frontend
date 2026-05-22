@@ -104,14 +104,14 @@ body{
    analyst line attributed with the sparkle ✦. */
 .hero-deal-section{padding:.25rem 0 1.25rem}
 .hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
-/* Watchlist heart — bottom action row, right side. Mirrors the
-   runner-row and rest-of-feed pattern where the heart is always on
-   the right. CTA + arrow now sit on the left. Negative right margin
-   pulls the heart visually into the same right-edge column as the
-   runner+compact hearts (hero card has 1.3rem padding; runners have
-   .9rem; the -.4rem cancels the difference so all hearts scan as
-   one vertical column down the page). */
-.hd-watch{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0;margin-left:.5rem;margin-right:-.4rem}
+/* Watchlist heart — absolute-positioned at the bottom-right of the hero
+   card so it lines up with runner-row + compact-row hearts on the same
+   right-edge column regardless of card padding differences. Previous
+   relative + negative-margin approach didn't account for the mobile
+   runner-row '::after' arrow that pushes the runner heart inward,
+   so the hero heart drifted ~15-20px to the right of the runner
+   hearts on mobile. Absolute lock fixes that. */
+.hd-watch{position:absolute;right:.9rem;bottom:1rem;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;z-index:2}
 .hd-watch svg{width:18px;height:18px}
 .hd-watch:hover{background:var(--cream-2);color:var(--forest)}
 .hd-watch.on{color:var(--forest)}
