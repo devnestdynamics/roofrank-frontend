@@ -1663,36 +1663,46 @@ function renderRentEstimate(d){
   // Easier: just rewrite the toggle label
   toggleBtn.childNodes[0].nodeValue = usingOverride ? 'Edit your numbers ' : 'Use your own numbers ';
 
-  // Build the form inputs from either the override (if set) or HUD defaults
+  // Build the form inputs from either the override (if set) or HUD defaults.
+  // Skip the full rebuild if the form is OPEN and the user might be
+  // mid-typing — we don't want a lens-toggle re-render to nuke their
+  // half-entered values. Headline (above) still updates either way.
   const inputs = document.getElementById('rentUnitInputs');
-  inputs.innerHTML = '';
-  const defaultBdBase = mix.baseBd || 2;
-  const defaultBdNext = Math.min(4, defaultBdBase + 1);
-  const baseRent = mix.baseTierFmr || 1800;
-  const nextRent = mix.nextTierFmr || baseRent;
+  const form   = document.getElementById('rentForm');
+  const formOpen = form && form.style.display !== 'none';
+  if (inputs && !formOpen) {
+    inputs.innerHTML = '';
+    const defaultBdBase = mix.baseBd || 2;
+    const defaultBdNext = Math.min(4, defaultBdBase + 1);
+    // Defaults shown in the form reflect the active condition lens — so
+    // a user toggling 'Renovated' before opening 'Use your own numbers'
+    // sees $2,371/unit defaults instead of $2,062, matching the headline.
+    const baseRent = Math.round((mix.baseTierFmr || 1800) * (lensActive ? condMult : 1.0));
+    const nextRent = Math.round((mix.nextTierFmr || mix.baseTierFmr || 1800) * (lensActive ? condMult : 1.0));
 
-  for(let i = 0; i < d.units; i++){
-    let bd, rent;
-    if(usingOverride && ov.unitRents[i]){
-      bd   = ov.unitRents[i].bd;
-      rent = ov.unitRents[i].rent;
-    } else {
-      // First N units at base tier, last (units - N) at base+1 tier
-      const atBase = i < (mix.unitsAtBase || d.units);
-      bd   = atBase ? defaultBdBase : defaultBdNext;
-      rent = atBase ? baseRent : nextRent;
+    for(let i = 0; i < d.units; i++){
+      let bd, rent;
+      if(usingOverride && ov.unitRents[i]){
+        bd   = ov.unitRents[i].bd;
+        rent = ov.unitRents[i].rent;
+      } else {
+        // First N units at base tier, last (units - N) at base+1 tier
+        const atBase = i < (mix.unitsAtBase || d.units);
+        bd   = atBase ? defaultBdBase : defaultBdNext;
+        rent = atBase ? baseRent : nextRent;
+      }
+      inputs.insertAdjacentHTML('beforeend', `
+        <div class="rent-unit">
+          <div class="rent-unit-label">Unit ${i+1}</div>
+          <select class="rent-unit-bd" data-idx="${i}" onchange="recalcRentTotal()">
+            ${[1,2,3,4,5].map(n => `<option value="${n}"${n===bd?' selected':''}>${n}BR</option>`).join('')}
+          </select>
+          <input type="number" class="rent-unit-rent" data-idx="${i}" value="${rent}" min="0" max="15000" step="50" oninput="recalcRentTotal()" placeholder="$/mo">
+        </div>
+      `);
     }
-    inputs.insertAdjacentHTML('beforeend', `
-      <div class="rent-unit">
-        <div class="rent-unit-label">Unit ${i+1}</div>
-        <select class="rent-unit-bd" data-idx="${i}" onchange="recalcRentTotal()">
-          ${[1,2,3,4,5].map(n => `<option value="${n}"${n===bd?' selected':''}>${n}BR</option>`).join('')}
-        </select>
-        <input type="number" class="rent-unit-rent" data-idx="${i}" value="${rent}" min="0" max="15000" step="50" oninput="recalcRentTotal()" placeholder="$/mo">
-      </div>
-    `);
+    recalcRentTotal();
   }
-  recalcRentTotal();
 
   section.style.display = '';
 }
