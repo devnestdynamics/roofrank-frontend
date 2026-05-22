@@ -1622,11 +1622,19 @@ function renderRentEstimate(d){
   if(!re || (re.perUnitMonthly == null && !re.unitMix)){ section.style.display = 'none'; return; }
 
   // Headline shows the current effective rent — either the user's override
-  // (if applied) or the HUD-derived default.
+  // (if applied) or the HUD-derived default. Apply the active condition
+  // lens multiplier (As-is = 0.85, Updated = 1.0, Renovated = 1.15) so
+  // the rent tile stays consistent with the cashflow recompute below —
+  // they were drifting apart, confusing users when they toggled lenses.
+  // User override takes priority — those numbers are explicit, not assumed.
   const ov = d.userRentOverride;
   const usingOverride = !!(ov && ov.adjustedScoring);
-  const totalMonthly = usingOverride ? ov.adjustedScoring.totalMonthly : re.totalMonthly;
-  const perUnit      = usingOverride ? ov.adjustedScoring.monthlyRentPerUnit : re.perUnitMonthly;
+  const condMult = (typeof scenario !== 'undefined' && scenario.condMult) || 1.0;
+  const baseTotal = usingOverride ? ov.adjustedScoring.totalMonthly : re.totalMonthly;
+  const basePerUnit = usingOverride ? ov.adjustedScoring.monthlyRentPerUnit : re.perUnitMonthly;
+  const lensActive = !usingOverride && Math.abs(condMult - 1.0) > 0.001;
+  const totalMonthly = lensActive ? Math.round((baseTotal || 0) * condMult) : baseTotal;
+  const perUnit      = lensActive ? Math.round((basePerUnit || 0) * condMult) : basePerUnit;
 
   const headEl = document.getElementById('rentHeadline');
   const subEl  = document.getElementById('rentSub');
@@ -1641,9 +1649,12 @@ function renderRentEstimate(d){
   const mixDesc = mix.unitsAtBasePlusOne > 0
     ? `${mix.unitsAtBase}× ${mix.baseBd}BR + ${mix.unitsAtBasePlusOne}× ${Math.min(4,(mix.baseBd||2)+1)}BR`
     : `${d.units}× ${mix.baseBd||2}BR`;
+  const lensSuffix = lensActive
+    ? ` · ${condMult > 1 ? '+' : ''}${Math.round((condMult-1)*100)}% condition lens`
+    : '';
   subEl.textContent = usingOverride
     ? `Score recomputed with your numbers · revert below to use HUD estimate`
-    : `HUD FY${(re.version||'').includes('fy26')?'26':'25'} ${d.city||''} · ${mixDesc}`;
+    : `HUD FY${(re.version||'').includes('fy26')?'26':'25'} ${d.city||''} · ${mixDesc}${lensSuffix}`;
 
   revertBtn.style.display = usingOverride ? '' : 'none';
   toggleBtn.querySelector('span,br') || (toggleBtn.firstChild.textContent = usingOverride
@@ -1845,6 +1856,12 @@ function setCondition(mult){
     meta.textContent = (pct >= 0 ? '+' : '') + pct + '% on HUD baseline';
   }
   if (typeof applyScenario === 'function') applyScenario();
+  // Keep the Rent Estimate tile in sync — it has its own render path
+  // and used to show the unmultiplied HUD baseline even as cashflow
+  // moved. The override tile takes precedence inside renderRentEstimate.
+  if (typeof renderRentEstimate === 'function' && typeof _deal !== 'undefined' && _deal) {
+    renderRentEstimate(_deal);
+  }
 }
 
 // Pro gates the condition lens. Free callers see the row but the
