@@ -152,10 +152,6 @@ nav.top{
 .dd-hero-rmark-col{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.3rem}
 .dd-hero-head .hero-rmark{flex-shrink:0;width:72px}
 .dd-hero-head .hero-rmark svg{width:72px;height:72px}
-/* Eyebrow above the score number — tells the reader what they're looking
-   at before they read the digits. Mono + small caps for the
-   instrument-panel feel. */
-.dd-hero-head .hero-rmark-eyebrow{font-family:var(--mono);font-size:.55rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:2px}
 /* Inline "78 /100" — denominator stays visible (was .55rem ≈ 8.8px, easy
    to miss). Number stays big + colored; denom keeps the muted treatment. */
 .dd-hero-head .hero-rmark-num{font-size:1.45rem;display:inline-flex;align-items:baseline;gap:2px}
@@ -405,14 +401,6 @@ nav.top{
 .photo-tile.first{width:100%}
 .photo-tile img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-count{position:absolute;top:.7rem;right:.85rem;background:rgba(28,31,28,.78);color:#fff;font-family:var(--mono);font-size:.66rem;font-weight:500;padding:.25rem .55rem;border-radius:5px;letter-spacing:.04em;backdrop-filter:blur(4px)}
-
-/* ── EXTERNAL MLS LINK ─────────────────────────────────────────────────
-   Small chip beneath the price row — quick exit to the original listing
-   for serious buyers (photos, agent, tour scheduling). */
-.hero-mls-row{display:flex;justify-content:center;margin-top:.4rem;margin-bottom:.9rem}
-.hero-mls-link{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);text-decoration:none;padding:.32rem .7rem;border:1px solid var(--border);border-radius:6px;background:var(--white);transition:all .15s}
-.hero-mls-link:hover{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
-.hero-mls-link svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 
 /* ── NEIGHBORHOOD + MAP LINK ───────────────────────────────────────────
    Tight inline location row under the city line. Neighborhood (if we
@@ -1036,7 +1024,6 @@ nav.top{
           </svg>
           <div class="hero-rmark-num"><span id="hrNum">—</span><span class="hr-denom">/100</span></div>
         </div>
-        <div class="hero-rmark-eyebrow">RoofRank Score</div>
         <button type="button" class="hero-rmark-hint" onclick="openScoreExplain()">How is this scored?</button>
       </div>
       <div class="dd-hero-info">
@@ -1065,13 +1052,6 @@ nav.top{
       <span class="hero-price-label">Asking</span>
       <span class="hero-price-val" id="heroPriceVal">—</span>
       <span class="hero-price-meta" id="heroPricePerUnit"></span>
-    </div>
-
-    <div class="hero-mls-row" id="heroMlsRow" style="display:none">
-      <a class="hero-mls-link" id="heroMlsLink" href="#" target="_blank" rel="noopener noreferrer">
-        <span id="heroMlsText">View on MLS</span>
-        <svg viewBox="0 0 24 24"><path d="M7 17 L17 7 M9 7 H17 V15"/></svg>
-      </a>
     </div>
 
     <div class="hero-loc-row" id="heroLocRow" style="display:none">
@@ -2455,43 +2435,6 @@ function renderDeal(d){
       photosSection.style.display = '';
     }
   } catch (e) { console.warn('photos render failed:', e); }
-
-  // ── External listing URL (View on MLS / Find on Zillow) ─────────────
-  // Prefers a direct upstream URL (RentCast `listingUrl`, agent URL).
-  // Falls back to a Zillow search slug when only address is known —
-  // technically ToS-grey but the link just opens a search query, no
-  // scraping. Real photos + a clean upstream URL come once we wire
-  // SimplyRETS / ListHub. Opt out with localStorage.rr_mls_link = '0'.
-  try {
-    const MLS_LINK_DISABLED = (() => {
-      try { return localStorage.getItem('rr_mls_link') === '0'; } catch { return false; }
-    })();
-    if (!MLS_LINK_DISABLED) {
-      const ld = d.listingData || {};
-      const directUrl = ld.listingUrl || ld.url || (ld.agent && ld.agent.url);
-      const mlsNumber = ld.mlsNumber || ld.mlsId || (ld.mls && ld.mls.number);
-      const mlsRow  = document.getElementById('heroMlsRow');
-      const mlsLink = document.getElementById('heroMlsLink');
-      const mlsText = document.getElementById('heroMlsText');
-      if (mlsRow && mlsLink && mlsText) {
-        let href = directUrl;
-        let label = mlsNumber ? `View on MLS · ${mlsNumber}` : 'View on MLS';
-        if (!href && d.address && d.city && d.state) {
-          const slug = `${d.address}-${d.city}-${d.state}${d.zipCode ? '-' + d.zipCode : ''}`
-            .replace(/[^a-zA-Z0-9\s-]/g, '')
-            .trim()
-            .replace(/\s+/g, '-');
-          href = `https://www.zillow.com/homes/${slug}_rb/`;
-          label = mlsNumber ? `Find on Zillow · MLS ${mlsNumber}` : 'Find on Zillow';
-        }
-        if (href) {
-          mlsLink.href = href;
-          mlsText.textContent = label;
-          mlsRow.style.display = '';
-        }
-      }
-    }
-  } catch (e) { console.warn('mls link render failed:', e); }
 
   // ── Neighborhood + map link ──────────────────────────────────────────
   // Map link works on every deal (we always have address + usually lat/lon
