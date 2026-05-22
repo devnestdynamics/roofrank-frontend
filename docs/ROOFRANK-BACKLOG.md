@@ -10,9 +10,9 @@
 |---|---|
 | ✅ Done | 55 |
 | 🔴 MVP Scope (must-ship) | 6 |
-| 🟡 Pre-launch important | 7 |
+| 🟡 Pre-launch important | 6 |
 | 🟢 Phase 2 / Backlog | 78 |
-| 🔵 Deferred (post-launch) | 4 |
+| 🔵 Deferred (post-launch) | 5 |
 | ❌ Dropped (strategy change) | 13 |
 | 📋 Strategy doc | 1 |
 | **Total** | **164** |
@@ -26,7 +26,7 @@
 
 ---
 
-## 🎯 NEXT 17 — what actually ships before / right after launch
+## 🎯 NEXT 16 — what actually ships before / right after launch
 
 What's left for a clean launch + first 60 days of polish. Strict filter: blocking issues, fixes that move workflows from C/F → B+, items already in flight that need verification. TAM-expansion items (#212-220) deliberately excluded — those are year-1 post-launch work.
 
@@ -40,7 +40,6 @@ What's left for a clean launch + first 60 days of polish. Strict filter: blockin
 | 6 | #196 | Empty + error states sweep across all pages | 🟡 B → A | Loading skeletons, network-failure states, empty-list states, 401/403/500 handling. Currently most pages have none. One day across all surfaces. | Me |
 | 7 | #211 | Separate Resend dev/prod API keys | 🟡 Important hygiene | Already burned through ~250 test-bounce sends against prod sender reputation. `safeSend()` guard shipped (72b1170) but the architectural fix (separate keys + sender domain) is half a day and prevents this whole category. | Me |
 | 7a | [#222](#222-twilio-sms--magic-link-fallback--pro-alerts) | Twilio SMS — magic-link fallback + Pro alerts | 🟡 Insurance against email failures | If magic-link email is throttled (current state) or rejected by a domain, users have no way in. SMS fallback removes the single point of failure. Also unlocks Pro-tier SMS alerts as a premium channel. ~3-5 days. | Ali (account) + Me (backend) |
-| 7b | [#223](#223-analyst-led-positioning-launch--angles-1--2-from-strategy-review) | Analyst-led positioning (Angles 1+2) — mockup, review, ship | 🟡 Pre-launch positioning | Reposition from "deal screener with AI features" to "AI underwriting analyst." Mockups first (Claude), Ali reviews, then ~2-3 weeks frontend-only work. Hard prereq: Anthropic narrative reliability stays above 80%. | Me (mockups), Ali (direction) |
 | 8 | #193 / narrative reliability | Narrative backfill retry + observability on AI failures | 🟡 B → A | Narrative auto-gen shipped (5eef153) + 529 retry shipped (d9d43b7) + garbage cleanup script (b803099). What's missing: alerting when a backfill stalls or returns truncated JSON. Pair with rank 3 (Sentry). | Me |
 | 9 | #205 | CI BUG — migrate runs before deploy, silently skips migrations | 🟡 Launch-week | The May 21 tier rename had to be re-run manually because of this. Next migration that fails silently in CI will cause a real prod outage. Option-2 fix is a one-line `--overrides` JSON change in deploy.yml. | Me |
 | 10 | #199 | Deal-detail auth gating audit | 🟡 Pre-launch security | Ali confirmed deal-detail rendered in incognito. Either lock it down or define the public-read surface explicitly. 30 min to investigate, 1 hr to fix. | Me |
@@ -3578,7 +3577,11 @@ SMS becomes a real lever for two distinct use cases. Both contribute to launch r
 ---
 
 ### 223. Analyst-led positioning launch — Angles 1 + 2 from strategy review
-**Priority:** 🟡 Pre-launch (mockup first, ship after Ali approval) · **Effort:** M (~2-3 weeks total) · **TAM tier: positioning shift, not new TAM**
+**Priority:** 🔵 Deferred — kept in backlog · **Effort:** M (~2-3 weeks total) · **TAM tier: positioning shift, not new TAM**
+
+**Status update 2026-05-22 (later same day):** Ali reviewed the mockups (`mockup-angle-1.html`, `mockup-angle-2.html`) and chose to defer the positioning rewrite for now. Item stays in the backlog as a future option, not pre-launch work. Reason: launch focus stays on shipping the existing product cleanly + closing the C/F-grade gaps (Resend, magic link, observability, mobile QA) rather than reframing the brand simultaneously. Reasonable call — taking on positioning + product reliability work in the same window is how launches slip.
+
+**When to revisit:** post-launch, once we have (a) 4+ weeks of consistent narrative quality data (Anthropic 529 rate below ~5%), and (b) real signal from paying users about whether the current "deal screener with AI features" positioning is actually friction. If users describe the product as "the AI analyst tool" in interviews, the positioning may already be doing this work organically and we save the rewrite. If they describe it as "another Mashvisor with chat," that's the trigger to revisit.
 
 Reposition RoofRank from "deal screener with AI features" to "AI underwriting analyst that scores every multifamily listing in your market." Filed 2026-05-22 after Ali confirmed Angles 1 + 2 fit the current product cleanly (no pivot required).
 
