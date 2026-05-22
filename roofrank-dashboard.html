@@ -108,7 +108,11 @@ body{
 .hd-verdict.pas{color:var(--muted);background:var(--cream-2);border:1px solid var(--cream-3)}
 .hd-score-slot{margin-left:auto;display:flex;align-items:center}
 .hd-score-slot .rmark{width:62px}
-.hd-score-slot .rmark-num{font-size:1rem;margin-top:2px}
+.hd-score-slot .rmark-num{font-size:1rem;margin-top:2px;display:inline-flex;align-items:baseline;gap:2px}
+/* /100 denominator alongside the score — matches the deal-detail
+   hero treatment (muted, smaller, mono). Was missing on dashboard;
+   user noted the inconsistency 2026-05-21. */
+.rmark-num .hd-denom{font-family:var(--mono);font-size:.55rem;color:var(--faint);font-weight:400;letter-spacing:.02em}
 .hd-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.95rem;letter-spacing:-.01em}
 .hd-numbers{display:flex;align-items:baseline;gap:1.6rem;margin-bottom:.85rem;flex-wrap:wrap}
 .hd-num{display:flex;flex-direction:column;line-height:1}
@@ -1618,7 +1622,7 @@ function renderHero(deals){
         <div class="hd-score-slot">
           <div class="rmark ${cl}" title="${verdict} · ${score} / 100">
             ${HERO_RANK_MARK_SVG}
-            <div class="rmark-num">${score || '—'}</div>
+            <div class="rmark-num">${score || '—'}<span class="hd-denom">/100</span></div>
           </div>
         </div>
       </div>
