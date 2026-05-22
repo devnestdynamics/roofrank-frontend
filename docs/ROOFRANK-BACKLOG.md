@@ -9,13 +9,13 @@
 | Status | Count |
 |---|---|
 | ✅ Done | 55 |
-| 🔴 MVP Scope (must-ship) | 4 |
-| 🟡 Pre-launch important | 6 |
+| 🔴 MVP Scope (must-ship) | 6 |
+| 🟡 Pre-launch important | 7 |
 | 🟢 Phase 2 / Backlog | 78 |
 | 🔵 Deferred (post-launch) | 4 |
 | ❌ Dropped (strategy change) | 13 |
 | 📋 Strategy doc | 1 |
-| **Total** | **161** |
+| **Total** | **164** |
 
 **What changed 2026-05-22 (this audit):** 20 items moved to Done (AI narrative V2 bull/bear, condition lens MVP, free-tier gating server-side, free-tier UX, dashboard hero polish, rent tile lens sync, narrative auto-gen on score-write, garbage narrative cleanup, BUG-001 non-UUID 404, BUG-003 wrong-password feedback, BUG-004 freshness sweep, OG image regen, live stat bar, metrics RankMark migration, Sonnet 4.6, per-unit rent override, magic-link plumbing, dashboard /100 denominator, deal-detail hero polish, expose Cap/NOI/DSCR/GRM on /public). 7 items dropped as obsolete (photos via vendor, mockup matching, social proof on landing, social proof dupe, deal-of-the-day rotation, narrative upgrade dupe, narrative on deal-detail dupe). Top 15 launch-and-first-60-days list added below. **Earlier 2026-05-22 strategy-review additions:** 7 TAM-expansion items + 1 strategy doc (#212-219, #220).
 
@@ -26,7 +26,7 @@
 
 ---
 
-## 🎯 NEXT 15 — what actually ships before / right after launch
+## 🎯 NEXT 17 — what actually ships before / right after launch
 
 What's left for a clean launch + first 60 days of polish. Strict filter: blocking issues, fixes that move workflows from C/F → B+, items already in flight that need verification. TAM-expansion items (#212-220) deliberately excluded — those are year-1 post-launch work.
 
@@ -34,11 +34,13 @@ What's left for a clean launch + first 60 days of polish. Strict filter: blockin
 |---|---|---|---|---|---|
 | 1 | #71 / #203 | Verify magic-link delivers in prod (inbox confirmation) | 🔴 Blocker | Currently C — code paths work, no human-verified inbox delivery. If this is broken on launch day, signup is broken. | Ali (manual test) |
 | 2 | #207 | ATTOM API key 401 — renew + redeploy | 🔴 Blocker | Salem/Revere/Framingham have 44 unscored deals from May 21 ingest waiting on this. Mitigation shipped (180d cache, dead call removed) but root cause open. | Ali (account) |
-| 3 | NEW | Sentry + uptime monitoring (frontend + backend) | 🔴 F-grade gap | Currently flying blind. Zero observability means we won't know magic-link is broken, ingestion is failing, or AI chat is 500ing until users complain. Highest-leverage launch-readiness fix. Add `@sentry/node` to backend, `@sentry/browser` to frontend, BetterUptime or UptimeRobot pinging `/health` + landing. | Me + Ali |
+| 3 | [#221](#221-sentry-error-tracking--better-stack-uptime-monitoring--observability-foundation) | Sentry + Better Stack uptime monitoring | 🔴 F-grade gap | Currently flying blind. Zero observability means we won't know magic-link is broken, ingestion is failing, or AI chat is 500ing until users complain. Highest-leverage launch-readiness fix. | Me + Ali |
 | 4 | #186 | BUG-004 stale deals — add status-field check (extend the freshness sweep) | 🔴 Launch-blocker | Freshness sweep shipped (2c1f696) but it only catches deals missing from RentCast pulls. Add per-listing `status` field check to also catch pending/contingent/under-contract while still listed. Lost-trust bug for the featured deal flow. | Me |
 | 5 | #197 | Real-device mobile QA walkthrough (iPhone + Android) | 🔴 Pre-launch | All recent work done in 430px DevTools. Tap targets, sticky bars, keyboard overlay, font rendering need real hands. Block launch on this. | Ali |
 | 6 | #196 | Empty + error states sweep across all pages | 🟡 B → A | Loading skeletons, network-failure states, empty-list states, 401/403/500 handling. Currently most pages have none. One day across all surfaces. | Me |
 | 7 | #211 | Separate Resend dev/prod API keys | 🟡 Important hygiene | Already burned through ~250 test-bounce sends against prod sender reputation. `safeSend()` guard shipped (72b1170) but the architectural fix (separate keys + sender domain) is half a day and prevents this whole category. | Me |
+| 7a | [#222](#222-twilio-sms--magic-link-fallback--pro-alerts) | Twilio SMS — magic-link fallback + Pro alerts | 🟡 Insurance against email failures | If magic-link email is throttled (current state) or rejected by a domain, users have no way in. SMS fallback removes the single point of failure. Also unlocks Pro-tier SMS alerts as a premium channel. ~3-5 days. | Ali (account) + Me (backend) |
+| 7b | [#223](#223-analyst-led-positioning-launch--angles-1--2-from-strategy-review) | Analyst-led positioning (Angles 1+2) — mockup, review, ship | 🟡 Pre-launch positioning | Reposition from "deal screener with AI features" to "AI underwriting analyst." Mockups first (Claude), Ali reviews, then ~2-3 weeks frontend-only work. Hard prereq: Anthropic narrative reliability stays above 80%. | Me (mockups), Ali (direction) |
 | 8 | #193 / narrative reliability | Narrative backfill retry + observability on AI failures | 🟡 B → A | Narrative auto-gen shipped (5eef153) + 529 retry shipped (d9d43b7) + garbage cleanup script (b803099). What's missing: alerting when a backfill stalls or returns truncated JSON. Pair with rank 3 (Sentry). | Me |
 | 9 | #205 | CI BUG — migrate runs before deploy, silently skips migrations | 🟡 Launch-week | The May 21 tier rename had to be re-run manually because of this. Next migration that fails silently in CI will cause a real prod outage. Option-2 fix is a one-line `--overrides` JSON change in deploy.yml. | Me |
 | 10 | #199 | Deal-detail auth gating audit | 🟡 Pre-launch security | Ali confirmed deal-detail rendered in incognito. Either lock it down or define the public-read surface explicitly. 30 min to investigate, 1 hr to fix. | Me |
@@ -3505,3 +3507,111 @@ Suggested sequencing for solo-founder capacity (10-15 hrs/wk) given the items ab
 **Rule:** pick the ONE next thing after MVP launch that customer feedback points at most clearly. Two strong launches (browser extension + house-hacker) beats five half-done features.
 
 **Don't add to year 1:** SFR scoring, fix-and-flip mode, tenant management, native mobile, portfolio tracker. All defensible Year 2+ moves but they dilute focus during the PMF-discovery phase.
+
+---
+
+## 🚨 Pre-launch additions (filed 2026-05-22)
+
+---
+
+### 221. Sentry error tracking + Better Stack uptime monitoring — observability foundation
+**Priority:** 🔴 MVP-blocking · **Effort:** S (~1-2 hrs total) · **Grade impact: F → B+**
+
+Launch-blocking observability gap called out in the 2026-05-22 grading review. Two pieces:
+
+**1. Sentry (runtime error tracking)** — free tier covers 5K errors/month.
+- Backend: `@sentry/node` in `src/index.ts` with DSN from env, basic Express request handler integration, source-map upload via CI on deploy
+- Frontend: `<script>` snippet from Sentry dashboard added to base template, captures unhandled errors + Promise rejections + console errors
+- Slack/email alert rules: trigger on any new error type, or 10+ same-error in 5 min window
+- **Without this:** we find out about prod crashes from customer complaints instead of an alert. Unacceptable for paying users.
+
+**2. Better Stack / Uptime Robot (uptime monitoring)** — free tier pings every 3 min, texts on failure.
+- Monitor: `https://api.roofrank.io/health` + `https://app.roofrank.io/` (frontend)
+- SMS alerts to Ali's phone for any failure > 1 min
+- Status page (optional): `status.roofrank.io` for transparency once we have paying users
+
+**Total effort:** ~30 min Sentry backend, ~15 min Sentry frontend, ~10 min Better Stack setup. Should be done before the first paying customer signs up.
+
+**Owner:** Claude (Sentry wiring), Ali (Better Stack — needs phone-number setup).
+
+---
+
+### 222. Twilio SMS — magic-link fallback + Pro alerts
+**Priority:** 🔴 MVP-blocking · **Effort:** M (~3-5 days) · **Grade impact: C → A on magic link delivery**
+
+SMS becomes a real lever for two distinct use cases. Both contribute to launch readiness:
+
+**Use case A: Magic-link SMS fallback when email is throttled/failing.**
+- Today: magic link goes via Resend, and we have NO backup if Resend is throttled (current state) or a user's domain rejects us
+- With SMS: user can choose "send code to phone" instead of "send link to email" at signup
+- Removes the C-grade liability that came from the recent Resend reputation tank
+- Also genuinely faster for mobile-first users (no inbox tab-switch)
+
+**Use case B: Pro-tier deal alerts via SMS.**
+- Strong Buy alert: "RoofRank: New 88/100 deal at 504 Summer St Lynn, $1.05M. View → [link]"
+- Price-drop alert on watchlist: "RoofRank: 2 Stevens Rd dropped $25K. New score 87. View → [link]"
+- Pro/Team only — premium channel justifies the $0.0075/SMS cost
+
+**Cost math at 10-market scale:**
+- Magic-link SMS: ~50 signups/month × $0.0075 = $0.40/month
+- Pro alerts: ~50 Pro users × ~2-5 alerts/week × 4 weeks = 400-1000 SMS/month × $0.0075 = $3-8/month
+- Twilio number rental: $1/month per US long-code number, or ~$1500 one-time + $1K/mo for a short code (overkill for our volume)
+- **Total at launch scale: ~$5-10/month**
+
+**Scope v1:**
+- Twilio account + 1 US long-code number ($1/mo)
+- Backend: `src/lib/sms.ts` wrapping Twilio Messages API; mirror pattern of `src/lib/email.ts` including a `safeSend` guard that skips test phone numbers (`+15005550006` etc per Twilio test numbers)
+- Frontend signup flow: "send code to email" / "send code to phone" toggle on magic-link form
+- Backend `auth/request-magic-link` accepts optional `phone` field; if present, sends OTP via SMS instead of magic-link email
+- Pro alert dispatcher reuses existing `sendStrongBuyAlert()` shape — adds SMS channel alongside email when user has phone + opted in
+- User profile page: phone number + "Receive alerts via SMS" toggle
+
+**Risks:**
+- TCPA compliance: opt-in must be explicit, every SMS needs an opt-out instruction ("Reply STOP to unsubscribe"). Twilio enforces this but our copy needs to comply
+- A2P 10DLC registration: US carriers require brand registration for marketing SMS (~$15 one-time + $2/mo). Magic-link SMS is "transactional" and may avoid this; verify with Twilio's docs
+- Phone-number opt-out keyword handling (STOP/UNSUBSCRIBE) needs a webhook handler on our end
+
+**Owner:** Ali (Twilio account setup, A2P registration), Claude (backend SMS lib + frontend toggle + dispatcher integration).
+
+**Prerequisite for use case B:** user-profile page can accept and store a phone number. Today the auth flow only collects email.
+
+---
+
+### 223. Analyst-led positioning launch — Angles 1 + 2 from strategy review
+**Priority:** 🟡 Pre-launch (mockup first, ship after Ali approval) · **Effort:** M (~2-3 weeks total) · **TAM tier: positioning shift, not new TAM**
+
+Reposition RoofRank from "deal screener with AI features" to "AI underwriting analyst that scores every multifamily listing in your market." Filed 2026-05-22 after Ali confirmed Angles 1 + 2 fit the current product cleanly (no pivot required).
+
+**What this is NOT:** a feature pivot. The current product IS already an Analyst product — scoring engine + narrative service + chat are all components of an analyst persona. The work is making the marketing + UX catch up to what's been shipped.
+
+**Two parallel tracks:**
+
+**Track A — Angle 1: "The Analyst is the product, deals are the canvas"**
+- Landing page hero rewrite: lead with "An AI analyst that scores every multifamily deal in your market — before you do" (or similar)
+- Deal detail reorder: "Ask the Analyst" chat moves UP, visible without scroll (currently buried below cashflow)
+- Brand voice consistency: every AI output signs "— The Analyst" or uses persistent first-person voice ("I'd open at $580K", "Here's my read"). Today narratives are first-person, chat is first-person, but score + verdict are anonymous — unify the voice.
+- Navbar/sidebar: persistent "Ask the Analyst" entry — opens a deal-agnostic chat for market-level questions ("any good cash-flow deals in Lynn under $700K?")
+- Onboarding tweak: lead first-run with "Meet your Analyst" before showing the feed — builds relationship before showing inventory
+
+**Track B — Angle 2: "Background curation, hand-picked weekly memo"**
+- Market Brief email rebrand: "The Analyst's Weekly Memo" with sharper editorial voice
+- Dashboard badge: "Analyst's Pick" on the 1-3 deals the AI most strongly endorses each week (re-uses existing scoring; just surfaces top picks)
+- "Analyst's take" section on the email — single-paragraph editorial preamble before the deal list
+
+**Engineering cost breakdown:**
+- Landing + deal-detail reorder + voice unification: ~1-2 weeks (copy + frontend reorder, zero backend changes)
+- Deal-agnostic chat surface (the only net-new feature): ~3-5 days — new page + chat already exists, just accepts market-scope prompt instead of deal-scope
+- Market Brief copy + Analyst's Pick badge: ~3-5 days
+- **Total: ~2.5-3 weeks frontend-only work**
+
+**Hard prerequisite before shipping:** Resend reputation recovered (Track B requires reliable email send), Anthropic narrative reliability above 80% (Track A's brand promise hinges on consistent narrative quality — current 85% Anthropic 529 failure rate would actively damage the positioning).
+
+**Order of operations (per Ali 2026-05-22):**
+1. Build `mockup-angle-1.html` — landing hero shift + deal-detail chat reorder + persistent Analyst entry
+2. Build `mockup-angle-2.html` — Market Brief rebrand + Analyst's Pick badge
+3. Ali reviews mockups, picks direction (Angle 1 only, Angle 2 only, or hybrid)
+4. Ship in MVP launch timeframe — frontend-only changes, doesn't require backend coordination
+
+**The risk to push back on:** Angle 1 is a real commit. If narratives stay throttled or feel generic, the brand suffers more than under the current "AI is a feature" framing. So this hinges on Anthropic narrative reliability being a top-3 engineering priority.
+
+**Owner:** Claude (mockups, code), Ali (positioning approval, landing copy direction).
