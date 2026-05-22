@@ -98,7 +98,16 @@ body{
    it. The brief copy now folds INSIDE this card as an italicized
    analyst line attributed with the sparkle ✦. */
 .hero-deal-section{padding:.25rem 0 1.25rem}
-.hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.hero-deal{position:relative;background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
+/* Watchlist heart — corner affordance on the hero card so users can
+   save without opening. Top-right keeps clear of the verdict pill and
+   the rmark. 44px tap target on mobile per accessibility. */
+.hd-watch{position:absolute;top:.85rem;right:.85rem;width:38px;height:38px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:2}
+.hd-watch svg{width:18px;height:18px}
+.hd-watch:hover{background:var(--cream-2);color:var(--forest)}
+.hd-watch.on{color:var(--forest)}
+.hd-watch.on:hover{color:var(--forest-2)}
+@media(max-width:430px){.hd-watch{width:44px;height:44px}.hd-watch svg{width:20px;height:20px}}
 .hero-deal:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(28,74,53,.12)}
 .hd-head{display:flex;align-items:center;gap:.85rem;margin-bottom:.9rem}
 .hd-verdict{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 10px;border-radius:5px;line-height:1}
@@ -146,6 +155,14 @@ body{
 .runners-list{display:flex;flex-direction:column;gap:.4rem}
 .runner-row{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.7rem .9rem;display:flex;align-items:center;gap:.85rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
 .runner-row:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+/* Runner heart — sits right of the nums, minimal weight so the row
+   stays compact. Outline → filled on save. 44px target on mobile. */
+.runner-watch{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;color:var(--faint);cursor:pointer;transition:all .15s;flex-shrink:0;margin-left:.15rem}
+.runner-watch svg{width:16px;height:16px}
+.runner-watch:hover{background:var(--cream-2);color:var(--forest)}
+.runner-watch.on{color:var(--forest)}
+.runner-watch.on:hover{color:var(--forest-2)}
+@media(max-width:430px){.runner-watch{width:36px;height:36px}.runner-watch svg{width:18px;height:18px}}
 .runner-row .rmark{flex-direction:row;width:auto;gap:.4rem;align-items:center}
 .runner-row .rmark-svg{width:22px;height:22px;flex-shrink:0}
 .runner-row .rmark-num{font-size:.82rem;margin-top:0}
@@ -613,6 +630,14 @@ body{
 .compact:only-child{border-radius:var(--r)}
 .compact + .compact{border-top:none}
 .compact:hover{background:var(--cream-2); border-left-color:var(--sage)}
+/* Compact heart — same pattern as runner-watch, slightly bigger so the
+   compact-row's denser layout still gives 30px+ tap target. */
+.c-watch{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:none;border:none;color:var(--faint);cursor:pointer;transition:all .15s;flex-shrink:0;margin-left:.3rem}
+.c-watch svg{width:16px;height:16px}
+.c-watch:hover{background:var(--white);color:var(--forest)}
+.c-watch.on{color:var(--forest)}
+.c-watch.on:hover{color:var(--forest-2)}
+@media(max-width:430px){.c-watch{width:38px;height:38px}.c-watch svg{width:18px;height:18px}}
 .compact.sb{border-left-color:var(--forest)}
 .compact.buy{border-left-color:var(--forest-3)}
 .compact.wat{border-left-color:var(--amber)}
@@ -1649,8 +1674,12 @@ function renderHero(deals){
     lead.daysOnMarket != null ? `listed ${lead.daysOnMarket} day${lead.daysOnMarket===1?'':'s'} ago` : null,
   ].filter(Boolean).join(' · ');
   const brief = buildHeroAnalystLine(lead, deals);
+  const heroOn = WatchlistAPI.has(lead.id);
   heroEl.innerHTML = `
     <div class="hero-deal" onclick="openDeal('${lead.id}',event)">
+      <button class="hd-watch ${heroOn?'on':''}" onclick="toggleW('${lead.id}',event)" aria-label="${heroOn?'Remove from watchlist':'Save to watchlist'}" title="${heroOn?'Saved':'Save'}">
+        <svg viewBox="0 0 24 24" fill="${heroOn?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </button>
       <div class="hd-head">
         <span class="hd-verdict ${cl}">${verdict}</span>
         <div class="hd-score-slot">
@@ -1706,6 +1735,7 @@ function renderRunners(deals){
     const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
     const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
     const addrShort = shortAddr(d);
+    const rOn = WatchlistAPI.has(d.id);
     return `
       <button class="runner-row" onclick="openDeal('${d.id}',event)">
         <div class="rmark ${cl}" title="${verdict} · ${score} / 100">
@@ -1717,6 +1747,9 @@ function renderRunners(deals){
           ${cf != null ? `<span class="runner-cf">${cf < 0 ? '-' : ''}$${Math.abs(cf).toLocaleString()}/mo</span>` : ''}
           ${cf != null && coc != null ? '<span>·</span>' : ''}
           ${coc != null ? `<span>${coc}% CoC</span>` : ''}
+        </span>
+        <span class="runner-watch ${rOn?'on':''}" onclick="toggleW('${d.id}',event)" role="button" aria-label="${rOn?'Saved':'Save to watchlist'}" title="${rOn?'Saved':'Save'}">
+          <svg viewBox="0 0 24 24" fill="${rOn?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </span>
       </button>
     `;
@@ -1967,6 +2000,7 @@ function compactRow(d){
   const fin = (d.reportData||{}).financials || {};
   const cl = scoreClass(score), c = scoreColor(score);
   const cf = fin.monthlyCashFlow;
+  const cOn = WatchlistAPI.has(d.id);
   return `<div class="compact ${cl}" onclick="openDeal('${d.id}',event)">
     <div class="c-ring">
       <svg viewBox="0 0 40 40" aria-hidden="true">
@@ -1985,6 +2019,9 @@ function compactRow(d){
       ${cf!=null?`<div class="c-cf ${cf>=0?'g':'r'}">${cf>=0?'+':'−'}$${Math.round(Math.abs(cf)).toLocaleString()}/mo</div>`:''}
       <div class="c-price">${fmtPrice(d.askingPrice)}</div>
     </div>
+    <button class="c-watch ${cOn?'on':''}" onclick="toggleW('${d.id}',event)" aria-label="${cOn?'Saved':'Save to watchlist'}" title="${cOn?'Saved':'Save'}">
+      <svg viewBox="0 0 24 24" fill="${cOn?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </button>
   </div>`;
 }
 
@@ -2048,9 +2085,20 @@ async function toggleW(id, e){
   try {
     const on = await WatchlistAPI.toggle(id);
     if(btn){
-      btn.className = 'wbtn' + (on ? ' on' : '');
+      // Toggle the 'on' class without stomping the base class. Was
+      // hard-replacing className to 'wbtn' which broke hero/runner/
+      // compact hearts (each uses a different base class).
+      btn.classList.toggle('on', on);
       const svg = btn.querySelector('svg');
-      if(svg) svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+      if (svg) {
+        // hd-/runner-/c-watch use currentColor for fill; wbtn uses a
+        // computed color attribute. Toggle the right one based on class.
+        if (btn.classList.contains('wbtn')) {
+          svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+        } else {
+          svg.setAttribute('fill', on ? 'currentColor' : 'none');
+        }
+      }
     }
     syncWatchBadge();
   } catch (err) {
