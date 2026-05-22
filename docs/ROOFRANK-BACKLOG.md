@@ -1,6 +1,6 @@
 # RoofRank Product Backlog
 
-**Last updated:** May 16, 2026
+**Last updated:** May 21, 2026
 
 ---
 
@@ -8,12 +8,20 @@
 
 | Status | Count |
 |---|---|
-| ✅ Done | 30 |
-| 🔴 MVP Scope | 20 |
-| 🟡 Phase 2 | 57 |
-| 🟢 Phase 3 / Backlog | 34 |
+| ✅ Done | 35 |
+| 🔴 MVP Scope (must-ship) | 4 |
+| 🟡 Pre-launch important | 6 |
+| 🟢 Phase 2 / Backlog | 91 |
+| 🔵 Deferred (post-launch) | 4 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **141** |
+| **Total** | **146** |
+
+**What changed since May 16:** 5 items closed (AI narrative shipped, Ask-the-Analyst chat wired, condition lens MVP, Sonnet 4.6 migration, free-tier gating complete). 5 new items filed (#206 Sonnet, #207 ATTOM 401, #208 photos deferred, #209 pre-auth intent capture, #210 standalone Analyst direction).
+
+**Live MVP punch list (active tasks, not backlog):**
+- #71 Verify magic-link delivers in prod (30 min, Ali + me)
+- ATTOM key renewal (Ali handling separately) — unblocks Salem/Revere/Framingham scoring
+- End-to-end real-device walkthrough on iOS + Android — only humans can do this
 
 ---
 
@@ -2627,17 +2635,9 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 193. Analyst chat — wire backend or label "Coming soon"
+### 193. ~~Analyst chat — wire backend or label "Coming soon"~~ ✅ DONE 2026-05-21
 
-**Why:** `roofrank-analyst.html` is in the bottom nav as a primary tab. The frontend chat UI is built, but backend `/ai/analyst` endpoint is noted as "not wired yet" in code comments. Today users tap Analyst and either get nothing or a stub error. That's a broken UX promise.
-
-**Two options:**
-- **(a) Wire it.** OpenAI or Anthropic API call with system prompt + deal context. Probably 1-2 days for MVP (rate limiting, cost tracking, conversation persistence, deal-context injection). Pro feature per pricing.
-- **(b) Label it.** Add a "Coming soon" badge on the tab + an inline message on the page ("AI analyst chat ships in Pro, coming this month"). 30 min. Honest about the gap.
-
-**Decision driver:** if Pro is launching this quarter, ship (a). If it's a Q3+ feature, ship (b) and put the Analyst tab behind a "Coming soon" pill so users don't repeatedly tap a dead link.
-
-**Re-evaluate when:** Pro launch sequencing is decided.
+**Resolution:** Wired option (a). Backend `/api/ai/chat` shipped with Pro gating (planChecks.requireProTier). Frontend Ask-the-Analyst chat on every deal-detail page is now live for Pro users — streaming SSE response from Claude Sonnet 4.6, history persisted per-deal in localStorage, refresh-token retry on 401, 402 path showing upgrade prompt. Standalone `/analyst` URL was deprecated since the chat moved per-deal — replaced with a redirect to dashboard (see backlog #210 for long-term direction).
 
 ---
 
@@ -2927,11 +2927,26 @@ Then show me the last few git commits on both repos so I can see where we left o
 
 **Recommendation:** Verify Resend in prod TODAY. Push notifications + daily email in pre-launch sprint. SMS = post-launch experiment.
 
+**Partial resolution (2026-05-21):** Email infrastructure mostly built; SMS still 0:
+- ✅ Magic link (Resend) — wired + tested in `tests/magic-link.spec.ts`
+- ✅ Welcome email — wired
+- ✅ Password reset — wired
+- ✅ Org invite — wired
+- ✅ Payment failed — wired
+- ✅ Strong Buy alert email — fires nightly post-ingest via dispatchAlerts
+- ✅ Push notifications (VAPID) — wired + tested
+- ✅ Price drop alert (push) — fires on listing price drop ≥$1K
+- ✅ AI Market Brief (was "Morning Brief" / "Morning Digest") — renamed 2026-05-21; sendMarketBrief() fires nightly to active paid orgs
+- ❌ SMS (Twilio) — zero code, post-launch
+- ⚠️ **End-to-end inbox verification in prod still pending** — code paths work, but no one has confirmed an email actually reached an inbox in prod after the latest deploys. This is task #71 in the active list. Pre-launch must-have.
+
 ---
 
 ### 204. Condition-aware rent (kill the "HUD FMR = truth" assumption)
 
-**Status:** 🔴 Important · revisit after Pro gating + Pro features wired.
+**Status:** 🟡 MVP shipped 2026-05-21 (step 1: condition lens on deal-detail). Steps 2-5 still open per the build order below.
+
+**Step 1 resolution:** Three-position toggle (As-is / Updated / Renovated, ±15% rent multiplier) live on deal-detail inside the rent estimate card. Pro-only feature; free callers see the toggle dimmed with a "🔒 Pro · condition-aware scoring" pill. Multiplier cascades through cashflow, CoC, DSCR, cap rate, GRM, NOI — all recompute live via the existing `applyScenario` pipeline. See setCondition / setConditionEnabled in roofrank-deal-detail.html.
 
 **The problem (raised by Ali 2026-05-21):** HUD Fair Market Rent is the rent for *decent, safe, sanitary* housing — a C-class floor. A gut-renovated 2BR in Lynn pulls $300-500 *over* FMR; a tired 1970s unit with original kitchens/baths sits $200-400 *under*. Our scoring engine treats both identically. Every downstream metric (cap rate, CoC, DSCR, PITI cashflow) is therefore wrong for both. The user's mental adjustment ("I can tell from the photos whether this will pull expected rent") is not encoded anywhere in the product.
 
@@ -2979,7 +2994,7 @@ This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate 
 
 ---
 
-### 206. Migrate AI calls from `claude-sonnet-4-20250514` → `claude-sonnet-4-6`
+### 206. ~~Migrate AI calls from `claude-sonnet-4-20250514` → `claude-sonnet-4-6`~~ ✅ DONE 2026-05-21
 
 **Status:** 🟡 Pre-2026-06-15 (model EOL date).
 
@@ -2993,6 +3008,8 @@ This bit us on commit `c35d49b` (the starter/pro/team tier rename). The migrate 
 **Re-validation needed after swap:** Voice could shift between model versions. Generate ~5 narratives on the new model and eyeball them against the current set before backfilling production deals again with `--force`.
 
 **Recommendation:** Lift the model id to a single constant (e.g. `src/lib/aiModels.ts`) so the swap is one-line. Do this in the same change as the migration to keep future swaps cheap. Run before June 15 — Anthropic will start returning errors after that date.
+
+**Resolution (2026-05-21):** Shipped. Created `src/lib/aiModels.ts` as single source of truth. Both call sites (narrativeService + routes/ai.ts) now import `ANTHROPIC_MODELS.sonnet`. Validation on 2 narratives surfaced that Sonnet 4.6 generates slightly longer responses on average — 1 of 2 truncated mid-JSON. Bumped `MAX_OUTPUT_TOKENS` 320 → 500 (cost impact: ~$0.30 added to a full 130-deal backfill). Voice on first validation deal was sharp and on-tone. Same prompt, same pricing tier.
 
 ---
 
@@ -3089,3 +3106,10 @@ ATTOM 401: {"Response":{"status":{"code":"401","msg":"Unauthorized"}}}
 4. If the key returns 401 in curl, log into the ATTOM dashboard and check quota / billing / key status.
 
 **Fix:** Rotate the key + update ECS task definition + redeploy. Until then, ATTOM-dependent fields keep defaulting silently. Should also add a Sentry/CloudWatch alarm so a future 401 spike doesn't go unnoticed for weeks.
+
+**Mitigation shipped 2026-05-21** (root cause still open — Ali handling key renewal separately):
+- Dropped the dead `getSalesComps()` call from `enrichListing()`. Was hitting `/salescomparables/address` once per listing, caching the response into `reportData.attom.comps[]`, and the result was never read by scoring or any frontend surface. Pure quota waste. Removed in `src/lib/attom.ts:255` area.
+- Bumped `ATTOM_CACHE_TTL_DAYS` 90 → 180 in `src/workers/ingestionWorker.ts`. Property facts move at the pace of municipal tax-roll updates (annually or slower) so 180d still catches yearly refreshes while halving re-ingest call volume.
+- Net effect: ~1/3 of prior ATTOM call volume. Buys headroom on whatever quota tier we're on, but does NOT fix the 401 itself. When the key is renewed, the 44 unscored Salem/Revere/Framingham deals (see check-new-mkt audit) will score on the next nightly run.
+
+**Also discovered (separate finding):** the upstream symptom of ATTOM 401 is "rank_score IS NULL, units IS NULL" deal_feed rows that surface in the feed as broken cards. Filtered out at the query level (feed.ts now requires `rank_score IS NOT NULL`) so users don't see them while we wait for ATTOM to be back.
