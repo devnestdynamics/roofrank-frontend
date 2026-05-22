@@ -99,11 +99,12 @@ body{
    analyst line attributed with the sparkle ✦. */
 .hero-deal-section{padding:.25rem 0 1.25rem}
 .hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
-/* Watchlist heart — lives inline in the bottom action row alongside
-   'Open the full breakdown'. First tried absolute top-right but that
-   overlapped the rmark. Action-row placement gives clear separation +
-   keeps the heart with the other deal-level actions. */
-.hd-watch{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0;margin-right:.5rem}
+/* Watchlist heart — bottom action row, right side. Mirrors the
+   runner-row and rest-of-feed pattern where the heart is always on
+   the right. CTA + arrow now sit on the left. First placed in the
+   top-right corner (overlapped rmark); then bottom-left (inconsistent
+   with the other tiles); now bottom-right. */
+.hd-watch{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0;margin-left:.5rem}
 .hd-watch svg{width:18px;height:18px}
 .hd-watch:hover{background:var(--cream-2);color:var(--forest)}
 .hd-watch.on{color:var(--forest)}
@@ -139,7 +140,7 @@ body{
 .hd-brief-text{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink-2);line-height:1.5;flex:1}
 .hd-brief-text strong{font-weight:600;color:var(--forest);font-style:normal}
 .hd-action{padding-top:1rem;border-top:1px solid var(--cream-3);display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--forest);letter-spacing:.02em;transition:color .15s;gap:.5rem}
-.hd-action-cta{display:inline-flex;align-items:center;gap:.5rem;flex:1;justify-content:flex-end}
+.hd-action-cta{display:inline-flex;align-items:center;gap:.5rem;flex:1;justify-content:flex-start}
 .hero-deal:hover .hd-action-cta{color:var(--forest-2)}
 .hd-action-arrow{font-size:1.1rem;line-height:1;transition:transform .15s}
 .hero-deal:hover .hd-action-arrow{transform:translateX(3px)}
@@ -1709,10 +1710,10 @@ function renderHero(deals){
         <span class="hd-brief-text">${brief}</span>
       </div>
       <div class="hd-action">
+        <span class="hd-action-cta">Open the full breakdown<span class="hd-action-arrow" aria-hidden="true">→</span></span>
         <button class="hd-watch ${heroOn?'on':''}" onclick="toggleW('${lead.id}',event)" aria-label="${heroOn?'Remove from watchlist':'Save to watchlist'}" title="${heroOn?'Saved':'Save'}">
           <svg viewBox="0 0 24 24" fill="${heroOn?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </button>
-        <span class="hd-action-cta">Open the full breakdown<span class="hd-action-arrow" aria-hidden="true">→</span></span>
       </div>
     </div>
   `;
