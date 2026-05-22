@@ -2511,6 +2511,17 @@ function handleExport(){
 }
 
 async function boot(){
+  // Gate: deal data is Pro-tier intel — backend returns 401 for unauthed,
+  // but the page shell paints anyway and exposes our UI structure. Match
+  // the pattern other authed pages use (watchlist, reports, analyzer) and
+  // bounce to login before any data fetch. If the user lands here from a
+  // shared link, the login page deep-links back via ?next= so they don't
+  // lose the deal they wanted to see.
+  if (typeof requireAuth === 'function' && !Auth.isLoggedIn()) {
+    const next = encodeURIComponent(location.pathname + location.search);
+    location.href = `roofrank-login.html?next=${next}`;
+    return;
+  }
   if(!fid){ document.getElementById('loading').textContent='No deal selected — go back and click a deal.'; return; }
   // Pre-load watchlist so the heart's initial state is correct on first paint
   await WatchlistAPI.loadIds().catch(()=>{});

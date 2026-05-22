@@ -161,7 +161,13 @@ async function handleSignin(){
   btn.textContent='Signing in…';btn.disabled=true;
   try{
     await AuthAPI.login(email,pw);
-    location.href='roofrank-dashboard.html';
+    // Honor ?next= deep-link so users bounced here by requireAuth() land
+    // back on the page they wanted (deal detail, dashboard with city
+    // filter, etc.). Validate that next is same-origin to avoid an open
+    // redirect — accept relative paths only.
+    const next = new URLSearchParams(location.search).get('next');
+    const safe = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+    location.href = safe || 'roofrank-dashboard.html';
   }catch(e){
     btn.textContent='Sign In →';btn.disabled=false;
     showToast(e.status===401?'Invalid email or password.':'Sign in failed — please try again.','error');

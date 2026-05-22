@@ -870,7 +870,6 @@ body{
         Today
       </a>
       <a href="roofrank-watchlist.html">Watching <span id="navWatchBadge" style="display:none;font-size:.65rem;font-weight:600;color:var(--forest);margin-left:.15rem"></span></a>
-      <a href="roofrank-analyst.html">Analyst</a>
     </nav>
     <a href="roofrank-analyzer.html" class="rh-add" title="Score any address you're considering" aria-label="Score any address you're considering">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -959,10 +958,6 @@ body{
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         <span>Watching</span>
         <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
-      </a>
-      <a href="roofrank-analyst.html" class="bn-tab">
-        <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>
-        <span>Analyst</span>
       </a>
       <button class="bn-tab" type="button" onclick="document.getElementById('bnSheet').classList.add('open')">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
@@ -1256,6 +1251,16 @@ const LENSES = [
 
 // ── BOOT ──────────────────────────────────────────────────────────────────
 async function boot(){
+  // Gate: dashboard is auth-only — backend returns 401 for the feed call,
+  // but the page chrome paints anyway and exposes our UI structure.
+  // Bounce to login before any data fetch, with ?next= deep-link so the
+  // user returns here after sign-in. Same pattern as watchlist/reports/
+  // analyzer/deal-detail.
+  if (typeof requireAuth === 'function' && !Auth.isLoggedIn()) {
+    const next = encodeURIComponent(location.pathname + location.search);
+    location.href = `roofrank-login.html?next=${next}`;
+    return;
+  }
   // Read initial city filter: URL param wins over localStorage so shared links work.
   try {
     const urlCity = new URLSearchParams(window.location.search).get('city');
