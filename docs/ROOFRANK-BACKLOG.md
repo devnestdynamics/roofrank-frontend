@@ -1,6 +1,6 @@
 # RoofRank Product Backlog
 
-**Last updated:** May 22, 2026
+**Last updated:** May 22, 2026 (evening — after the 27-commit ship push)
 
 ---
 
@@ -8,16 +8,33 @@
 
 | Status | Count |
 |---|---|
-| ✅ Done | 55 |
-| 🔴 MVP Scope (must-ship) | 6 |
-| 🟡 Pre-launch important | 6 |
+| ✅ Done | 67 |
+| 🔴 MVP Scope (must-ship) | 4 |
+| 🟡 Pre-launch important | 5 |
 | 🟢 Phase 2 / Backlog | 78 |
 | 🔵 Deferred (post-launch) | 6 |
 | ❌ Dropped (strategy change) | 13 |
 | 📋 Strategy doc | 1 |
-| **Total** | **165** |
+| **Total** | **174** |
 
 **What changed 2026-05-22 (this audit):** 20 items moved to Done (AI narrative V2 bull/bear, condition lens MVP, free-tier gating server-side, free-tier UX, dashboard hero polish, rent tile lens sync, narrative auto-gen on score-write, garbage narrative cleanup, BUG-001 non-UUID 404, BUG-003 wrong-password feedback, BUG-004 freshness sweep, OG image regen, live stat bar, metrics RankMark migration, Sonnet 4.6, per-unit rent override, magic-link plumbing, dashboard /100 denominator, deal-detail hero polish, expose Cap/NOI/DSCR/GRM on /public). 7 items dropped as obsolete (photos via vendor, mockup matching, social proof on landing, social proof dupe, deal-of-the-day rotation, narrative upgrade dupe, narrative on deal-detail dupe). Top 15 launch-and-first-60-days list added below. **Earlier 2026-05-22 strategy-review additions:** 7 TAM-expansion items + 1 strategy doc (#212-219, #220).
+
+**What shipped 2026-05-22 evening (27 commits across both repos):**
+- ✅ #186 BUG-004 status-field check (pending/contingent/under-contract detection)
+- ✅ #192 Watchlist hero-DNA pass
+- ✅ #194 + #195 Pricing + account/billing audit (Stripe portal wired, FAQ refreshed, logged-in CTA swap)
+- ✅ #196 Empty + error states sweep (deal-detail + watchlist)
+- ✅ #199 Deal-detail + dashboard auth gating audit (requireAuth + ?next= deep-link)
+- ✅ #205 CI migrate ordering fix (migrate runs against new image, deploy reuses revision) + later CI fix for the action-vs-arn bug that broke 6 deploys
+- ✅ #220 Add a Property full stack (backend POST/GET /api/feed/manual, frontend analyzer rebuild, My Deals page, dashboard nav promotion)
+- ✅ #221 Sentry wiring (backend @sentry/node + frontend loader in api.js — awaiting DSN)
+- ✅ #93 Onboarding redesign (mockup + ship — 3-step analyst-led flow, users.phone column, POST /api/auth/me/phone)
+- ✅ verify-email page + auto-login (drops user into dashboard with session, not back to login)
+- ✅ Reset-password / invite / settings / unsubscribe pages (closes the 4 broken-email-URL bugs)
+- ✅ Dashboard hearts on hero + runner + compact tiles (+ alignment fix + icon swap + Add-a-Property nav chip)
+- ✅ Backlog cleanup script (deleteUsersByEmail.ts — sole-member org safety check + cascade)
+- ✅ Feed filter fix (ne(source,'manual') instead of eq(source,'rentcast') — un-broke 95 tests)
+- 🔵 #223 Analyst-led positioning — mockups shipped, ship-decision deferred to post-launch per Ali.
 
 **Live MVP punch list (active tasks, not backlog):**
 - #71 Verify magic-link delivers in prod (30 min, Ali + me) — code paths shipped, inbox confirmation still pending
@@ -26,28 +43,22 @@
 
 ---
 
-## 🎯 NEXT 16 — what actually ships before / right after launch
+## 🎯 NEXT 10 — what's actually left before launch (post-2026-05-22 ship push)
 
 What's left for a clean launch + first 60 days of polish. Strict filter: blocking issues, fixes that move workflows from C/F → B+, items already in flight that need verification. TAM-expansion items (#212-220) deliberately excluded — those are year-1 post-launch work.
 
 | Rank | Item # | Title | Status | Why it matters | Owner |
 |---|---|---|---|---|---|
-| 1 | #71 / #203 | Verify magic-link delivers in prod (inbox confirmation) | 🔴 Blocker | Currently C — code paths work, no human-verified inbox delivery. If this is broken on launch day, signup is broken. | Ali (manual test) |
-| 2 | #207 | ATTOM API key 401 — renew + redeploy | 🔴 Blocker | Salem/Revere/Framingham have 44 unscored deals from May 21 ingest waiting on this. Mitigation shipped (180d cache, dead call removed) but root cause open. | Ali (account) |
-| 3 | [#221](#221-sentry-error-tracking--better-stack-uptime-monitoring--observability-foundation) | Sentry + Better Stack uptime monitoring | 🔴 F-grade gap | Currently flying blind. Zero observability means we won't know magic-link is broken, ingestion is failing, or AI chat is 500ing until users complain. Highest-leverage launch-readiness fix. | Me + Ali |
-| 4 | #186 | BUG-004 stale deals — add status-field check (extend the freshness sweep) | 🔴 Launch-blocker | Freshness sweep shipped (2c1f696) but it only catches deals missing from RentCast pulls. Add per-listing `status` field check to also catch pending/contingent/under-contract while still listed. Lost-trust bug for the featured deal flow. | Me |
-| 5 | #197 | Real-device mobile QA walkthrough (iPhone + Android) | 🔴 Pre-launch | All recent work done in 430px DevTools. Tap targets, sticky bars, keyboard overlay, font rendering need real hands. Block launch on this. | Ali |
-| 6 | #196 | Empty + error states sweep across all pages | 🟡 B → A | Loading skeletons, network-failure states, empty-list states, 401/403/500 handling. Currently most pages have none. One day across all surfaces. | Me |
-| 7 | #211 | Separate Resend dev/prod API keys | 🟡 Important hygiene | Already burned through ~250 test-bounce sends against prod sender reputation. `safeSend()` guard shipped (72b1170) but the architectural fix (separate keys + sender domain) is half a day and prevents this whole category. | Me |
-| 7a | [#222](#222-twilio-sms--magic-link-fallback--pro-alerts) | Twilio SMS — magic-link fallback + Pro alerts | 🟡 Insurance against email failures | If magic-link email is throttled (current state) or rejected by a domain, users have no way in. SMS fallback removes the single point of failure. Also unlocks Pro-tier SMS alerts as a premium channel. ~3-5 days. | Ali (account) + Me (backend) |
-| 8 | #193 / narrative reliability | Narrative backfill retry + observability on AI failures | 🟡 B → A | Narrative auto-gen shipped (5eef153) + 529 retry shipped (d9d43b7) + garbage cleanup script (b803099). What's missing: alerting when a backfill stalls or returns truncated JSON. Pair with rank 3 (Sentry). | Me |
-| 9 | #205 | CI BUG — migrate runs before deploy, silently skips migrations | 🟡 Launch-week | The May 21 tier rename had to be re-run manually because of this. Next migration that fails silently in CI will cause a real prod outage. Option-2 fix is a one-line `--overrides` JSON change in deploy.yml. | Me |
-| 10 | #199 | Deal-detail auth gating audit | 🟡 Pre-launch security | Ali confirmed deal-detail rendered in incognito. Either lock it down or define the public-read surface explicitly. 30 min to investigate, 1 hr to fix. | Me |
-| 11 | #192 | Watchlist page hero-DNA pass | 🟡 B → A | Second-most-visited surface after Today, hasn't been brought in line with the canonical `.hero-deal` + `.rmark` system. 3-4 hrs. Users feel two products until done. | Me |
-| 12 | #194 / #195 | Pricing page + account/billing audit (one batch) | 🟡 Launch-week | Both surfaces still C — pricing page not reviewed since the tier rename, account/billing flow unmapped. Stripe upgrade flow needs end-to-end verification (#51 below). 2-3 hrs combined. | Me |
-| 13 | #182 | Full-opex cashflow toggle on deal-detail | 🟢 First-60-days polish | Data already in place (`monthlyCashFlowFullOpex` writes from seed + scoring). UI is a small segmented toggle. Pro-power-user feature; ships in <½ day. | Me |
-| 14 | #51 | Activate Stripe live keys + end-to-end checkout test | 🔴 Blocker (if not already done) | Verify the upgrade flow actually charges a real card. Logged as "🔴 Effort: M" since 2026 inception; needs explicit verification before public launch. | Ali |
-| 15 | #168 | Rotate exposed AWS deploy key (`AKIA3WKTSYVX2QHVM554`) | 🟡 Pre-launch hygiene | Key was pasted in a Claude transcript on 2026-05-16. Low-likelihood exploit but trivial to rotate. Knock out before scaling deploy frequency. | Ali |
+| 1 | #71 / #203 | Verify magic-link delivers in prod (inbox confirmation) | 🔴 Blocker — now unblocked | Resend reputation recovered. Code paths verified end-to-end via verify-email + auto-login flow tonight. Just needs Ali to do one fresh-account inbox test on the final production version. | Ali (manual test) |
+| 2 | #207 | ATTOM API key 401 — renew + redeploy | 🔴 Blocker | 55 unscored deals waiting. New analyzer flow + ingestion both degrade gracefully without ATTOM (manual unit-count fallback), but full value requires it. | Ali (account) |
+| 3 | #221 | Sentry DSN + Better Stack setup | 🟡 Wired, awaiting accounts | @sentry/node + frontend loader shipped. Just needs Ali to create a Sentry project (15 min), drop SENTRY_DSN into ECS env + page templates, then create the Better Stack ping. | Ali (accounts) |
+| 4 | #197 | Real-device mobile QA walkthrough (iPhone + Android) | 🔴 Pre-launch | All recent work done in 430px DevTools. Tap targets, sticky bars, keyboard overlay, font rendering need real hands. Block launch on this. | Ali |
+| 5 | #211 | Separate Resend dev/prod API keys | 🟡 Important hygiene | safeSend() guard shipped (72b1170). The architectural fix (separate keys + sender domain) is half a day and prevents the test-bounce-tanks-prod-reputation category entirely. | Me + Ali (Resend dashboard) |
+| 6 | [#222](#222-twilio-sms--magic-link-fallback--pro-alerts) | Twilio SMS — magic-link fallback + Pro alerts | 🟡 Insurance against email failures | Schema + phone-collection foundation shipped via the onboarding redesign (users.phone + smsOptIn cols, POST /api/auth/me/phone). Twilio account setup + A2P 10DLC registration + send wiring still pending. | Ali (account) + Me (backend) |
+| 7 | #193 | Narrative observability — alerting on AI failures | 🟡 B → A | Narrative auto-gen + 529 retry + garbage cleanup all shipped. What's missing: alerting when a backfill stalls or returns truncated JSON. Pairs naturally with #221 Sentry. | Me |
+| 8 | #182 | Full-opex cashflow toggle on deal-detail | 🟢 First-60-days polish | Data already in place (`monthlyCashFlowFullOpex` writes from seed + scoring). UI is a small segmented toggle. Pro-power-user feature; ships in <½ day. | Me |
+| 9 | #51 | Activate Stripe live keys + end-to-end checkout test | 🔴 Blocker | Verify the upgrade flow actually charges a real card. Logged as 🔴 since 2026 inception. Needs explicit verification before public launch. | Ali |
+| 10 | #168 | Rotate exposed AWS deploy key (`AKIA3WKTSYVX2QHVM554`) | 🟡 Pre-launch hygiene | Key was pasted in a Claude transcript 2026-05-16. Low-likelihood exploit but trivial to rotate. | Ali |
 
 **Deliberately NOT in the Top 15:** browser extension (#212), house-hacker mode (#213), portfolio tracker (#20), off-market sourcing (#214), Section 8 mode (#215), Team/brokerage polish (#216), native mobile (#217), geographic expansion (#218), add-your-own-property (#220), SMS alerts (#122 deferred), pre-auth AI chat (#180 deferred). All Year-1 TAM work, not launch work.
 
