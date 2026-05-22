@@ -3038,6 +3038,28 @@ Closes / supersedes:
 
 ---
 
+### 210. Standalone Analyst surface — what `/analyst` becomes long-term
+
+**Status:** 🟡 Post-launch · the URL is currently a redirect to dashboard (see 2026-05-21 commit).
+
+**Background:** The dedicated `/analyst` page was originally a "Coming soon · Pro" placeholder. When we shipped Ask-the-Analyst chat for real on every deal-detail page (the chat-on-the-thing-you're-asking-about pattern), the standalone surface became dead weight — a whole nav slot pointing at a page that just told users a feature was coming. Replaced with a redirect to dashboard so no one dead-ends, but the URL is now waiting for a real reason to exist.
+
+**Possible long-term shapes** (pick when we get there, not now):
+
+1. **Cross-deal portfolio Q&A** — the "ask about your watchlist / saved markets as a whole" surface. *"Which of my saved 5 deals has the best 5-year ROI under a 7% rate?"* / *"Show me the top Lynn deal this week."* / *"What's the macro on MA multifamily right now?"* — questions that aren't about any single deal. This is the most differentiated direction; nothing in the deal-detail chat does this.
+
+2. **Saved conversations / chat history** — every Ask-the-Analyst thread on every deal lives here, searchable. Investor revisits "what did the analyst say about 52 Hamilton when I asked last week?" without scrolling back to that deal-detail.
+
+3. **Analyst inbox / editorial feed** — a content surface (not just chat). Weekly market reads, editorial picks ("the 3 deals worth your attention this week"), Pro-only deep dives. Gets us a content/SEO play if framed as a public landing for a few flagship pieces.
+
+4. **Just kill the nav slot** — if none of the above become real product priorities, drop the standalone surface entirely + remove the nav links across pages (dashboard top nav, mobile bnav, analyzer nav).
+
+**Recommendation when revisiting:** option 1 is the most differentiated and the smallest lift on top of the chat infrastructure we already have (`/api/ai/chat` already takes a `dealId`; extending to portfolio Q&A is reusing the same Anthropic pipeline with a different system prompt + data context). Option 2 is incremental on top of option 1 (history is a thin layer).
+
+**Trigger to revisit:** when at least one of (a) Pro users start asking "can I see all my analyst conversations in one place?" via support, (b) we have a content/SEO strategy that needs a public-feeling editorial home, or (c) the deal-detail chat usage data shows users are typing portfolio-level questions and getting useless single-deal answers.
+
+---
+
 ### 207. ATTOM API key returning 401 in prod — enrichment is silently failing
 
 **Status:** 🔴 Critical · data quality regression in prod.
