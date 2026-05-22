@@ -910,11 +910,36 @@ nav.top{
 }
 .sticky-cta:hover{background:var(--forest-2)}
 
-/* ── LOADING ───────────────────────────────────────────────────────────── */
+/* ── LOADING + ERROR STATES ────────────────────────────────────────────── */
 .loading{
   text-align:center; padding:5rem 1rem;
   color:var(--muted); font-family:var(--serif); font-size:1.1rem;
 }
+/* Friendly error/empty card — used when the deal fails to load or
+   doesn't exist. Replaces raw 'Could not load deal: [error.message]'
+   text dump with something the user can actually act on. */
+.dd-state{
+  max-width:480px;margin:4.5rem auto 0;padding:2rem 1.75rem;
+  background:var(--white);border:1px solid var(--cream-3);
+  border-radius:14px;text-align:center;box-shadow:0 4px 18px rgba(28,31,28,.05);
+}
+.dd-state-icon{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--cream-2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;
+}
+.dd-state-icon svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dd-state-title{font-family:var(--serif);font-size:1.1rem;color:var(--ink);margin-bottom:.45rem;font-weight:500;letter-spacing:-.005em}
+.dd-state-sub{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.3rem;max-width:340px;margin-left:auto;margin-right:auto}
+.dd-state-actions{display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap}
+.dd-state-btn{
+  background:var(--forest);color:#fff;border:none;
+  padding:.55rem 1.15rem;border-radius:8px;
+  font-size:.82rem;font-weight:500;cursor:pointer;font-family:var(--sans);
+}
+.dd-state-btn.secondary{background:none;color:var(--muted);border:1px solid var(--border)}
+.dd-state-btn:hover{background:var(--forest-2)}
+.dd-state-btn.secondary:hover{border-color:var(--sage-border);color:var(--forest)}
 
 /* ── MOBILE TUNING ─────────────────────────────────────────────────────── */
 @media(max-width:520px){
@@ -2582,8 +2607,54 @@ async function boot(){
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(deal)); } catch{}
       renderDeal(deal); syncWatchButton(); loadChatHistory(); applyProUnlocks();
     }
-    else document.getElementById('loading').textContent='Deal not found.';
-  } catch(e){ document.getElementById('loading').textContent='Could not load deal: '+e.message; }
+    else {
+      // Deal not found — friendly empty state with a path back to the feed.
+      // Was a bare "Deal not found." string; users hit it on stale shared
+      // links + on deals we've since marked expired/pending.
+      renderDealState({
+        icon: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+        title: "We can't find that deal",
+        sub: "It may have been removed from the feed (under contract, withdrawn, or off-market). Browse the latest active deals from the feed.",
+        actions: [{ label: 'Back to feed', primary: true, href: 'roofrank-dashboard.html' }],
+      });
+    }
+  } catch(e){
+    // Network / API failure — friendly card with retry. Was dumping raw
+    // e.message (e.g. 'fetch failed', '500 Internal Server Error') which
+    // is meaningless to the user and looks broken.
+    console.warn('[deal-detail] load failed:', e);
+    renderDealState({
+      icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+      title: "Couldn't load this deal",
+      sub: "Something went wrong fetching the data. Check your connection and try again — if it keeps failing, the deal may have just been removed.",
+      actions: [
+        { label: 'Try again', primary: true, action: 'boot' },
+        { label: 'Back to feed', href: 'roofrank-dashboard.html' },
+      ],
+    });
+  }
+}
+
+// Renders the friendly state-card (loading-element replacement) for the
+// not-found and load-failure cases. Shared shape so the two paths look
+// like a designed surface, not two ad-hoc error messages.
+function renderDealState({ icon, title, sub, actions }){
+  const root = document.getElementById('loading');
+  if (!root) return;
+  root.className = 'dd-state';
+  const actionHtml = (actions || []).map(a => {
+    const cls = a.primary ? 'dd-state-btn' : 'dd-state-btn secondary';
+    const onclick = a.action === 'boot'
+      ? "boot()"
+      : (a.href ? `location.href='${a.href}'` : '');
+    return `<button class="${cls}" onclick="${onclick}">${a.label}</button>`;
+  }).join('');
+  root.innerHTML = `
+    <div class="dd-state-icon">${icon}</div>
+    <div class="dd-state-title">${title}</div>
+    <div class="dd-state-sub">${sub}</div>
+    <div class="dd-state-actions">${actionHtml}</div>
+  `;
 }
 document.addEventListener('DOMContentLoaded', boot);
 // Kick off the live-averages fetch in parallel with deal load — first render

@@ -239,16 +239,40 @@ async function boot(){
     const items = await apiFetch('/watchlist');
     renderItems(items.map(i=>i.deal).filter(Boolean));
   }catch{
-    // Fall back to localStorage IDs with no deal details
+    // Network failure — try the localStorage fallback (IDs only, no deal
+    // bodies). Then hydrate each via FeedAPI. If that ALSO fails, distinguish
+    // 'empty watchlist' from 'all fetches failed' so the user sees the
+    // right thing instead of an empty list with no explanation.
     const ids=JSON.parse(localStorage.getItem('rr_watch')||'[]');
     if(ids.length===0){renderItems([]);return;}
-    // Fetch each deal
-    const deals=await Promise.all(ids.map(id=>FeedAPI.get(id).catch(()=>null)));
-    renderItems(deals.filter(Boolean));
+    const fetchResults = await Promise.all(ids.map(id=>FeedAPI.get(id).then(d=>({ok:true,d})).catch(()=>({ok:false}))));
+    const deals = fetchResults.filter(r => r.ok).map(r => r.d).filter(Boolean);
+    if (deals.length === 0 && fetchResults.length > 0) {
+      // Every fetch failed — render network-error state, not empty state.
+      renderItems(null);
+      return;
+    }
+    renderItems(deals);
   }
 }
 
 function renderItems(deals){
+  const list=document.getElementById('list');
+  // Network-error variant — boot() passes null to signal "all fetches
+  // failed." Distinct from "0 saved deals" so we don't gaslight the user
+  // about an empty watchlist when really their connection's broken.
+  if (deals === null) {
+    document.getElementById('tbSub').textContent = '';
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon" style="background:rgba(160,48,48,.08);border-color:rgba(160,48,48,.2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a03030" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="empty-title">Couldn't load your watchlist</div>
+      <div class="empty-sub">Something went wrong fetching your saved deals. Check your connection and try again.</div>
+      <button class="empty-btn" onclick="boot()">Try again</button>
+    </div>`;
+    return;
+  }
   document.getElementById('tbSub').textContent=`${deals.length} saved deal${deals.length!==1?'s':''}`;
   // Count label shows "X of N" for free, raw count for Pro/Team. At cap
   // we append a quiet upgrade hint so the wall is visible.
@@ -261,7 +285,6 @@ function renderItems(deals){
   } else {
     cl.innerHTML = `${deals.length} of ${WL_CAP} ${noun}`;
   }
-  const list=document.getElementById('list');
   if(!deals.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="empty-title">Nothing saved yet</div><div class="empty-sub">Tap the heart icon on any deal in the feed to save it here.</div><button class="empty-btn" onclick="location.href='roofrank-dashboard.html'">Browse Deals →</button></div>`;return;}
   list.innerHTML=deals.map(d=>{
     const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
