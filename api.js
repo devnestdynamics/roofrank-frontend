@@ -4,6 +4,41 @@
 
 const BASE_URL = window.ROOFRANK_API_URL || 'https://api.roofrank.io/api';
 
+// ── Sentry frontend loader ─────────────────────────────────────────────────
+// Loads the Sentry browser bundle from CDN when window.SENTRY_DSN is set
+// on the page. Local dev leaves it undefined so Sentry stays quiet.
+// We tag the user from localStorage so errors come with the user ID
+// attached — support triage becomes one click instead of a timestamp hunt.
+(function loadSentry() {
+  if (!window.SENTRY_DSN || window.__sentryLoaded) return;
+  window.__sentryLoaded = true;
+  const s = document.createElement('script');
+  s.src = 'https://browser.sentry-cdn.com/8.55.0/bundle.tracing.min.js';
+  s.crossOrigin = 'anonymous';
+  s.async = true;
+  s.onload = function () {
+    if (!window.Sentry) return;
+    window.Sentry.init({
+      dsn: window.SENTRY_DSN,
+      environment: window.ROOFRANK_ENV || (location.hostname === 'localhost' ? 'development' : 'production'),
+      release: window.ROOFRANK_RELEASE || 'unknown',
+      tracesSampleRate: 0.05,
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 0.1,
+      ignoreErrors: [
+        'ResizeObserver loop limit exceeded',
+        'Non-Error promise rejection captured',
+        'Failed to fetch',
+      ],
+    });
+    try {
+      const uid = localStorage.getItem('rr_user_id');
+      if (uid) window.Sentry.setUser({ id: uid });
+    } catch {}
+  };
+  document.head.appendChild(s);
+})();
+
 const Auth = {
   getToken:   ()  => localStorage.getItem('rr_token'),
   setToken:   (t) => localStorage.setItem('rr_token', t),
