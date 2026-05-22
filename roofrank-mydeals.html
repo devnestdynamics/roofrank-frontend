@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — My Deals</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;--forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;--sage:#7aaa8f;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);--amber:#a06a00;--rose:#a03030;--border:#e0d9cf;--border-2:#cbc3b6;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--sw:240px;--r:10px}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;display:flex;min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-top{padding:1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;text-decoration:none}
+.sb-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.sb-nav{padding:.4rem 0;flex:1;overflow-y:auto}
+.sb-sect{font-size:.55rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:.5rem 1.3rem .2rem}
+.sb-link{display:flex;align-items:center;gap:.6rem;padding:.5rem 1.3rem;font-size:.8rem;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;transition:all .15s;font-family:var(--sans)}
+.sb-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6;stroke-linecap:round;stroke-linejoin:round}
+.sb-link:hover{color:var(--ink);background:var(--cream)}
+.sb-link.active{color:var(--forest);background:var(--sage-dim);border-left-color:var(--forest);font-weight:500}
+.sb-link.active svg{opacity:1;stroke:var(--forest)}
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.4rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;gap:.6rem}
+.tb-left{display:flex;align-items:baseline;gap:.55rem}
+.tb-title{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink)}
+.tb-sub{font-size:.68rem;color:var(--muted)}
+.tb-actions{display:flex;align-items:center;gap:.55rem}
+.tb-quota{font-family:var(--mono);font-size:.6rem;color:var(--muted);background:var(--cream-2);padding:3px 8px;border-radius:5px;border:1px solid var(--border);white-space:nowrap}
+.tb-quota b{color:var(--forest);font-weight:500}
+.tb-quota.warn{background:rgba(160,106,0,.08);border-color:rgba(160,106,0,.22)}
+.tb-quota.warn b{color:var(--amber)}
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.35rem .9rem;border-radius:var(--r);font-size:.76rem;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem}
+.btn-primary:hover{background:var(--forest-2)}
+.content{padding:1.3rem 1.4rem 4rem;flex:1}
+.note{background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:var(--r);padding:.75rem 1rem;font-size:.76rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.note strong{color:var(--forest)}
+.section-header{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.9rem}
+.sh-title{font-family:var(--serif);font-size:.9rem;font-weight:500;color:var(--ink)}
+.sh-count{font-size:.72rem;color:var(--muted);font-family:var(--mono)}
+
+/* Deal rows — match dashboard's runner-row + watchlist hero-DNA pattern */
+.deal{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.8rem .95rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .14s;margin-bottom:.45rem;position:relative;overflow:hidden;text-align:left;width:100%;font-family:inherit;color:inherit}
+.deal:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+.deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.deal.sb::before{background:var(--forest)}
+.deal.buy::before{background:var(--forest-3)}
+.deal.wat::before{background:var(--amber)}
+.deal.pas::before{background:var(--faint)}
+.rmark{flex-shrink:0;display:flex;flex-direction:row;align-items:center;gap:.4rem;width:auto}
+.rmark-svg{width:32px;height:32px;display:block;flex-shrink:0}
+.rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage)}
+.rmark-svg .mk-floor{fill:var(--cream-3)}
+.rmark.sb  .mk-roof{stroke:var(--forest)}
+.rmark.sb  .mk-floor-1{fill:var(--forest);opacity:.45}
+.rmark.sb  .mk-floor-2{fill:var(--forest);opacity:.7}
+.rmark.sb  .mk-floor-3{fill:var(--forest);opacity:1}
+.rmark.buy .mk-roof{stroke:var(--forest-3)}
+.rmark.buy .mk-floor-1{fill:var(--sage);opacity:.55}
+.rmark.buy .mk-floor-2{fill:var(--sage);opacity:.9}
+.rmark.buy .mk-floor-3{fill:var(--forest-3);opacity:1}
+.rmark.wat .mk-roof{stroke:var(--amber)}
+.rmark.wat .mk-floor-2{fill:var(--amber);opacity:.55}
+.rmark.wat .mk-floor-3{fill:var(--amber);opacity:.95}
+.rmark.pas .mk-roof{stroke:var(--faint)}
+.rmark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
+.rmark-num{font-family:var(--mono);font-size:.85rem;font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.rmark.sb  .rmark-num{color:var(--forest)}
+.rmark.buy .rmark-num{color:var(--forest-3)}
+.rmark.wat .rmark-num{color:var(--amber)}
+.rmark.pas .rmark-num{color:var(--muted)}
+.dbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.daddr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.005em}
+.dmeta{font-family:var(--mono);font-size:.7rem;color:var(--muted);line-height:1.4;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.dmeta .private-tag{color:var(--forest);background:var(--sage-dim);padding:1px 6px;border-radius:4px;border:1px solid var(--sage-border);font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.dnums{font-family:var(--mono);font-size:.78rem;color:var(--muted);flex-shrink:0;display:flex;gap:.5rem;align-items:baseline}
+.dnums-cf{color:var(--forest);font-weight:500}
+.dnums-cf.neg{color:var(--rose)}
+.dnums-coc{color:var(--muted)}
+.dnums-sep{color:var(--faint)}
+.dright{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.sbadge{font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.22)}
+.sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
+.sbadge.wat{background:rgba(160,106,0,.07);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.06);color:var(--rose);border-color:rgba(160,48,48,.18)}
+
+/* Empty state */
+.empty{text-align:center;padding:5rem 2rem}
+.empty-icon{width:52px;height:52px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.empty-icon svg{width:22px;height:22px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.empty-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);margin-bottom:.4rem}
+.empty-sub{font-size:.8rem;color:var(--muted);max-width:340px;margin:0 auto 1.2rem;line-height:1.65}
+.empty-btn{background:var(--forest);color:#fff;border:none;padding:.55rem 1.2rem;border-radius:var(--r);font-size:.82rem;cursor:pointer;font-family:var(--sans);text-decoration:none;display:inline-block}
+.empty-btn:hover{background:var(--forest-2)}
+
+/* Pro upsell when starter loads this page directly */
+.upsell{max-width:480px;margin:4rem auto;padding:2rem 1.75rem;background:var(--white);border:1px solid var(--cream-3);border-radius:14px;text-align:center;box-shadow:0 4px 18px rgba(28,31,28,.05)}
+.upsell-icon{width:48px;height:48px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.upsell-icon svg{width:22px;height:22px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.upsell-title{font-family:var(--serif);font-size:1.1rem;color:var(--ink);margin-bottom:.5rem;font-weight:500}
+.upsell-sub{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1.3rem;max-width:340px;margin-left:auto;margin-right:auto}
+.upsell-btn{background:var(--forest);color:#fff;border:none;padding:.6rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;font-family:var(--sans);text-decoration:none;display:inline-block}
+
+/* Mobile bottom nav */
+.wl-bnav{display:none;position:fixed;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--border);padding:.55rem .5rem .8rem;justify-content:space-around;align-items:center;z-index:60}
+.wl-bn-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--muted);text-decoration:none;font-size:.6rem;font-weight:500;letter-spacing:.04em;padding:.3rem 0;cursor:pointer;background:none;border:none;font-family:var(--sans)}
+.wl-bn-tab.active{color:var(--forest)}
+.wl-bn-tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.legal-footer{border-top:1px solid var(--border);background:var(--cream);padding:1.5rem 1.5rem 2rem;text-align:center;font-size:.75rem;color:#6a6e68;line-height:1.7;font-family:var(--sans)}
+.legal-footer a{color:#6a6e68;text-decoration:underline;text-underline-offset:2px}
+
+@media(max-width:860px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding-bottom:84px}
+  .wl-bnav{display:flex}
+  .topbar{padding:0 1rem;gap:.5rem}
+  .tb-left{flex:1;min-width:0;overflow:hidden}
+  .tb-title{font-size:.92rem}
+  .tb-sub{display:none}
+  .tb-quota{font-size:.56rem}
+  .btn-primary{padding:.3rem .65rem;font-size:.72rem;white-space:nowrap;flex-shrink:0}
+  .dnums{display:none}
+}
+</style>
+<script src="api.js"></script>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1c4a35">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+</head>
+<body>
+<aside class="sidebar">
+  <a href="roofrank-landing.html" class="sb-top">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/></svg>
+    <span class="sb-name">RoofRank</span>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Deals</div>
+    <a href="roofrank-dashboard.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Today</a>
+    <a href="roofrank-watchlist.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Watchlist</a>
+    <a href="roofrank-mydeals.html" class="sb-link active"><svg viewBox="0 0 24 24"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z" stroke-width="0" fill="currentColor"/></svg>My Deals</a>
+    <div class="sb-sect">Tools</div>
+    <a href="roofrank-analyzer.html" class="sb-link"><svg viewBox="0 0 24 24" stroke-width="1.7"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add a property</a>
+    <div class="sb-sect">Account</div>
+    <a href="roofrank-pricing.html?v=2" class="sb-link"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title">My Deals</span>
+      <span class="tb-sub" id="tbSub">— off-market properties you've scored</span>
+    </div>
+    <div class="tb-actions">
+      <span class="tb-quota" id="quotaChip" style="display:none"></span>
+      <a class="btn-primary" href="roofrank-analyzer.html">+ Add a property</a>
+    </div>
+  </header>
+  <div class="content">
+
+    <!-- Pro-upsell state — shown when user is starter -->
+    <div class="upsell" id="upsell" style="display:none">
+      <div class="upsell-icon"><svg viewBox="0 0 24 24"><path d="M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z"/></svg></div>
+      <div class="upsell-title">My Deals is a Pro feature</div>
+      <div class="upsell-sub">Score off-market and FSBO properties yourself, save them to a private deal list. Pro: 5/month. Team: 50/month.</div>
+      <a href="roofrank-pricing.html" class="upsell-btn">Upgrade to Pro →</a>
+    </div>
+
+    <!-- Loaded state -->
+    <div id="loaded" style="display:none">
+      <div class="note"><strong>Properties you analyzed yourself.</strong> Off-market, FSBO, or anything not in the public feed. Private — only you can see these. Scores reflect the snapshot at the time you added; re-add to refresh.</div>
+      <div class="section-header">
+        <span class="sh-title">Saved Analyses</span>
+        <span class="sh-count" id="countLbl">0 properties</span>
+      </div>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <footer class="legal-footer">
+    <div style="max-width:680px;margin:0 auto">
+      <div style="margin-bottom:.55rem">
+        &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
+        <a href="/privacy.html">Privacy</a> &middot;
+        <a href="/terms.html">Terms</a> &middot;
+        <a href="mailto:hello@roofrank.io">Contact</a>
+      </div>
+      <div style="opacity:.78;max-width:520px;margin:0 auto;font-size:.7rem">
+        RoofRank scores are informational, not financial advice.
+      </div>
+    </div>
+  </footer>
+</div>
+
+<nav class="wl-bnav" aria-label="Primary navigation">
+  <a href="roofrank-dashboard.html" class="wl-bn-tab">
+    <svg viewBox="0 0 24 24"><path d="M3 12 L12 4 L21 12 M5 10 V20 H19 V10"/></svg>
+    <span>Today</span>
+  </a>
+  <a href="roofrank-watchlist.html" class="wl-bn-tab">
+    <svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg>
+    <span>Watching</span>
+  </a>
+  <a href="roofrank-mydeals.html" class="wl-bn-tab active">
+    <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg>
+    <span>My Deals</span>
+  </a>
+  <a href="roofrank-pricing.html" class="wl-bn-tab">
+    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+    <span>More</span>
+  </a>
+</nav>
+
+<script>
+requireAuth();
+
+function fmtPrice(n){
+  if (n == null || isNaN(n)) return '—';
+  return n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n / 1000) + 'K';
+}
+function scoreClass(s){ return s>=75?'sb':s>=60?'buy':s>=45?'wat':'pas'; }
+function scoreSignal(s){ return s>=75?'Strong Buy':s>=60?'Buy':s>=45?'Watch':'Pass'; }
+
+function renderError(msg){
+  document.getElementById('loaded').style.display='';
+  document.getElementById('list').innerHTML = `<div class="empty">
+    <div class="empty-icon" style="background:rgba(160,48,48,.08);border-color:rgba(160,48,48,.2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#a03030" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="empty-title">Couldn't load your saved analyses</div>
+    <div class="empty-sub">${msg || 'Something went wrong. Check your connection and try again.'}</div>
+    <button class="empty-btn" onclick="boot()">Try again</button>
+  </div>`;
+}
+
+function renderEmpty(){
+  document.getElementById('loaded').style.display='';
+  document.getElementById('countLbl').textContent = '0 properties';
+  document.getElementById('list').innerHTML = `<div class="empty">
+    <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <div class="empty-title">No saved analyses yet</div>
+    <div class="empty-sub">Score an off-market or FSBO property and it'll land here. Private to you — not visible in the public feed.</div>
+    <a class="empty-btn" href="roofrank-analyzer.html">+ Add your first property</a>
+  </div>`;
+}
+
+function renderDeals(deals){
+  document.getElementById('loaded').style.display='';
+  document.getElementById('tbSub').textContent = `${deals.length} saved · private to you`;
+  document.getElementById('countLbl').textContent = `${deals.length} ${deals.length===1?'property':'properties'}`;
+  document.getElementById('list').innerHTML = deals.map(d => {
+    const score = d.rankScore || 0;
+    const fin = (d.reportData||{}).financials || {};
+    const cl = scoreClass(score);
+    const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+    const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+    const created = d.createdAt ? new Date(d.createdAt) : null;
+    const ageDays = created ? Math.floor((Date.now() - created.getTime()) / 86400000) : null;
+    const ageLabel = ageDays == null ? '' : ageDays === 0 ? 'today' : ageDays === 1 ? 'yesterday' : `${ageDays}d ago`;
+    const meta = [
+      d.units ? `${d.units} unit${d.units===1?'':'s'}` : null,
+      fmtPrice(d.askingPrice),
+      ageLabel ? `added ${ageLabel}` : null,
+    ].filter(Boolean).join(' · ');
+    return `<a class="deal ${cl}" href="roofrank-deal-detail.html?fid=${d.id}">
+      <div class="rmark ${cl}">
+        <svg class="rmark-svg" viewBox="0 0 40 40">
+          <path class="mk-roof" d="M5 17 L20 7 L35 17"/>
+          <rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/>
+          <rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/>
+        </svg>
+        <div class="rmark-num">${score || '—'}</div>
+      </div>
+      <div class="dbody">
+        <div class="daddr">${d.address}, ${d.city}</div>
+        <div class="dmeta"><span class="private-tag">Off-market</span>${meta}</div>
+      </div>
+      <div class="dnums">
+        ${cf != null ? `<span class="dnums-cf ${cf<0?'neg':''}">${cf < 0 ? '-' : '+'}$${Math.abs(cf).toLocaleString()}/mo</span>` : ''}
+        ${cf != null && coc != null ? '<span class="dnums-sep">·</span>' : ''}
+        ${coc != null ? `<span class="dnums-coc">${coc}% CoC</span>` : ''}
+      </div>
+      <div class="dright">
+        <span class="sbadge ${cl}">${scoreSignal(score)}</span>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+async function boot(){
+  // Plan gate — starter sees upsell, no list. Avoids a flash of "0
+  // properties" empty state for free users who can't add any.
+  try {
+    const sub = await BillingAPI.getSubscription();
+    const plan = (sub?.plan || '').toLowerCase();
+    if (plan !== 'pro' && plan !== 'team') {
+      document.getElementById('upsell').style.display = '';
+      document.getElementById('loaded').style.display = 'none';
+      return;
+    }
+  } catch (e) {
+    console.warn('[mydeals] subscription check failed:', e?.message || e);
+    // Don't block — let the API itself enforce
+  }
+
+  try {
+    const res = await ManualFeedAPI.list();
+    const deals = res?.deals || [];
+    const quota = res?.quota;
+    if (quota) {
+      const chip = document.getElementById('quotaChip');
+      chip.innerHTML = `<b>${quota.used}</b> of ${quota.limit} this month`;
+      chip.style.display = '';
+      if (quota.used >= quota.limit) chip.classList.add('warn');
+    }
+    if (!deals.length) {
+      renderEmpty();
+    } else {
+      renderDeals(deals);
+    }
+  } catch (e) {
+    console.warn('[mydeals] load failed:', e?.message || e);
+    renderError(e?.message);
+  }
+}
+boot();
+</script>
+</body>
+</html>
