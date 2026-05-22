@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Verify email</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100vh;display:flex;flex-direction:column;font-size:15px;-webkit-font-smoothing:antialiased}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.2rem}
+.card{max-width:480px;width:100%;padding:2.5rem 2rem;background:var(--white);border:1px solid var(--cream-3);border-radius:14px;box-shadow:0 4px 22px rgba(28,31,28,.06);text-align:center}
+.brand{margin-bottom:1.5rem}
+.brand svg{width:36px;height:36px}
+.brand-name{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);letter-spacing:-.005em;margin-top:.35rem}
+.icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem}
+.icon svg{width:26px;height:26px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.icon.loading{background:var(--cream-2);border:1px solid var(--border)}
+.icon.loading svg{stroke:var(--muted);animation:spin 1s linear infinite}
+.icon.success{background:var(--sage-dim);border:1px solid var(--sage-border)}
+.icon.success svg{stroke:var(--forest)}
+.icon.error{background:rgba(160,48,48,.06);border:1px solid rgba(160,48,48,.2)}
+.icon.error svg{stroke:var(--rose)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.title{font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--ink);letter-spacing:-.01em;margin-bottom:.55rem;line-height:1.2}
+.title em{font-style:normal;color:var(--forest)}
+.sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.6rem;max-width:340px;margin-left:auto;margin-right:auto}
+.sub b{color:var(--ink);font-weight:500}
+.actions{display:flex;flex-direction:column;gap:.55rem;align-items:stretch}
+.btn{padding:.7rem 1.2rem;border-radius:8px;font-weight:500;font-size:.88rem;font-family:var(--sans);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none}
+.btn.primary{background:var(--forest);color:#fff}
+.btn.primary:hover{background:var(--forest-2)}
+.btn.secondary{background:none;color:var(--muted);border:1px solid var(--border)}
+.btn.secondary:hover{border-color:var(--sage-border);color:var(--forest);background:var(--sage-dim)}
+.state{display:none}
+.state.active{display:block}
+.legal-footer{border-top:1px solid var(--border);background:var(--cream);padding:1.5rem;text-align:center;font-size:.75rem;color:#6a6e68;line-height:1.7;font-family:var(--sans)}
+.legal-footer a{color:#6a6e68;text-decoration:underline;text-underline-offset:2px}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="card">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+      <div class="brand-name">RoofRank</div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="state active" id="stateLoading">
+      <div class="icon loading">
+        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      </div>
+      <div class="title">Verifying your <em>email</em>…</div>
+      <div class="sub">Hang on a second.</div>
+    </div>
+
+    <!-- Success state -->
+    <div class="state" id="stateSuccess">
+      <div class="icon success">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="title">You're <em>verified</em>.</div>
+      <div class="sub">Your email is confirmed. Your analyst's been scoring deals overnight — go see today's picks.</div>
+      <div class="actions">
+        <a class="btn primary" href="roofrank-dashboard.html">Open my dashboard →</a>
+      </div>
+    </div>
+
+    <!-- Already verified state -->
+    <div class="state" id="stateAlready">
+      <div class="icon success">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="title">Already <em>verified</em>.</div>
+      <div class="sub">This email was confirmed earlier. You can sign in any time — no need to verify again.</div>
+      <div class="actions">
+        <a class="btn primary" href="roofrank-dashboard.html">Open my dashboard →</a>
+        <a class="btn secondary" href="roofrank-login.html">Sign in</a>
+      </div>
+    </div>
+
+    <!-- Error state — token invalid / expired / missing -->
+    <div class="state" id="stateError">
+      <div class="icon error">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="title">That link <em>didn't work</em>.</div>
+      <div class="sub" id="errorSub"><b>The verification link is invalid or expired.</b> They time out for security. Sign in to request a fresh one.</div>
+      <div class="actions">
+        <a class="btn primary" href="roofrank-login.html">Sign in</a>
+        <a class="btn secondary" href="mailto:hello@roofrank.io">Email support</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="legal-footer">
+  <div style="max-width:680px;margin:0 auto">
+    <div style="margin-bottom:.55rem">
+      &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
+      <a href="/privacy.html">Privacy</a> &middot;
+      <a href="/terms.html">Terms</a> &middot;
+      <a href="mailto:hello@roofrank.io">Contact</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function showState(id){
+  document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+(async function verify(){
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
+  if (!token) {
+    document.getElementById('errorSub').innerHTML = "<b>No verification token in the link.</b> The URL may have been copied incompletely. Sign in to request a new verification email.";
+    showState('stateError');
+    return;
+  }
+
+  const apiBase = window.ROOFRANK_API_URL;
+  try {
+    const res = await fetch(apiBase + '/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    if (res.ok) {
+      showState('stateSuccess');
+      return;
+    }
+    // 400 = invalid token. Could be: never existed, already used, or expired.
+    // The backend returns the same error for "already verified" via early
+    // return — surface a separate state if we can detect it from the body.
+    const data = await res.json().catch(() => ({}));
+    const msg = (data?.error || data?.message || '').toLowerCase();
+    if (msg.includes('already verified') || msg.includes('already used')) {
+      showState('stateAlready');
+      return;
+    }
+    document.getElementById('errorSub').innerHTML = "<b>" + (data?.error || data?.message || "We couldn't verify this link.") + "</b> The link may have expired or already been used. Sign in to request a new one.";
+    showState('stateError');
+  } catch (err) {
+    console.warn('[verify-email] network error:', err?.message || err);
+    document.getElementById('errorSub').innerHTML = "<b>Couldn't reach our servers.</b> Check your connection and try the link again. If the problem persists, email us.";
+    showState('stateError');
+  }
+})();
+</script>
+
+</body>
+</html>
