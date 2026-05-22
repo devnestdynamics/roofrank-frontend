@@ -36,14 +36,23 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .section-header{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.9rem}
 .sh-title{font-family:var(--serif);font-size:.9rem;font-weight:500;color:var(--ink)}
 .sh-count{font-size:.72rem;color:var(--muted);font-family:var(--mono)}
-.deal{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .14s;margin-bottom:.4rem;position:relative;overflow:hidden}
-.deal:hover{border-color:var(--sage-border);box-shadow:0 3px 14px rgba(28,31,28,.07);transform:translateY(-1px)}
+/* Watchlist deal row — same visual language as dashboard's .runner-row
+   (rmark inline-row, serif address, cashflow as the lead KPI) but with
+   one extra row of meta and a remove button. Was using a different
+   shape (CoC/Cap/DSCR pills, right-aligned price/verdict) — felt like
+   a separate product. Aligned 2026-05-22. */
+.deal{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:.8rem .95rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:all .14s;margin-bottom:.45rem;position:relative;overflow:hidden;text-align:left;width:100%;font-family:inherit;color:inherit}
+.deal:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
 .deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
 .deal.sb::before{background:var(--forest)}
 .deal.buy::before{background:var(--forest-3)}
 .deal.wat::before{background:var(--amber)}
-.rmark{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:48px}
-.rmark-svg{width:100%;aspect-ratio:1;display:block;overflow:visible}
+.deal.pas::before{background:var(--faint)}
+/* RankMark inline-row variant — same shape dashboard runner-row uses
+   (svg + number side-by-side, not stacked). Self-contained .rmark
+   styling for the page also covers the bottom-nav icons. */
+.rmark{flex-shrink:0;display:flex;flex-direction:row;align-items:center;gap:.4rem;width:auto}
+.rmark-svg{width:32px;height:32px;display:block;overflow:visible;flex-shrink:0}
 .rmark-svg .mk-roof{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sage);transition:stroke .3s}
 .rmark-svg .mk-floor{transition:fill .3s,opacity .3s;fill:var(--cream-3)}
 .rmark.sb  .mk-roof{stroke:var(--forest)}
@@ -62,23 +71,32 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
 .rmark.pas .mk-floor-1{fill:var(--cream-3);opacity:1}
 .rmark.pas .mk-floor-2{fill:var(--cream-3);opacity:1}
 .rmark.pas .mk-floor-3{fill:var(--faint);opacity:.6}
-.rmark-num{font-family:var(--mono);font-size:.78rem;font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.rmark-num{font-family:var(--mono);font-size:.85rem;font-weight:500;line-height:1;color:var(--ink);letter-spacing:-.01em;margin-top:0}
 .rmark.sb  .rmark-num{color:var(--forest)}
 .rmark.buy .rmark-num{color:var(--forest-3)}
 .rmark.wat .rmark-num{color:var(--amber)}
 .rmark.pas .rmark-num{color:var(--muted)}
-.dbody{flex:1;min-width:0}
-.daddr{font-family:var(--serif);font-size:.87rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
-.dmeta{font-size:.67rem;color:var(--muted);margin-bottom:3px}
-.dkpis{display:flex;gap:.28rem;flex-wrap:wrap}
-.kp{font-size:.61rem;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted);background:var(--cream)}
-.kp.g{color:var(--forest);border-color:var(--sage-border);background:var(--sage-dim)}
-.dright{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.sbadge{font-size:.58rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
-.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.2)}
+/* Deal body — serif address, mono meta, no metric pills (matches
+   dashboard runner pattern). Wraps to one or two lines depending on
+   length; addr ellipsis-truncates so badge column stays aligned. */
+.dbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.daddr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.005em}
+.dmeta{font-family:var(--mono);font-size:.7rem;color:var(--muted);line-height:1.4}
+/* Numbers column — same shape as dashboard's .runner-nums; cashflow
+   in forest, CoC in muted. Hidden on narrow widths to keep the row
+   tight; the deal-detail page has the full numbers. */
+.dnums{font-family:var(--mono);font-size:.78rem;color:var(--muted);flex-shrink:0;display:flex;gap:.5rem;align-items:baseline}
+.dnums-cf{color:var(--forest);font-weight:500}
+.dnums-coc{color:var(--muted)}
+.dnums-sep{color:var(--faint)}
+/* Right column — verdict badge over remove button. Matches dashboard's
+   verdict-pill shape (sb/buy/wat/pas variants, mono uppercase). */
+.dright{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.sbadge{font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid}
+.sbadge.sb{background:rgba(28,74,53,.08);color:var(--forest);border-color:rgba(28,74,53,.22)}
 .sbadge.buy{background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)}
-.sbadge.wat{background:rgba(160,106,0,.08);color:var(--amber);border-color:rgba(160,106,0,.2)}
-.dprice{font-family:var(--mono);font-size:.8rem;color:var(--ink)}
+.sbadge.wat{background:rgba(160,106,0,.07);color:var(--amber);border-color:rgba(160,106,0,.2)}
+.sbadge.pas{background:rgba(160,48,48,.06);color:var(--rose);border-color:rgba(160,48,48,.18)}
 .rm-btn{background:none;border:none;cursor:pointer;color:var(--faint);padding:3px;transition:color .14s;line-height:0}
 .rm-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 .rm-btn:hover{color:var(--rose)}
@@ -114,6 +132,10 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   .tb-title{font-size:.92rem}
   .tb-sub{display:none}  /* "0 saved deals" is duplicated in the section header below */
   .btn-primary{padding:.3rem .65rem;font-size:.72rem;white-space:nowrap;flex-shrink:0}
+  /* Mirror dashboard runner-row: hide the inline numbers column so the
+     address + verdict have room. Cashflow + CoC are visible on the
+     deal-detail page; the watchlist row should stay glanceable. */
+  .dnums{display:none}
 }
 </style>
 <script src="api.js"></script>
@@ -136,8 +158,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
     <div class="sb-sect">Deals</div>
     <a href="roofrank-dashboard.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Today</a>
     <a href="roofrank-watchlist.html" class="sb-link active"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Watchlist</a>
-    <div class="sb-sect">Conversation</div>
-    <a href="roofrank-analyst.html" class="sb-link"><svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 0 L13.6 9.4 L24 12 L13.6 14.6 L12 24 L10.4 14.6 L0 12 L10.4 9.4 Z"/></svg>Analyst</a>
     <div class="sb-sect">Tools</div>
     <a href="roofrank-analyzer.html" class="sb-link"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analyze a deal</a>
     <a href="roofrank-reports.html" class="sb-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Reports</a>
@@ -190,10 +210,6 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-heigh
   <a href="roofrank-watchlist.html" class="wl-bn-tab active">
     <svg viewBox="0 0 24 24"><path d="M12 21 C12 21 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 21 12 21 Z"/></svg>
     <span>Watching</span>
-  </a>
-  <a href="roofrank-analyst.html" class="wl-bn-tab">
-    <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 2 L13.6 9.4 L21 12 L13.6 14.6 L12 22 L10.4 14.6 L3 12 L10.4 9.4 Z"/></svg>
-    <span>Analyst</span>
   </a>
   <a href="roofrank-pricing.html" class="wl-bn-tab">
     <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
@@ -250,6 +266,16 @@ function renderItems(deals){
   list.innerHTML=deals.map(d=>{
     const score=d.rankScore||0, fin=(d.reportData||{}).financials||{};
     const cl=scoreClass(score);
+    const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+    const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+    // Meta line mirrors dashboard hero-deal: units · price · DOM.
+    // Compact, mono, single line. Cashflow + CoC become the lead KPIs
+    // (was CoC/Cap/DSCR pills — over-busy for a watchlist row).
+    const meta = [
+      d.units ? `${d.units} units` : null,
+      fmtPrice(d.askingPrice),
+      d.daysOnMarket != null ? `${d.daysOnMarket}d` : null,
+    ].filter(Boolean).join(' · ');
     return`<div class="deal ${cl}" onclick="location.href='roofrank-deal-detail.html?fid=${d.id}'">
       <div class="rmark ${cl}" title="${score||'—'} / 100">
         <svg class="rmark-svg" viewBox="0 0 40 40">
@@ -262,17 +288,16 @@ function renderItems(deals){
       </div>
       <div class="dbody">
         <div class="daddr">${d.address}</div>
-        <div class="dmeta">${[d.city,d.state].filter(Boolean).join(', ')} · ${d.units||'?'} units · ${d.propertyType||''}</div>
-        <div class="dkpis">
-          ${fin.cashOnCashReturn!=null?`<span class="kp ${fin.cashOnCashReturn>=8?'g':''}">CoC ${fin.cashOnCashReturn.toFixed(1)}%</span>`:''}
-          ${fin.capRate!=null?`<span class="kp ${fin.capRate>=6.5?'g':''}">Cap ${fin.capRate.toFixed(1)}%</span>`:''}
-          ${fin.dscr!=null?`<span class="kp ${fin.dscr>=1.25?'g':''}">DSCR ${fin.dscr.toFixed(2)}</span>`:''}
-        </div>
+        <div class="dmeta">${meta}</div>
+      </div>
+      <div class="dnums">
+        ${cf != null ? `<span class="dnums-cf">${cf < 0 ? '-' : ''}$${Math.abs(cf).toLocaleString()}/mo</span>` : ''}
+        ${cf != null && coc != null ? '<span class="dnums-sep">·</span>' : ''}
+        ${coc != null ? `<span class="dnums-coc">${coc}% CoC</span>` : ''}
       </div>
       <div class="dright">
         <span class="sbadge ${cl}">${scoreSignal(score)}</span>
-        <div class="dprice">${fmtPrice(d.askingPrice)}</div>
-        <button class="rm-btn" onclick="remove('${d.id}',event)" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+        <button class="rm-btn" onclick="remove('${d.id}',event)" title="Remove from watchlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
       </div>
     </div>`;
   }).join('');
