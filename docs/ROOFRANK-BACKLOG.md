@@ -1,6 +1,6 @@
 # RoofRank Product Backlog
 
-**Last updated:** May 21, 2026
+**Last updated:** May 22, 2026
 
 ---
 
@@ -11,12 +11,13 @@
 | ✅ Done | 35 |
 | 🔴 MVP Scope (must-ship) | 4 |
 | 🟡 Pre-launch important | 6 |
-| 🟢 Phase 2 / Backlog | 91 |
+| 🟢 Phase 2 / Backlog | 99 |
 | 🔵 Deferred (post-launch) | 4 |
 | ❌ Dropped (strategy change) | 6 |
-| **Total** | **146** |
+| 📋 Strategy doc | 1 |
+| **Total** | **155** |
 
-**What changed since May 16:** 5 items closed (AI narrative shipped, Ask-the-Analyst chat wired, condition lens MVP, Sonnet 4.6 migration, free-tier gating complete). 5 new items filed (#206 Sonnet, #207 ATTOM 401, #208 photos deferred, #209 pre-auth intent capture, #210 standalone Analyst direction).
+**What changed since May 16:** 5 items closed (AI narrative shipped, Ask-the-Analyst chat wired, condition lens MVP, Sonnet 4.6 migration, free-tier gating complete). 5 new items filed earlier this week (#206 Sonnet, #207 ATTOM 401, #208 photos deferred, #209 pre-auth intent capture, #210 standalone Analyst direction). **2026-05-22 strategy-review additions:** 7 new items + 1 strategy doc — TAM-expansion features ranked Tier S/A/B + year-1 sequencing plan (#212-219). Item #20 (portfolio tracker) expanded with TAM framing.
 
 **Live MVP punch list (active tasks, not backlog):**
 - #71 Verify magic-link delivers in prod (30 min, Ali + me)
@@ -246,10 +247,22 @@ Already have percentile badge on dashboard. Expand to deal detail: "Top 15% of a
 
 ---
 
-### 20. Portfolio Tracker
-**Priority:** 🟢 · **Effort:** L
+### 20. Portfolio Tracker — own-it mode for existing landlords
+**Priority:** 🟢 · **Effort:** L · **TAM tier: A** (filed 2026-05-22 in TAM-expansion strategy review)
 
 "I own this property" — mark purchased deals, track portfolio performance over time. Stickiest long-term feature.
+
+**TAM angle (added 2026-05-22):** opens a *different audience* than active shoppers — current landlords are ~17M nationally vs. ~3-5M active shoppers. Two paths in:
+- Cross-sell to Pro buyers AFTER they close their first deal (natural funnel — they're already in the system with the deal record)
+- Direct acquisition of existing owners via "free portfolio tracker, paid scoring on new deals" funnel — competes with Stessa ($35/mo), positions RoofRank's scoring as the differentiator
+
+**Scope for v1:**
+- Mark any deal as "I own this" → moves it from feed view to portfolio view
+- Manual P&L entry per property (actual rents, actual taxes, actual expenses) so portfolio numbers diverge from initial-purchase assumptions
+- Annual depreciation calc (straight-line 27.5 yr residential)
+- Aggregate dashboard: total NOI, total cashflow, weighted cap rate across portfolio
+
+**What NOT to build for v1:** tenant management, rent collection, bank-feed integration. Stessa owns that turf; RoofRank's edge stays "the analytics layer, not the operations layer."
 
 ---
 
@@ -3141,3 +3154,194 @@ ATTOM 401: {"Response":{"status":{"code":"401","msg":"Unauthorized"}}}
 - Net effect: ~1/3 of prior ATTOM call volume. Buys headroom on whatever quota tier we're on, but does NOT fix the 401 itself. When the key is renewed, the 44 unscored Salem/Revere/Framingham deals (see check-new-mkt audit) will score on the next nightly run.
 
 **Also discovered (separate finding):** the upstream symptom of ATTOM 401 is "rank_score IS NULL, units IS NULL" deal_feed rows that surface in the feed as broken cards. Filtered out at the query level (feed.ts now requires `rank_score IS NOT NULL`) so users don't see them while we wait for ATTOM to be back.
+
+---
+
+## 🚀 TAM-expansion features (filed 2026-05-22, ranked Tier S/A/B)
+
+Filed after a strategy review on TAM expansion levers for solo-founder execution. Each item is sized for ~10-15 hr/wk capacity and ranked by impact-vs-effort on year-1 TAM growth. See [Year-1 sequencing table](#219-year-1-tam-expansion-sequencing) at the bottom for the suggested order.
+
+---
+
+### 212. Browser extension — score any Zillow/Redfin listing inline · Tier S
+**Priority:** 🟢 Post-launch · **Effort:** L (~2-3 weeks) · **TAM tier: S**
+
+Chrome/Edge/Firefox extension that injects a RoofRank score onto any multifamily listing on Zillow.com and Redfin.com.
+
+**Why this is Tier S:**
+Largest distribution unlock in the backlog. Every investor browsing Zillow becomes a touchpoint, not just the ones who happen to land on roofrank.io. Closes the discovery gap entirely — we go to where investors *already* shop instead of waiting for them to find us.
+
+**Side benefit — viral mechanic.** Users naturally screenshot and share "look at this 90/100 deal" or "this is rated Pass and the listing's been up 90 days, makes sense." Each share is a passive marketing impression.
+
+**Scope v1 (MVP extension):**
+- Detects multifamily listings on Zillow/Redfin (URL pattern + DOM probe for "Multi-Family" type)
+- Calls our public scoring endpoint (build one — pass listing facts, get back score + verdict)
+- Renders a floating RankMark badge in the listing header
+- Click → opens roofrank.io with deal pre-loaded (or signup if not authed)
+
+**Scope v2:**
+- Side panel with full cashflow + condition lens (Pro feature, drives upgrade clicks IN-CONTEXT)
+- "Save to watchlist" button
+- Other sites: Realtor.com, Crexi (commercial multifamily), LoopNet (commercial multifamily)
+
+**Risks to plan for:**
+- Zillow/Redfin DOM changes routinely — need a probe-script pattern that fails gracefully and an in-extension version-pin check that warns when probes break
+- Anti-scraping concerns: we're NOT scraping listings, just enriching the user's existing view. Stays in TOS-safe territory but worth a legal read before public launch.
+
+**Effort:** Real estimate ~3 weeks (1wk MVP extension, 1wk testing across Chrome/Edge/Firefox + Zillow/Redfin variant pages, 1wk submission/review for stores). After launch the maintenance burden is the probe scripts (~2hrs/month).
+
+---
+
+### 213. House-hacker mode — guided experience for first-time owner-occupants · Tier S
+**Priority:** 🟢 Post-launch · **Effort:** M (~2-3 weeks) · **TAM tier: S**
+
+Dedicated experience for millennial/Gen Z first-time buyers purchasing a 2-4 unit they'll live in.
+
+**Why this is Tier S:**
+3-5x TAM expansion vs current "active investor" target. The pool of W-2 employees considering house-hacking is vastly larger than the pool of people who self-identify as "real estate investors." And house-hackers are the entry point to becoming lifetime investors — capturing them at first property is a customer-for-life play.
+
+**Scope v1:**
+- Onboarding asks "Are you buying to live in one unit?" → routes to house-hacker mode
+- Different scoring lens: assumes 1 unit at $0 rent (owner-occupied), other units at HUD FMR
+- FHA 3.5% down option toggle (instead of default 25% investor down)
+- Tax math: owner-occupied portion gets primary-residence treatment; rental portion gets depreciation
+- Headline becomes "Your monthly cost to live here" instead of "Cap rate"
+- New verdict copy: "Free housing + $400/mo income" vs "$1,200/mo to live here, breakeven"
+
+**Scope v2:**
+- "Will you qualify for FHA?" mini-form (DTI, credit estimate)
+- Local first-time buyer programs by city (MA: ONE Mortgage, MassHousing) — strong SEO play
+- Comparison: "What if you rented vs bought this?" calculator
+
+**Pricing wedge:** house-hacker mode could anchor the $19 Lite tier conversation — lower commitment for someone who hasn't yet committed to "I'm an investor."
+
+**Effort:** ~3 weeks. Scoring engine is mostly reusable (PITI + cashflow already handles units); biggest work is the alternative onboarding flow + FHA-vs-conventional toggles + new copy for every verdict surface.
+
+---
+
+### 214. Off-market deal sourcing — FSBO + pre-foreclosure + tax-lien feeds · Tier A
+**Priority:** 🟢 Year 2 · **Effort:** XL (~6-8 weeks) · **TAM tier: A**
+
+Surface non-MLS deals: For-Sale-by-Owner listings, pre-foreclosure notices, tax-delinquent property lists, divorce/probate filings.
+
+**Why this is Tier A (high-value but heavier):**
+Pulls in the *serious investor segment* that doesn't bother with MLS-only tools — they're hunting for deals the algorithms can't surface. Differentiates RoofRank from every competitor in our band (Mashvisor, Stessa, DealCheck) — none of them do off-market well at the small-multifamily scale.
+
+**Data sources to evaluate:**
+- **PropStream** (subscription, ~$99/mo per seat — broker license required for some feeds)
+- **BatchData** ($0.05-$0.15/property — has FSBO + pre-foreclosure)
+- **DataTree by First American** (enterprise, $$$)
+- **County recorder feeds** (free but requires per-county scraping — labor-intensive at scale)
+- **Auction.com / Zillow Foreclosures** (public scrape, TOS-grey)
+
+**Scope v1:** one source (BatchData most likely — paygo, no broker license), one market (Worcester probably — densest distress signal in our footprint), pre-foreclosure only. Stand it up, see if it converts before broadening.
+
+**Pricing wedge:** likely a separate **$99/mo "Hunter" plan** on top of Pro. Off-market hunters have higher willingness-to-pay because the deals are higher-margin.
+
+**Risks:**
+- Data quality varies wildly by county / state — even paid providers have stale tax-lien data
+- Legal/ethical: pre-foreclosure outreach is regulated in MA (Chapter 244 §35B notices). We surface listings, we don't enable outreach — but make sure the product doesn't drift into "skip-trace the owner" territory
+- Cost: BatchData is per-call, so even probe-level usage could add up fast at full state coverage
+
+**Effort:** ~6-8 weeks first source + market. Significant data-engineering effort vs the rest of the product (different ingestion shape, dedup against MLS listings, ownership-info matching).
+
+---
+
+### 215. Section 8 / HCV optimization mode · Tier B
+**Priority:** 🟢 Year 2 · **Effort:** M (~2 weeks) · **TAM tier: B**
+
+Explicit scoring lens for "what if I rent all units to Section 8 / Housing Choice Voucher tenants?"
+
+**Why this is Tier B (niche but high-value):**
+Section 8 investing is a real subculture in working-class markets — Lynn, Worcester, Springfield, Lawrence, Brockton, Fall River. The math is genuinely different (guaranteed rent at HUD FMR rates, longer tenancies, but more inspections + heavier paperwork). Underserved by mainstream tools because most assume Section 8 = "low quality investment." For investors who know how to operate it, HCV is the *most stable* cashflow in multifamily.
+
+**Scope:**
+- Toggle in scoring lens: "Assume Section 8 / HCV rents" (default off)
+- When on: rents lock to HUD FMR exactly (no haircut for vacancy/loss — voucher pays direct)
+- Vacancy assumption drops 5% → 2% (HCV vacancies are rare)
+- Adds "inspection complexity" badge — yearly HUD inspection requirement
+- Per-PHA waitlist length data (where public — varies by MA city)
+
+**Differentiation play:** "RoofRank is the only multifamily tool that scores HCV strategy honestly" is a positioning line that pulls in a passionate underserved audience. They'll evangelize the tool in their communities (HCV investor Facebook groups, BiggerPockets sub-forums).
+
+**Effort:** ~2 weeks. Most of the scoring engine reuses; the differentiation is in copy, defaults, and a dedicated badge/lens UI.
+
+---
+
+### 216. Team-plan branded PDF exports + multi-seat for brokerages · Tier B
+**Priority:** 🟢 Year 2 · **Effort:** M (~2 weeks) · **TAM tier: B (ARPU lift, not raw TAM)**
+
+Polish the $249/mo Team plan so it actually sells to small brokerages (3-10 agents).
+
+**Why this is Tier B:**
+Not raw TAM expansion (same count of buyers exists today) but a **5x ARPU lift** on the existing addressable. 5K-15K small brokerages in NE alone × 1% capture × $249/mo = $12K-$37K MRR from this slice. Separate from #12 (generic CSV/PDF export) — this is specifically the *brokerage-facing* version.
+
+**What's missing today for Team to be sellable:**
+- Branded PDF export (broker logo + colors + "prepared for [client name]") — agents need to share these with buyer clients
+- Multi-seat admin (add/remove agents, per-seat usage tracking)
+- "Compare deals" view (side-by-side scoring for buyer-presentation mode)
+- Activity log (which agent looked at which deal, when)
+- Custom market lists per seat ("Agent Sarah covers Lynn + Salem; Agent Mike covers Worcester")
+
+**Effort:** ~2 weeks. The hard part isn't engineering, it's the sales motion — brokers want 4-12 week trials, custom demos, references. Plan for the GTM as part of this work, not just the build.
+
+**Trigger to ship:** after we have one or two Pro users who are themselves brokerage owners and are using RoofRank for client-facing work. Their feedback shapes v1.
+
+---
+
+### 217. Native mobile app — iOS first, Android second · Tier B
+**Priority:** 🟢 Year 2+ · **Effort:** XL (~6-10 weeks) · **TAM tier: B**
+
+Native mobile app (React Native or Swift/Kotlin) for browsing deals + AI chat + watchlist on phone.
+
+**Why this is Tier B (deferred):**
+Investors do browse listings on phones, but the web app already works on mobile (responsive). Native app is a polish + retention play more than a TAM-expansion play. Justified when (a) we cross 500 active users and mobile sessions are a measurable conversion bottleneck, OR (b) we want push notifications that don't require web-push opt-in (iOS web push is still finicky).
+
+**Scope v1:** read-only — browse deals, view detail, AI chat, watchlist toggle. No analyzer (saves a lot of UI work). Push notifications native (more reliable than web push).
+
+**Risks:**
+- App Store review process for first-time developers is a 1-4 week unknown
+- Maintenance burden (two more deploy targets) is real for solo founder
+- React Native vs native swift tradeoff: RN faster to ship (reuses web codebase patterns), Swift better UX. RN probably right for v1 given solo capacity.
+
+**Effort:** ~6-10 weeks for v1 RN app. Real talk — defer this until other Tier S/A items have landed unless mobile conversion data forces it sooner.
+
+---
+
+### 218. Geographic expansion sequencing (MA → Northeast) · Tier 0 (highest leverage)
+**Priority:** 🟢 Months 4-12 post-launch · **Effort:** S per state (4-8 hrs to wire) · **TAM tier: 0**
+
+Not a feature but the single highest-impact TAM lever per the strategy review. Filed here so it doesn't get forgotten.
+
+**Sequencing:**
+| Phase | Coverage | TAM multiplier vs MA-only |
+|---|---|---|
+| Today | MA (5 cities) | 1x |
+| Month 4-6 | + MA (30 cities), then RI/CT/NH | 2-3x |
+| Month 7-12 | + NY-state, NJ, PA-east | 6-9x |
+| Month 13-18 | + Midwest cities (Chicago, Pittsburgh, Cleveland, Detroit, Cincinnati) | 12-25x |
+
+**Per-state setup cost:** 4-8 hrs of dev (market assumptions config: city tax rates, insurance rates, HUD FMR lookups, distance-based comp calibration) + ATTOM call burst when ingesting first 100-300 listings per market. No new product, no new sales motion, no new positioning.
+
+**Why this is Tier 0 (above Tier S):** linear revenue multiplier with the smallest unit of work. Every other TAM lever assumes you've at least expanded geographically first — adding browser extension across only MA caps the extension's reach at MA's TAM.
+
+**Do not:** national rollout. Owning Northeast deeply (recognition, broker partnerships, content authority) beats being 1-of-30 in every state. Stay regional until $10K+ MRR.
+
+---
+
+### 219. Year-1 TAM-expansion sequencing
+**Priority:** 📋 Strategy doc · **Effort:** N/A (just a plan)
+
+Suggested sequencing for solo-founder capacity (10-15 hrs/wk) given the items above:
+
+| Month | Focus | Items |
+|---|---|---|
+| 1-2 (now) | Ship MVP cleanly, get 25 paid customers | (current MVP punch list) |
+| 3-4 | Browser extension (distribution unlock) | [#212](#212-browser-extension-) |
+| 5-6 | House-hacker mode (audience expansion) | [#213](#213-house-hacker-mode-) |
+| 7-9 | Geographic expansion to NE (CT, NH, RI) | [#218](#218-geographic-expansion-sequencing-ma--northeast-) |
+| 10-12 | Either off-market sourcing OR Team/brokerage tier (whichever the data says) | [#214](#214-off-market-deal-sourcing-) or [#216](#216-team-plan-branded-pdf-exports-) |
+
+**Rule:** pick the ONE next thing after MVP launch that customer feedback points at most clearly. Two strong launches (browser extension + house-hacker) beats five half-done features.
+
+**Don't add to year 1:** SFR scoring, fix-and-flip mode, tenant management, native mobile, portfolio tracker. All defensible Year 2+ moves but they dilute focus during the PMF-discovery phase.
