@@ -8,21 +8,52 @@
 
 | Status | Count |
 |---|---|
-| ✅ Done | 35 |
+| ✅ Done | 55 |
 | 🔴 MVP Scope (must-ship) | 4 |
 | 🟡 Pre-launch important | 6 |
-| 🟢 Phase 2 / Backlog | 99 |
+| 🟢 Phase 2 / Backlog | 78 |
 | 🔵 Deferred (post-launch) | 4 |
-| ❌ Dropped (strategy change) | 6 |
+| ❌ Dropped (strategy change) | 13 |
 | 📋 Strategy doc | 1 |
-| **Total** | **155** |
+| **Total** | **161** |
 
-**What changed since May 16:** 5 items closed (AI narrative shipped, Ask-the-Analyst chat wired, condition lens MVP, Sonnet 4.6 migration, free-tier gating complete). 5 new items filed earlier this week (#206 Sonnet, #207 ATTOM 401, #208 photos deferred, #209 pre-auth intent capture, #210 standalone Analyst direction). **2026-05-22 strategy-review additions:** 7 new items + 1 strategy doc — TAM-expansion features ranked Tier S/A/B + year-1 sequencing plan (#212-219). Item #20 (portfolio tracker) expanded with TAM framing.
+**What changed 2026-05-22 (this audit):** 20 items moved to Done (AI narrative V2 bull/bear, condition lens MVP, free-tier gating server-side, free-tier UX, dashboard hero polish, rent tile lens sync, narrative auto-gen on score-write, garbage narrative cleanup, BUG-001 non-UUID 404, BUG-003 wrong-password feedback, BUG-004 freshness sweep, OG image regen, live stat bar, metrics RankMark migration, Sonnet 4.6, per-unit rent override, magic-link plumbing, dashboard /100 denominator, deal-detail hero polish, expose Cap/NOI/DSCR/GRM on /public). 7 items dropped as obsolete (photos via vendor, mockup matching, social proof on landing, social proof dupe, deal-of-the-day rotation, narrative upgrade dupe, narrative on deal-detail dupe). Top 15 launch-and-first-60-days list added below. **Earlier 2026-05-22 strategy-review additions:** 7 TAM-expansion items + 1 strategy doc (#212-219, #220).
 
 **Live MVP punch list (active tasks, not backlog):**
-- #71 Verify magic-link delivers in prod (30 min, Ali + me)
-- ATTOM key renewal (Ali handling separately) — unblocks Salem/Revere/Framingham scoring
-- End-to-end real-device walkthrough on iOS + Android — only humans can do this
+- #71 Verify magic-link delivers in prod (30 min, Ali + me) — code paths shipped, inbox confirmation still pending
+- #207 ATTOM key renewal (Ali handling separately) — unblocks Salem/Revere/Framingham scoring
+- End-to-end real-device walkthrough on iOS + Android (#197) — only humans can do this
+
+---
+
+## 🎯 NEXT 15 — what actually ships before / right after launch
+
+What's left for a clean launch + first 60 days of polish. Strict filter: blocking issues, fixes that move workflows from C/F → B+, items already in flight that need verification. TAM-expansion items (#212-220) deliberately excluded — those are year-1 post-launch work.
+
+| Rank | Item # | Title | Status | Why it matters | Owner |
+|---|---|---|---|---|---|
+| 1 | #71 / #203 | Verify magic-link delivers in prod (inbox confirmation) | 🔴 Blocker | Currently C — code paths work, no human-verified inbox delivery. If this is broken on launch day, signup is broken. | Ali (manual test) |
+| 2 | #207 | ATTOM API key 401 — renew + redeploy | 🔴 Blocker | Salem/Revere/Framingham have 44 unscored deals from May 21 ingest waiting on this. Mitigation shipped (180d cache, dead call removed) but root cause open. | Ali (account) |
+| 3 | NEW | Sentry + uptime monitoring (frontend + backend) | 🔴 F-grade gap | Currently flying blind. Zero observability means we won't know magic-link is broken, ingestion is failing, or AI chat is 500ing until users complain. Highest-leverage launch-readiness fix. Add `@sentry/node` to backend, `@sentry/browser` to frontend, BetterUptime or UptimeRobot pinging `/health` + landing. | Me + Ali |
+| 4 | #186 | BUG-004 stale deals — add status-field check (extend the freshness sweep) | 🔴 Launch-blocker | Freshness sweep shipped (2c1f696) but it only catches deals missing from RentCast pulls. Add per-listing `status` field check to also catch pending/contingent/under-contract while still listed. Lost-trust bug for the featured deal flow. | Me |
+| 5 | #197 | Real-device mobile QA walkthrough (iPhone + Android) | 🔴 Pre-launch | All recent work done in 430px DevTools. Tap targets, sticky bars, keyboard overlay, font rendering need real hands. Block launch on this. | Ali |
+| 6 | #196 | Empty + error states sweep across all pages | 🟡 B → A | Loading skeletons, network-failure states, empty-list states, 401/403/500 handling. Currently most pages have none. One day across all surfaces. | Me |
+| 7 | #211 | Separate Resend dev/prod API keys | 🟡 Important hygiene | Already burned through ~250 test-bounce sends against prod sender reputation. `safeSend()` guard shipped (72b1170) but the architectural fix (separate keys + sender domain) is half a day and prevents this whole category. | Me |
+| 8 | #193 / narrative reliability | Narrative backfill retry + observability on AI failures | 🟡 B → A | Narrative auto-gen shipped (5eef153) + 529 retry shipped (d9d43b7) + garbage cleanup script (b803099). What's missing: alerting when a backfill stalls or returns truncated JSON. Pair with rank 3 (Sentry). | Me |
+| 9 | #205 | CI BUG — migrate runs before deploy, silently skips migrations | 🟡 Launch-week | The May 21 tier rename had to be re-run manually because of this. Next migration that fails silently in CI will cause a real prod outage. Option-2 fix is a one-line `--overrides` JSON change in deploy.yml. | Me |
+| 10 | #199 | Deal-detail auth gating audit | 🟡 Pre-launch security | Ali confirmed deal-detail rendered in incognito. Either lock it down or define the public-read surface explicitly. 30 min to investigate, 1 hr to fix. | Me |
+| 11 | #192 | Watchlist page hero-DNA pass | 🟡 B → A | Second-most-visited surface after Today, hasn't been brought in line with the canonical `.hero-deal` + `.rmark` system. 3-4 hrs. Users feel two products until done. | Me |
+| 12 | #194 / #195 | Pricing page + account/billing audit (one batch) | 🟡 Launch-week | Both surfaces still C — pricing page not reviewed since the tier rename, account/billing flow unmapped. Stripe upgrade flow needs end-to-end verification (#51 below). 2-3 hrs combined. | Me |
+| 13 | #182 | Full-opex cashflow toggle on deal-detail | 🟢 First-60-days polish | Data already in place (`monthlyCashFlowFullOpex` writes from seed + scoring). UI is a small segmented toggle. Pro-power-user feature; ships in <½ day. | Me |
+| 14 | #51 | Activate Stripe live keys + end-to-end checkout test | 🔴 Blocker (if not already done) | Verify the upgrade flow actually charges a real card. Logged as "🔴 Effort: M" since 2026 inception; needs explicit verification before public launch. | Ali |
+| 15 | #168 | Rotate exposed AWS deploy key (`AKIA3WKTSYVX2QHVM554`) | 🟡 Pre-launch hygiene | Key was pasted in a Claude transcript on 2026-05-16. Low-likelihood exploit but trivial to rotate. Knock out before scaling deploy frequency. | Ali |
+
+**Deliberately NOT in the Top 15:** browser extension (#212), house-hacker mode (#213), portfolio tracker (#20), off-market sourcing (#214), Section 8 mode (#215), Team/brokerage polish (#216), native mobile (#217), geographic expansion (#218), add-your-own-property (#220), SMS alerts (#122 deferred), pre-auth AI chat (#180 deferred). All Year-1 TAM work, not launch work.
+
+**Ambiguous items the user should call:**
+- #59 BiggerPockets / REI community outreach — currently 🔴, but is this a launch-week thing or a Month-2 GTM thing? If GTM, drop from MVP table.
+- #149 Verify Worcester HUD FMR — flagged Phase 2 but if a user disputes a rent number on launch day, this becomes urgent.
+- #189 expose Cap/NOI/DSCR/GRM on /public — backend shipped (8680469); frontend wiring on landing chips may still be partial. Worth a 15-min verification pass.
 
 ---
 
@@ -37,19 +68,19 @@
 | 81 | Payback Period Visual | 🔴 MVP — promoted from Phase 2 (May 15) |
 | 99 | Analyzer PITI Consistency Fix | ✅ Done May 15 — Option A quick form uses PITI baseline; 18-field form moved behind "tweak assumptions" expandable |
 | 100 | Replace Fake Landing Page Data | ✅ Done May 14 — removed Sarah T. testimonial; hero mockup now uses real Lynn/Worcester deal styling |
-| 101 | Onboarding Goal → Feed Personalization | 🔲 Todo |
-| 105 | Make it Work Offer Calculator | 🟡 In Progress — replaced max-offer card |
-| 116 | Deploy Script | 🔲 Todo |
-| 119 | Rebuild Onboarding — 3 Steps | 🔲 Todo |
-| 120 | AI Analyst Standalone Page | 🔲 Todo |
-| 121 | MVP Checklist — Pre-Launch Gates | 🔲 Todo |
-| 122 | SMS Alerts | 🔲 Todo |
-| 123 | Brand decision (RoofRank vs Deckers) | 🔲 Deferred per user May 15 |
-| 124 | Roof silhouette tier-color A/B/C pick | 🔲 Awaiting decision — see roof-options.html |
-| — | Fix nightly ingestion (item 75) | 🔲 Todo |
+| 101 | Onboarding Goal → Feed Personalization | ❌ Dropped — onboarding rebuilt (#119) into a 3-step picker-first flow that doesn't collect a goal |
+| 105 | Make it Work Offer Calculator | ✅ Done May 14 — replaced max-offer card with negotiation-anchor card on deal detail |
+| 116 | Deploy Script | ✅ Done — frontend is Netlify-on-push; backend is `.github/workflows/deploy.yml` (commits 41c8ce7, fedfde9) |
+| 119 | Rebuild Onboarding — 3 Steps | ✅ Done — 3-step picker-first flow with live per-market counts (commits e1c77b0, 945f9c1, 1dac9db, 929693e) |
+| 120 | AI Analyst Standalone Page | ❌ Dropped — chat moved per-deal; `/analyst` URL redirects to dashboard; long-term direction in #210 |
+| 121 | MVP Checklist — Pre-Launch Gates | 🔲 Todo — superseded by Top 15 above |
+| 122 | SMS Alerts | 🔵 Deferred — PWA push covers same job at $0 (#135 shipped); revisit post-launch if install rate is low |
+| 123 | Brand decision (RoofRank vs Deckers) | 🔵 Deferred per user May 15 — see #177 |
+| 124 | Roof silhouette tier-color A/B/C pick | ✅ Done — canonical `.rmark` system (Deckers roof + 3 floor bars, tier-colored) shipped across landing, onboarding, dashboard, deal-detail (commits ce6475d, 929693e, ca3553c) |
+| — | Fix nightly ingestion (item 75) | 🔲 Todo — see #75 |
 | — | Zero console errors | 🔲 Todo |
 | — | Mobile deal detail rebuild | ✅ Done May 14 |
-| — | Stripe checkout tested end to end | 🔲 Todo |
+| — | Stripe checkout tested end to end | 🔲 Todo — see Top 15 rank 14 (#51) |
 
 ---
 
@@ -86,6 +117,29 @@
 | — | Project relocation to ~/Code/, docs/ tracked in git | May 15 |
 | — | Repo reorg: backend + infra split, all under devnestdynamics | May 15 |
 | — | PWA setup (manifest, service worker, icons) | May 15 |
+| 79 | Per-unit rent estimate panel with override | May 18 |
+| 82 | "Make it Work" offer card (replaced max-offer) | May 14 |
+| 102 | Watchlist price drop alerts (push + email) | May 19 |
+| 119 | Onboarding rebuild — 3 steps, picker-first | May 17 |
+| 124 | RankMark canonical scoring icon (roof + 3 floor bars) | May 20 |
+| 133 | "Since last visit" in-app strip | May 17 |
+| 135 | PWA push end-to-end | May 17 |
+| 136 | Score-explain modal | May 19 |
+| 167 | Home-button signs out bug | May 16 |
+| 170 | Live stat bar on landing | May 19 |
+| 174 | Free → Pro upgrade UX (server-side gating) | May 20 |
+| 176 | OG image + preview tags regen | May 22 |
+| 183 | BUG-001 non-UUID 404 | May 19 |
+| 185 | BUG-003 wrong-password feedback | May 19 |
+| 190 | Landing metrics section → canonical RankMark | May 19 |
+| 200 | BUG-005 JSONB string scalars | May 21 |
+| 204 | Condition lens MVP on deal-detail (step 1) | May 21 |
+| 206 | Sonnet 4.6 migration | May 21 |
+| — | AI Deal Narrative V2 (bull + bear, auto-gen on score-write) | May 21 |
+| — | Free-tier gating end-to-end | May 20 |
+| — | Magic-link plumbing (Resend) — code paths shipped | May 19 |
+| — | Dashboard hero polish + /100 denominator | May 22 |
+| — | Per-metric averages on /feed/stats/markets | May 21 |
 
 ---
 
@@ -212,8 +266,11 @@ Add "Removed — Undo" toast with 5-second window instead of instant delete.
 
 ---
 
-### 15. Save Onboarding Progress to localStorage
+### 15. Save Onboarding Progress to localStorage — ❌ Dropped per onboarding rebuild (#119)
 **Priority:** 🟡 · **Effort:** S
+
+**Reason:** New onboarding (#119 shipped) collects no form data — picker-first flow with no progress to save.
+
 
 Refreshing during onboarding resets to Step 1. Save step and form values to localStorage, clear on completion.
 
@@ -364,7 +421,7 @@ ATTOM failing for all Lynn addresses. Scoring without neighborhood grades. Debug
 
 ---
 
-### 34. Fix Nightly Ingestion — Use Direct ingestMarket
+### ~~34. Fix Nightly Ingestion — Use Direct ingestMarket~~ ✅ DONE — see #75
 **Priority:** 🔴 · **Effort:** S
 
 Nightly 2am job calls `runIngestionNow()` which queues via BullMQ. Queue processor may not run. Switch nightly job to call `ingestMarket()` directly like `runIngestion.ts` does.
@@ -569,7 +626,7 @@ Current: "Stop spreadsheets. Every deal, ranked for you." Options saved in memor
 
 ---
 
-### 58. Fix "Not Secure" Warning (Cached)
+### 58. Fix "Not Secure" Warning (Cached) — ❌ Dropped (browser cache long-since cleared)
 **Priority:** 🟢 · **Effort:** S
 
 SSL cert is provisioned. Warning is browser cache. Clears on its own. Hard refresh: Cmd+Shift+R.
@@ -741,8 +798,11 @@ Many Lynn investors use 5/1 or 7/1 ARMs to improve initial cash flow. Add ARM to
 
 ---
 
-### 74. Remove Seed Data Market by Market
+### 74. Remove Seed Data Market by Market — ❌ Dropped — superseded by 5-city MA scope
 **Priority:** 🔴 · **Effort:** S · **Category:** Data Quality
+
+**Reason:** MVP scope cut from 9 cities to 5 MA cities (Lynn, Worcester, Salem, Revere, Framingham). Non-launch cities are hidden in the UI (commit 8c6f6f1). Unscored deals filtered from public feed (373dce6). Salem/Revere/Framingham still seed-only, gated by #207 ATTOM renewal.
+
 
 26 seed deals are fake. Remove them as real RentCast data is activated per market.
 
@@ -766,8 +826,11 @@ DELETE FROM deal_feed WHERE source = 'seed';
 
 ---
 
-### 75. Fix Nightly Ingestion — Bypass BullMQ
+### ~~75. Fix Nightly Ingestion — Bypass BullMQ~~ ✅ DONE
 **Priority:** 🔴 · **Effort:** S · **Category:** Infrastructure
+
+**Shipped:** `scheduleNightlyIngestion()` in `src/workers/ingestionWorker.ts` runs at 2am for the 5 MVP MA markets directly (no BullMQ dependency). `src/index.ts:132` wires the schedule on boot.
+
 
 Nightly 2am job queues via BullMQ but the worker that processes the queue may not run reliably. Fix: call `ingestMarket()` directly from the scheduler, same as `runIngestion.ts` does. This ensures data refreshes every night automatically without manual intervention.
 
@@ -840,8 +903,11 @@ Rethink the scoring and analyzer UI around simplicity first, complexity optional
 
 ---
 
-### 79. Rent Estimate Panel with Override
-**Priority:** 🔴 · **Effort:** M · **Category:** Product
+### ~~79. Rent Estimate Panel with Override~~ ✅ DONE 2026-05-18 (commit 9f43023)
+**Priority:** 🔴 · **Effort:** M
+
+**Shipped:** Per-unit rent override on deal-detail with live recompute of cashflow, CoC, DSCR, cap rate, GRM, NOI through the `applyScenario` pipeline. Default to HUD FMR estimate; user overrides per unit; "your estimate vs HUD" side-by-side. Pro-gated. Rent tile now also syncs with the condition lens (#204) per commit 83140eb. Per-unit rent defaults follow the condition lens too (commit 360fe8a).
+ · **Category:** Product
 
 Show the rent estimate used in scoring with context, and let the investor override it with their local knowledge to see a revised score.
 
@@ -1012,7 +1078,7 @@ Combines cash flow + rent growth + tax benefits into one intuitive number invest
 
 ---
 
-### 82. Replace "Max Offer" Calculator with "Make it Work" Card
+### ~~82. Replace "Max Offer" Calculator with "Make it Work" Card~~ ✅ DONE May 14
 **Priority:** 🔴 · **Effort:** S · **Category:** Product
 
 The current "What's your maximum offer?" section on deal detail is solving the wrong problem. Showing "$170K above asking" is useless and confusing. Replace with a clean "Make it Work" card that answers the real investor question: what do I need to offer to make this deal good?
@@ -1072,15 +1138,21 @@ Watchlist currently shows saved deals with no context on how they've changed. Sh
 
 ---
 
-### 87. Onboarding Uses Real Deal
+### ~~87. Onboarding Uses Real Deal~~ ✅ DONE — onboarding rebuild (#119) uses live data
 **Priority:** 🟡 · **Effort:** S · **Category:** Product
+
+**Shipped:** Onboarding hero card pulls from live `/feed/public` data, filters unscored deals (945f9c1), and frames against the user's pre-auth market pick (630dfd9). No more Freeman St / inflated demo scores.
+
 
 Onboarding "Score your first deal" example uses Freeman St with inflated scores that don't match the real product. Replace with a real Lynn deal (e.g. 82 Linwood St, score 68) so the first impression is accurate and honest.
 
 ---
 
-### 88. Deal of the Day Rotation
+### 88. Deal of the Day Rotation — ❌ Dropped (dashboard rebuilt around one hero deal + runners, not a rotating signal)
 **Priority:** 🟡 · **Effort:** S · **Category:** Product
+
+**Reason:** Dashboard V1 polish (e1c77b0) settled on a hero card + runners pattern. Rotating signal doesn't fit the new IA. Revisit if user testing shows demand for variety.
+
 
 Deal of the Day always shows the highest scoring deal. Rotate the signal daily:
 - Monday: Top cash flow
@@ -1093,8 +1165,11 @@ Creates a reason to check back every day.
 
 ---
 
-### 89. Social Proof on Landing Page
+### 89. Social Proof on Landing Page — ❌ Dropped — duplicates #60
 **Priority:** 🔴 · **Effort:** S · **Category:** Marketing
+
+**Reason:** Same item as #60, which is itself explicitly cut until real testimonials exist (per feedback memory + May 15 strategy notes).
+
 
 No testimonials, no logos, no trust signals. Even one real quote from a beta user would help conversions significantly. Reach out to anyone who has used the product and ask for a one-sentence quote. Display below the hero.
 
@@ -1114,8 +1189,11 @@ The stress test toggle is one of the most useful features on the Analyzer but it
 
 ---
 
-### 92. Narrative Upgrade — AI Quality
+### 92. Narrative Upgrade — AI Quality — ❌ Dropped — duplicates #28 (shipped) and #103
 **Priority:** 🔴 · **Effort:** M · **Category:** AI Features
+
+**Reason:** Resolved by V2 bull + bear narrative structure (commit ed3fca0) + auto-gen on score-write (5eef153). Sonnet 4.6 migration (d4b64ef) bumped quality further.
+
 
 Deal detail narrative paragraph reads like a template. This is exactly where the AI upgrade (item 40) would have the most impact — first thing investors read when they open a deal. Prioritize this as the first AI feature to build.
 
@@ -1236,15 +1314,21 @@ Fix:
 
 ---
 
-### 102. Watchlist Price Drop Alerts
+### ~~102. Watchlist Price Drop Alerts~~ ✅ DONE 2026-05-19
 **Priority:** 🔴 · **Effort:** M · **Category:** Product
+
+**Shipped:** Watchlist price drop push trigger fires on listings where the asking price drops ≥$1K AND ≥1% (per `dispatchAlerts` + push fanout in ingestion worker). Push notifications use the same VAPID infra from #135. Email-side price-drop alert is also wired into the alert dispatcher.
+
 
 Track asking price at time of save. When price drops, badge the deal in watchlist and send email alert. "82 Linwood St dropped $25K since you saved it." This is the feature that makes investors check the app daily.
 
 ---
 
-### 103. AI Narrative on Deal Detail (Replace Template)
+### ~~103. AI Narrative on Deal Detail (Replace Template)~~ ❌ Dropped — duplicates #28
 **Priority:** 🔴 · **Effort:** S · **Category:** AI Features
+
+**Resolution:** Duplicated #28. Shipped via the V2 bull + bear narrative structure (commit ed3fca0) + auto-gen on score-write (commit 5eef153) + Sonnet 4.6 migration (commit d4b64ef). Pro-only; free tier sees a blurred teaser. Garbage narrative cleanup script also shipped (b803099).
+
 
 The narrative paragraph on deal detail is template-based — reads like a formula. Replace with Claude-generated 2-sentence summary on page load. Call AI endpoint once with "write a 2-sentence analyst summary" prompt. Cache in sessionStorage so it only generates once per session.
 
@@ -1263,7 +1347,7 @@ The retention mechanic that keeps people subscribed month after month. AI alread
 
 ---
 
-### 105. Make it Work Offer Calculator (Replace Current)
+### ~~105. Make it Work Offer Calculator (Replace Current)~~ ✅ DONE May 14 — duplicates #82
 **Priority:** 🔴 · **Effort:** S · **Category:** Product
 
 Replace broken offer calculator with clean single insight:
@@ -1439,8 +1523,11 @@ Current deployment is 5 manual steps per file per change. Automate:
 
 ---
 
-### 117. Migrate Frontend to React / Next.js
+### 117. Migrate Frontend to React / Next.js — ❌ Dropped from MVP scope (deferred indefinitely)
 **Priority:** 🟡 · **Effort:** XL · **Category:** Infrastructure
+
+**Reason:** Vanilla HTML + service worker is fine at current scale. Strategy review raised the trigger from 20 paying users to 50, and the canonical hero-deal + rmark patterns shipped without needing React. Revisit post-PMF.
+
 
 Current HTML files don't scale. Issues:
 - Manual deployment pain
@@ -1463,8 +1550,11 @@ Before React migration, add a shared `mobile.css` that handles mobile layout pro
 
 ## MVP Scope Items
 
-### 119. Rebuild Onboarding — 3 Steps, No Forms
+### ~~119. Rebuild Onboarding — 3 Steps, No Forms~~ ✅ DONE 2026-05-17
 **Priority:** 🔴 MVP · **Effort:** M · **Category:** Product
+
+**Shipped:** 3-step picker-first flow. Commits: e1c77b0 (V1 polish), 945f9c1 (live per-market counts), 1dac9db (filter unscored before featuring), 929693e (RankMark + live freshness signal), 630dfd9 (kill Boston example, use user's market pick), 766787e (WOW-moment simplification — one hero card, clean runners). No name/email/goal collection; signup-first then immediate value.
+
 
 Rebuild onboarding from scratch. Current flow is a form that collects data it doesn't use. New flow shows value immediately.
 
@@ -1499,8 +1589,11 @@ Real counts. Honest about live vs coming soon. Tap to follow.
 
 ---
 
-### 120. AI Analyst — Standalone Chat Page
+### ~~120. AI Analyst — Standalone Chat Page~~ ❌ Dropped 2026-05-21
 **Priority:** 🔴 MVP · **Effort:** M · **Category:** AI Features
+
+**Resolution:** Strategy shifted — chat lives per-deal on every deal-detail page (commit a018d43), where the context is. Standalone `/analyst` URL deprecated to a redirect to dashboard (commit f6365e3). Long-term direction for the URL captured in #210.
+
 
 Standalone AI chat page accessible from nav bar. Not deal-specific — for market questions, education, strategy.
 
@@ -1677,8 +1770,11 @@ Third time a free user hits a lens lock or long-tail blur, auto-grant 24 hours o
 
 ---
 
-### 133. "What changed since yesterday" badge
+### ~~133. "What changed since yesterday" badge~~ ✅ DONE
 **Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Retention
+
+**Shipped:** "Since last visit" in-app strip on dashboard (see notification-strategy section line 1878). Uses the `RR_SNAPSHOT_KEY` pattern to diff returns against the prior session.
+
 
 Top of dashboard on returning visit: "2 new Strong Buys, 1 price drop on your watchlist, your top-saved deal went up 4 pts." A reason to open the app every morning. Works without email/SMS.
 
@@ -1691,8 +1787,11 @@ Top of dashboard on returning visit: "2 new Strong Buys, 1 price drop on your wa
 
 ---
 
-### 135. PWA push notifications
+### ~~135. PWA push notifications~~ ✅ DONE
 **Priority:** 🔴 MVP candidate · **Effort:** M · **Category:** Retention · **Status:** Frontend done — awaits VAPID keys + backend
+
+**Shipped end-to-end:** VAPID generated, service-worker push/click/rotation handlers live, backend `/api/notifications/{subscribe,unsubscribe,resubscribe}` routes deployed, table migrated in prod, Strong Buy fanout in ingestion worker (≥75 score), watchlist price-drop trigger (≥$1K + ≥1%). iOS caveat documented (PWA install required).
+
 
 "🔔 New Strong Buy at 58 Laighton" push notifications, free, replace #122 SMS for installed users.
 
@@ -1707,8 +1806,11 @@ iOS caveat: only fires for installed PWAs (Add to Home Screen).
 
 ---
 
-### 136. Score explainability sheet
+### ~~136. Score explainability sheet~~ ✅ DONE
 **Priority:** 🔴 MVP candidate · **Effort:** S · **Category:** Trust
+
+**Shipped:** Score-explain modal is one of the 4 workflows the user grades at A. Tap any score → modal showing per-metric contribution to the final number. Replaced the black-box question with a glass-box answer.
+
 
 Tap any score → modal showing each metric's contribution to the final number. Today scoring is a black box. Glass-box version cuts "how is this scored?" support load and builds trust.
 
@@ -1776,8 +1878,11 @@ Show "N others watching this" or "Trending in Lynn" on deal cards + detail page 
 
 ---
 
-### 140. House photos
+### 140. House photos — ❌ Dropped per #208 (launching without photos, decision locked 2026-05-21)
 **Priority:** 🟡 Phase 2 · **Effort:** M · **Category:** Product
+
+**Reason:** Every legitimate MLS-photo feed requires broker sponsorship in MA. See #208 for the launch posture (Zillow CTA in the photo slot, "numbers first, photos one click away" copy). Original entry preserved below for reference.
+
 
 Eventually add property photos, but selectively. Default approach:
 - **Deal-detail hero only** — full-bleed at top, slightly desaturated so listing-agent gloss doesn't overpower our "honest analyst" voice
@@ -2136,8 +2241,11 @@ Big lots = subdivision / ADU potential. Surface lot size + zoning hint on deal d
 
 Some small multifamily is set up as NNN where tenants pay expenses. Materially different scoring math (lower expense ratio, higher CoC). Catch via leaseType field.
 
-### 166. Per-deal rate + down payment overrides
+### 166. Per-deal rate + down payment overrides — 🟡 PARTIAL (rate already live via #8, DP override still open)
 **Priority:** 🔴 MVP candidate · **Effort:** S · **Source:** New `deal_assumption_overrides` table (mirror `deal_rent_overrides`)
+
+**Status:** Custom rate slider on deal-detail (item #8) is live and triggers full recompute. Down payment % override still TODO. Live market mortgage rate now sourced from FRED MORTGAGE30US weekly (commit b0ab7ef) so the rate default is fresh. Down-payment override is the remaining wedge — defer to post-launch unless a user asks.
+
 
 Investors don't typically override taxes and insurance — those come from the bill or the carrier. But they DO override the financing assumptions on every deal: *"I can lock 6.25% with my lender"* or *"I'm putting 30% down on this one, not 25%."* Mirror the rent-override pattern (#79 shipped) so deal-detail exposes two more dials:
 - **Mortgage rate** — preloaded with the live Freddie Mac rate; user can type their own
@@ -2182,8 +2290,11 @@ This is a "halo" feature that **bridges Pro and Agent & Team** without forcing t
 - Phone numbers via SMS would require Twilio (item 122 backlog) — push notifications are cheaper.
 - Privacy: each recipient should be able to unsubscribe directly from any alert.
 
-### 170. Live stats strip on landing (replaces shallow stat bar)
+### ~~170. Live stats strip on landing (replaces shallow stat bar)~~ ✅ DONE (commit 416d45a)
 **Priority:** 🔴 MVP · **Effort:** S · **Source:** Strategic review's landing fix #2 + 2026-05-16 honest audit
+
+**Shipped:** Landing now reads live per-market deal counts. Stat bar + live brief mockup both fed from real data. Related follow-up: #179 (flip to all 5 cities when Salem/Revere/Framingham scoring is live — gated by #207 ATTOM renewal).
+
 
 Replace the dark `30 sec / $0` stat bar (currently filler — "30 sec" repeats the hero claim) with **live per-market deal counts** from a new public backend endpoint:
 
@@ -2229,8 +2340,11 @@ We've adjusted mobile breakpoints reactively (chip border barely visible flagged
 
 ---
 
-### 174. Free → Pro upgrade UX (feature gating in product)
+### ~~174. Free → Pro upgrade UX (feature gating in product)~~ ✅ DONE 2026-05-20
 **Priority:** 🔴 MVP · **Effort:** L · **Source:** 2026-05-16 honest audit
+
+**Shipped:** Server-side enforcement of 3 free-tier gates (commit 322fd5b) + market access caps + daily deal-view caps (commit ef8187c). Frontend-side UI polish on the live gates (commit 851cb72). Tier rename `essentials → starter` and `enterprise → team` (commit c35d49b). Daily view-limit banner on deal-detail (commit e43e7c3). User grades this workflow at A. One follow-up open: end-to-end Stripe checkout test (Top 15 rank 14, #51).
+
 
 The pricing wall is defined in copy (Starter = passive view, Pro = active engagement). But the product still shows everything to everyone. When a Free user clicks "Push alerts" or "Custom rate override," what happens?
 
@@ -2255,8 +2369,11 @@ Mostly a polish pass after the bigger Option C build.
 
 ---
 
-### 176. OG image + social preview regen
+### ~~176. OG image + social preview regen~~ ✅ DONE 2026-05-22 (commits 5024525, 63f1472, c469ef0)
 **Priority:** 🔴 MVP · **Effort:** S · **Source:** 2026-05-16 honest audit
+
+**Shipped:** OG image regen'd to match decision-tool positioning (5024525). Real PNG variants regenerated for OG + favicon (63f1472, fixed stale assets). OG meta tags fixed at the root URL — `index.html` had no preview tags before (c469ef0). Closes #187 (was 58 Laighton) too — both rolled into the same asset swap.
+
 
 The current Open Graph image (`/og-image.png`) is from before the decision-tool reframe. When a user shares roofrank.io on LinkedIn, Slack, or Twitter, the preview probably still says *"An AI analyst for every multifamily deal"* — the old positioning we deliberately moved away from.
 
@@ -2446,7 +2563,7 @@ Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db
 
 ---
 
-### 183. BUG-001 · GET /api/feed/:id with a non-UUID returns 500
+### ~~183. BUG-001 · GET /api/feed/:id with a non-UUID returns 500~~ ✅ FIXED 2026-05-19 (commit 54e82e9)
 
 **What:** Hitting `GET /api/feed/nonexistent-id` (or any non-UUID string) currently throws a Postgres invalid-input-syntax error that bubbles up as `{"error":"Internal server error"}` with status 500.
 
@@ -2476,7 +2593,7 @@ Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db
 
 ---
 
-### 185. BUG-003 · Wrong-password login leaves user with no feedback
+### ~~185. BUG-003 · Wrong-password login leaves user with no feedback~~ ✅ FIXED 2026-05-19 (commit 912e56c)
 
 **What:** Entering the wrong password on `roofrank-login.html` silently reloads the page. No toast, no error message, nothing.
 
@@ -2495,7 +2612,10 @@ Related: scoring engine math (`src/lib/scoringEngine.ts:135-160`), seed (`src/db
 
 ---
 
-### 186. BUG-004 · Ingestion never deactivates deals after status change (launch-blocker)
+### 186. BUG-004 · Ingestion never deactivates deals after status change (launch-blocker) — 🟡 PARTIAL (commit 2c1f696)
+
+**Partial fix shipped 2026-05-20:** Freshness sweep added in `ingestionWorker.ts` — listings missing from the latest RentCast pull for a market get marked stale. This catches the most common drop-off case. **Still open:** per-listing `status` field check to also catch pending/contingent/under-contract while still listed (i.e., the listing IS in the pull but its status moved past `active`). See Top 15 rank 4 — this is the remaining launch-blocker piece.
+
 
 **What:** RentCast (and likely all ingestion sources) only update the row when a listing is *visible* to them. When a property goes under contract / pending / off-market / contingent, our DB still has `status='active'` and the deal stays in the feed.
 
@@ -2522,7 +2642,7 @@ All 4 were stale. Manually deleted from prod via one-off ECS task. Lynn went fro
 
 ---
 
-### 187. Landing OG image still shows 58 Laighton St
+### ~~187. Landing OG image still shows 58 Laighton St~~ ✅ FIXED 2026-05-22 — rolled into #176
 
 **What:** `og-image.png` (and the matching Twitter card) was generated when 58 Laighton was the proof example. That deal is now purged from prod (BUG-004 stale, see commit `f34b0de`), so social link previews — Slack, iMessage, X, LinkedIn — still surface a property our system no longer knows about. Anyone who copies a roofrank.io link to a chat sees the wrong house.
 
@@ -2538,7 +2658,7 @@ All 4 were stale. Manually deleted from prod via one-off ECS task. Lynn went fro
 
 ---
 
-### 188. Landing "brief mockup" section still references 58 Laighton
+### ~~188. Landing "brief mockup" section still references 58 Laighton~~ ✅ FIXED (commits f34b0de, ef67a43)
 
 **What:** Below the metrics section, there's a "What you'd see in your dashboard" mockup featuring a hardcoded brief, a pick card, and a chat Q&A. All three still name 58 Laighton St with specific numbers (11.4% CoC, $2,180/mo, $645K).
 
@@ -2557,7 +2677,7 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 189. Expose Cap Rate / NOI / DSCR / GRM on /feed/public
+### 189. Expose Cap Rate / NOI / DSCR / GRM on /feed/public — 🟡 BACKEND DONE (commit 8680469), frontend wiring TBD
 
 **What:** The landing's "scoring engine" section shows 8 metric chips. After commit `ef67a43`, four of them (Cash-on-Cash, Price/Unit, Verdict, Score) are live from `/feed/public`. The other four — **Cap Rate, NOI, DSCR, GRM** — are static illustrative numbers because the public endpoint doesn't surface them. CapEx and Neighborhood are also static (different reason — those are tier labels, not computed values).
 
@@ -2571,7 +2691,7 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 190. Landing "Why X scored" section should adopt the canonical RankMark
+### ~~190. Landing "Why X scored" section should adopt the canonical RankMark~~ ✅ DONE (commit ca3553c)
 
 **What:** After commits `ce6475d` (landing hero) + `929693e` (onboarding), every scoring surface uses the canonical `.rmark` system (Deckers roof + 3 floor bars, tier-colored via `sb`/`buy`/`wat`/`pas`) EXCEPT the landing's `#metrics → .metrics-verdict-mark` block. That one still uses its own SVG with hardcoded forest colors.
 
@@ -2720,7 +2840,7 @@ Option 2 is more durable but bigger; option 1 keeps the section honest in 5 min.
 
 ---
 
-### 198. Property photos on deal-detail (needs a different data provider)
+### 198. Property photos on deal-detail (needs a different data provider) — ❌ Dropped per #208
 
 **What:** Deal-detail's photos strip is wired (frontend supports `listingData.photos[]`), but **RentCast's Property Listings API does not include media at any tier** — confirmed via their schema docs (2026-05-20). Ali's current API Foundation plan ($74/mo) is not the limitation; photos simply aren't in the response shape RentCast ships.
 
@@ -2955,9 +3075,9 @@ Then show me the last few git commits on both repos so I can see where we left o
 
 ---
 
-### 204. Condition-aware rent (kill the "HUD FMR = truth" assumption)
+### 204. Condition-aware rent (kill the "HUD FMR = truth" assumption) — 🟡 STEP 1 SHIPPED 2026-05-21 (commit b63de2f)
 
-**Status:** 🟡 MVP shipped 2026-05-21 (step 1: condition lens on deal-detail). Steps 2-5 still open per the build order below.
+**Status:** Step 1 (condition lens MVP) shipped + rent tile lens sync (83140eb) + per-unit defaults follow the lens too (360fe8a). Steps 2-5 still open per the build order below. User grades the condition lens workflow at A-.
 
 **Step 1 resolution:** Three-position toggle (As-is / Updated / Renovated, ±15% rent multiplier) live on deal-detail inside the rent estimate card. Pro-only feature; free callers see the toggle dimmed with a "🔒 Pro · condition-aware scoring" pill. Multiplier cascades through cashflow, CoC, DSCR, cap rate, GRM, NOI — all recompute live via the existing `applyScenario` pipeline. See setCondition / setConditionEnabled in roofrank-deal-detail.html.
 
@@ -3326,6 +3446,46 @@ Not a feature but the single highest-impact TAM lever per the strategy review. F
 **Why this is Tier 0 (above Tier S):** linear revenue multiplier with the smallest unit of work. Every other TAM lever assumes you've at least expanded geographically first — adding browser extension across only MA caps the extension's reach at MA's TAM.
 
 **Do not:** national rollout. Owning Northeast deeply (recognition, broker partnerships, content authority) beats being 1-of-30 in every state. Stay regional until $10K+ MRR.
+
+---
+
+### 220. Add your own property — score off-market / FSBO / portfolio addresses
+**Priority:** 🟢 Year 1 (post-launch validation) · **Effort:** L (~2-3 weeks) · **TAM tier: A**
+
+Let users paste an address + asking price, score it like any other deal, save to a private "My Deals" tab. Replaces the abandoned `/analyst` standalone analyzer with a much-lower-friction version: RentCast `/properties` lookup auto-fills 90% of the form (year built, sqft, beds, baths, lat/lon), user just confirms address + supplies asking price. ATTOM enriches for units + neighborhood grade. Scoring engine reuses unchanged.
+
+**Use cases that justify this:**
+- Owner-occupant evaluating an off-market deal a friend brought them
+- Investor scoring a FSBO/Craigslist listing not on MLS
+- Existing landlord scoring properties they own to compare against current market
+- "What if" scenarios on properties in markets we don't ingest
+
+**Why it's Tier A (not S):**
+- Real demand, real differentiation, naturally bridges to Tier A item #20 (portfolio tracker) — once you can add a property, "track properties I own" is the obvious next ask
+- But adds a whole new dashboard surface ("My Deals" tab, add-property modal, per-user quota tracking) — significant build vs the Tier S items (browser extension, house-hacker) that have higher distribution leverage
+- Should wait until customer demand confirms it. If 3 of first 25 paid users say "I have an off-market deal I want to score," green-light immediately. Otherwise let it bake.
+
+**Scope v1:**
+- "Analyze any address" CTA on dashboard (Pro/Team only — gated by per-month quota)
+- Address input → RentCast `/properties` lookup → confirm/correct prefilled fields
+- User enters asking price (RentCast often missing it for FSBO)
+- ATTOM enrichment + score
+- Save to "My Deals" tab on dashboard (separate from MLS feed)
+- Per-user quota: 5/month Pro, 50/month Team (cost protection)
+
+**Cost per add:**
+- RentCast: ~$0.07-$0.20 per call
+- ATTOM: 2 calls × $0.25-$0.50 = $0.50-$1.00
+- Total: ~$0.60-$1.20 per analysis
+
+**Risks:**
+- ATTOM can't classify some addresses → graceful "we couldn't find detailed records, here's a manual-input fallback"
+- Power user spam: enforce hard quota server-side
+- "My Deals" becomes a shadow CRM users want to share with partners → eventually needs sharing/export (out of scope v1)
+
+**Hard prerequisite:** ATTOM key renewed (Item #207) — won't work otherwise.
+
+**Bridge to #20 (Portfolio Tracker):** ship this first, then #20 reuses the "My Deals" data model and adds owned-property P&L tracking on top. Don't try to ship them together.
 
 ---
 
