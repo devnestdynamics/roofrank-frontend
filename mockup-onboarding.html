@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Onboarding redesign mockup</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:#ebe6dc;color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:14px;-webkit-font-smoothing:antialiased;padding:2.5rem 1.5rem 5rem}
+
+.wrap{max-width:1640px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:1.9rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.01em}
+.page-sub{font-size:.85rem;color:var(--muted);margin-bottom:2.5rem;max-width:880px;line-height:1.7}
+.page-sub b{color:var(--ink);font-weight:500}
+
+.section-title{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--ink);margin:3.5rem 0 .35rem;letter-spacing:-.005em;padding-bottom:.5rem;border-bottom:1px solid #d6cfc2;display:flex;align-items:baseline;gap:.7rem}
+.section-title:first-of-type{margin-top:.5rem}
+.section-title .step-tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);background:var(--sage-dim);padding:3px 9px;border-radius:4px;border:1px solid var(--sage-border)}
+.section-meta{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:780px}
+
+.split{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;align-items:start}
+@media(max-width:1280px){.split{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.split{grid-template-columns:1fr}}
+
+.col-head{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d6cfc2}
+.col-num{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid;color:var(--forest);background:var(--sage-dim);border-color:var(--sage-border)}
+.col-num.cur{color:var(--amber);background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+.col-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink)}
+
+.note{font-size:.72rem;color:var(--muted);margin-top:.7rem;line-height:1.6;padding:.7rem .85rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px}
+.note b{color:var(--ink);font-weight:500}
+.note .good{color:var(--forest);font-weight:500}
+
+/* ───── PHONE FRAME ───── */
+.phone{background:var(--cream);border:1px solid var(--cream-3);border-radius:14px;padding:1.5rem 1.2rem 1.1rem;box-shadow:0 4px 22px rgba(28,31,28,.06);min-height:580px;position:relative}
+.brand-mark{text-align:center;margin-bottom:1.2rem}
+.brand-mark svg{width:28px;height:28px;display:inline-block;margin-bottom:.3rem}
+.brand-mark-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+
+/* Step dots */
+.dots{display:flex;gap:.4rem;justify-content:center;margin-bottom:1.4rem}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--cream-3);transition:width .25s,background .25s}
+.dot.active{width:22px;border-radius:99px;background:var(--forest)}
+.dot.done{background:var(--sage)}
+
+.step-label{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:.45rem}
+.step-h{font-family:var(--serif);font-size:1.45rem;font-weight:500;line-height:1.18;letter-spacing:-.01em;text-align:center;color:var(--ink);margin-bottom:.5rem}
+.step-h em{font-style:normal;color:var(--forest)}
+.step-sub{font-size:.82rem;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:1.55rem;max-width:340px;margin-left:auto;margin-right:auto}
+.step-sub b{color:var(--ink);font-weight:500}
+
+/* Buttons */
+.btn{background:var(--forest);color:#fff;border:none;padding:.85rem 1.2rem;border-radius:10px;font-weight:500;font-size:.88rem;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;width:100%}
+.btn:hover{background:var(--forest-2)}
+.btn.secondary{background:none;color:var(--muted);border:1px solid var(--border)}
+.btn.secondary:hover{border-color:var(--sage-border);color:var(--forest)}
+.btn.tertiary{background:none;color:var(--muted);border:none;font-size:.78rem;padding:.55rem;text-decoration:underline;text-underline-offset:2px}
+.btn.tertiary:hover{color:var(--forest)}
+
+/* ───── STEP 1: Markets ───── */
+.market-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.3rem}
+.market-chip{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.85rem .95rem;cursor:pointer;text-align:left;transition:all .15s;position:relative;font-family:inherit}
+.market-chip:hover{border-color:var(--sage-border);background:var(--sage-dim)}
+.market-chip.selected{border-color:var(--forest);background:var(--sage-dim)}
+.market-chip-check{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--forest);color:#fff;display:none;align-items:center;justify-content:center}
+.market-chip.selected .market-chip-check{display:flex}
+.market-chip-check svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.market-chip-name{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--ink);margin-bottom:2px;letter-spacing:-.005em}
+.market-chip-region{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.market-chip-count{font-family:var(--mono);font-size:.62rem;color:var(--forest);font-weight:500;margin-top:4px}
+.market-chip:not(.selected) .market-chip-count{color:var(--muted)}
+
+/* ───── STEP 2: Deal preview ───── */
+.preview-card{background:var(--white);border:1.5px solid var(--sage-border);border-radius:14px;padding:1rem 1.05rem;box-shadow:0 10px 32px rgba(28,74,53,.08);margin-bottom:.55rem}
+.preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.4rem}
+.preview-verdict{font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:4px 9px;border-radius:5px;background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest);line-height:1}
+.preview-rmark{display:inline-flex;align-items:baseline;gap:.35rem}
+.preview-rmark svg{width:26px;height:26px}
+.preview-rmark-num{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--forest);line-height:1;display:inline-flex;align-items:baseline;gap:1px}
+.preview-rmark-num .denom{font-size:.55rem;color:var(--faint);font-weight:400}
+.preview-addr{font-family:var(--serif);font-size:1.02rem;font-weight:500;line-height:1.2;letter-spacing:-.005em;margin-bottom:.35rem}
+.preview-nums{display:flex;gap:1rem;margin:.5rem 0 .4rem;flex-wrap:wrap}
+.preview-num-val{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.1;display:block}
+.preview-num-val.cf{color:var(--forest)}
+.preview-num-label{font-family:var(--mono);font-size:.5rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.preview-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);padding-top:.55rem;border-top:1px solid var(--cream-3);margin-top:.5rem}
+.preview-meta b{color:var(--ink);font-weight:500}
+.preview-analyst{margin-top:.6rem;padding:.55rem .7rem;background:rgba(122,170,143,.05);border:1px solid var(--sage-border);border-radius:6px;font-family:var(--serif);font-size:.7rem;color:var(--ink);font-style:italic;line-height:1.5}
+.preview-analyst::before{content:'— The Analyst ';font-family:var(--mono);font-style:normal;font-size:.5rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);display:block;margin-bottom:3px}
+
+.preview-mini{display:flex;align-items:center;gap:.55rem;padding:.55rem .75rem;background:var(--white);border:1px solid var(--cream-3);border-radius:9px;margin-bottom:.45rem}
+.preview-mini-mark{flex-shrink:0;width:24px;height:24px}
+.preview-mini-mark svg{width:24px;height:24px}
+.preview-mini-info{flex:1;line-height:1.3;min-width:0}
+.preview-mini-addr{font-family:var(--serif);font-size:.82rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.005em}
+.preview-mini-meta{font-family:var(--mono);font-size:.58rem;color:var(--muted)}
+.preview-mini-score{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--forest);line-height:1;flex-shrink:0}
+
+.preview-foot{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.62rem;color:var(--muted);justify-content:center;margin:1.1rem 0 1.2rem}
+.preview-foot-dot{width:5px;height:5px;border-radius:50%;background:var(--forest)}
+
+/* ───── STEP 3: SMS ───── */
+.sms-row{margin-bottom:.95rem}
+.sms-label{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:block}
+.sms-input{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-family:var(--sans);font-size:.95rem;color:var(--ink);outline:none;transition:border-color .15s}
+.sms-input::placeholder{color:var(--faint)}
+.sms-input:focus{border-color:var(--forest)}
+.sms-bullets{padding:.85rem 1rem;background:var(--white);border:1px solid var(--cream-3);border-radius:9px;margin-bottom:1.1rem}
+.sms-bullet{display:flex;gap:.55rem;align-items:flex-start;font-size:.76rem;line-height:1.5;color:var(--ink);padding:.18rem 0}
+.sms-bullet svg{width:14px;height:14px;stroke:var(--forest);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:1px}
+.sms-bullet b{font-weight:500}
+.sms-fine{font-size:.65rem;color:var(--muted);line-height:1.55;margin-top:.6rem;font-style:italic;text-align:center}
+
+/* ───── OLD vs NEW comparison block ───── */
+.old-frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:12px;padding:2rem 1.5rem;min-height:580px;position:relative;opacity:.85}
+.old-h{font-family:var(--serif);font-size:1.4rem;font-weight:500;line-height:1.2;text-align:center;color:var(--ink);margin-bottom:.55rem}
+.old-h em{font-style:italic;color:var(--forest)}
+.old-sub{font-size:.82rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:1.5rem}
+.old-field{margin-bottom:.85rem}
+.old-label{font-size:.7rem;color:var(--muted);margin-bottom:3px}
+.old-input{width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;font-size:.92rem;color:var(--ink);font-family:var(--sans)}
+.old-input.placeholder{color:var(--faint)}
+.old-btn{margin-top:.85rem;background:var(--forest);color:#fff;border:none;padding:.85rem 1rem;border-radius:8px;font-weight:500;width:100%;font-family:var(--sans);font-size:.88rem}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">Onboarding redesign mockup — analyst-led</h1>
+  <p class="page-sub">
+    Current cold-signup flow ("Welcome → personalize → score your first deal") is generic SaaS copy that doesn't say what the product does. Proposed redesign drops to <b>3 steps</b>, uses the analyst voice + dashboard visual language, and demonstrates value (real deals in their markets) before asking for more input. Below: the 3 proposed steps stacked, plus a quick before/after of step 1 so you can feel the tone shift.
+  </p>
+
+  <!-- ──── BEFORE / AFTER STEP 1 ──── -->
+  <h2 class="section-title">Step 1 — Pick markets <span class="step-tag">replaces "Welcome / personalize"</span></h2>
+  <p class="section-meta">Current step 1 collects First Name + Email — but they JUST typed email on signup, so we're asking twice. Proposed step 1 is functional: pick markets, filter the feed. First name moves to optional later (or comes from Stripe if they pay). Email isn't re-asked at all.</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current — generic SaaS copy</span></div>
+      <div class="old-frame">
+        <div class="brand-mark">
+          <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+        </div>
+        <div class="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="step-label">Step 1 of 4</div>
+        <div class="old-h">Welcome to<br><em>RoofRank.</em></div>
+        <div class="old-sub">Let's personalize your experience so you see the right deals every morning. Takes 2 minutes.</div>
+        <div class="old-field"><div class="old-label">First Name</div><input class="old-input" value="DevN"></div>
+        <div class="old-field"><div class="old-label">Email Address</div><input class="old-input" value="devnestdynamics@gmail.com"></div>
+        <button class="old-btn">Continue →</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num">1 · new</span><span class="col-title">Proposed — pick markets, analyst voice</span></div>
+      <div class="phone">
+        <div class="brand-mark">
+          <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+          <div class="brand-mark-name">RoofRank</div>
+        </div>
+        <div class="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="step-label">Step 1 of 3</div>
+        <div class="step-h">Where are you <em>hunting</em>?</div>
+        <div class="step-sub">Pick the markets you actually look at. Your analyst scores every 2-6 unit listing in these cities every night — you'll see them on the dashboard tomorrow morning.</div>
+
+        <div class="market-grid">
+          <button class="market-chip selected">
+            <div class="market-chip-check"><svg viewBox="0 0 10 10"><polyline points="1 5 4 8 9 2"/></svg></div>
+            <div class="market-chip-name">Lynn</div>
+            <div class="market-chip-region">North Shore · MA</div>
+            <div class="market-chip-count">23 active deals</div>
+          </button>
+          <button class="market-chip selected">
+            <div class="market-chip-check"><svg viewBox="0 0 10 10"><polyline points="1 5 4 8 9 2"/></svg></div>
+            <div class="market-chip-name">Worcester</div>
+            <div class="market-chip-region">Central · MA</div>
+            <div class="market-chip-count">36 active deals</div>
+          </button>
+          <button class="market-chip">
+            <div class="market-chip-name">Salem</div>
+            <div class="market-chip-region">North Shore · MA</div>
+            <div class="market-chip-count">8 active deals</div>
+          </button>
+          <button class="market-chip">
+            <div class="market-chip-name">Revere</div>
+            <div class="market-chip-region">North Shore · MA</div>
+            <div class="market-chip-count">12 active deals</div>
+          </button>
+          <button class="market-chip" style="grid-column:1 / -1">
+            <div class="market-chip-name">Framingham</div>
+            <div class="market-chip-region">MetroWest · MA</div>
+            <div class="market-chip-count">9 active deals</div>
+          </button>
+        </div>
+
+        <button class="btn">Continue · 2 picked →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> H1 swaps from "Welcome to RoofRank" (generic) to "Where are you hunting?" (action verb, addresses the user as someone with intent). Sub-copy says what the analyst <em>does</em> ("scores every 2-6 unit listing in these cities every night") instead of generic "personalize." Each city chip shows live active-deal count — concrete, demonstrates the inventory is real. <b>Selected by default</b>: zero markets, user picks at least one. <b>Doesn't ask for name/email</b> — we have those from signup.
+  </p>
+
+  <!-- ──── STEP 2 ──── -->
+  <h2 class="section-title">Step 2 — Live deal preview <span class="step-tag">replaces "Score your first deal"</span></h2>
+  <p class="section-meta">Current step 2 asks "paste an address you're looking at" — but a brand-new user typically doesn't have one. Proposed step 2 shows them what the product DOES: 1 hero deal + 2 runners from their picked markets, with analyst quote. Demonstrates value before any more inputs. Zero forms.</p>
+
+  <div style="max-width:520px;margin:0 auto">
+    <div class="phone">
+      <div class="brand-mark">
+        <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+      </div>
+      <div class="dots"><span class="dot done"></span><span class="dot active"></span><span class="dot"></span></div>
+      <div class="step-label">Step 2 of 3</div>
+      <div class="step-h">Here's what your<br>analyst's <em>watching</em> today.</div>
+      <div class="step-sub">A 5-second preview of your Lynn + Worcester feed. The full breakdown opens once you finish onboarding.</div>
+
+      <div class="preview-card">
+        <div class="preview-head">
+          <span class="preview-verdict">Strong Buy</span>
+          <div class="preview-rmark">
+            <svg viewBox="0 0 40 40"><path d="M5 18 L20 7 L35 18" fill="none" stroke="#1c4a35" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="21" width="28" height="3" rx=".5" fill="#1c4a35"/><rect x="6" y="27" width="28" height="3" rx=".5" fill="#1c4a35" opacity=".7"/><rect x="6" y="33" width="28" height="3" rx=".5" fill="#1c4a35" opacity=".45"/></svg>
+            <div class="preview-rmark-num">92<span class="denom">/100</span></div>
+          </div>
+        </div>
+        <h2 class="preview-addr">139 Vernon St, Worcester</h2>
+        <div class="preview-nums">
+          <div><span class="preview-num-val cf">+$2,165</span><span class="preview-num-label">/mo cashflow</span></div>
+          <div><span class="preview-num-val">19.2%</span><span class="preview-num-label">cash-on-cash</span></div>
+        </div>
+        <div class="preview-meta">3 Units · $565K · 28d on market · <b>Top 10%</b> in Worcester</div>
+        <div class="preview-analyst">Cleanest triple-decker I've seen this month. Seller's 28 days in — open at $530K.</div>
+      </div>
+
+      <div class="preview-mini">
+        <div class="preview-mini-mark"><svg viewBox="0 0 40 40"><path d="M5 18 L20 7 L35 18" fill="none" stroke="#1c4a35" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="21" width="28" height="3" rx=".5" fill="#1c4a35"/><rect x="6" y="27" width="28" height="3" rx=".5" fill="#1c4a35" opacity=".7"/><rect x="6" y="33" width="28" height="3" rx=".5" fill="#1c4a35" opacity=".45"/></svg></div>
+        <div class="preview-mini-info"><div class="preview-mini-addr">2 Stevens Rd, Worcester</div><div class="preview-mini-meta">3U · $600K · +$2,542/mo · 19.3% CoC</div></div>
+        <div class="preview-mini-score">90</div>
+      </div>
+      <div class="preview-mini">
+        <div class="preview-mini-mark"><svg viewBox="0 0 40 40"><path d="M5 18 L20 7 L35 18" fill="none" stroke="#3e8160" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="21" width="28" height="3" rx=".5" fill="#3e8160"/><rect x="6" y="27" width="28" height="3" rx=".5" fill="#7aaa8f" opacity=".9"/><rect x="6" y="33" width="28" height="3" rx=".5" fill="#7aaa8f" opacity=".55"/></svg></div>
+        <div class="preview-mini-info"><div class="preview-mini-addr">76-78 Linden St, Lynn</div><div class="preview-mini-meta">4U · $900K · +$1,890/mo · 11.8% CoC</div></div>
+        <div class="preview-mini-score" style="color:#3e8160">87</div>
+      </div>
+
+      <div class="preview-foot"><span class="preview-foot-dot"></span>32 more deals waiting for you on the dashboard</div>
+
+      <button class="btn">One more step →</button>
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Why this works:</b> instead of an empty form asking for input, the new user sees REAL deals in markets they just picked — with the analyst's voice quoted inline. Communicates the value prop ("AI analyst that scores every multifamily listing") through demonstration, not copy. Bonus: when ATTOM is down, this step pulls from the existing <code>/api/feed/public</code> endpoint which doesn't need ATTOM to fetch scored deals (they were scored at ingest time).
+    <br><br>
+    <b>Implementation note:</b> reuses the existing public-feed API + deal-row visual primitives. No new infra. ~1 day frontend.
+  </p>
+
+  <!-- ──── STEP 3 ──── -->
+  <h2 class="section-title">Step 3 — Optional SMS phone <span class="step-tag">new · skippable</span></h2>
+  <p class="section-meta">Lays the groundwork for Twilio (#222) without forcing it. Skippable — they can add later from account settings. Frames SMS as "we'll text you when something matches" rather than "give us your number."</p>
+
+  <div style="max-width:520px;margin:0 auto">
+    <div class="phone">
+      <div class="brand-mark">
+        <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+      </div>
+      <div class="dots"><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span></div>
+      <div class="step-label">Step 3 of 3 · optional</div>
+      <div class="step-h">Get a text when<br>your analyst <em>finds one</em>.</div>
+      <div class="step-sub">If something hits Strong Buy in your markets, I'll text you the score + cashflow + a link. You'll skip the morning inbox scroll.</div>
+
+      <div class="sms-row">
+        <label class="sms-label">Mobile number · US</label>
+        <input class="sms-input" placeholder="(555) 123-4567" inputmode="tel" autocomplete="tel">
+      </div>
+
+      <div class="sms-bullets">
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Strong Buy alerts only.</b> Not your standard daily newsletter — these only fire when a deal scores 75+ in your markets.</span></div>
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Price drops on watched deals.</b> If a deal you saved cuts the price, you'll know first.</span></div>
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Reply STOP to opt out.</b> Standard messaging rates apply. No marketing spam.</span></div>
+      </div>
+
+      <button class="btn">Save and open my dashboard →</button>
+      <button class="btn tertiary" style="margin-top:.6rem">Skip · I'll add it later</button>
+
+      <div class="sms-fine">You can add or remove this anytime from account settings.</div>
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Why optional + skippable:</b> SMS opt-in friction loses 20-40% of cold signups if mandatory. Making it the 3rd-of-3 step + clearly skippable means we capture phone numbers from the users most likely to actually want alerts (real intent), while not blocking the rest from reaching the dashboard. Sets up Twilio (#222) for an immediate-value debut — the first Strong Buy alert is the user's first real "wow" moment.
+    <br><br>
+    <b>Copy choices:</b> "your analyst <em>finds one</em>" reinforces the analyst persona. "Strong Buy alerts only" is the value commitment — no daily noise. "Reply STOP" + "Standard messaging rates" pre-empts TCPA concerns and sets correct expectations.
+  </p>
+
+  <!-- ──── SUMMARY ──── -->
+  <h2 class="section-title">What ships when this is approved</h2>
+  <p class="section-meta">Engineering scope assuming green-light on this direction.</p>
+
+  <div class="note" style="max-width:880px">
+    <b>Frontend</b> (~3-4 days):<br>
+    · Rewrite roofrank-onboarding.html with the new 3-step flow. Keep file name + URL.<br>
+    · Step 1 calls existing POST /api/feed/markets to save the user's market picks (already wired)<br>
+    · Step 2 calls existing GET /api/feed/public (no new endpoint needed — same one the landing page uses)<br>
+    · Step 3 saves the phone number to user.phone (new column on users table — small migration)<br>
+    <br>
+    <b>Backend</b> (~½ day):<br>
+    · Migration to add phone column to users table<br>
+    · POST /api/auth/me/phone (validate US format, save) — Twilio integration comes later under #222<br>
+    <br>
+    <b>Hard prerequisite</b>: none. Works in degraded mode (no live counts) if ATTOM is still 401'd; the active-deal counts on each market chip read from rentcast-source rows that don't need ATTOM.<br>
+    <br>
+    <b>Migration</b>: existing onboarding users mid-flow when this lands have nothing to lose — they just see the new flow on next sign-in. No data loss.<br>
+    <br>
+    <b>Don't ship until</b>: the analyst-led positioning rewrite (#223) is approved, since this onboarding leans heavily into the "analyst" voice and would feel inconsistent with the rest of the product if positioning stayed generic.
+  </div>
+
+</div>
+</body>
+</html>
