@@ -134,6 +134,9 @@ const AuthAPI = {
     return data;
   },
   me()                        { return apiFetch('/auth/me'); },
+  setPhone(phone, smsOptIn=true) {
+    return apiFetch('/auth/me/phone', { method:'POST', body: JSON.stringify({ phone, smsOptIn }) });
+  },
   forgotPassword(email)       { return apiFetch('/auth/forgot-password', { method:'POST', body: JSON.stringify({ email }) }); },
   resetPassword(token, pw)    { return apiFetch('/auth/reset-password',  { method:'POST', body: JSON.stringify({ token, password: pw }) }); },
   verifyEmail(token)          { return apiFetch('/auth/verify-email',    { method:'POST', body: JSON.stringify({ token }) }); },

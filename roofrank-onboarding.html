@@ -1,231 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Welcome</title>
-<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--cream:#f7f4ef;--cream-2:#f0ece4;--white:#fff;--ink:#1c1f1c;--muted:#6b7168;--faint:#a8ad9f;--forest:#1c4a35;--forest-2:#2d6448;--forest-3:#3e8160;--sage:#7aaa8f;--sage-dim:rgba(122,170,143,.1);--sage-border:rgba(122,170,143,.25);--border:#e0d9cf;--border-2:#cbc3b6;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:10px}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
 html{color-scheme:light}
-body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle,rgba(28,74,53,.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
-.wrapper{max-width:700px;margin:0 auto;padding:3rem 1.5rem 5rem;position:relative;z-index:1}
-.brand{display:flex;align-items:center;gap:9px;justify-content:center;margin-bottom:2.5rem;text-decoration:none}
-.brand-name{font-family:var(--serif);font-size:1.1rem;font-weight:500;color:var(--ink)}
-/* Step indicator */
-.steps{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-bottom:2.5rem}
-.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border-2);transition:background .3s}
-.step-dot.on{background:var(--forest);width:24px;border-radius:4px}
-.step-dot.done{background:var(--forest-3)}
-/* Panel */
-.panel{display:none}
-.panel.on{display:block}
-.panel-head{text-align:center;margin-bottom:2rem}
-.step-num{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);margin-bottom:.5rem}
-.panel-title{font-family:var(--serif);font-size:1.75rem;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:.5rem}
-.panel-title em{font-style:italic;color:var(--forest)}
-.panel-sub{font-size:.88rem;color:var(--muted);line-height:1.7;max-width:420px;margin:0 auto}
-/* Name form */
-.name-form{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.75rem;max-width:400px;margin:0 auto 1.5rem}
-label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:.3rem;margin-top:.75rem}
-label:first-of-type{margin-top:0}
-input[type=text],input[type=email]{width:100%;padding:.55rem .75rem;border:1px solid var(--border-2);border-radius:8px;font-size:.85rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;transition:border-color .14s}
-input:focus{border-color:var(--forest)}
-/* Market grid */
-.mkt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1.75rem}
-.mkt-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;cursor:pointer;transition:all .15s;text-align:center;user-select:none;position:relative}
-.mkt-card:hover{border-color:var(--sage-border);background:var(--sage-dim)}
-.mkt-card.on{border-color:var(--forest);background:var(--sage-dim)}
-.mkt-card.on::after{content:'✓';position:absolute;top:.5rem;right:.6rem;font-size:.7rem;color:var(--forest);font-weight:700}
-.mkt-emoji{font-size:1.4rem;margin-bottom:.3rem}
-.mkt-name{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:1px}
-.mkt-state{font-size:.65rem;color:var(--muted)}
-.mkt-count{font-size:.6rem;font-family:var(--mono);color:var(--forest);margin-top:3px}
-/* Goal cards */
-.goal-grid{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.75rem;max-width:480px;margin-left:auto;margin-right:auto}
-/* Score a deal — new Step 2 */
-.score-step{max-width:520px;margin:0 auto}
-.score-input-wrap{position:relative;margin-bottom:1rem}
-.score-addr-input{width:100%;padding:.9rem 1rem;border:1.5px solid var(--border-2);border-radius:12px;font-size:.95rem;font-family:var(--sans);color:var(--ink);background:var(--white);outline:none;transition:border-color .2s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.score-addr-input:focus{border-color:var(--forest);box-shadow:0 2px 12px rgba(28,74,53,.1)}
-.score-addr-input::placeholder{color:var(--faint)}
-.score-divider{display:flex;align-items:center;gap:.75rem;margin:.85rem 0;color:var(--faint);font-size:.75rem}
-.score-divider::before,.score-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.score-actions{display:flex;gap:.65rem}
-.score-example-btn{flex:1;padding:.65rem;border:1px solid var(--border-2);border-radius:10px;background:var(--white);color:var(--muted);font-size:.8rem;font-family:var(--sans);cursor:pointer;transition:all .15s;text-align:center}
-.score-example-btn:hover{border-color:var(--forest);color:var(--forest);background:var(--sage-dim)}
-.score-skip-btn{padding:.65rem 1rem;border:none;background:none;color:var(--faint);font-size:.78rem;font-family:var(--sans);cursor:pointer;transition:color .15s}
-.score-skip-btn:hover{color:var(--muted)}
-/* Score result */
-.score-result{display:none;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem;text-align:center;animation:fu .3s ease}
-.score-result.show{display:block}
-.score-result-ring{width:90px;height:90px;position:relative;margin:0 auto .75rem}
-.score-result-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.srr-track{fill:none;stroke:var(--cream-3);stroke-width:6}
-.srr-fill{fill:none;stroke-width:6;stroke-linecap:round;stroke-dasharray:246;stroke-dashoffset:246;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1) .3s}
-.srr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.srr-score{font-family:var(--mono);font-size:1.9rem;font-weight:500;line-height:1}
-.srr-sig{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
-.score-result-addr{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);margin-bottom:.25rem}
-.score-result-feed{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.1rem}
-.score-result-feed strong{color:var(--forest)}
-.score-result-kpis{display:flex;justify-content:center;gap:1rem;margin-bottom:1.2rem}
-.srk{text-align:center}
-.srk-val{font-family:var(--mono);font-size:.95rem;font-weight:500;color:var(--ink)}
-.srk-val.g{color:var(--forest)}.srk-val.a{color:var(--amber)}.srk-val.r{color:var(--rose)}
-.srk-lbl{font-size:.62rem;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
-/* Score bar animation */
-.score-bars{display:flex;flex-direction:column;gap:4px;margin-bottom:1rem;text-align:left}
-.sbar-row{display:flex;align-items:center;gap:.5rem;font-size:.7rem}
-.sbar-name{color:var(--muted);min-width:130px}
-.sbar-track{flex:1;height:4px;background:var(--cream-3);border-radius:2px;overflow:hidden}
-.sbar-fill{height:100%;border-radius:2px;width:0;transition:width .6s cubic-bezier(.22,1,.36,1)}
-.sbar-val{font-family:var(--mono);font-size:.68rem;color:var(--ink);min-width:40px;text-align:right}
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100vh;display:flex;flex-direction:column;font-size:15px;-webkit-font-smoothing:antialiased}
+main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 1.2rem 3rem}
+.card{max-width:540px;width:100%;padding:2.25rem 1.85rem 2rem;background:var(--white);border:1px solid var(--cream-3);border-radius:14px;box-shadow:0 4px 22px rgba(28,31,28,.06)}
+@media(max-width:430px){.card{padding:1.75rem 1.25rem}}
 
-.goal-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.85rem}
-.goal-card:hover{border-color:var(--sage-border)}
-.goal-card.on{border-color:var(--forest);background:var(--sage-dim)}
-.goal-icon{width:36px;height:36px;border-radius:8px;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.goal-icon svg{width:16px;height:16px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.goal-text{font-size:.82rem;color:var(--ink);line-height:1.55}
-.goal-text strong{font-weight:500;color:var(--ink);display:block;margin-bottom:1px}
-/* CTA */
-.continue-btn{display:block;width:100%;max-width:320px;margin:0 auto;background:var(--forest);color:#fff;border:none;padding:.72rem;border-radius:var(--r);font-family:var(--sans);font-size:.9rem;font-weight:500;cursor:pointer;transition:background .15s;text-align:center}
-.continue-btn:hover{background:var(--forest-2)}
-.continue-btn:disabled{background:var(--faint);cursor:not-allowed}
-.skip{display:block;text-align:center;margin-top:.75rem;font-size:.75rem;color:var(--muted);cursor:pointer;text-decoration:none}
-.skip:hover{color:var(--forest)}
-/* Finish */
-.finish-card{background:var(--forest);border-radius:16px;padding:2.5rem 2rem;text-align:center;max-width:440px;margin:0 auto}
-.finish-icon{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem}
-.finish-icon svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.finish-title{font-family:var(--serif);font-size:1.45rem;font-weight:400;color:#fff;margin-bottom:.45rem}
-.finish-sub{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:1.5rem;max-width:300px;margin-left:auto;margin-right:auto}
-.finish-btn{display:block;background:#fff;color:var(--forest);border:none;padding:.65rem 1.5rem;border-radius:var(--r);font-family:var(--sans);font-size:.88rem;font-weight:500;cursor:pointer;margin:0 auto;transition:all .15s;text-decoration:none}
-.finish-btn:hover{background:var(--cream-2)}
-@media(max-width:540px){.mkt-grid{grid-template-columns:repeat(2,1fr)}}
+.brand{text-align:center;margin-bottom:1.3rem}
+.brand svg{width:30px;height:30px}
+.brand-name{font-family:var(--serif);font-size:.92rem;font-weight:500;color:var(--ink);letter-spacing:-.005em;margin-top:.3rem}
+
+.dots{display:flex;gap:.4rem;justify-content:center;margin-bottom:1.2rem}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--cream-3);transition:width .25s,background .25s}
+.dot.active{width:22px;border-radius:99px;background:var(--forest)}
+.dot.done{background:var(--sage)}
+
+.step-label{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:.4rem}
+.step-h{font-family:var(--serif);font-size:1.5rem;font-weight:500;line-height:1.18;letter-spacing:-.01em;text-align:center;color:var(--ink);margin-bottom:.5rem}
+.step-h em{font-style:normal;color:var(--forest)}
+.step-sub{font-size:.85rem;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:1.6rem;max-width:380px;margin-left:auto;margin-right:auto}
+.step-sub b{color:var(--ink);font-weight:500}
+
+.btn{background:var(--forest);color:#fff;border:none;padding:.85rem 1.2rem;border-radius:10px;font-weight:500;font-size:.88rem;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;width:100%}
+.btn:hover:not(:disabled){background:var(--forest-2)}
+.btn:disabled{background:var(--cream-3);color:var(--muted);cursor:not-allowed}
+.btn.tertiary{background:none;color:var(--muted);border:none;font-size:.8rem;padding:.55rem;text-decoration:underline;text-underline-offset:2px;width:auto}
+.btn.tertiary:hover{color:var(--forest)}
+
+.step{display:none}
+.step.active{display:block}
+
+/* Step 1 — markets */
+.market-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.3rem}
+.market-chip{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.85rem .95rem;cursor:pointer;text-align:left;transition:all .15s;position:relative;font-family:inherit}
+.market-chip:hover{border-color:var(--sage-border);background:var(--sage-dim)}
+.market-chip.selected{border-color:var(--forest);background:var(--sage-dim)}
+.market-chip-check{position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--forest);color:#fff;display:none;align-items:center;justify-content:center}
+.market-chip.selected .market-chip-check{display:flex}
+.market-chip-check svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.market-chip-name{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);margin-bottom:2px;letter-spacing:-.005em}
+.market-chip-region{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.market-chip-count{font-family:var(--mono);font-size:.62rem;color:var(--forest);font-weight:500;margin-top:4px}
+.market-chip:not(.selected) .market-chip-count{color:var(--muted)}
+
+/* Step 2 — preview */
+.preview-card{background:var(--white);border:1.5px solid var(--sage-border);border-radius:14px;padding:1rem 1.05rem;box-shadow:0 10px 32px rgba(28,74,53,.08);margin-bottom:.55rem}
+.preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.4rem}
+.preview-verdict{font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:4px 9px;border-radius:5px;background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest);line-height:1}
+.preview-verdict.buy{background:rgba(62,129,96,.07);border-color:rgba(62,129,96,.2);color:var(--forest-3)}
+.preview-verdict.wat{background:rgba(160,106,0,.07);border-color:rgba(160,106,0,.2);color:var(--amber)}
+.preview-rmark{display:inline-flex;align-items:baseline;gap:.35rem}
+.preview-rmark svg{width:26px;height:26px}
+.preview-rmark-num{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--forest);line-height:1;display:inline-flex;align-items:baseline;gap:1px}
+.preview-rmark.buy .preview-rmark-num{color:var(--forest-3)}
+.preview-rmark.wat .preview-rmark-num{color:var(--amber)}
+.preview-rmark-num .denom{font-size:.55rem;color:var(--faint);font-weight:400}
+.preview-addr{font-family:var(--serif);font-size:1.02rem;font-weight:500;line-height:1.2;letter-spacing:-.005em;margin-bottom:.35rem}
+.preview-nums{display:flex;gap:1rem;margin:.5rem 0 .4rem;flex-wrap:wrap}
+.preview-num-val{font-family:var(--serif);font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.1;display:block}
+.preview-num-val.cf{color:var(--forest)}
+.preview-num-label{font-family:var(--mono);font-size:.5rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.preview-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);padding-top:.55rem;border-top:1px solid var(--cream-3);margin-top:.5rem}
+.preview-analyst{margin-top:.6rem;padding:.55rem .7rem;background:rgba(122,170,143,.05);border:1px solid var(--sage-border);border-radius:6px;font-family:var(--serif);font-size:.7rem;color:var(--ink);font-style:italic;line-height:1.5}
+.preview-analyst::before{content:'— The Analyst ';font-family:var(--mono);font-style:normal;font-size:.5rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);display:block;margin-bottom:3px}
+
+.preview-mini{display:flex;align-items:center;gap:.55rem;padding:.55rem .75rem;background:var(--white);border:1px solid var(--cream-3);border-radius:9px;margin-bottom:.45rem}
+.preview-mini-mark{flex-shrink:0;width:24px;height:24px}
+.preview-mini-mark svg{width:24px;height:24px}
+.preview-mini-info{flex:1;line-height:1.3;min-width:0}
+.preview-mini-addr{font-family:var(--serif);font-size:.82rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.005em}
+.preview-mini-meta{font-family:var(--mono);font-size:.58rem;color:var(--muted)}
+.preview-mini-score{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--forest);line-height:1;flex-shrink:0}
+
+.preview-foot{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.62rem;color:var(--muted);justify-content:center;margin:1.1rem 0 1.2rem}
+.preview-foot-dot{width:5px;height:5px;border-radius:50%;background:var(--forest)}
+
+.preview-skeleton{padding:2rem 1rem;text-align:center;color:var(--muted);font-style:italic;font-size:.85rem;background:var(--white);border:1px solid var(--cream-3);border-radius:11px;margin-bottom:.55rem}
+
+/* Step 3 — SMS */
+.sms-label{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:block}
+.sms-input{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-family:var(--sans);font-size:.95rem;color:var(--ink);outline:none;transition:border-color .15s;margin-bottom:.95rem}
+.sms-input::placeholder{color:var(--faint)}
+.sms-input:focus{border-color:var(--forest)}
+.sms-bullets{padding:.85rem 1rem;background:var(--cream);border:1px solid var(--cream-3);border-radius:9px;margin-bottom:1.1rem}
+.sms-bullet{display:flex;gap:.55rem;align-items:flex-start;font-size:.76rem;line-height:1.5;color:var(--ink);padding:.18rem 0}
+.sms-bullet svg{width:14px;height:14px;stroke:var(--forest);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:1px}
+.sms-bullet b{font-weight:500}
+.sms-fine{font-size:.65rem;color:var(--muted);line-height:1.55;margin-top:.6rem;font-style:italic;text-align:center}
+
+/* Error inline */
+.inline-error{margin-top:.6rem;padding:.6rem .75rem;background:rgba(160,48,48,.05);border:1px solid rgba(160,48,48,.2);border-radius:8px;font-size:.78rem;color:var(--rose);line-height:1.5}
+.inline-error b{font-weight:500}
+
+.skip-row{text-align:center;margin-top:.4rem}
+
+.legal-footer{border-top:1px solid var(--border);background:var(--cream);padding:1.5rem;text-align:center;font-size:.72rem;color:#6a6e68;line-height:1.7;font-family:var(--sans)}
+.legal-footer a{color:#6a6e68;text-decoration:underline;text-underline-offset:2px}
 </style>
 <script src="api.js"></script>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1c4a35">
-<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-<link rel="apple-touch-icon" href="/icons/icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="RoofRank">
-<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/service-worker.js")</script>
 </head>
 <body>
-<div class="wrapper">
-  <a href="roofrank-landing.html" class="brand">
-    <svg width="28" height="28" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#1c4a35"/><path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/></svg>
-    <span class="brand-name">RoofRank</span>
-  </a>
 
-  <div class="steps" id="stepDots">
-    <div class="step-dot on"></div>
-    <div class="step-dot"></div>
-    <div class="step-dot"></div>
-    <div class="step-dot"></div>
+<main>
+  <div class="card">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+      <div class="brand-name">RoofRank</div>
+    </div>
+
+    <div class="dots">
+      <span class="dot active" id="dot1"></span>
+      <span class="dot" id="dot2"></span>
+      <span class="dot" id="dot3"></span>
+    </div>
+
+    <!-- ───── STEP 1: Markets ───── -->
+    <section class="step active" id="step1">
+      <div class="step-label">Step 1 of 3</div>
+      <div class="step-h">Where are you <em>hunting</em>?</div>
+      <div class="step-sub">Pick the markets you actually look at. Your analyst scores every 2-6 unit listing in these cities every night — you'll see them on the dashboard tomorrow morning.</div>
+
+      <div class="market-grid" id="marketGrid"></div>
+
+      <button class="btn" id="step1Btn" disabled onclick="handleStep1()">Continue · <span id="pickCount">0</span> picked →</button>
+      <div class="inline-error" id="step1Error" style="display:none"></div>
+    </section>
+
+    <!-- ───── STEP 2: Live preview ───── -->
+    <section class="step" id="step2">
+      <div class="step-label">Step 2 of 3</div>
+      <div class="step-h">Here's what your<br>analyst's <em>watching</em> today.</div>
+      <div class="step-sub" id="step2Sub">A 5-second preview of your feed. The full breakdown opens once you finish onboarding.</div>
+
+      <div id="previewList">
+        <div class="preview-skeleton">Loading your analyst's picks…</div>
+      </div>
+
+      <div class="preview-foot" id="previewFoot" style="display:none">
+        <span class="preview-foot-dot"></span>
+        <span id="previewFootText"></span>
+      </div>
+
+      <button class="btn" onclick="handleStep2()">One more step →</button>
+    </section>
+
+    <!-- ───── STEP 3: SMS (optional) ───── -->
+    <section class="step" id="step3">
+      <div class="step-label">Step 3 of 3 · optional</div>
+      <div class="step-h">Get a text when<br>your analyst <em>finds one</em>.</div>
+      <div class="step-sub">If something hits Strong Buy in your markets, I'll text you the score + cashflow + a link. You'll skip the morning inbox scroll.</div>
+
+      <label class="sms-label" for="smsPhone">Mobile number · US</label>
+      <input class="sms-input" id="smsPhone" placeholder="(555) 123-4567" inputmode="tel" autocomplete="tel">
+
+      <div class="sms-bullets">
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Strong Buy alerts only.</b> Not a daily newsletter — these fire only when a deal scores 75+ in your markets.</span></div>
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Price drops on watched deals.</b> If a saved deal cuts its price, you'll know first.</span></div>
+        <div class="sms-bullet"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span><b>Reply STOP to opt out.</b> Standard messaging rates apply. No marketing spam.</span></div>
+      </div>
+
+      <button class="btn" id="step3Btn" onclick="handleStep3(false)">Save and open my dashboard →</button>
+      <div class="skip-row"><button class="btn tertiary" onclick="handleStep3(true)">Skip · I'll add it later</button></div>
+      <div class="inline-error" id="step3Error" style="display:none"></div>
+
+      <div class="sms-fine">You can add or remove this anytime from account settings.</div>
+    </section>
   </div>
+</main>
 
-  <!-- STEP 1 — Name -->
-  <div class="panel on" id="step1">
-    <div class="panel-head">
-      <div class="step-num">Step 1 of 4</div>
-      <div class="panel-title">Welcome to<br><em>RoofRank.</em></div>
-      <div class="panel-sub">Let's personalize your experience so you see the right deals every morning. Takes 2 minutes.</div>
+<div class="legal-footer">
+  <div style="max-width:680px;margin:0 auto">
+    <div style="margin-bottom:.55rem">
+      &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
+      <a href="/privacy.html">Privacy</a> &middot;
+      <a href="/terms.html">Terms</a> &middot;
+      <a href="mailto:hello@roofrank.io">Contact</a>
     </div>
-    <div class="name-form">
-      <label for="fname">First Name</label>
-      <input type="text" id="fname" placeholder="Michael">
-      <label for="femail">Email Address</label>
-      <input type="email" id="femail" placeholder="michael@email.com">
-    </div>
-    <button class="continue-btn" onclick="nextStep(1)">Continue →</button>
-  </div>
-
-  <!-- STEP 2 — Markets -->
-  <div class="panel" id="step2">
-    <div class="panel-head">
-      <div class="step-num">STEP 2 OF 4</div>
-      <div class="panel-title">Score your<br><em>first deal.</em></div>
-      <div class="panel-sub">While we set up your feed — paste an address you're already looking at, or try one of ours.</div>
-    </div>
-
-    <div class="score-step">
-      <!-- Address input. Placeholder + example button copy populated in
-           applyMarketExample() from the user's pre-auth market pick
-           (rr_pre_market localStorage) — falls back to Lynn. Was
-           hard-coded to Boston, which we dropped from launch markets. -->
-      <div class="score-input-wrap">
-        <input class="score-addr-input" id="scoreAddr" type="text"
-          placeholder="123 Main St, Lynn MA 01902"
-          onkeydown="if(event.key==='Enter')runScore()">
-      </div>
-
-      <div class="score-actions">
-        <button class="score-example-btn" id="scoreExampleBtn" onclick="useExample()">★ Try a Lynn example →</button>
-        <button class="score-skip-btn" onclick="skipToFeed()">Skip, show me the feed →</button>
-      </div>
-
-      <!-- Score result -->
-      <div class="score-result" id="scoreResult">
-        <div class="score-result-ring">
-          <svg viewBox="0 0 88 88"><circle class="srr-track" cx="44" cy="44" r="39"/><circle class="srr-fill" id="srrFill" cx="44" cy="44" r="39"/></svg>
-          <div class="srr-num"><div class="srr-score" id="srrScore">—</div><div class="srr-sig" id="srrSig">—</div></div>
-        </div>
-        <div class="score-result-addr" id="srrAddr">—</div>
-        <div class="score-result-feed" id="srrFeed">—</div>
-        <div class="score-result-kpis" id="srrKpis"></div>
-        <div class="score-bars" id="scoreBars"></div>
-        <button class="continue-btn" onclick="nextStep(2)" style="margin-top:.5rem">See my deal feed →</button>
-      </div>
-
-      <!-- Run button (shows after typing) -->
-      <button class="continue-btn" id="runScoreBtn" style="display:none;margin-top:.85rem" onclick="runScore()">Score this deal →</button>
-    </div>
-  </div>
-
-  <div class="panel" id="step3">
-    <div class="panel-head">
-      <div class="step-num">Step 3 of 4</div>
-      <div class="panel-title">What's your<br><em>investing goal?</em></div>
-      <div class="panel-sub">This helps us tune your deal scoring and what we put at the top of your feed.</div>
-    </div>
-    <div class="goal-grid">
-      <div class="goal-card on" onclick="selectGoal(this)">
-        <div class="goal-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="goal-text"><strong>Maximize cash flow</strong>Monthly income is the priority. I want deals that pay me every month.</div>
-      </div>
-      <div class="goal-card" onclick="selectGoal(this)">
-        <div class="goal-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-        <div class="goal-text"><strong>Build equity and wealth</strong>Looking for appreciation + cash flow. I'm thinking 5–10 year holds.</div>
-      </div>
-      <div class="goal-card" onclick="selectGoal(this)">
-        <div class="goal-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
-        <div class="goal-text"><strong>Add to an existing portfolio</strong>I already own properties. Looking for my next deal.</div>
-      </div>
-      <div class="goal-card" onclick="selectGoal(this)">
-        <div class="goal-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-        <div class="goal-text"><strong>Still learning</strong>First investment coming up. I want to understand what makes a deal good.</div>
-      </div>
-    </div>
-    <button class="continue-btn" onclick="nextStep(3)">Continue →</button>
-  </div>
-
-  <!-- STEP 4 — Done -->
-  <div class="panel" id="step4">
-    <div class="panel-head">
-      <div class="step-num">Step 4 of 4</div>
-    </div>
-    <div class="finish-card">
-      <div class="finish-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div class="finish-title">You're all set.</div>
-      <div class="finish-sub">Your deal feed is ready. We found <strong style="color:rgba(255,255,255,.85)">38 deals</strong> in your markets, including <strong style="color:rgba(255,255,255,.85)">7 Strong Buys</strong>. Let's rank them.</div>
-      <a href="roofrank-dashboard.html" class="finish-btn">Open Deal Feed →</a>
+    <div style="opacity:.78;max-width:520px;margin:0 auto;font-size:.66rem">
+      RoofRank scores are informational, not financial advice.
     </div>
   </div>
 </div>
@@ -233,269 +207,224 @@ input:focus{border-color:var(--forest)}
 <script>
 requireAuth();
 
-let step=1;
-const dots=document.querySelectorAll('.step-dot');
+// ───── State ─────
+const MARKETS = [
+  { id: 'lynn',       city: 'Lynn',       state: 'MA', region: 'North Shore' },
+  { id: 'worcester',  city: 'Worcester',  state: 'MA', region: 'Central' },
+  { id: 'salem',      city: 'Salem',      state: 'MA', region: 'North Shore' },
+  { id: 'revere',     city: 'Revere',     state: 'MA', region: 'North Shore' },
+  { id: 'framingham', city: 'Framingham', state: 'MA', region: 'MetroWest' },
+];
+const picked = new Set();
+let counts = {};   // city -> active count
 
-function advance(from){
-  document.getElementById('step'+from).classList.remove('on');
-  step=from+1;
-  document.getElementById('step'+step).classList.add('on');
-  dots.forEach((d,i)=>{d.classList.toggle('on',i===step-1);d.classList.toggle('done',i<step-1);});
-  window.scrollTo({top:0,behavior:'smooth'});
+(function bootStep1(){
+  // Preselect from rr_pre_market (landing-page handoff). Falls back to
+  // empty selection so the user makes an explicit choice if they didn't
+  // come through the landing flow.
+  let pre = '';
+  try { pre = (localStorage.getItem('rr_pre_market') || '').toLowerCase(); } catch {}
+  if (pre && MARKETS.find(m => m.id === pre)) picked.add(pre);
+
+  renderChips();
+  updateContinueBtn();
+  loadActiveCounts();
+})();
+
+function renderChips(){
+  const grid = document.getElementById('marketGrid');
+  grid.innerHTML = MARKETS.map((m, i) => {
+    const selected = picked.has(m.id);
+    const count = counts[m.city];
+    const lastFullRow = MARKETS.length % 2 === 1 && i === MARKETS.length - 1;
+    return `<button type="button" class="market-chip ${selected ? 'selected' : ''}" onclick="toggleMarket('${m.id}')" ${lastFullRow ? 'style="grid-column:1 / -1"' : ''}>
+      <div class="market-chip-check"><svg viewBox="0 0 10 10"><polyline points="1 5 4 8 9 2"/></svg></div>
+      <div class="market-chip-name">${m.city}</div>
+      <div class="market-chip-region">${m.region} · ${m.state}</div>
+      ${count != null ? `<div class="market-chip-count">${count} active deal${count === 1 ? '' : 's'}</div>` : ''}
+    </button>`;
+  }).join('');
 }
 
-async function nextStep(from){
-  if(from===1){
-    const n=document.getElementById('fname').value.trim();
-    if(!n){showToast('Please enter your first name.','warning');return;}
+function toggleMarket(id){
+  if (picked.has(id)) picked.delete(id);
+  else picked.add(id);
+  renderChips();
+  updateContinueBtn();
+}
+
+function updateContinueBtn(){
+  const n = picked.size;
+  document.getElementById('pickCount').textContent = n;
+  document.getElementById('step1Btn').disabled = n === 0;
+}
+
+async function loadActiveCounts(){
+  // Best-effort — counts hide gracefully if the public-feed endpoint
+  // doesn't return them. Parallelized; each market is ~50ms cached.
+  await Promise.all(MARKETS.map(async m => {
+    try {
+      const res = await fetch(`${window.ROOFRANK_API_URL}/feed/public?market=${m.id}&limit=1`);
+      if (!res.ok) return;
+      const data = await res.json();
+      counts[m.city] = data?.market?.activeCount ?? null;
+    } catch {}
+  }));
+  renderChips();
+}
+
+// ───── STEP 1 → 2 ─────
+async function handleStep1(){
+  const btn = document.getElementById('step1Btn');
+  btn.disabled = true;
+  btn.innerHTML = 'Saving…';
+  document.getElementById('step1Error').style.display = 'none';
+  try {
+    // Save each picked market sequentially — POST /api/feed/markets is
+    // single-city. Up to 5 in v1; too small to bother parallelizing.
+    for (const id of picked) {
+      const m = MARKETS.find(x => x.id === id);
+      await FeedAPI.saveMarket(m.city, m.state);
+    }
+    try { localStorage.removeItem('rr_pre_market'); } catch {}
+    advanceTo(2);
+    loadPreview();
+  } catch (err) {
+    const code = err?.code;
+    let msg = err?.message || 'Failed to save your markets.';
+    if (code === 'MARKETS_LIMIT_EXCEEDED' || err?.status === 402) {
+      msg = 'Free tier caps markets at 2. Pick fewer, or upgrade to Pro for unlimited.';
+    }
+    document.getElementById('step1Error').innerHTML = `<b>${msg}</b>`;
+    document.getElementById('step1Error').style.display = '';
+    btn.disabled = false;
+    btn.innerHTML = `Continue · ${picked.size} picked →`;
   }
-  if(from===3){
-    await saveOnboarding();
+}
+
+// ───── STEP 2 preview load ─────
+async function loadPreview(){
+  const list = document.getElementById('previewList');
+  const foot = document.getElementById('previewFoot');
+  try {
+    const first = [...picked][0];
+    const m = MARKETS.find(x => x.id === first);
+    const res = await fetch(`${window.ROOFRANK_API_URL}/feed/public?market=${first}&limit=3`);
+    if (!res.ok) throw new Error('preview fetch failed');
+    const data = await res.json();
+    const deals = data?.deals || [];
+    const total = data?.market?.activeCount ?? null;
+    if (!deals.length) {
+      list.innerHTML = `<div class="preview-skeleton">No scored deals in ${m.city} just yet — your dashboard will fill in tomorrow morning.</div>`;
+      foot.style.display = 'none';
+      return;
+    }
+    list.innerHTML = renderPreviewHero(deals[0]) +
+      deals.slice(1, 3).map(renderPreviewMini).join('');
+    if (total && total > deals.length) {
+      foot.style.display = '';
+      document.getElementById('previewFootText').textContent = `${total - deals.length} more deals waiting on the dashboard`;
+    }
+  } catch (err) {
+    console.warn('[onboarding] preview fetch failed:', err?.message || err);
+    list.innerHTML = `<div class="preview-skeleton">Your dashboard will load in a moment. Continue when you're ready.</div>`;
+    foot.style.display = 'none';
+  }
+}
+
+function tierClass(s){ return s >= 75 ? 'sb' : s >= 60 ? 'buy' : s >= 45 ? 'wat' : 'pas'; }
+function tierLabel(s){ return s >= 75 ? 'Strong Buy' : s >= 60 ? 'Buy' : s >= 45 ? 'Watch' : 'Pass'; }
+function tierColor(cl){ return cl === 'sb' ? '#1c4a35' : cl === 'buy' ? '#3e8160' : cl === 'wat' ? '#a06a00' : '#a8ad9f'; }
+function fmtPrice(n){
+  if (n == null) return '—';
+  return n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1000) + 'K';
+}
+
+function renderPreviewHero(d){
+  const score = d.rankScore || 0;
+  const cl = tierClass(score);
+  const verdict = tierLabel(score);
+  const fin = d.reportData?.financials || {};
+  const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+  const coc = fin.cashOnCashReturn != null ? fin.cashOnCashReturn.toFixed(1) : null;
+  const cfStr = cf == null ? '—' : (cf >= 0 ? '+$' : '-$') + Math.abs(cf).toLocaleString();
+  const c = tierColor(cl);
+  const analystLine = d?.brief || `One of the stronger ${d.city || ''} deals in your feed right now.`;
+  return `<div class="preview-card">
+    <div class="preview-head">
+      <span class="preview-verdict ${cl}">${verdict}</span>
+      <div class="preview-rmark ${cl}">
+        <svg viewBox="0 0 40 40"><path d="M5 18 L20 7 L35 18" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="21" width="28" height="3" rx=".5" fill="${c}"/><rect x="6" y="27" width="28" height="3" rx=".5" fill="${c}" opacity=".7"/><rect x="6" y="33" width="28" height="3" rx=".5" fill="${c}" opacity=".45"/></svg>
+        <div class="preview-rmark-num">${score}<span class="denom">/100</span></div>
+      </div>
+    </div>
+    <h2 class="preview-addr">${d.address}, ${d.city}</h2>
+    <div class="preview-nums">
+      ${cf != null ? `<div><span class="preview-num-val cf">${cfStr}</span><span class="preview-num-label">/mo cashflow</span></div>` : ''}
+      ${coc != null ? `<div><span class="preview-num-val">${coc}%</span><span class="preview-num-label">cash-on-cash</span></div>` : ''}
+    </div>
+    <div class="preview-meta">${d.units || '—'} Unit${d.units===1?'':'s'} · ${fmtPrice(d.askingPrice)}${d.daysOnMarket != null ? ' · ' + d.daysOnMarket + 'd on market' : ''}</div>
+    <div class="preview-analyst">${analystLine}</div>
+  </div>`;
+}
+
+function renderPreviewMini(d){
+  const score = d.rankScore || 0;
+  const cl = tierClass(score);
+  const c = tierColor(cl);
+  const fin = d.reportData?.financials || {};
+  const cf = fin.monthlyCashFlow != null ? Math.round(fin.monthlyCashFlow) : null;
+  return `<div class="preview-mini">
+    <div class="preview-mini-mark"><svg viewBox="0 0 40 40"><path d="M5 18 L20 7 L35 18" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="21" width="28" height="3" rx=".5" fill="${c}"/><rect x="6" y="27" width="28" height="3" rx=".5" fill="${c}" opacity=".7"/><rect x="6" y="33" width="28" height="3" rx=".5" fill="${c}" opacity=".45"/></svg></div>
+    <div class="preview-mini-info">
+      <div class="preview-mini-addr">${d.address}, ${d.city}</div>
+      <div class="preview-mini-meta">${d.units || '—'}U · ${fmtPrice(d.askingPrice)}${cf != null ? ' · ' + (cf < 0 ? '-' : '+') + '$' + Math.abs(cf).toLocaleString() + '/mo' : ''}</div>
+    </div>
+    <div class="preview-mini-score" style="color:${c}">${score}</div>
+  </div>`;
+}
+
+// ───── STEP 2 → 3 ─────
+function handleStep2(){ advanceTo(3); }
+
+// ───── STEP 3 → done ─────
+async function handleStep3(skip){
+  const btn = document.getElementById('step3Btn');
+  document.getElementById('step3Error').style.display = 'none';
+  const phone = document.getElementById('smsPhone').value.trim();
+  if (skip || !phone) {
+    location.href = 'roofrank-dashboard.html';
     return;
   }
-  advance(from);
-  // Auto-focus address input on step 2
-  if(from+1===2){
-    setTimeout(()=>{
-      const inp=document.getElementById('scoreAddr');
-      if(inp) inp.focus();
-    },300);
+  btn.disabled = true;
+  btn.innerHTML = 'Saving…';
+  try {
+    await AuthAPI.setPhone(phone, true);
+    location.href = 'roofrank-dashboard.html';
+  } catch (err) {
+    const code = err?.code;
+    let msg = err?.message || 'Failed to save your phone number.';
+    if (code === 'PHONE_INVALID') {
+      msg = "That doesn't look like a valid US phone number. Try the format (555) 123-4567.";
+    }
+    document.getElementById('step3Error').innerHTML = `<b>${msg}</b> Or skip below — you can add it later.`;
+    document.getElementById('step3Error').style.display = '';
+    btn.disabled = false;
+    btn.innerHTML = 'Save and open my dashboard →';
   }
 }
 
-// Show run button when user types
-document.addEventListener('DOMContentLoaded',()=>{
-  const inp=document.getElementById('scoreAddr');
-  if(inp){
-    inp.addEventListener('input',()=>{
-      const btn=document.getElementById('runScoreBtn');
-      if(btn) btn.style.display=inp.value.trim().length>5?'block':'none';
-    });
-  }
-});
-
-// Example deals — one per launch market. Picked to highlight a real
-// MVP city (not Boston, which we dropped from launch). Lynn 52 Hamilton
-// is the canonical example we use across the rest of the product
-// (mockups, narratives, comp lookups), so it's the default fallback.
-const EXAMPLE_DEALS = {
-  lynn: {
-    address: '52 Hamilton Ave', city: 'Lynn', state: 'MA', units: 2, yearBuilt: 1900,
-    askingPrice: 679900, propertyType: 'Multi-Family', rankScore: 69,
-    reportData: {
-      signal: 'Buy', neighborhoodGrade: 'B',
-      financials: { cashOnCashReturn: 9.1, capRate: 8.14, dscr: 1.43, grm: 5.49, pricePerUnit: 339950, noi: 55304, grossRentalIncome: 117600, downPayment: 169975, totalCashToClose: 179494, monthlyCashFlow: 1391, beforeTaxCashFlow: 16692 },
-      scores: { cashOnCash:75, capRate:95, dscr:80, grm:70, pricePerUnit:70, noi:75, capexReserve:65, neighborhoodGrade:65 }
-    }
-  },
-  worcester: {
-    address: '88 Park Ave', city: 'Worcester', state: 'MA', units: 4, yearBuilt: 1935,
-    askingPrice: 750000, propertyType: 'Multi-Family', rankScore: 78,
-    reportData: {
-      signal: 'Strong Buy', neighborhoodGrade: 'B-',
-      financials: { cashOnCashReturn: 10.2, capRate: 8.8, dscr: 1.55, grm: 7.2, pricePerUnit: 187500, noi: 66000, grossRentalIncome: 103200, downPayment: 187500, totalCashToClose: 198000, monthlyCashFlow: 1900, beforeTaxCashFlow: 22800 },
-      scores: { cashOnCash:85, capRate:90, dscr:80, grm:75, pricePerUnit:90, noi:75, capexReserve:65, neighborhoodGrade:55 }
-    }
-  },
-  salem:      { address: '5 Winter Island Rd', city: 'Salem',      state: 'MA', units: 3, yearBuilt: 1920, askingPrice: 850000, propertyType: 'Multi-Family', rankScore: 65, reportData: { signal:'Buy',  neighborhoodGrade:'B',  financials:{cashOnCashReturn:7.5,capRate:7.2,dscr:1.32,grm:7.8,pricePerUnit:283333,noi:61200,grossRentalIncome:108000,monthlyCashFlow:1100}, scores:{cashOnCash:65,capRate:75,dscr:70,grm:70,pricePerUnit:65,noi:65,capexReserve:60,neighborhoodGrade:60} } },
-  revere:     { address: '14 Bay Rd',           city: 'Revere',     state: 'MA', units: 2, yearBuilt: 1915, askingPrice: 595000, propertyType: 'Multi-Family', rankScore: 71, reportData: { signal:'Buy',  neighborhoodGrade:'B',  financials:{cashOnCashReturn:8.5,capRate:7.9,dscr:1.4, grm:5.8,pricePerUnit:297500,noi:47000,grossRentalIncome:102600,monthlyCashFlow:1250}, scores:{cashOnCash:75,capRate:85,dscr:78,grm:75,pricePerUnit:70,noi:70,capexReserve:60,neighborhoodGrade:60} } },
-  framingham: { address: '88 Elm St',           city: 'Framingham', state: 'MA', units: 3, yearBuilt: 1925, askingPrice: 825000, propertyType: 'Multi-Family', rankScore: 62, reportData: { signal:'Buy',  neighborhoodGrade:'B+', financials:{cashOnCashReturn:6.8,capRate:6.9,dscr:1.28,grm:8.5,pricePerUnit:275000,noi:56925,grossRentalIncome:97200, monthlyCashFlow:950 }, scores:{cashOnCash:60,capRate:70,dscr:68,grm:65,pricePerUnit:65,noi:60,capexReserve:60,neighborhoodGrade:75} } },
-};
-function getExampleDeal(){
-  let pre = null;
-  try { pre = (localStorage.getItem('rr_pre_market') || '').toLowerCase(); } catch {}
-  if (pre === 'all') pre = 'lynn';  // "all 5 cities" pick → Lynn flagship
-  return EXAMPLE_DEALS[pre] || EXAMPLE_DEALS.lynn;
-}
-// Back-compat alias for any code that still references EXAMPLE_DEAL.
-const EXAMPLE_DEAL = EXAMPLE_DEALS.lynn;
-
-function useExample(){
-  const ex = getExampleDeal();
-  document.getElementById('scoreAddr').value = `${ex.address}, ${ex.city} ${ex.state}`;
-  document.getElementById('runScoreBtn').style.display='block';
-  setTimeout(()=>runScore(true), 150);
-}
-
-// Update the placeholder + example button copy to match the user's
-// pre-auth market pick. Runs on DOMContentLoaded below.
-function applyMarketExample(){
-  const ex = getExampleDeal();
-  const input = document.getElementById('scoreAddr');
-  const btn   = document.getElementById('scoreExampleBtn');
-  if (input) input.placeholder = `123 Main St, ${ex.city} MA`;
-  if (btn)   btn.textContent   = `★ Try a ${ex.city} example →`;
-}
-document.addEventListener('DOMContentLoaded', applyMarketExample);
-// Already-fired DOMContentLoaded case (in case this script comes later).
-if (document.readyState !== 'loading') applyMarketExample();
-
-function skipToFeed(){
-  // Save with the user's pre-auth market pick (or Lynn as a sensible
-  // default MVP market) and go straight to dashboard.
-  let pre = null;
-  try { pre = localStorage.getItem('rr_pre_market'); } catch {}
-  const MVP = {
-    lynn:       [{city:'Lynn',       state:'MA'}],
-    salem:      [{city:'Salem',      state:'MA'}],
-    revere:     [{city:'Revere',     state:'MA'}],
-    worcester:  [{city:'Worcester',  state:'MA'}],
-    framingham: [{city:'Framingham', state:'MA'}],
-    all:        [{city:'Lynn',       state:'MA'}, {city:'Worcester', state:'MA'}],
-  };
-  const picks = (pre && MVP[pre]) || MVP.lynn;
-  OrgAPI.saveOnboarding(picks).catch(()=>{});
-  location.href='roofrank-dashboard.html';
-}
-
-function runScore(useExampleData=false){
-  const addr=document.getElementById('scoreAddr').value.trim();
-  if(!addr&&!useExampleData) return;
-  const btn=document.getElementById('runScoreBtn');
-  if(btn){btn.textContent='Scoring…';btn.disabled=true;}
-
-  // Use example data or simulate scoring from address
-  const deal = useExampleData ? EXAMPLE_DEAL : simulateScore(addr);
-
-  setTimeout(()=>{
-    showScoreResult(deal);
-    if(btn){btn.style.display='none';}
-  }, useExampleData?400:1200);
-}
-
-function simulateScore(addr){
-  // For now simulate a realistic deal from the address
-  // In production this would call the Analyzer API
-  const hash = addr.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  const score = 45 + (hash % 35); // 45-80 range
-  const coc = 3 + (hash%7) + (hash%3)*0.5;
-  const cap = 5.5 + (hash%3);
-  const dscr = 0.95 + (hash%40)/100;
-  return {
-    address: addr,
-    city: ['Lynn','Worcester','Salem','Revere','Framingham','Boston'].find(c => addr.includes(c)) || 'New England',
-    rankScore: score,
-    reportData:{
-      signal: score>=75?'Strong Buy':score>=60?'Buy':score>=45?'Watch':'Pass',
-      financials:{cashOnCashReturn:Math.round(coc*10)/10,capRate:Math.round(cap*10)/10,dscr:Math.round(dscr*100)/100,grm:8.5+(hash%3)},
-      scores:{cashOnCash:Math.min(100,coc/12*100),capRate:Math.min(100,cap/8.5*100),dscr:Math.min(100,((dscr-0.8)/0.8)*100),grm:70,pricePerUnit:65,noi:55,capexReserve:65,neighborhoodGrade:70}
-    }
-  };
-}
-
-function showScoreResult(deal){
-  const fin=(deal.reportData||{}).financials||{};
-  const scores=(deal.reportData||{}).scores||{};
-  const score=deal.rankScore||0;
-  const signal=(deal.reportData||{}).signal||'Watch';
-  const c=score>=75?'#1c4a35':score>=60?'#3e8160':score>=45?'#a06a00':'#a03030';
-  const circ=2*Math.PI*39;
-
-  // Score ring
-  document.getElementById('srrScore').textContent=score;
-  document.getElementById('srrScore').style.color=c;
-  document.getElementById('srrSig').textContent=signal;
-  document.getElementById('srrSig').style.color=c;
-  const fill=document.getElementById('srrFill');
-  fill.style.stroke=c;
-  setTimeout(()=>{ fill.style.strokeDashoffset=circ-(score/100)*circ; },100);
-
-  // Address
-  document.getElementById('srrAddr').textContent=deal.address;
-
-  // Feed context — how many deals beat this score
-  const beatenBy = score>=75?0:score>=60?3:score>=45?8:15;
-  document.getElementById('srrFeed').innerHTML=beatenBy>0
-    ? `Your feed is ready. We found <strong>${beatenBy} deals</strong> in New England that score higher than this.`
-    : `<strong>Strong Buy — your feed is ready.</strong> This is one of the top deals in the market right now.`;
-
-  // KPI tiles
-  const kpis=[
-    ['CoC',fin.cashOnCashReturn!=null?fin.cashOnCashReturn.toFixed(1)+'%':'—',fin.cashOnCashReturn>=8?'g':fin.cashOnCashReturn>=5?'a':'r'],
-    ['Cap Rate',fin.capRate!=null?fin.capRate.toFixed(1)+'%':'—',fin.capRate>=6.5?'g':fin.capRate>=5?'a':'r'],
-    ['DSCR',fin.dscr!=null?fin.dscr.toFixed(2):'—',fin.dscr>=1.25?'g':fin.dscr>=1.0?'a':'r'],
-    ['GRM',fin.grm!=null?fin.grm.toFixed(1)+'×':'—',fin.grm<=10?'g':fin.grm<=13?'a':'r'],
-  ];
-  document.getElementById('srrKpis').innerHTML=kpis.map(([l,v,cls])=>
-    `<div class="srk"><div class="srk-val ${cls}">${v}</div><div class="srk-lbl">${l}</div></div>`
-  ).join('');
-
-  // Score bars — animate in sequentially
-  const bars=[
-    ['Cash-on-Cash',scores.cashOnCash||0,'var(--forest)'],
-    ['Cap Rate',scores.capRate||0,'var(--forest)'],
-    ['DSCR',scores.dscr||0,'var(--forest-3)'],
-    ['GRM',scores.grm||0,'var(--forest-3)'],
-    ['Price/Unit',scores.pricePerUnit||0,'var(--amber)'],
-    ['NOI',scores.noi||0,'var(--forest)'],
-    ['CapEx Reserve',scores.capexReserve||0,'var(--amber)'],
-    ['Neighborhood',scores.neighborhoodGrade||0,'var(--forest-3)'],
-  ];
-  const barsEl=document.getElementById('scoreBars');
-  barsEl.innerHTML=bars.map(([name,pct])=>{
-    const p=Math.max(0,Math.min(100,pct));
-    const bc=p>=70?'var(--forest)':p>=45?'var(--forest-3)':p>=25?'var(--amber)':'var(--rose)';
-    const lbl=p>=75?'Great':p>=55?'Good':p>=35?'Watch':'Low';
-    const lc=p>=70?'var(--forest)':p>=45?'var(--forest-3)':p>=25?'var(--amber)':'var(--rose)';
-    return`<div class="sbar-row"><span class="sbar-name">${name}</span><div class="sbar-track"><div class="sbar-fill" style="background:${bc}"></div></div><div class="sbar-val" style="color:${lc};font-family:var(--sans);font-weight:600">${lbl}</div></div>`;
-  }).join('');
-
-  // Animate bars in sequentially
-  const fills=barsEl.querySelectorAll('.sbar-fill');
-  fills.forEach((f,i)=>{
-    setTimeout(()=>{
-      const pct=Math.max(0,Math.min(100,bars[i][1]));
-      f.style.width=pct+'%';
-    }, 200+i*80);
+function advanceTo(n){
+  ['step1','step2','step3'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('active', i === n - 1);
+    const dot = document.getElementById('dot' + (i + 1));
+    dot.classList.remove('active', 'done');
+    if (i < n - 1) dot.classList.add('done');
+    else if (i === n - 1) dot.classList.add('active');
   });
-
-  // Show result
-  const result=document.getElementById('scoreResult');
-  result.className='score-result show';
-  result.scrollIntoView({behavior:'smooth',block:'nearest'});
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
-
-async function saveOnboarding(){
-  // Use the market the user picked in the pre-auth onboard flow if
-  // we have it (stored in rr_pre_market localStorage). Falls back to
-  // the 2 MVP markets with real data so a free-tier user always lands
-  // on a feed with deals. Backend truncates to the plan's cap (2 for
-  // starter) so passing more than that is safe — just wastes the call.
-  let pre = null;
-  try { pre = localStorage.getItem('rr_pre_market'); } catch {}
-  // id → (city, state) for the 5 MVP launch markets. 'all' fans out
-  // to the 2 with the most data (Lynn + Worcester); the rest are
-  // single-market picks.
-  const MVP = {
-    lynn:       [{city:'Lynn',       state:'MA'}],
-    salem:      [{city:'Salem',      state:'MA'}],
-    revere:     [{city:'Revere',     state:'MA'}],
-    worcester:  [{city:'Worcester',  state:'MA'}],
-    framingham: [{city:'Framingham', state:'MA'}],
-    all:        [{city:'Lynn',       state:'MA'}, {city:'Worcester', state:'MA'}],
-  };
-  const picks = (pre && MVP[pre]) || MVP.lynn;
-  try { await OrgAPI.saveOnboarding(picks); } catch {}
-  advance(3);
-}
-
-function toggleMkt(el){ el.classList.toggle('on'); }
-function selectGoal(el){ document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
 </script>
 
-<!-- Legal footer strip -->
-<div style="border-top:1px solid #e0d9cf;background:#f7f4ef;padding:1.5rem 1.5rem 2rem;text-align:center;font-size:.75rem;color:#6a6e68;line-height:1.7;font-family:'DM Sans',system-ui,sans-serif;position:relative;z-index:5">
-  <div style="max-width:680px;margin:0 auto">
-    <div style="margin-bottom:.55rem">
-      &copy; 2026 DevNest Dynamics, LLC &middot; RoofRank&trade; &middot;
-      <a href="/privacy.html" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Privacy</a> &middot;
-      <a href="/terms.html" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Terms</a> &middot;
-      <a href="mailto:hello@roofrank.io" style="color:#6a6e68;text-decoration:underline;text-underline-offset:2px">Contact</a>
-    </div>
-    <div style="opacity:.78;max-width:520px;margin:0 auto;font-size:.7rem">
-      RoofRank scores are informational, not financial advice. Verify all figures with your CPA, lender, and agent before making investment decisions. Property data from RentCast, ATTOM, and HUD.
-    </div>
-  </div>
-</div>
 </body>
 </html>
