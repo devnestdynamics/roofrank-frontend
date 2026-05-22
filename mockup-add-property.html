@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Add a property (#220) mockup</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:#ebe6dc;color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:14px;-webkit-font-smoothing:antialiased;padding:2.5rem 1.5rem 5rem}
+
+.wrap{max-width:1640px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:1.9rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.01em}
+.page-sub{font-size:.85rem;color:var(--muted);margin-bottom:2.5rem;max-width:880px;line-height:1.7}
+.page-sub b{color:var(--ink);font-weight:500}
+
+.section-title{font-family:var(--serif);font-size:1.25rem;font-weight:500;color:var(--ink);margin:3.5rem 0 .35rem;letter-spacing:-.005em;padding-bottom:.5rem;border-bottom:1px solid #d6cfc2;display:flex;align-items:baseline;gap:.7rem}
+.section-title:first-of-type{margin-top:.5rem}
+.section-title .step-tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);background:var(--sage-dim);padding:3px 9px;border-radius:4px;border:1px solid var(--sage-border)}
+.section-meta{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:780px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:1100px){.split{grid-template-columns:1fr}}
+
+.col-head{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d6cfc2}
+.col-num{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid;color:var(--forest);background:var(--sage-dim);border-color:var(--sage-border)}
+.col-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink)}
+
+.note{font-size:.72rem;color:var(--muted);margin-top:.7rem;line-height:1.6;padding:.7rem .85rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px}
+.note b{color:var(--ink);font-weight:500}
+
+/* ───────────── PAGE FRAME ───────────── */
+.frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:14px;overflow:hidden;box-shadow:0 4px 22px rgba(28,31,28,.06)}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1.2rem;height:54px;display:flex;align-items:center;gap:.85rem;font-size:.78rem}
+.tb-back{color:var(--muted);font-size:.9rem;cursor:pointer}
+.tb-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);letter-spacing:-.005em;flex:1}
+.tb-quota{font-family:var(--mono);font-size:.62rem;color:var(--muted);background:var(--cream-2);padding:3px 8px;border-radius:5px;border:1px solid var(--border)}
+.tb-quota b{color:var(--forest);font-weight:500}
+.frame-body{padding:1.75rem 1.4rem 2rem}
+
+/* ───────────── STEP 1 — ADDRESS ENTRY ───────────── */
+.ap-eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);margin-bottom:.65rem}
+.ap-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--forest);box-shadow:0 0 0 3px var(--sage-dim)}
+.ap-h1{font-family:var(--serif);font-size:1.55rem;font-weight:500;line-height:1.2;letter-spacing:-.01em;margin-bottom:.55rem;color:var(--ink)}
+.ap-h1 em{font-style:normal;color:var(--forest)}
+.ap-sub{font-size:.84rem;color:var(--muted);line-height:1.65;margin-bottom:1.4rem;max-width:560px}
+.ap-sub b{color:var(--ink);font-weight:500}
+
+.ap-addr-row{display:flex;gap:.6rem;align-items:stretch;margin-bottom:.55rem;max-width:680px}
+.ap-addr-input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-family:var(--sans);font-size:.95rem;color:var(--ink);outline:none;transition:border-color .15s}
+.ap-addr-input::placeholder{color:var(--faint)}
+.ap-addr-input:focus{border-color:var(--forest)}
+.ap-lookup-btn{background:var(--forest);color:#fff;border:none;padding:.85rem 1.25rem;border-radius:10px;font-weight:500;font-size:.85rem;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.ap-lookup-btn:hover{background:var(--forest-2)}
+.ap-addr-help{font-size:.7rem;color:var(--muted);max-width:580px;line-height:1.55}
+.ap-addr-help b{color:var(--ink);font-weight:500}
+
+.ap-what-happens{margin-top:1.75rem;padding:1rem 1.15rem;background:var(--white);border:1px solid var(--cream-3);border-radius:10px;max-width:680px}
+.ap-what-title{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem}
+.ap-what-list{display:flex;flex-direction:column;gap:.4rem}
+.ap-what-item{display:flex;gap:.55rem;align-items:flex-start;font-size:.78rem;color:var(--ink);line-height:1.5}
+.ap-what-num{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest);font-family:var(--mono);font-size:.65rem;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1;margin-top:1px}
+.ap-what-item span{flex:1}
+.ap-what-item b{color:var(--ink);font-weight:500}
+
+/* ───────────── STEP 2 — LOADED, NEEDS ASKING PRICE ───────────── */
+.ap-loaded-header{display:flex;align-items:flex-start;gap:.95rem;padding-bottom:1.1rem;border-bottom:1px solid var(--cream-3);margin-bottom:1.25rem}
+.ap-loaded-pin{flex-shrink:0;width:38px;height:38px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);display:flex;align-items:center;justify-content:center}
+.ap-loaded-pin svg{width:18px;height:18px;stroke:var(--forest);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ap-loaded-addr{flex:1}
+.ap-loaded-addr-main{font-family:var(--serif);font-size:1.2rem;font-weight:500;color:var(--ink);line-height:1.2;margin-bottom:.2rem;letter-spacing:-.005em}
+.ap-loaded-addr-prov{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.ap-loaded-addr-prov b{color:var(--forest);font-weight:500}
+.ap-edit-addr{font-size:.7rem;color:var(--forest);text-decoration:underline;text-underline-offset:2px;cursor:pointer;flex-shrink:0;padding-top:.45rem}
+
+.ap-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1.35rem}
+.ap-field{background:var(--white);border:1px solid var(--cream-3);border-radius:9px;padding:.6rem .85rem;position:relative}
+.ap-field.required{border-color:var(--forest);background:rgba(122,170,143,.04)}
+.ap-field-label{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;display:flex;align-items:center;gap:.4rem}
+.ap-field-label .src{color:var(--forest);font-weight:600}
+.ap-field-label .src-pending{color:var(--amber);font-weight:600}
+.ap-field-input{width:100%;background:none;border:none;font-family:var(--sans);font-size:.95rem;color:var(--ink);outline:none;padding:0;font-weight:500}
+.ap-field-input.mono{font-family:var(--mono);font-size:1rem}
+.ap-field-input::placeholder{color:var(--faint)}
+.ap-field-suffix{position:absolute;right:.85rem;bottom:.6rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+
+.ap-attom-strip{display:flex;align-items:center;gap:.65rem;padding:.7rem .85rem;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:8px;margin-bottom:1.35rem;font-size:.75rem}
+.ap-attom-icon{flex-shrink:0;width:14px;height:14px;color:var(--forest)}
+.ap-attom-icon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ap-attom-text{color:var(--ink);line-height:1.5}
+.ap-attom-text b{color:var(--forest);font-weight:500}
+
+.ap-score-btn{background:var(--forest);color:#fff;border:none;padding:.85rem 1.4rem;border-radius:10px;font-weight:500;font-size:.92rem;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;width:100%;justify-content:center}
+.ap-score-btn:disabled{background:var(--cream-3);color:var(--muted);cursor:not-allowed}
+.ap-score-btn:hover:not(:disabled){background:var(--forest-2)}
+.ap-score-btn-arrow{font-size:1.1rem;line-height:.7}
+
+/* ───────────── STEP 3 — SCORED ───────────── */
+.ap-result-card{background:var(--white);border:1.5px solid var(--sage-border);border-radius:14px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);margin-bottom:1.35rem}
+.ap-result-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;gap:.6rem;flex-wrap:wrap}
+.ap-result-verdict{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:5px 11px;border-radius:6px;background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest);line-height:1}
+.ap-result-rmark{display:inline-flex;align-items:baseline;gap:.4rem}
+.ap-result-rmark svg{width:34px;height:34px}
+.ap-result-rmark-num{font-family:var(--mono);font-size:1.55rem;font-weight:500;color:var(--forest);line-height:1;display:inline-flex;align-items:baseline;gap:2px}
+.ap-result-rmark-denom{font-size:.62rem;color:var(--faint);font-weight:400}
+.ap-result-addr{font-family:var(--serif);font-size:1.35rem;font-weight:500;line-height:1.2;letter-spacing:-.01em;margin:.65rem 0 .4rem}
+.ap-result-numbers{display:flex;gap:1.5rem;margin:.85rem 0 .65rem;flex-wrap:wrap}
+.ap-result-num{}
+.ap-result-num-val{font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--ink);letter-spacing:-.005em;line-height:1.1;display:block}
+.ap-result-num-val.cf-positive{color:var(--forest)}
+.ap-result-num-label{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.ap-result-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);padding-top:.7rem;border-top:1px solid var(--cream-3)}
+.ap-result-meta b{color:var(--ink);font-weight:500}
+.ap-result-analyst{margin-top:.85rem;padding:.7rem .85rem;background:rgba(122,170,143,.05);border:1px solid var(--sage-border);border-radius:8px;font-family:var(--serif);font-size:.78rem;color:var(--ink);font-style:italic;line-height:1.55}
+.ap-result-analyst::before{content:'— The Analyst · ';font-family:var(--mono);font-style:normal;font-size:.55rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);display:block;margin-bottom:3px}
+
+.ap-actions{display:flex;gap:.55rem;flex-wrap:wrap}
+.ap-action{padding:.65rem 1.05rem;border-radius:8px;font-size:.82rem;font-weight:500;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;border:none}
+.ap-action.primary{background:var(--forest);color:#fff}
+.ap-action.primary:hover{background:var(--forest-2)}
+.ap-action.secondary{background:none;color:var(--muted);border:1px solid var(--border)}
+.ap-action.secondary:hover{border-color:var(--sage-border);color:var(--forest);background:var(--sage-dim)}
+.ap-action.tertiary{background:none;color:var(--forest);border:none;padding-left:.4rem}
+.ap-action.tertiary:hover{text-decoration:underline;text-underline-offset:2px}
+
+/* ───────────── MY DEALS TAB ───────────── */
+.md-tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--cream-3);margin-bottom:1.1rem}
+.md-tab{padding:.6rem 1rem .7rem;font-size:.85rem;color:var(--muted);font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:var(--sans)}
+.md-tab.active{color:var(--forest);border-bottom-color:var(--forest)}
+.md-tab .count{font-family:var(--mono);font-size:.62rem;color:var(--muted);background:var(--cream-2);padding:1px 6px;border-radius:9px;margin-left:.35rem;border:1px solid var(--border)}
+.md-tab.active .count{color:var(--forest);background:var(--sage-dim);border-color:var(--sage-border)}
+
+.md-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding:.7rem 1rem;background:var(--white);border:1px solid var(--cream-3);border-radius:9px;gap:.65rem}
+.md-toolbar-left{font-size:.78rem;color:var(--muted)}
+.md-toolbar-left b{color:var(--ink);font-weight:500}
+.md-add-btn{background:var(--forest);color:#fff;border:none;padding:.45rem .9rem;border-radius:7px;font-size:.76rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem}
+
+.md-deal{background:var(--white);border:1px solid var(--cream-3);border-radius:10px;padding:.8rem .95rem;display:flex;align-items:center;gap:.9rem;margin-bottom:.45rem;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;text-align:left;width:100%;font-family:inherit;color:inherit}
+.md-deal:hover{border-color:var(--sage-border);background:var(--sage-dim);transform:translateX(2px)}
+.md-deal::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--forest)}
+.md-deal-rmark{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+.md-deal-rmark svg{width:30px;height:30px}
+.md-deal-rmark-num{font-family:var(--mono);font-size:.95rem;font-weight:500;color:var(--forest);line-height:1}
+.md-deal-info{flex:1;min-width:0}
+.md-deal-addr{font-family:var(--serif);font-size:.95rem;font-weight:500;color:var(--ink);letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.md-deal-meta{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:2px}
+.md-deal-meta .private-tag{color:var(--forest);background:var(--sage-dim);padding:1px 5px;border-radius:3px;border:1px solid var(--sage-border);margin-right:.3rem}
+.md-deal-cf{font-family:var(--mono);font-size:.78rem;color:var(--forest);font-weight:500;flex-shrink:0}
+.md-deal-verdict{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:5px;background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest);line-height:1;flex-shrink:0}
+
+/* RankMark common */
+.mk-roof{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.mk-floor{fill:var(--forest)}
+.mk-floor-1{opacity:.45}
+.mk-floor-2{opacity:.7}
+.mk-floor-3{opacity:1}
+
+/* failure-state CSS */
+.ap-attom-strip.warn{background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.22)}
+.ap-attom-strip.warn .ap-attom-icon{color:var(--amber)}
+.ap-attom-strip.warn .ap-attom-text b{color:var(--amber)}
+.ap-fallback-note{font-size:.7rem;color:var(--muted);margin-top:.6rem;line-height:1.5;font-style:italic}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">Add a property — backlog #220 mockup</h1>
+  <p class="page-sub">
+    Replaces the existing <code>roofrank-analyzer.html</code> with a much-lower-friction flow. Same end goal (score a property not on our feed), but RentCast + ATTOM auto-fill 90% of the form so the user just supplies the asking price. Below: the 4 user-facing states, in order. Last panel shows where saved analyses live (the new <b>My Deals</b> tab — replaces the killed <code>roofrank-reports.html</code>).
+  </p>
+
+  <!-- ──── STEP 1: ADDRESS ENTRY ──── -->
+  <h2 class="section-title"><span class="step-tag">Step 1</span>Empty state — enter an address</h2>
+  <p class="section-meta">Single input. No form to fill, no checkboxes, no "select property type" pre-flight. Paste the address, hit Look up, we do the heavy lifting.</p>
+
+  <div class="frame">
+    <div class="topbar">
+      <span class="tb-back">← Back to feed</span>
+      <span class="tb-title">Add a property</span>
+      <span class="tb-quota">Pro · <b>0</b> of 5 used this month</span>
+    </div>
+    <div class="frame-body">
+      <div class="ap-eyebrow"><span class="ap-eyebrow-dot"></span>Off-market · FSBO · or any address</div>
+      <h1 class="ap-h1">Score any property —<br>even if it's not in the <em>feed</em>.</h1>
+      <p class="ap-sub">Paste an address. I'll pull what's public, you give me the asking price, and I'll score it against the same model that runs every deal in your feed. Saves to your private <b>My Deals</b> tab — not visible to other users.</p>
+
+      <div class="ap-addr-row">
+        <input type="text" class="ap-addr-input" placeholder="e.g. 142 Main St, Lynn, MA 01902">
+        <button class="ap-lookup-btn">Look up property →</button>
+      </div>
+      <div class="ap-addr-help">Works on any US residential address. Best results in our MA launch markets (Lynn, Worcester, Salem, Revere, Framingham), but the scoring model runs anywhere. <b>Pro plan</b>: 5 added properties per month. <b>Team</b>: 50/month.</div>
+
+      <div class="ap-what-happens">
+        <div class="ap-what-title">What happens when you click Look up</div>
+        <div class="ap-what-list">
+          <div class="ap-what-item"><span class="ap-what-num">1</span><span>I check <b>RentCast property records</b> for year built, square footage, bedrooms, lot size — usually all populated.</span></div>
+          <div class="ap-what-item"><span class="ap-what-num">2</span><span>I run <b>ATTOM enrichment</b> for unit count, neighborhood grade, and assessor tax. This is the only field that sometimes fails — I'll flag if so and let you input manually.</span></div>
+          <div class="ap-what-item"><span class="ap-what-num">3</span><span>You add the <b>asking price</b> (FSBO listings, off-market leads, etc. — public records don't have this).</span></div>
+          <div class="ap-what-item"><span class="ap-what-num">4</span><span>I score it using the same model your feed uses, with today's Freddie rate. Saves to <b>My Deals</b> when you're done.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Why this is better than the current analyzer:</b> the old form had 8 fields (address, asking, rent, beds, baths, sqft, year built, units) — most of which RentCast already knows. Users abandoned the form. With auto-fill, the user goes from zero to scored deal in 2 inputs instead of 8.
+  </p>
+
+  <!-- ──── STEP 2: LOADED ──── -->
+  <h2 class="section-title"><span class="step-tag">Step 2</span>Lookup complete — confirm + add asking price</h2>
+  <p class="section-meta">After ~2-3 seconds the auto-fill lands. Provenance is visible per field — user can tell what came from RentCast vs ATTOM vs them. Only the asking price field is required from the user (everything else is editable but defaults to the pull).</p>
+
+  <div class="frame">
+    <div class="topbar">
+      <span class="tb-back">← Back to feed</span>
+      <span class="tb-title">Add a property</span>
+      <span class="tb-quota">Pro · <b>0</b> of 5 used this month</span>
+    </div>
+    <div class="frame-body">
+      <div class="ap-loaded-header">
+        <div class="ap-loaded-pin"><svg viewBox="0 0 24 24"><path d="M12 22 C12 22 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 22 12 22 Z"/><circle cx="12" cy="9" r="2"/></svg></div>
+        <div class="ap-loaded-addr">
+          <div class="ap-loaded-addr-main">142 Main St, Lynn, MA 01902</div>
+          <div class="ap-loaded-addr-prov">Matched on <b>RentCast property record</b> · Worcester County · last sale 2018</div>
+        </div>
+        <span class="ap-edit-addr">Edit address</span>
+      </div>
+
+      <div class="ap-fields-grid">
+        <div class="ap-field required">
+          <div class="ap-field-label">Asking price <span class="src-pending">· you provide</span></div>
+          <input type="text" class="ap-field-input mono" placeholder="$650,000" value="">
+        </div>
+        <div class="ap-field">
+          <div class="ap-field-label">Units <span class="src">· ATTOM</span></div>
+          <input type="text" class="ap-field-input mono" value="3 (Triplex)">
+        </div>
+        <div class="ap-field">
+          <div class="ap-field-label">Year built <span class="src">· RentCast</span></div>
+          <input type="text" class="ap-field-input mono" value="1900">
+        </div>
+        <div class="ap-field">
+          <div class="ap-field-label">Square footage <span class="src">· RentCast</span></div>
+          <input type="text" class="ap-field-input mono" value="3,041">
+        </div>
+        <div class="ap-field">
+          <div class="ap-field-label">Bedrooms · Bathrooms <span class="src">· RentCast</span></div>
+          <input type="text" class="ap-field-input mono" value="7 BR · 3 BA">
+        </div>
+        <div class="ap-field">
+          <div class="ap-field-label">Neighborhood grade <span class="src">· ATTOM</span></div>
+          <input type="text" class="ap-field-input mono" value="B (Eastern Lynn)">
+        </div>
+      </div>
+
+      <div class="ap-attom-strip">
+        <span class="ap-attom-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
+        <span class="ap-attom-text"><b>ATTOM classified this as a Triplex</b> · tax data populated · neighborhood grade B. Rent estimate will use HUD FMR for Lynn at 2BR + 3BR mix.</span>
+      </div>
+
+      <button class="ap-score-btn">Score this property <span class="ap-score-btn-arrow">→</span></button>
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Provenance is the key trust signal here.</b> Every field is labeled with where it came from (RentCast, ATTOM, or "you provide"). User can edit anything if they have better info — but the defaults are explicit measurements, not guesses. <b>Required-field-only highlight</b>: asking price gets the forest border + sage tint so it's the first place the user's eye lands.
+  </p>
+
+  <p class="note">
+    <b>What happens when ATTOM fails to classify</b> (the 401 case + the "ATTOM didn't classify this building" case): the Units + Neighborhood Grade fields go into manual-input mode with a warning strip. User picks Duplex/Triplex/etc. from a dropdown. Score still runs; provenance flag flips to "user-input" so we can audit if they self-classify wrong later.
+  </p>
+
+  <!-- ──── STEP 3: SCORED ──── -->
+  <h2 class="section-title"><span class="step-tag">Step 3</span>Scored — save to My Deals</h2>
+  <p class="section-meta">The result card matches dashboard's hero-deal pattern exactly — verdict + score + cashflow as the dominant numbers, analyst quote, address, meta. User can save to My Deals (the private tab), open full breakdown (deal-detail page in private mode), or analyze another property.</p>
+
+  <div class="frame">
+    <div class="topbar">
+      <span class="tb-back">← Back to feed</span>
+      <span class="tb-title">Add a property</span>
+      <span class="tb-quota">Pro · <b>1</b> of 5 used this month</span>
+    </div>
+    <div class="frame-body">
+
+      <div class="ap-result-card">
+        <div class="ap-result-head">
+          <span class="ap-result-verdict">Strong Buy</span>
+          <div class="ap-result-rmark">
+            <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+            <div class="ap-result-rmark-num">88<span class="ap-result-rmark-denom">/100</span></div>
+          </div>
+        </div>
+        <h2 class="ap-result-addr">142 Main St, Lynn</h2>
+        <div class="ap-result-numbers">
+          <div class="ap-result-num">
+            <span class="ap-result-num-val cf-positive">+$1,820</span>
+            <span class="ap-result-num-label">/mo cashflow</span>
+          </div>
+          <div class="ap-result-num">
+            <span class="ap-result-num-val">14.2%</span>
+            <span class="ap-result-num-label">cash-on-cash</span>
+          </div>
+          <div class="ap-result-num">
+            <span class="ap-result-num-val">8.4%</span>
+            <span class="ap-result-num-label">cap rate</span>
+          </div>
+        </div>
+        <div class="ap-result-meta">3 Units · Triplex · $650K asking · $217K/unit · Lynn · Built 1900 · today's Freddie rate (6.50%)</div>
+        <div class="ap-result-analyst">At $217K per unit on a Lynn triplex with a 14% CoC, this is a stronger play than three of the four MLS-listed Lynn triplexes in your feed right now. I'd open at $615K — the 1900 build year means CapEx reserves matter, but the numbers absorb it.</div>
+      </div>
+
+      <div class="ap-actions">
+        <button class="ap-action primary">★ Save to My Deals</button>
+        <button class="ap-action secondary">Open full breakdown</button>
+        <button class="ap-action tertiary">+ Analyze another</button>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Result card consistency:</b> verdict pill, rmark, address, cashflow $/mo + CoC + cap rate, meta line, and analyst quote — same visual language as dashboard's hero-deal. User feels like they got "a RoofRank deal" not "an analyzer output."
+    <br><br>
+    <b>The analyst quote</b> is the differentiator vs the old analyzer (which just spit out numbers). Generated by the same narrative service, comparing the new property against user's existing feed — turns this from a calculator into an underwriting consultation.
+  </p>
+
+  <!-- ──── STEP 4: MY DEALS TAB ──── -->
+  <h2 class="section-title"><span class="step-tag">Step 4</span>Where saved analyses live — the My Deals tab</h2>
+  <p class="section-meta">Replaces the killed "My Reports" page. Lives as a tab on the dashboard rather than a separate sidebar surface. Three reasons: keeps the user in the feed context, eliminates a sidebar item, and uses the exact same deal-row shape as Today and Watching (zero new UI primitives).</p>
+
+  <div class="frame">
+    <div class="topbar">
+      <span class="tb-back" style="visibility:hidden">←</span>
+      <span class="tb-title" style="font-size:1.1rem;">RoofRank</span>
+      <span class="tb-quota" style="border:none;background:none;padding:0">Lynn · Worcester · Salem</span>
+    </div>
+    <div class="frame-body" style="padding-top:1.1rem">
+      <div class="md-tabs">
+        <span class="md-tab">Today<span class="count">47</span></span>
+        <span class="md-tab">Watching<span class="count">3</span></span>
+        <span class="md-tab active">My Deals<span class="count">2</span></span>
+      </div>
+
+      <div class="md-toolbar">
+        <div class="md-toolbar-left">Properties you analyzed yourself · <b>private</b> · 2 of 5 this month</div>
+        <button class="md-add-btn">+ Add a property</button>
+      </div>
+
+      <button class="md-deal">
+        <div class="md-deal-rmark">
+          <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+          <div class="md-deal-rmark-num">88</div>
+        </div>
+        <div class="md-deal-info">
+          <div class="md-deal-addr">142 Main St, Lynn</div>
+          <div class="md-deal-meta"><span class="private-tag">Off-market</span>3 units · $650K · added today</div>
+        </div>
+        <div class="md-deal-cf">+$1,820/mo</div>
+        <span class="md-deal-verdict">Strong Buy</span>
+      </button>
+      <button class="md-deal">
+        <div class="md-deal-rmark">
+          <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+          <div class="md-deal-rmark-num">73</div>
+        </div>
+        <div class="md-deal-info">
+          <div class="md-deal-addr">88 Elm St, Salem</div>
+          <div class="md-deal-meta"><span class="private-tag">FSBO</span>2 units · $475K · added 5d ago</div>
+        </div>
+        <div class="md-deal-cf">+$640/mo</div>
+        <span class="md-deal-verdict" style="background:rgba(62,129,96,.07);color:var(--forest-3);border-color:rgba(62,129,96,.2)">Buy</span>
+      </button>
+
+    </div>
+  </div>
+
+  <p class="note">
+    <b>Why a tab instead of a page:</b> "My Reports" was a dead-end surface that pulled users out of the deal context. Putting saved analyses INSIDE the dashboard as a 3rd tab keeps the user one tap away from cross-comparing their off-market finds against the live MLS feed. It also kills a sidebar item and a redundant quota system.
+    <br><br>
+    <b>What stays on the deal card itself:</b> small private-tag badge ("Off-market" / "FSBO" / "Manual") makes it clear at a glance that these aren't MLS-sourced deals. Otherwise the row is visually identical to a Watching row — same rmark, same verdict, same cashflow display. Maximum reuse.
+  </p>
+
+  <!-- ──── SUMMARY ──── -->
+  <h2 class="section-title">What ships when this is approved</h2>
+  <p class="section-meta">Engineering scope, if you green-light this direction:</p>
+
+  <div class="note" style="max-width:880px">
+    <b>Frontend</b> (~1.5-2 weeks):<br>
+    · Rebuild roofrank-analyzer.html with the new flow (address entry → lookup → confirm → score → save). Keep the file name to avoid breaking nav links during migration.<br>
+    · Add "My Deals" tab to dashboard. Reuses existing .deal row CSS (just shipped in the watchlist hero-DNA pass).<br>
+    · Quota indicator in the topbar + soft-wall when user hits 5/month on Pro.<br>
+    <br>
+    <b>Backend</b> (~3-5 days):<br>
+    · New POST /api/feed/manual endpoint — accepts address + asking price, does RentCast + ATTOM lookup, runs scoreProperty(), saves with source='manual' flag.<br>
+    · Per-user-per-month quota check (re-uses Pro/Team plan limits config).<br>
+    · GET /api/feed/manual for the My Deals tab list.<br>
+    · Reuses 100% of the existing scoring engine + narrative service.<br>
+    <br>
+    <b>Migration</b>:<br>
+    · Delete roofrank-reports.html and all references (sidebar links, mobile nav).<br>
+    · Existing analyzer URL keeps working (same file, new internals).<br>
+    · No backwards-compat hooks for old "reports" data — there are no real reports in prod yet per the audit.<br>
+    <br>
+    <b>Hard prerequisite</b>: ATTOM key renewed (item #207). Won't work otherwise — ATTOM is the unit-classification step.
+  </div>
+
+</div>
+</body>
+</html>
