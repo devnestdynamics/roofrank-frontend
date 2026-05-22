@@ -146,6 +146,15 @@ function showState(id){
       body: JSON.stringify({ token }),
     });
     if (res.ok) {
+      // Backend returns accessToken/refreshToken so we can drop the user
+      // straight into the dashboard. Without this, clicking 'Open my
+      // dashboard' on the success state bounced to /login because the
+      // dashboard's requireAuth() saw no rr_token in localStorage.
+      try {
+        const data = await res.json();
+        if (data?.accessToken)  localStorage.setItem('rr_token', data.accessToken);
+        if (data?.refreshToken) localStorage.setItem('rr_refresh', data.refreshToken);
+      } catch {}
       showState('stateSuccess');
       return;
     }
