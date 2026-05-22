@@ -402,17 +402,6 @@ nav.top{
 .photo-tile img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-count{position:absolute;top:.7rem;right:.85rem;background:rgba(28,31,28,.78);color:#fff;font-family:var(--mono);font-size:.66rem;font-weight:500;padding:.25rem .55rem;border-radius:5px;letter-spacing:.04em;backdrop-filter:blur(4px)}
 
-/* ── NEIGHBORHOOD + MAP LINK ───────────────────────────────────────────
-   Tight inline location row under the city line. Neighborhood (if we
-   have it from ATTOM enrichment) + "View on map →" that opens Google
-   Maps with the address. Builds buyer confidence without a heavy embed. */
-.hero-loc-row{display:flex;justify-content:center;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;font-family:var(--mono);font-size:.74rem;color:var(--muted)}
-.hero-loc-neighborhood{color:var(--ink);font-weight:500}
-.hero-loc-sep{color:var(--faint)}
-.hero-loc-map{display:inline-flex;align-items:center;gap:.3rem;color:var(--forest);text-decoration:none;padding:2px 4px;border-radius:4px;transition:all .15s}
-.hero-loc-map:hover{background:var(--sage-dim)}
-.hero-loc-map svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
 /* ── COMPARABLES STRIP (item 6 of deal-detail audit) ──────────────────
    Peer deals in the same city — same DNA as the dashboard rows.
    Mini-RankMark on the left, address + verdict on the right, $cashflow
@@ -1052,15 +1041,6 @@ nav.top{
       <span class="hero-price-label">Asking</span>
       <span class="hero-price-val" id="heroPriceVal">—</span>
       <span class="hero-price-meta" id="heroPricePerUnit"></span>
-    </div>
-
-    <div class="hero-loc-row" id="heroLocRow" style="display:none">
-      <span class="hero-loc-neighborhood" id="heroLocNeighborhood" style="display:none">—</span>
-      <span class="hero-loc-sep" id="heroLocSep" style="display:none">·</span>
-      <a class="hero-loc-map" id="heroLocMap" href="#" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24"><path d="M12 22 C12 22 4 14 4 9 A5 5 0 0 1 12 6 A5 5 0 0 1 20 9 C20 14 12 22 12 22 Z"/><circle cx="12" cy="9" r="2"/></svg>
-        View on map
-      </a>
     </div>
 
     <!-- "How is this calculated?" moved up next to the RankMark in the
@@ -2437,34 +2417,6 @@ function renderDeal(d){
   } catch (e) { console.warn('photos render failed:', e); }
 
   // ── Neighborhood + map link ──────────────────────────────────────────
-  // Map link works on every deal (we always have address + usually lat/lon
-  // from RentCast). Neighborhood line only shows if ATTOM enrichment
-  // surfaced one (sometimes RentCast's `county` is the only locality field).
-  try {
-    const ld = d.listingData || {};
-    const pd = d.propertyData || {};
-    const lat = ld.latitude || pd.latitude;
-    const lon = ld.longitude || pd.longitude;
-    const neighborhood = pd.neighborhood || pd.subdivision || ld.subdivision || null;
-    const locRow = document.getElementById('heroLocRow');
-    const locN   = document.getElementById('heroLocNeighborhood');
-    const locSep = document.getElementById('heroLocSep');
-    const locMap = document.getElementById('heroLocMap');
-    if (locRow && locMap) {
-      if (neighborhood && locN) {
-        locN.textContent = neighborhood;
-        locN.style.display = '';
-        if (locSep) locSep.style.display = '';
-      }
-      // Prefer lat/lon for a specific pin; fall back to address query.
-      const mapHref = (lat != null && lon != null)
-        ? `https://www.google.com/maps?q=${lat},${lon}`
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.address || '')}`;
-      locMap.href = mapHref;
-      locRow.style.display = '';
-    }
-  } catch (e) { console.warn('map link render failed:', e); }
-
   // ── Freshness signal — use the live Freddie rate if we have it ──────
   try {
     const freshTextEl = document.getElementById('heroFreshText');
