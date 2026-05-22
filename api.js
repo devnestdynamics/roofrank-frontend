@@ -193,6 +193,16 @@ const ReportsAPI = {
   },
 };
 
+// ── Add-a-property (#220) — Pro/Team-only flow that scores off-market /
+// FSBO addresses via RentCast + ATTOM + scoreProperty(). Results land in
+// the user's My Deals tab on the dashboard (source='manual'). Server
+// enforces per-month quota; surface 402 PRO_FEATURE_REQUIRED and 429
+// MANUAL_QUOTA_EXCEEDED with the right upgrade prompts.
+const ManualFeedAPI = {
+  list()         { return apiFetch('/feed/manual'); },
+  create(input)  { return apiFetch('/feed/manual', { method: 'POST', body: JSON.stringify(input) }); },
+};
+
 const WatchlistAPI = {
   _ids: null,
   async loadIds() {
