@@ -66,9 +66,14 @@ body{
 .rh-nav a{display:inline-flex;align-items:center;gap:.4rem}
 .rh-nav-mark{width:16px;height:16px;flex-shrink:0;display:inline-block}
 .rh-nav-mark svg{width:100%;height:100%;display:block}
-.rh-add{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s;flex-shrink:0}
+/* Add-a-property pill — was an icon-only square ('+') that hid on
+   mobile, so the new flow was invisible from the dashboard. Now a
+   labeled chip visible on all viewports. Text shortens to just '+'
+   under 380px so it doesn't crowd the avatar. */
+.rh-add{display:inline-flex;align-items:center;justify-content:center;gap:.32rem;height:32px;padding:0 .75rem;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s;flex-shrink:0;font-size:.78rem;font-weight:500;font-family:var(--sans);letter-spacing:.005em}
 .rh-add:hover{background:var(--forest-2)}
-.rh-add svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+.rh-add svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+@media(max-width:380px){.rh-add .rh-add-label{display:none}.rh-add{padding:0;width:32px}}
 /* Quiet "Upgrade" text link replaces the loud green "+ Pro" pill.
    Daily users have either converted or they haven't — no need to
    shout on every screen. Pill markup retained for the hover popup
@@ -101,10 +106,12 @@ body{
 .hero-deal{background:var(--white);border:1.5px solid var(--sage-border);border-radius:18px;padding:1.4rem 1.3rem;box-shadow:0 10px 32px rgba(28,74,53,.09);cursor:pointer;transition:transform .15s,box-shadow .15s}
 /* Watchlist heart — bottom action row, right side. Mirrors the
    runner-row and rest-of-feed pattern where the heart is always on
-   the right. CTA + arrow now sit on the left. First placed in the
-   top-right corner (overlapped rmark); then bottom-left (inconsistent
-   with the other tiles); now bottom-right. */
-.hd-watch{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0;margin-left:.5rem}
+   the right. CTA + arrow now sit on the left. Negative right margin
+   pulls the heart visually into the same right-edge column as the
+   runner+compact hearts (hero card has 1.3rem padding; runners have
+   .9rem; the -.4rem cancels the difference so all hearts scan as
+   one vertical column down the page). */
+.hd-watch{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .15s;flex-shrink:0;margin-left:.5rem;margin-right:-.4rem}
 .hd-watch svg{width:18px;height:18px}
 .hd-watch:hover{background:var(--cream-2);color:var(--forest)}
 .hd-watch.on{color:var(--forest)}
@@ -844,7 +851,11 @@ body{
 /* ── MOBILE TWEAKS ─────────────────────────────────────────────────────── */
 @media(max-width:860px){
   body{padding-bottom:calc(var(--ask-h) + var(--bnav-h))}
-  .rh-nav,.rh-add{display:none}
+  /* Hide the desktop primary-nav links (Today/Watching/My Deals) since
+     the bottom nav handles those on mobile. KEEP .rh-add visible — it's
+     the discoverability entry to the new Add a Property flow; bottom nav
+     doesn't have a slot for it (the 4 slots are Today/Watching/My Deals/More). */
+  .rh-nav{display:none}
   /* keep rh-pro on mobile but shrink it; bottom nav handles other actions */
   .rh-pro{font-size:.6rem;padding:.25rem .5rem;border-radius:11px}
   .rh-pro svg{width:8px;height:8px}
@@ -902,6 +913,7 @@ body{
     </nav>
     <a href="roofrank-analyzer.html" class="rh-add" title="Add a property — score any address" aria-label="Add a property — score any address">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span class="rh-add-label">Add a property</span>
     </a>
     <!-- Quiet upgrade text-link (was a loud green "+ Pro" pill that
          shouted on every screen — replaced 2026-05-19 V1 polish). -->
@@ -989,7 +1001,7 @@ body{
         <span class="bn-badge" id="bnWatchBadge" style="display:none">0</span>
       </a>
       <a href="roofrank-mydeals.html" class="bn-tab">
-        <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
         <span>My Deals</span>
       </a>
       <button class="bn-tab" type="button" onclick="document.getElementById('bnSheet').classList.add('open')">
