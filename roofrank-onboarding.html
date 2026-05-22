@@ -156,15 +156,18 @@ input:focus{border-color:var(--forest)}
     </div>
 
     <div class="score-step">
-      <!-- Address input -->
+      <!-- Address input. Placeholder + example button copy populated in
+           applyMarketExample() from the user's pre-auth market pick
+           (rr_pre_market localStorage) — falls back to Lynn. Was
+           hard-coded to Boston, which we dropped from launch markets. -->
       <div class="score-input-wrap">
         <input class="score-addr-input" id="scoreAddr" type="text"
-          placeholder="123 Main St, Boston MA 02134"
+          placeholder="123 Main St, Lynn MA 01902"
           onkeydown="if(event.key==='Enter')runScore()">
       </div>
 
       <div class="score-actions">
-        <button class="score-example-btn" onclick="useExample()">★ Try a Boston example →</button>
+        <button class="score-example-btn" id="scoreExampleBtn" onclick="useExample()">★ Try a Lynn example →</button>
         <button class="score-skip-btn" onclick="skipToFeed()">Skip, show me the feed →</button>
       </div>
 
@@ -271,31 +274,61 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-// Example Boston deal (Freeman St seed data)
-const EXAMPLE_DEAL = {
-  address: '37–39 Freeman St',
-  city: 'Boston', state: 'MA', units: 5, yearBuilt: 1920,
-  askingPrice: 1575000, propertyType: 'Triple Decker',
-  rankScore: 63,
-  reportData: {
-    signal: 'Buy',
-    neighborhoodGrade: 'A-',
-    financials: {
-      cashOnCashReturn: 4.3, capRate: 7.3, dscr: 1.19, grm: 8.0,
-      pricePerUnit: 315000, noi: 114777,
-      grossRentalIncome: 198000, downPayment: 393750,
-      totalCashToClose: 415800, monthlyCashFlow: 1507,
-      beforeTaxCashFlow: 18079
-    },
-    scores: {cashOnCash:30,capRate:85,dscr:50,grm:100,pricePerUnit:75,noi:77,capexReserve:70,neighborhoodGrade:82}
-  }
+// Example deals — one per launch market. Picked to highlight a real
+// MVP city (not Boston, which we dropped from launch). Lynn 52 Hamilton
+// is the canonical example we use across the rest of the product
+// (mockups, narratives, comp lookups), so it's the default fallback.
+const EXAMPLE_DEALS = {
+  lynn: {
+    address: '52 Hamilton Ave', city: 'Lynn', state: 'MA', units: 2, yearBuilt: 1900,
+    askingPrice: 679900, propertyType: 'Multi-Family', rankScore: 69,
+    reportData: {
+      signal: 'Buy', neighborhoodGrade: 'B',
+      financials: { cashOnCashReturn: 9.1, capRate: 8.14, dscr: 1.43, grm: 5.49, pricePerUnit: 339950, noi: 55304, grossRentalIncome: 117600, downPayment: 169975, totalCashToClose: 179494, monthlyCashFlow: 1391, beforeTaxCashFlow: 16692 },
+      scores: { cashOnCash:75, capRate:95, dscr:80, grm:70, pricePerUnit:70, noi:75, capexReserve:65, neighborhoodGrade:65 }
+    }
+  },
+  worcester: {
+    address: '88 Park Ave', city: 'Worcester', state: 'MA', units: 4, yearBuilt: 1935,
+    askingPrice: 750000, propertyType: 'Multi-Family', rankScore: 78,
+    reportData: {
+      signal: 'Strong Buy', neighborhoodGrade: 'B-',
+      financials: { cashOnCashReturn: 10.2, capRate: 8.8, dscr: 1.55, grm: 7.2, pricePerUnit: 187500, noi: 66000, grossRentalIncome: 103200, downPayment: 187500, totalCashToClose: 198000, monthlyCashFlow: 1900, beforeTaxCashFlow: 22800 },
+      scores: { cashOnCash:85, capRate:90, dscr:80, grm:75, pricePerUnit:90, noi:75, capexReserve:65, neighborhoodGrade:55 }
+    }
+  },
+  salem:      { address: '5 Winter Island Rd', city: 'Salem',      state: 'MA', units: 3, yearBuilt: 1920, askingPrice: 850000, propertyType: 'Multi-Family', rankScore: 65, reportData: { signal:'Buy',  neighborhoodGrade:'B',  financials:{cashOnCashReturn:7.5,capRate:7.2,dscr:1.32,grm:7.8,pricePerUnit:283333,noi:61200,grossRentalIncome:108000,monthlyCashFlow:1100}, scores:{cashOnCash:65,capRate:75,dscr:70,grm:70,pricePerUnit:65,noi:65,capexReserve:60,neighborhoodGrade:60} } },
+  revere:     { address: '14 Bay Rd',           city: 'Revere',     state: 'MA', units: 2, yearBuilt: 1915, askingPrice: 595000, propertyType: 'Multi-Family', rankScore: 71, reportData: { signal:'Buy',  neighborhoodGrade:'B',  financials:{cashOnCashReturn:8.5,capRate:7.9,dscr:1.4, grm:5.8,pricePerUnit:297500,noi:47000,grossRentalIncome:102600,monthlyCashFlow:1250}, scores:{cashOnCash:75,capRate:85,dscr:78,grm:75,pricePerUnit:70,noi:70,capexReserve:60,neighborhoodGrade:60} } },
+  framingham: { address: '88 Elm St',           city: 'Framingham', state: 'MA', units: 3, yearBuilt: 1925, askingPrice: 825000, propertyType: 'Multi-Family', rankScore: 62, reportData: { signal:'Buy',  neighborhoodGrade:'B+', financials:{cashOnCashReturn:6.8,capRate:6.9,dscr:1.28,grm:8.5,pricePerUnit:275000,noi:56925,grossRentalIncome:97200, monthlyCashFlow:950 }, scores:{cashOnCash:60,capRate:70,dscr:68,grm:65,pricePerUnit:65,noi:60,capexReserve:60,neighborhoodGrade:75} } },
 };
+function getExampleDeal(){
+  let pre = null;
+  try { pre = (localStorage.getItem('rr_pre_market') || '').toLowerCase(); } catch {}
+  if (pre === 'all') pre = 'lynn';  // "all 5 cities" pick → Lynn flagship
+  return EXAMPLE_DEALS[pre] || EXAMPLE_DEALS.lynn;
+}
+// Back-compat alias for any code that still references EXAMPLE_DEAL.
+const EXAMPLE_DEAL = EXAMPLE_DEALS.lynn;
 
 function useExample(){
-  document.getElementById('scoreAddr').value = '37–39 Freeman St, Boston MA 02134';
+  const ex = getExampleDeal();
+  document.getElementById('scoreAddr').value = `${ex.address}, ${ex.city} ${ex.state}`;
   document.getElementById('runScoreBtn').style.display='block';
   setTimeout(()=>runScore(true), 150);
 }
+
+// Update the placeholder + example button copy to match the user's
+// pre-auth market pick. Runs on DOMContentLoaded below.
+function applyMarketExample(){
+  const ex = getExampleDeal();
+  const input = document.getElementById('scoreAddr');
+  const btn   = document.getElementById('scoreExampleBtn');
+  if (input) input.placeholder = `123 Main St, ${ex.city} MA`;
+  if (btn)   btn.textContent   = `★ Try a ${ex.city} example →`;
+}
+document.addEventListener('DOMContentLoaded', applyMarketExample);
+// Already-fired DOMContentLoaded case (in case this script comes later).
+if (document.readyState !== 'loading') applyMarketExample();
 
 function skipToFeed(){
   // Save with the user's pre-auth market pick (or Lynn as a sensible
@@ -340,7 +373,7 @@ function simulateScore(addr){
   const dscr = 0.95 + (hash%40)/100;
   return {
     address: addr,
-    city: addr.includes('Boston')?'Boston':addr.includes('Worcester')?'Worcester':'New England',
+    city: ['Lynn','Worcester','Salem','Revere','Framingham','Boston'].find(c => addr.includes(c)) || 'New England',
     rankScore: score,
     reportData:{
       signal: score>=75?'Strong Buy':score>=60?'Buy':score>=45?'Watch':'Pass',
