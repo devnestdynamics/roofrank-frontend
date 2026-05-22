@@ -12,10 +12,10 @@
 | 🔴 MVP Scope (must-ship) | 6 |
 | 🟡 Pre-launch important | 6 |
 | 🟢 Phase 2 / Backlog | 78 |
-| 🔵 Deferred (post-launch) | 5 |
+| 🔵 Deferred (post-launch) | 6 |
 | ❌ Dropped (strategy change) | 13 |
 | 📋 Strategy doc | 1 |
-| **Total** | **164** |
+| **Total** | **165** |
 
 **What changed 2026-05-22 (this audit):** 20 items moved to Done (AI narrative V2 bull/bear, condition lens MVP, free-tier gating server-side, free-tier UX, dashboard hero polish, rent tile lens sync, narrative auto-gen on score-write, garbage narrative cleanup, BUG-001 non-UUID 404, BUG-003 wrong-password feedback, BUG-004 freshness sweep, OG image regen, live stat bar, metrics RankMark migration, Sonnet 4.6, per-unit rent override, magic-link plumbing, dashboard /100 denominator, deal-detail hero polish, expose Cap/NOI/DSCR/GRM on /public). 7 items dropped as obsolete (photos via vendor, mockup matching, social proof on landing, social proof dupe, deal-of-the-day rotation, narrative upgrade dupe, narrative on deal-detail dupe). Top 15 launch-and-first-60-days list added below. **Earlier 2026-05-22 strategy-review additions:** 7 TAM-expansion items + 1 strategy doc (#212-219, #220).
 
@@ -3618,3 +3618,47 @@ Reposition RoofRank from "deal screener with AI features" to "AI underwriting an
 **The risk to push back on:** Angle 1 is a real commit. If narratives stay throttled or feel generic, the brand suffers more than under the current "AI is a feature" framing. So this hinges on Anthropic narrative reliability being a top-3 engineering priority.
 
 **Owner:** Claude (mockups, code), Ali (positioning approval, landing copy direction).
+
+---
+
+### 224. AWS Free Plan — claim exploration credits (genuine-explore path only)
+**Priority:** 🔵 Deferred (low-priority opportunity) · **Effort:** S-M (~2-6 hrs depending on path) · **Cash value: ~$80 credits**
+
+AWS account (ID: 803871049071) has $59 remaining + up to $80 more by exploring 4 eligible services before **2026-11-10**. Filed for tracking; don't pull forward into pre-launch crunch.
+
+**Cost-vs-value reality:**
+- $80 in credits ≈ 1 month of post-Free-Tier infra bill (~$85-95/mo at 10-market scale)
+- Free Tier covers ~$0/mo until ~May 2027; credits stack on top of that
+- At target year-1 ARR ($30-90K), infra is 2-4% of revenue — not worth heavy optimization
+
+**Two paths, with honest tradeoffs:**
+
+| Path | Time | Cash | Product value | Verdict |
+|---|---|---|---|---|
+| Pure game-it (4 throwaway resources) | ~2 hr | $80 | $0 | $40/hr in saved future infra cost — bad ROI when time-constrained |
+| Genuine explore (4 useful services) | ~4-6 hr | $80 | Real | Only justified if 3+ of the 4 services would ship |
+
+**Two services worth genuine exploration for RoofRank:**
+
+1. **AWS SES** — Resend fallback when reputation tanks (just happened to us during the test-bounce incident). Or full replacement at scale. Free tier: 62K emails/mo from EC2. Setup: verified domain identity + 1 test send (~30 min).
+2. **AWS Secrets Manager** — Removes env vars from ECS task def. Pairs with [#168](#168) AWS key rotation work. Small but real. Setup: create one secret + reference from task def (~20 min).
+
+**Two more for the 4-service threshold (lower value, judgment call):**
+- **AWS Lambda + EventBridge** — could host narrative gen as serverless, decouple from main ECS task. Today's ingestion-worker already does this in BullMQ; moving to Lambda is purity, not need.
+- **AWS X-Ray** — distributed tracing for Express. Pairs with Sentry. Useful eventually, overkill pre-launch.
+
+**Services to AVOID:**
+- **Lightsail** — autobills $3.50-$10/mo if you provision and forget
+- **Cognito** — months of auth rebuild for marginal value (custom auth works)
+- **CloudFront** before deciding on Netlify migration
+
+**Practical guardrails:**
+1. Set AWS Budgets alert at $5 today (free, takes 5 min). Catches any service that quietly starts billing.
+2. Calendar reminder 14 days before Free Plan expires — when it ends, you lose access to current resources unless upgraded. Hard cutoff, not gradual.
+3. If pulling the trigger, do it on a Saturday afternoon — not pre-launch time.
+
+**Recommendation:** ship SES + Secrets Manager genuinely (both have product value), then either (a) skip the other two and accept ~$40 in credits, or (b) game-it the remaining two as a tax-deductible cost optimization, your call. **Don't restructure your week for the $80**, it doesn't pencil at solo-founder time cost.
+
+**Trigger to revisit:** post-launch, on a low-pressure week, OR when AWS Free Tier expires (~May 2027) and the bill becomes material.
+
+**Owner:** Ali (AWS account access, decision on which services to claim).
