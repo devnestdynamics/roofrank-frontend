@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Angle 2 positioning mockup</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:#ebe6dc;color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:14px;-webkit-font-smoothing:antialiased;padding:2.5rem 1.5rem 5rem}
+
+.wrap{max-width:1640px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:1.9rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.01em}
+.page-sub{font-size:.85rem;color:var(--muted);margin-bottom:2.5rem;max-width:880px;line-height:1.7}
+.page-sub b{color:var(--ink);font-weight:500}
+
+.section-title{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--ink);margin:3.5rem 0 .35rem;letter-spacing:-.005em;padding-bottom:.5rem;border-bottom:1px solid #d6cfc2}
+.section-title:first-of-type{margin-top:.5rem}
+.section-meta{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:720px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:1100px){.split{grid-template-columns:1fr}}
+
+.col-head{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d6cfc2}
+.col-num{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.col-num.cur{color:var(--amber);background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+.col-num.new{color:var(--forest);background:var(--sage-dim);border-color:var(--sage-border)}
+.col-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink)}
+
+.note{font-size:.72rem;color:var(--muted);margin-top:.7rem;line-height:1.6;padding:.7rem .85rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px}
+.note b{color:var(--ink);font-weight:500}
+
+/* ──── EMAIL CLIENT FRAME ──── */
+.mail-frame{background:#e9e6df;border:1px solid #cbc3b6;border-radius:14px;padding:.9rem;box-shadow:0 4px 22px rgba(28,31,28,.06)}
+.mail-headerbar{display:flex;align-items:center;gap:.55rem;font-size:.66rem;color:var(--muted);font-family:var(--mono);padding:0 .55rem .7rem}
+.mail-headerbar-from{color:var(--ink);font-weight:500;font-family:var(--sans)}
+.mail-headerbar-sep{color:var(--faint)}
+.mail-subject{padding:0 .55rem .9rem;font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+.mail-body{background:var(--cream);border:1px solid var(--cream-3);border-radius:8px;overflow:hidden;font-family:var(--sans)}
+
+/* Current email — matches lib/email.ts inline styling */
+.cur-mail-head{background:#1c4a35;padding:18px 24px}
+.cur-mail-head-h1{color:#fff;font-size:18px;margin:0;font-weight:400;font-family:var(--sans)}
+.cur-mail-head-sub{color:rgba(255,255,255,.6);font-size:11px;margin:3px 0 0;font-family:var(--sans)}
+.cur-mail-content{padding:22px 24px;background:#fff}
+.cur-mail-greet{color:#1c1f1c;font-size:14px;margin:0 0 4px;font-family:var(--sans)}
+.cur-mail-greet-sub{color:#6b7168;font-size:12px;margin:0 0 18px;font-family:var(--sans)}
+.cur-mail-stats{display:flex;gap:10px;margin-bottom:18px}
+.cur-mail-stat{flex:1;background:#f7f4ef;border:1px solid #e0d9cf;border-radius:6px;padding:10px 8px;text-align:center}
+.cur-mail-stat-num{font-size:18px;font-weight:400;color:#1c4a35;font-family:Georgia,serif}
+.cur-mail-stat-lbl{font-size:9px;color:#6b7168;text-transform:uppercase;letter-spacing:.06em;font-family:var(--sans)}
+.cur-mail-eyebrow{color:#1c1f1c;font-size:11px;font-weight:600;margin:0 0 4px;text-transform:uppercase;letter-spacing:.07em;font-family:var(--sans)}
+.cur-mail-deal{padding:8px 0;border-bottom:1px solid #f0ece4;display:flex;justify-content:space-between;align-items:center;font-family:var(--sans)}
+.cur-mail-deal-addr{color:#1c1f1c;font-weight:500;font-size:12px}
+.cur-mail-deal-city{color:#6b7168;font-size:10px;margin-top:1px}
+.cur-mail-deal-score{background:#1c4a35;color:#fff;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;font-family:var(--mono)}
+.cur-mail-deal-price{color:#6b7168;font-size:10px;margin-top:1px;font-family:var(--mono)}
+.cur-mail-cta{margin-top:18px;text-align:center}
+.cur-mail-cta a{background:#1c4a35;color:#fff;padding:8px 20px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:500;display:inline-block;font-family:var(--sans)}
+
+/* Proposed email — Analyst's Weekly Memo */
+.new-mail-head{padding:22px 28px 18px;background:var(--cream);border-bottom:1px solid var(--cream-3)}
+.new-mail-masthead{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.new-mail-masthead-mark svg{width:14px;height:14px;display:block}
+.mk-roof{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.mk-floor{fill:var(--forest)}
+.mk-floor-1{opacity:.45}
+.mk-floor-2{opacity:.7}
+.mk-floor-3{opacity:1}
+.new-mail-issue{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--ink);letter-spacing:-.01em;line-height:1.15;margin-bottom:5px}
+.new-mail-byline{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.new-mail-byline b{color:var(--ink);font-weight:500}
+.new-mail-content{padding:24px 28px;background:#fff}
+.new-mail-lede{font-family:var(--serif);font-size:14px;font-style:italic;color:var(--ink);line-height:1.6;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--cream-3)}
+.new-mail-lede b{font-style:normal;font-weight:500;background:linear-gradient(180deg,transparent 65%,rgba(122,170,143,.28) 65%);padding:0 2px}
+.new-mail-byline-inline{display:flex;align-items:center;gap:.4rem;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.new-mail-byline-inline svg{width:13px;height:13px}
+.new-mail-section{margin-bottom:18px}
+.new-mail-section-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);margin-bottom:8px;display:flex;align-items:center;gap:.4rem}
+.new-mail-pick{padding:10px 0;border-bottom:1px solid var(--cream-2);display:flex;align-items:flex-start;gap:10px}
+.new-mail-pick:last-child{border-bottom:none}
+.new-mail-pick-rmark{flex-shrink:0;width:32px;height:32px}
+.new-mail-pick-rmark svg{width:32px;height:32px}
+.new-mail-pick-body{flex:1;line-height:1.4}
+.new-mail-pick-addr{font-family:var(--serif);font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+.new-mail-pick-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px}
+.new-mail-pick-take{font-family:var(--serif);font-size:11px;color:var(--ink);font-style:italic;line-height:1.5;margin-top:5px;padding-left:0}
+.new-mail-pick-score{flex-shrink:0;text-align:right}
+.new-mail-pick-score-num{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--forest);line-height:1}
+.new-mail-pick-score-tier{font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--forest);margin-top:2px}
+.new-mail-cta{margin-top:22px;text-align:center}
+.new-mail-cta a{background:var(--forest);color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:500;display:inline-block;font-family:var(--sans)}
+.new-mail-foot{padding:14px 24px;text-align:center;background:var(--cream);border-top:1px solid var(--cream-3)}
+.new-mail-sig{font-family:var(--serif);font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px}
+.new-mail-sig b{font-style:normal;color:var(--ink);font-weight:500}
+
+/* ──── DASHBOARD DEAL CARD ──── */
+.dash-frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:12px;padding:1.25rem 1.1rem;box-shadow:0 4px 22px rgba(28,31,28,.06)}
+.dash-section-label{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem}
+.dash-deal{background:var(--white);border:1px solid var(--cream-3);border-radius:10px;padding:.85rem 1rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.85rem;position:relative}
+.dash-deal-rmark{flex-shrink:0;width:42px;height:42px}
+.dash-deal-rmark svg{width:42px;height:42px}
+.dash-deal-info{flex:1;line-height:1.4}
+.dash-deal-addr{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+.dash-deal-meta{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:2px}
+.dash-deal-cf{font-family:var(--mono);font-size:.76rem;color:var(--forest);font-weight:500;margin-top:3px}
+.dash-deal-right{text-align:right;flex-shrink:0}
+.dash-deal-score{font-family:var(--mono);font-size:1.35rem;font-weight:500;color:var(--forest);line-height:1}
+.dash-deal-tier{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);margin-top:3px}
+
+/* Analyst's Pick badge */
+.dash-pick-deal{border:1.5px solid var(--forest);box-shadow:0 4px 18px rgba(28,74,53,.08);background:linear-gradient(180deg,rgba(122,170,143,.05),transparent 50%)}
+.dash-pick-badge{position:absolute;top:-9px;left:14px;background:var(--forest);color:#fff;font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:flex;align-items:center;gap:.3rem}
+.dash-pick-badge svg{width:8px;height:8px}
+.dash-pick-take{font-family:var(--serif);font-size:.75rem;color:var(--ink);font-style:italic;line-height:1.5;margin-top:.65rem;padding:.55rem .7rem;background:rgba(122,170,143,.08);border-left:3px solid var(--forest);border-radius:0 4px 4px 0}
+.dash-pick-take::before{content:'';display:inline-block;width:10px;height:10px;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%231c4a35' d='M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z'/%3E%3C/svg%3E") no-repeat center/contain;vertical-align:middle;margin-right:.35rem;margin-bottom:1px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">Angle 2 — Curation positioning (complement to Angle 1)</h1>
+  <p class="page-sub">
+    Reframe the Market Brief as <b>"The Analyst's Weekly Memo"</b> with sharper editorial voice, and add an <b>"Analyst's Pick"</b> badge to the 1-3 deals the AI most strongly endorses each week. Curation is what an analyst <em>does</em> — Angle 2 adds the surface for that work alongside Angle 1's positioning rewrite. Same data + scoring; new framing and one new badge component.
+  </p>
+
+  <!-- ──── SURFACE 1: WEEKLY EMAIL ──── -->
+  <h2 class="section-title">Surface 1 — Email rebrand: "Market Brief" → "The Analyst's Weekly Memo"</h2>
+  <p class="section-meta">Current is a stats dashboard ("3 strong buys, 12 markets, 47 deals — here's a list"). Proposed leads with an editorial paragraph in the Analyst's voice, then the picks. Stats move to the footer. Tone shifts from "data delivery" to "memo from your analyst."</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current</span></div>
+      <div class="mail-frame">
+        <div class="mail-headerbar"><span class="mail-headerbar-from">RoofRank</span><span class="mail-headerbar-sep">·</span><span>noreply@roofrank.io</span><span class="mail-headerbar-sep">·</span><span>9:00 AM</span></div>
+        <div class="mail-subject">Your RoofRank Market Brief — 3 Strong Buys today</div>
+        <div class="mail-body">
+          <div class="cur-mail-head">
+            <h1 class="cur-mail-head-h1">RoofRank</h1>
+            <p class="cur-mail-head-sub">Market Brief</p>
+          </div>
+          <div class="cur-mail-content">
+            <p class="cur-mail-greet">Hi Ali —</p>
+            <p class="cur-mail-greet-sub">Here's what's worth your time across 5 markets right now.</p>
+            <div class="cur-mail-stats">
+              <div class="cur-mail-stat"><div class="cur-mail-stat-num">47</div><div class="cur-mail-stat-lbl">Active Deals</div></div>
+              <div class="cur-mail-stat"><div class="cur-mail-stat-num">3</div><div class="cur-mail-stat-lbl">Strong Buys</div></div>
+              <div class="cur-mail-stat"><div class="cur-mail-stat-num">5</div><div class="cur-mail-stat-lbl">Markets</div></div>
+            </div>
+            <p class="cur-mail-eyebrow">Top Deals Today</p>
+            <div class="cur-mail-deal">
+              <div><div class="cur-mail-deal-addr">2 Stevens Rd</div><div class="cur-mail-deal-city">Worcester, MA</div></div>
+              <div style="text-align:right"><span class="cur-mail-deal-score">90</span><div class="cur-mail-deal-price">$600K</div></div>
+            </div>
+            <div class="cur-mail-deal">
+              <div><div class="cur-mail-deal-addr">139 Vernon St</div><div class="cur-mail-deal-city">Worcester, MA</div></div>
+              <div style="text-align:right"><span class="cur-mail-deal-score">92</span><div class="cur-mail-deal-price">$565K</div></div>
+            </div>
+            <div class="cur-mail-deal">
+              <div><div class="cur-mail-deal-addr">76-78 Linden St</div><div class="cur-mail-deal-city">Lynn, MA</div></div>
+              <div style="text-align:right"><span class="cur-mail-deal-score">87</span><div class="cur-mail-deal-price">$900K</div></div>
+            </div>
+            <div class="cur-mail-cta"><a>View Full Feed →</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num new">2 · proposed</span><span class="col-title">The Analyst's Weekly Memo</span></div>
+      <div class="mail-frame">
+        <div class="mail-headerbar"><span class="mail-headerbar-from">The Analyst @ RoofRank</span><span class="mail-headerbar-sep">·</span><span>memo@roofrank.io</span><span class="mail-headerbar-sep">·</span><span>9:00 AM</span></div>
+        <div class="mail-subject">Memo · Week of May 22 — Worcester's hot, Lynn's quiet, one play worth a call</div>
+        <div class="mail-body">
+          <div class="new-mail-head">
+            <div class="new-mail-masthead">
+              <span class="new-mail-masthead-mark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></span>
+              <span>The Analyst · Issue 24</span>
+            </div>
+            <div class="new-mail-issue">Worcester's hot, Lynn's quiet,<br>one play worth a call.</div>
+            <div class="new-mail-byline">Week of <b>May 22, 2026</b> · 47 deals reviewed · 3 picks below</div>
+          </div>
+          <div class="new-mail-content">
+            <div class="new-mail-lede">
+              Worcester is the story this week — <b>7 new 2-6 unit listings</b>, two of them sub-$200K per unit with cap rates north of 9%. Lynn's been dead for 10 days, which usually means either a flood of cheap inventory in 2-3 weeks or sellers digging in. One pick this week stands out: <b>139 Vernon St</b>. Numbers are where the rest of Worcester wants to be in six months.
+              <div class="new-mail-byline-inline">
+                <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+                <span>— The Analyst</span>
+              </div>
+            </div>
+
+            <div class="new-mail-section">
+              <div class="new-mail-section-eyebrow">★ Picks this week</div>
+              <div class="new-mail-pick">
+                <div class="new-mail-pick-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+                <div class="new-mail-pick-body">
+                  <div class="new-mail-pick-addr">139 Vernon St, Worcester</div>
+                  <div class="new-mail-pick-meta">$565K · 3 units · 9.7% cap · $2,165/mo cashflow</div>
+                  <div class="new-mail-pick-take">"Cleanest triple-decker I've seen this month. Seller's 28 days in — open at $530K."</div>
+                </div>
+                <div class="new-mail-pick-score"><div class="new-mail-pick-score-num">92</div><div class="new-mail-pick-score-tier">Strong Buy</div></div>
+              </div>
+              <div class="new-mail-pick">
+                <div class="new-mail-pick-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+                <div class="new-mail-pick-body">
+                  <div class="new-mail-pick-addr">2 Stevens Rd, Worcester</div>
+                  <div class="new-mail-pick-meta">$600K · 3 units · 8.4% cap · $2,542/mo cashflow</div>
+                  <div class="new-mail-pick-take">"Almost as good as Vernon, slightly more rehab risk on the 1900 build."</div>
+                </div>
+                <div class="new-mail-pick-score"><div class="new-mail-pick-score-num">90</div><div class="new-mail-pick-score-tier">Strong Buy</div></div>
+              </div>
+              <div class="new-mail-pick">
+                <div class="new-mail-pick-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+                <div class="new-mail-pick-body">
+                  <div class="new-mail-pick-addr">76-78 Linden St, Lynn</div>
+                  <div class="new-mail-pick-meta">$900K · 4 units · 7.1% cap · $1,890/mo cashflow</div>
+                  <div class="new-mail-pick-take">"Only solid Lynn play this week. Quiet market right now, but cap holds at 6.8% even down to $880K."</div>
+                </div>
+                <div class="new-mail-pick-score"><div class="new-mail-pick-score-num">87</div><div class="new-mail-pick-score-tier">Strong Buy</div></div>
+              </div>
+            </div>
+
+            <div class="new-mail-cta"><a>Read the full feed →</a></div>
+          </div>
+          <div class="new-mail-foot">
+            <div class="new-mail-sig"><b>The Analyst</b> · 47 deals reviewed · 5 markets · 3 picks this week</div>
+            <div class="new-mail-sig" style="font-size:9px">Manage preferences · Unsubscribe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> Subject becomes editorial ("Worcester's hot, Lynn's quiet, one play worth a call") instead of statistical. Sender becomes "The Analyst @ RoofRank" — the brand voice signs the email. The big change is structural: ~120 words of editorial paragraph at the top in the Analyst's voice (cites specific markets, makes calls), then 3 picks with one-line takes. Stats footer instead of stats header. The whole email reads like a memo from someone you trust, not a notification.
+    <br><br>
+    <b>Implementation note:</b> the lede paragraph is generated weekly by the same narrative service — needs ~250-token-budget generation that takes the week's stats and 3 top deals as context. Could ship with hand-written ledes for the first 2-3 weeks while we tune the prompt.
+  </p>
+
+  <!-- ──── SURFACE 2: ANALYST'S PICK BADGE ──── -->
+  <h2 class="section-title">Surface 2 — Dashboard "Analyst's Pick" badge on top 1-3 deals</h2>
+  <p class="section-meta">Today: dashboard feed is a flat list of scored deals, ordered by score DESC. Proposed: top 1-3 highest-scoring deals (or hand-curated per week by the AI) get an "Analyst's Pick" badge + a one-line take. Surfaces the curated subset without burying the rest.</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current dashboard</span></div>
+      <div class="dash-frame">
+        <div class="dash-section-label">Today · Worcester · Lynn</div>
+        <div class="dash-deal">
+          <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+          <div class="dash-deal-info">
+            <div class="dash-deal-addr">139 Vernon St</div>
+            <div class="dash-deal-meta">Worcester · 3U · $565K · 1900</div>
+            <div class="dash-deal-cf">+$2,165/mo · 19.2% CoC</div>
+          </div>
+          <div class="dash-deal-right"><div class="dash-deal-score">92</div><div class="dash-deal-tier">Strong Buy</div></div>
+        </div>
+        <div class="dash-deal">
+          <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+          <div class="dash-deal-info">
+            <div class="dash-deal-addr">2 Stevens Rd</div>
+            <div class="dash-deal-meta">Worcester · 3U · $600K · 1900</div>
+            <div class="dash-deal-cf">+$2,542/mo · 19.3% CoC</div>
+          </div>
+          <div class="dash-deal-right"><div class="dash-deal-score">90</div><div class="dash-deal-tier">Strong Buy</div></div>
+        </div>
+        <div class="dash-deal">
+          <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+          <div class="dash-deal-info">
+            <div class="dash-deal-addr">76-78 Linden St</div>
+            <div class="dash-deal-meta">Lynn · 4U · $900K · 2004</div>
+            <div class="dash-deal-cf">+$1,890/mo · 11.8% CoC</div>
+          </div>
+          <div class="dash-deal-right"><div class="dash-deal-score">87</div><div class="dash-deal-tier">Strong Buy</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num new">2 · proposed</span><span class="col-title">With Analyst's Pick badge</span></div>
+      <div class="dash-frame">
+        <div class="dash-section-label">Today · Worcester · Lynn</div>
+        <div class="dash-deal dash-pick-deal">
+          <span class="dash-pick-badge"><svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z"/></svg>Analyst's Pick</span>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:.85rem">
+              <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+              <div class="dash-deal-info">
+                <div class="dash-deal-addr">139 Vernon St</div>
+                <div class="dash-deal-meta">Worcester · 3U · $565K · 1900</div>
+                <div class="dash-deal-cf">+$2,165/mo · 19.2% CoC</div>
+              </div>
+              <div class="dash-deal-right"><div class="dash-deal-score">92</div><div class="dash-deal-tier">Strong Buy</div></div>
+            </div>
+            <div class="dash-pick-take">Cleanest triple-decker I've seen this month. Seller's 28 days in — open at $530K.</div>
+          </div>
+        </div>
+        <div class="dash-deal">
+          <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+          <div class="dash-deal-info">
+            <div class="dash-deal-addr">2 Stevens Rd</div>
+            <div class="dash-deal-meta">Worcester · 3U · $600K · 1900</div>
+            <div class="dash-deal-cf">+$2,542/mo · 19.3% CoC</div>
+          </div>
+          <div class="dash-deal-right"><div class="dash-deal-score">90</div><div class="dash-deal-tier">Strong Buy</div></div>
+        </div>
+        <div class="dash-deal">
+          <div class="dash-deal-rmark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+          <div class="dash-deal-info">
+            <div class="dash-deal-addr">76-78 Linden St</div>
+            <div class="dash-deal-meta">Lynn · 4U · $900K · 2004</div>
+            <div class="dash-deal-cf">+$1,890/mo · 11.8% CoC</div>
+          </div>
+          <div class="dash-deal-right"><div class="dash-deal-score">87</div><div class="dash-deal-tier">Strong Buy</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> top 1-3 deals get a darker border + sage tint + "Analyst's Pick" badge + a one-line italic take quoted from the narrative service. Other deals stay unchanged — the badge is the differentiator, not a layout overhaul. Visual scan time stays the same; the user sees the curated pick(s) first without losing the broader list.
+    <br><br>
+    <b>How "Pick" is selected:</b> simplest v1 is "highest-scoring 1-3 deals in the last 7 days within markets the user follows." More sophisticated v2 uses the narrative's strength of conviction (Sonnet 4.6 already generates this implicitly — we just need to extract a confidence number from the prompt). The take quote is pulled from the existing bull narrative — no new generation needed.
+    <br><br>
+    <b>Effort:</b> badge component + take extraction + sort logic = ~½ day frontend + ~½ day backend (the "pick" flag needs to live on the deal record so other surfaces can use it too).
+  </p>
+
+</div>
+</body>
+</html>

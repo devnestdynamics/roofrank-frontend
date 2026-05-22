@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Angle 1 positioning mockup</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448; --forest-3:#3e8160;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --amber:#a06a00; --rose:#a03030;
+  --border:#e5dfd4; --border-2:#cbc3b6;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{color-scheme:light}
+body{background:#ebe6dc;color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:14px;-webkit-font-smoothing:antialiased;padding:2.5rem 1.5rem 5rem}
+
+.wrap{max-width:1640px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:1.9rem;font-weight:400;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.01em}
+.page-sub{font-size:.85rem;color:var(--muted);margin-bottom:2.5rem;max-width:880px;line-height:1.7}
+.page-sub b{color:var(--ink);font-weight:500}
+
+.section-title{font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--ink);margin:3.5rem 0 .35rem;letter-spacing:-.005em;padding-bottom:.5rem;border-bottom:1px solid #d6cfc2}
+.section-title:first-of-type{margin-top:.5rem}
+.section-meta{font-size:.75rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:720px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:1100px){.split{grid-template-columns:1fr}}
+
+.col-head{display:flex;align-items:baseline;gap:.55rem;margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid #d6cfc2}
+.col-num{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.col-num.cur{color:var(--amber);background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+.col-num.new{color:var(--forest);background:var(--sage-dim);border-color:var(--sage-border)}
+.col-title{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink)}
+
+.note{font-size:.72rem;color:var(--muted);margin-top:.7rem;line-height:1.6;padding:.7rem .85rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px}
+.note b{color:var(--ink);font-weight:500}
+
+/* ──── LANDING HERO PANEL ──── */
+.landing-frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:14px;padding:2.5rem 2rem 2.2rem;box-shadow:0 4px 22px rgba(28,31,28,.06);position:relative;min-height:380px}
+.landing-tag{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:1.1rem}
+.landing-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--forest);box-shadow:0 0 0 3px var(--sage-dim)}
+.landing-h1{font-family:var(--serif);font-size:2.2rem;font-weight:500;line-height:1.1;letter-spacing:-.015em;margin-bottom:.95rem;color:var(--ink)}
+.landing-h1 em{font-style:normal;color:#111110;font-weight:500}
+.landing-h1 .accent{color:var(--forest)}
+.landing-sub{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.6rem;max-width:480px}
+.landing-cta{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.2rem;background:var(--forest);color:#fff;border:none;border-radius:8px;font-weight:500;font-size:.85rem;font-family:var(--sans);cursor:pointer;text-decoration:none}
+
+/* Receipt card (only on the current panel for parity to live page) */
+.receipt-card{margin-top:1.5rem;background:var(--white);border:1px solid var(--cream-3);border-radius:10px;padding:.8rem .95rem;display:flex;align-items:center;gap:.85rem;font-size:.78rem;max-width:400px;position:relative}
+.receipt-30s{position:absolute;top:-9px;right:14px;background:var(--forest);color:#fff;font-family:var(--mono);font-size:.55rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.receipt-rmark{flex-shrink:0;width:36px;height:36px}
+.receipt-rmark svg{width:36px;height:36px;display:block}
+.mk-roof{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:var(--forest)}
+.mk-floor{fill:var(--forest)}
+.mk-floor-1{opacity:.45}
+.mk-floor-2{opacity:.7}
+.mk-floor-3{opacity:1}
+.receipt-body{flex:1;line-height:1.4}
+.receipt-addr{font-weight:500;color:var(--ink);font-family:var(--serif);font-size:.92rem;letter-spacing:-.005em}
+.receipt-meta{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:2px}
+.receipt-score{font-family:var(--mono);font-size:1.5rem;font-weight:500;color:var(--forest);line-height:1}
+
+/* Analyst-voice receipt for proposed panel */
+.analyst-receipt{margin-top:1.5rem;background:var(--white);border:1px solid var(--cream-3);border-radius:10px;padding:.95rem 1.1rem;max-width:480px;position:relative}
+.analyst-receipt-tag{position:absolute;top:-9px;left:14px;background:var(--forest);color:#fff;font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:flex;align-items:center;gap:.3rem}
+.analyst-receipt-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.4)}
+.analyst-receipt-quote{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:.65rem}
+.analyst-receipt-quote::before{content:'"';color:var(--forest);font-size:1.15rem;margin-right:1px}
+.analyst-receipt-quote::after{content:'"';color:var(--forest);font-size:1.15rem;margin-left:1px}
+.analyst-receipt-meta{display:flex;align-items:center;gap:.55rem;font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+.analyst-receipt-meta svg{width:18px;height:18px;flex-shrink:0}
+.analyst-receipt-meta b{color:var(--ink);font-weight:500}
+.analyst-receipt-meta-sep{color:var(--faint)}
+
+/* ──── DEAL DETAIL PANEL ──── */
+.detail-frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:12px;padding:1.25rem 1.1rem 1.1rem;box-shadow:0 4px 22px rgba(28,31,28,.06);min-height:560px}
+.detail-nav{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--cream-3);padding-bottom:.85rem;margin-bottom:1.05rem;font-size:.78rem;color:var(--muted)}
+.detail-nav-addr{font-weight:500;color:var(--ink);font-family:var(--serif);font-size:.95rem;letter-spacing:-.005em}
+.detail-export{font-size:.6rem;font-weight:600;background:var(--forest);color:#fff;padding:5px 11px;border-radius:5px;letter-spacing:.05em}
+
+.dd-hero-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.55rem}
+.dd-rmark{display:flex;align-items:center;gap:.4rem}
+.dd-rmark svg{width:38px;height:38px}
+.dd-rmark-num{font-family:var(--mono);font-size:1.45rem;font-weight:500;color:var(--forest);display:inline-flex;align-items:baseline;gap:2px;line-height:1}
+.dd-rmark-num .denom{font-size:.62rem;color:var(--faint)}
+.dd-signal{display:inline-flex;align-items:center;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:5px;background:rgba(28,74,53,.08);border:1px solid rgba(28,74,53,.22);color:var(--forest);line-height:1}
+.dd-hint{margin-left:auto;font-size:.66rem;color:var(--forest);text-decoration:underline}
+.dd-addr-line{font-family:var(--serif);font-size:1.18rem;font-weight:500;line-height:1.2;margin-bottom:.3rem}
+.dd-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--cream-3)}
+
+/* Cashflow card */
+.dd-cf{background:var(--forest);color:#fff;border-radius:12px;padding:.95rem 1rem;margin-bottom:1rem}
+.dd-cf-eyebrow{font-size:.55rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.7;margin-bottom:.35rem}
+.dd-cf-big{font-family:var(--serif);font-size:1.75rem;font-weight:500;letter-spacing:-.01em;display:flex;align-items:baseline;gap:.25rem}
+.dd-cf-big small{font-size:.78rem;opacity:.75;font-family:var(--mono);font-weight:400}
+.dd-cf-meta{font-size:.7rem;opacity:.78;margin-top:.35rem}
+.dd-cf-meta b{font-weight:500;color:#fff}
+
+/* Bull/Bear narrative */
+.dd-narr-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.55rem;gap:.5rem}
+.dd-narr-eyebrow{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--forest)}
+.dd-narr-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.dd-narr-card{border-radius:8px;padding:.65rem .8rem;background:#fafaf7;border:1px solid var(--cream-3);font-size:.7rem;line-height:1.5}
+.dd-narr-card.bull{background:rgba(122,170,143,.07);border-color:var(--sage-border)}
+.dd-narr-card.bear{background:rgba(160,106,0,.06);border-color:rgba(160,106,0,.2)}
+.dd-narr-tag{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem}
+.dd-narr-card.bull .dd-narr-tag{color:var(--forest)}
+.dd-narr-card.bear .dd-narr-tag{color:var(--amber)}
+
+/* Ask the Analyst chat block */
+.dd-chat{background:#2a3530;color:#e9efeb;border-radius:12px;padding:1rem 1.1rem;margin-bottom:.85rem;position:relative}
+.dd-chat-tag{position:absolute;top:-9px;left:14px;background:var(--forest);color:#fff;font-family:var(--mono);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:flex;align-items:center;gap:.3rem}
+.dd-chat-tag::before{content:'';width:5px;height:5px;border-radius:50%;background:#7aaa8f;box-shadow:0 0 0 1px rgba(122,170,143,.4)}
+.dd-chat-prompt{font-family:var(--serif);font-size:.95rem;font-style:italic;line-height:1.5;color:#e9efeb;margin-bottom:.85rem;padding-top:.25rem}
+.dd-chat-input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.55rem .75rem;display:flex;align-items:center;gap:.5rem;color:#a8b4ad;font-size:.78rem}
+.dd-chat-input-text{flex:1}
+.dd-chat-send{background:var(--sage);color:var(--forest);border:none;padding:.35rem .8rem;border-radius:5px;font-weight:600;font-size:.7rem;font-family:var(--sans)}
+.dd-chat-chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.65rem}
+.dd-chat-chip{background:rgba(122,170,143,.13);border:1px solid rgba(122,170,143,.3);color:#bcd1c4;font-size:.65rem;padding:3px 8px;border-radius:99px;font-family:var(--mono);letter-spacing:.02em}
+
+/* ──── NAV / DASHBOARD PANEL ──── */
+.nav-frame{background:var(--cream);border:1px solid var(--cream-3);border-radius:12px;padding:0;overflow:hidden;box-shadow:0 4px 22px rgba(28,31,28,.06)}
+.nav-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 1rem;height:54px;display:flex;align-items:center;justify-content:space-between;gap:.55rem}
+.nav-brand{font-family:var(--serif);font-size:1rem;font-weight:500;color:var(--ink);letter-spacing:-.005em}
+.nav-links{display:flex;align-items:center;gap:1.25rem}
+.nav-links a{font-size:.78rem;font-weight:500;color:var(--muted);text-decoration:none;padding:.3rem 0;cursor:pointer;border-bottom:2px solid transparent}
+.nav-links a.active{color:var(--forest);border-bottom-color:var(--forest)}
+.nav-links a.analyst-pill{background:var(--forest);color:#fff;padding:.35rem .75rem;border-radius:99px;border:none;font-size:.72rem;display:inline-flex;align-items:center;gap:.35rem}
+.nav-links a.analyst-pill svg{width:11px;height:11px}
+.nav-add{background:var(--cream-2);border:1px solid var(--border);color:var(--muted);padding:.35rem .55rem;border-radius:6px;font-size:.7rem;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer}
+.nav-body{padding:1.25rem 1.1rem;min-height:280px}
+.nav-deal{background:var(--white);border:1px solid var(--cream-3);border-radius:8px;padding:.7rem .85rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.65rem;font-size:.78rem}
+.nav-deal-mark{flex-shrink:0;width:30px;height:30px}
+.nav-deal-mark svg{width:30px;height:30px}
+.nav-deal-info{flex:1;line-height:1.35}
+.nav-deal-addr{font-weight:500;color:var(--ink);font-family:var(--serif)}
+.nav-deal-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+.nav-deal-score{font-family:var(--mono);font-size:1.05rem;font-weight:500;color:var(--forest)}
+.nav-deal-arrow{color:var(--faint);font-size:.9rem}
+.nav-analyst-cta{margin-top:.8rem;background:#2a3530;color:#e9efeb;border-radius:8px;padding:.7rem .85rem;display:flex;align-items:center;gap:.65rem;font-size:.78rem;cursor:pointer;border:1px solid rgba(122,170,143,.18)}
+.nav-analyst-cta svg{flex-shrink:0;width:18px;height:18px}
+.nav-analyst-cta-text{flex:1;font-family:var(--serif);font-style:italic}
+.nav-analyst-cta-text b{color:#bcd1c4;font-style:normal;font-weight:500}
+.nav-analyst-cta-arrow{color:#7aaa8f;font-family:var(--mono);font-size:.85rem}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">Angle 1 — Analyst-led positioning</h1>
+  <p class="page-sub">
+    Reposition RoofRank from "deal screener with AI features" to <b>"an AI analyst that scores every multifamily deal in your market."</b> Same product, sharper story. Three surfaces shift to make the brand match what's actually built: landing hero, deal-detail (chat moves up), and dashboard nav (persistent Ask-the-Analyst entry). No engineering pivot — copy + UX reorder + ~3-5 days for the deal-agnostic chat surface.
+  </p>
+
+  <!-- ──── SURFACE 1: LANDING HERO ──── -->
+  <h2 class="section-title">Surface 1 — Landing page hero</h2>
+  <p class="section-meta">Current hero leads with a benefit ("Know if a multifamily cashflows in 30 seconds"). Proposed leads with WHO is doing the analysis. Receipt also shifts from "look at this fast result" to "hear from the analyst" — the analyst's voice becomes the proof, not the speed.</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current</span></div>
+      <div class="landing-frame">
+        <div class="landing-tag"><span class="landing-tag-dot"></span>Multifamily · 2–6 units · Numbers first, photos one click away</div>
+        <h1 class="landing-h1">Know if a multifamily cashflows —<br>in 30 seconds.</h1>
+        <p class="landing-sub">Live mortgage rates, real rents, actual property tax. Every 2–6 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
+        <a class="landing-cta">See live deals →</a>
+        <div class="receipt-card">
+          <span class="receipt-30s">in 30 sec</span>
+          <div class="receipt-rmark">
+            <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+          </div>
+          <div class="receipt-body">
+            <div class="receipt-addr">139 Vernon St, Worcester</div>
+            <div class="receipt-meta">STRONG BUY · 92/100 · +$2,165/mo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num new">1 · proposed</span><span class="col-title">Analyst-led</span></div>
+      <div class="landing-frame">
+        <div class="landing-tag"><span class="landing-tag-dot"></span>Massachusetts · 2–6 unit multifamily · powered by Claude Sonnet 4.6</div>
+        <h1 class="landing-h1">An <span class="accent">AI analyst</span> reads every multifamily<br>listing in your market — before you do.</h1>
+        <p class="landing-sub">Score, cashflow, and a direct opinion on every 2–6 unit deal in Massachusetts. Asks the questions you would — without burning your Sunday on Zillow.</p>
+        <a class="landing-cta">Meet the Analyst →</a>
+        <div class="analyst-receipt">
+          <span class="analyst-receipt-tag">The Analyst</span>
+          <div class="analyst-receipt-quote">139 Vernon St is one of the cleanest Worcester triple-decker plays I've seen this month — 9.7% cap, $2K cashflow, and the seller's been on market 28 days. I'd open at $565K.</div>
+          <div class="analyst-receipt-meta">
+            <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+            <span><b>92/100</b> Strong Buy</span>
+            <span class="analyst-receipt-meta-sep">·</span>
+            <span>Worcester triple-decker</span>
+            <span class="analyst-receipt-meta-sep">·</span>
+            <span>scored 4 hrs ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> tag swaps "Numbers first" → vendor signal ("powered by Claude Sonnet 4.6") to communicate the AI engine without saying "AI" generically. Headline shifts from outcome-focused ("Know if a multifamily cashflows") to actor-focused ("An AI analyst reads every listing"). Receipt swaps the badge/score grid for an analyst-voice quote — same data, different proof shape. CTA changes from "See live deals" to "Meet the Analyst" — frames first-touch as relationship-building, not feature-browsing.
+    <br><br>
+    <b>Risk:</b> Anthropic narrative reliability needs to hold above ~80% — if the Analyst's voice is throttled or inconsistent, the brand promise breaks faster than under the current framing.
+  </p>
+
+  <!-- ──── SURFACE 2: DEAL DETAIL CHAT REORDER ──── -->
+  <h2 class="section-title">Surface 2 — Deal detail (chat moves up)</h2>
+  <p class="section-meta">Today: cashflow card → narrative → comps → rent estimate → score breakdown → Ask the Analyst (~5 sections down). Proposed: chat surfaces immediately under the score row. The differentiated feature shows above the fold; cashflow + narrative reorder to support it instead of preceding it.</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current order</span></div>
+      <div class="detail-frame">
+        <div class="detail-nav"><span class="detail-nav-addr">← 2 Stevens Rd, Worcester</span><span class="detail-export">Export</span></div>
+        <div class="dd-hero-row">
+          <div class="dd-rmark">
+            <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+            <div class="dd-rmark-num">90<span class="denom">/100</span></div>
+          </div>
+          <span class="dd-signal">Strong Buy</span>
+          <span class="dd-hint">How is this scored?</span>
+        </div>
+        <div class="dd-addr-line">2 Stevens Rd, Worcester, MA 01603</div>
+        <div class="dd-meta">3 Units · Multi-Family · Built 1900 · 27d on market</div>
+        <div class="dd-cf">
+          <div class="dd-cf-eyebrow">Projected monthly cash flow</div>
+          <div class="dd-cf-big">+$2,542<small>/mo</small></div>
+          <div class="dd-cf-meta">$30,504/yr · <b>19.3%</b> cash-on-cash</div>
+        </div>
+        <div class="dd-narr-head"><span class="dd-narr-eyebrow">✦ Analyst note</span></div>
+        <div class="dd-narr-grid">
+          <div class="dd-narr-card bull"><div class="dd-narr-tag">Bull</div>A 10.1% cap on a Worcester triple-decker is genuinely competitive…</div>
+          <div class="dd-narr-card bear"><div class="dd-narr-tag">Bear</div>At $200K per unit and 1900 build year, CapEx reserves need to absorb…</div>
+        </div>
+        <div style="text-align:center;padding:.85rem;background:var(--cream-2);border:1px dashed var(--border-2);border-radius:8px;font-size:.72rem;color:var(--muted)">↓ then comps, rent estimate, score breakdown, then chat ↓</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num new">1 · proposed</span><span class="col-title">Chat first</span></div>
+      <div class="detail-frame">
+        <div class="detail-nav"><span class="detail-nav-addr">← 2 Stevens Rd, Worcester</span><span class="detail-export">Export</span></div>
+        <div class="dd-hero-row">
+          <div class="dd-rmark">
+            <svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg>
+            <div class="dd-rmark-num">90<span class="denom">/100</span></div>
+          </div>
+          <span class="dd-signal">Strong Buy</span>
+          <span class="dd-hint">How is this scored?</span>
+        </div>
+        <div class="dd-addr-line">2 Stevens Rd, Worcester, MA 01603</div>
+        <div class="dd-meta">3 Units · Multi-Family · Built 1900 · 27d on market</div>
+
+        <div class="dd-chat">
+          <span class="dd-chat-tag">The Analyst</span>
+          <div class="dd-chat-prompt">This Worcester triple-decker is one of the better cap rates I'm seeing this week. Worth a closer look — ask me anything.</div>
+          <div class="dd-chat-input">
+            <span class="dd-chat-input-text">Ask anything about this deal…</span>
+            <button class="dd-chat-send">Ask →</button>
+          </div>
+          <div class="dd-chat-chips">
+            <span class="dd-chat-chip">Biggest risk?</span>
+            <span class="dd-chat-chip">What should I offer?</span>
+            <span class="dd-chat-chip">Compare to other Worcester</span>
+          </div>
+        </div>
+
+        <div class="dd-cf">
+          <div class="dd-cf-eyebrow">Projected monthly cash flow</div>
+          <div class="dd-cf-big">+$2,542<small>/mo</small></div>
+          <div class="dd-cf-meta">$30,504/yr · <b>19.3%</b> cash-on-cash</div>
+        </div>
+
+        <div style="text-align:center;padding:.85rem;background:var(--cream-2);border:1px dashed var(--border-2);border-radius:8px;font-size:.72rem;color:var(--muted)">↓ bull/bear narrative, comps, score breakdown ↓</div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> Ask-the-Analyst chat moves immediately under the score row — visible above the fold. Includes a "first message" from the Analyst that frames the deal in voice, not just numbers. Cashflow card moves DOWN one position; narrative + comps follow it. The chat becomes the feature you see first, not the one you find by scrolling.
+    <br><br>
+    <b>Why this matters:</b> right now users have to scroll past 4-5 sections to find the differentiated feature. With the reorder, the chat is the dominant element on first paint — anchors the entire experience around the analyst's voice.
+  </p>
+
+  <!-- ──── SURFACE 3: PERSISTENT ASK THE ANALYST IN NAV ──── -->
+  <h2 class="section-title">Surface 3 — Dashboard nav (persistent Ask-the-Analyst entry)</h2>
+  <p class="section-meta">Today: chat lives inside a specific deal. To ask the Analyst a market-level question ("any 8%-cap deals in Lynn under $700K?"), the user has to pick a deal first, then steer the chat away from it. Proposed: a persistent "Ask the Analyst" entry at the nav level opens a deal-agnostic chat. ~3-5 days of work — chat infra already exists, just needs a market-scope prompt path.</p>
+  <div class="split">
+
+    <div>
+      <div class="col-head"><span class="col-num cur">0 · live</span><span class="col-title">Current nav</span></div>
+      <div class="nav-frame">
+        <div class="nav-bar">
+          <span class="nav-brand">RoofRank</span>
+          <div class="nav-links">
+            <a class="active">Today</a>
+            <a>Watching</a>
+          </div>
+          <span class="nav-add">+ Analyze</span>
+        </div>
+        <div class="nav-body">
+          <div class="nav-deal">
+            <div class="nav-deal-mark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+            <div class="nav-deal-info"><div class="nav-deal-addr">2 Stevens Rd</div><div class="nav-deal-meta">Worcester · 3U · $600K</div></div>
+            <span class="nav-deal-score">90</span><span class="nav-deal-arrow">›</span>
+          </div>
+          <div class="nav-deal">
+            <div class="nav-deal-mark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+            <div class="nav-deal-info"><div class="nav-deal-addr">76-78 Linden St</div><div class="nav-deal-meta">Lynn · 4U · $900K</div></div>
+            <span class="nav-deal-score">87</span><span class="nav-deal-arrow">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-head"><span class="col-num new">1 · proposed</span><span class="col-title">Analyst-led nav</span></div>
+      <div class="nav-frame">
+        <div class="nav-bar">
+          <span class="nav-brand">RoofRank</span>
+          <div class="nav-links">
+            <a class="active">Today</a>
+            <a>Watching</a>
+            <a class="analyst-pill"><svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z"/></svg>Ask the Analyst</a>
+          </div>
+          <span class="nav-add">+ Analyze</span>
+        </div>
+        <div class="nav-body">
+          <div class="nav-deal">
+            <div class="nav-deal-mark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+            <div class="nav-deal-info"><div class="nav-deal-addr">2 Stevens Rd</div><div class="nav-deal-meta">Worcester · 3U · $600K</div></div>
+            <span class="nav-deal-score">90</span><span class="nav-deal-arrow">›</span>
+          </div>
+          <div class="nav-deal">
+            <div class="nav-deal-mark"><svg viewBox="0 0 40 40"><path class="mk-roof" d="M5 18 L20 7 L35 18"/><rect class="mk-floor mk-floor-3" x="6" y="21" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-2" x="6" y="27" width="28" height="3" rx=".5"/><rect class="mk-floor mk-floor-1" x="6" y="33" width="28" height="3" rx=".5"/></svg></div>
+            <div class="nav-deal-info"><div class="nav-deal-addr">76-78 Linden St</div><div class="nav-deal-meta">Lynn · 4U · $900K</div></div>
+            <span class="nav-deal-score">87</span><span class="nav-deal-arrow">›</span>
+          </div>
+          <div class="nav-analyst-cta">
+            <svg viewBox="0 0 24 24" stroke="none" fill="#7aaa8f"><path d="M12 2 L13.6 9.4 L22 12 L13.6 14.6 L12 22 L10.4 14.6 L2 12 L10.4 9.4 Z"/></svg>
+            <div class="nav-analyst-cta-text"><b>Don't see what you're looking for?</b> Ask the Analyst about any market.</div>
+            <span class="nav-analyst-cta-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">
+    <b>What changed:</b> nav gets a new persistent "Ask the Analyst" pill — visible from every page, opens a deal-agnostic chat. Underneath the deal list, an inline CTA reinforces the same affordance ("don't see what you're looking for? Ask the Analyst"). The chat infra exists today; the only build is a new chat surface that accepts a market-scope prompt instead of a deal-scope.
+    <br><br>
+    <b>Why this matters:</b> the brand promise is "an analyst, always available." Today, that's only true once you pick a specific deal. Adding the persistent entry makes the promise real at the dashboard level — and creates a natural funnel for users who have a question but no specific deal to anchor it to.
+  </p>
+
+</div>
+</body>
+</html>
