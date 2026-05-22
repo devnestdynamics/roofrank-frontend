@@ -3018,6 +3018,26 @@ Closes / supersedes:
 
 ---
 
+### 209. Pre-auth intent capture (alternatives to a hard email gate)
+
+**Status:** 🟡 Post-launch · revisit when conversion data shows we need it.
+
+**Background:** Was briefly tracked as a launch task (originally #72 — onboarding email-gate) before Ali pushed back. The current pre-auth flow is deliberate value-before-signup: pick market → see real deals immediately → email only required when the user clicks into a deal (existing magic-link wall). Adding an email gate BEFORE the deals reveal would tax the funnel at exactly the wrong point.
+
+**Three friction-light alternatives** to capture intent without breaking the current flow:
+
+1. **Server-side analytics on pre-auth market picks.** Already partially implicit — every `/feed/public?market=...` call logs the market id and IP. Add a tiny `pre_auth_intent` table (or just structured CloudWatch logs) tracking: `(market, user_agent, referrer, timestamp)`. Lets us see funnel drop-off + market-pick distribution without asking anyone for anything. ~½ day.
+
+2. **Exit-intent soft capture.** When the user moves cursor toward the close-tab / back-button, surface a friendly modal: *"Save your market — we'll send a brief next time a Strong Buy lands."* Email-optional, dismissable. Industry-standard pattern, low conversion-friction (only shown to users actively leaving). ~½ day frontend.
+
+3. **In-feed soft capture.** After the user has scrolled past the hero deal on the pre-auth feed, inject a quiet inline field: *"Want this in your inbox when fresh Strong Buys hit?"* Below-the-fold, easy to ignore. Better data quality than exit-intent (only fires for engaged readers). ~½ day frontend.
+
+**Recommendation when revisiting:** ship #1 immediately post-launch (zero friction, real data). Run for 2 weeks. If pre-auth drop-off is high AND we see returning anonymous traffic patterns we can't follow up on, layer in #2 or #3 deliberately. Don't ship all three at once — measure first.
+
+**Trigger to revisit:** when we have 50+ pre-auth market picks per week + we want to know who's returning.
+
+---
+
 ### 207. ATTOM API key returning 401 in prod — enrichment is silently failing
 
 **Status:** 🔴 Critical · data quality regression in prod.
