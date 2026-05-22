@@ -3077,6 +3077,34 @@ Closes / supersedes:
 
 ---
 
+### 211. Separate Resend account / API key for dev vs prod
+
+**Status:** 🟡 Important · post-launch but file it now so it doesn't get lost.
+
+**The pain that surfaced this (2026-05-21):** Ali pulled the Resend dashboard and saw 250+ bounced sends across 3 days. Every one was a Playwright test address (`e2e-onboard-*@example.com`, `mlink-test-*@example.com`, etc.). Root cause: local backend reads `RESEND_API_KEY` from `.env`, and `.env` holds the prod key. Every test run fired 13+ real Resend calls to fake addresses, all bounced, all counted against our sender reputation. Gmail/Outlook score by bounce rate; >5% triggers spam filtering. We hit ~99% on that 3-day window.
+
+**Immediate mitigation already shipped (commit 72b1170):** `safeSend()` wrapper in `lib/email.ts` skips Resend send when recipient domain is RFC 2606 / test domain (`example.com`, `example.org`, `example.net`, `test`, `localhost`, `invalid`). Stops the bleed but doesn't fix the architectural mistake of sharing one Resend account between dev and prod.
+
+**Why "shared Resend account" is bad even with the guard:**
+- Future test author writes a test that uses `@gmail.com` or `@anywhere-real.com` for some reason → bypasses the guard, hits prod reputation.
+- Future bug in `safeSend` (typo in domain list, regex error) silently re-enables the leak.
+- Prod email volume metrics in the Resend dashboard are polluted with test signal.
+- Free-tier quota (100 emails/day) is shared with test runs.
+- If we ever want a test that VERIFIES end-to-end inbox delivery (e.g., a Mailosaur-style integration), it'd burn prod quota.
+
+**The fix:**
+1. Create a second Resend account (or use Resend's "domain" abstraction to add a `dev.roofrank.io` subdomain with its own API key under the same account).
+2. New env var `RESEND_API_KEY_DEV` for the local/test key.
+3. Backend reads `RESEND_API_KEY_DEV` when `NODE_ENV !== 'production'`, otherwise `RESEND_API_KEY`.
+4. Local `.env` only has `RESEND_API_KEY_DEV`. Prod ECS task definition only has `RESEND_API_KEY`. Neither can be confused for the other.
+5. Sender domains stay isolated: `noreply@roofrank.io` (prod), `dev-noreply@dev.roofrank.io` (test) — so reputation never crosses.
+
+**Effort:** ~½ day, mostly DNS for the dev subdomain + Resend dashboard work + a tiny config branch. Could be done same-day post-launch.
+
+**Trigger to revisit:** before we add any test that needs to verify actual inbox delivery (Mailosaur, etc.), OR if we see the safeSend guard miss a leak in prod, OR if free-tier quota becomes a real constraint.
+
+---
+
 ### 207. ATTOM API key returning 401 in prod — enrichment is silently failing
 
 **Status:** 🔴 Critical · data quality regression in prod.
