@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoofRank — Settings</title>
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:wght@500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f4ef;color:#1c1f1c;font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;font-size:15px;-webkit-font-smoothing:antialiased}
+.card{max-width:440px;width:100%;padding:2.5rem 2rem;background:#fff;border:1px solid #e6e0d5;border-radius:14px;box-shadow:0 4px 22px rgba(28,31,28,.06);text-align:center}
+.brand{margin-bottom:1.5rem}
+.brand svg{width:32px;height:32px}
+.brand-name{font-family:'Playfair Display',Georgia,serif;font-size:1rem;font-weight:500;margin-top:.35rem}
+.title{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;font-weight:500;letter-spacing:-.01em;margin-bottom:.55rem;line-height:1.2}
+.sub{font-size:.85rem;color:#6b7168;line-height:1.65;margin-bottom:1.6rem;max-width:340px;margin-left:auto;margin-right:auto}
+.sub b{color:#1c1f1c;font-weight:500}
+.btn{background:#1c4a35;color:#fff;border:none;padding:.7rem 1.4rem;border-radius:8px;font-weight:500;font-size:.88rem;font-family:'DM Sans',system-ui,sans-serif;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:#2d6448}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
+    <div class="brand-name">RoofRank</div>
+  </div>
+  <div class="title">Settings · coming soon</div>
+  <div class="sub">A dedicated settings page (phone, SMS opt-in, alert preferences) is on the way. For now, <b>manage your subscription</b> from the dashboard's "More" menu &mdash; or sign out from there.</div>
+  <a class="btn" href="roofrank-dashboard.html">Open dashboard →</a>
+</div>
+<script>
+// Auto-redirect to dashboard after 4s so users don't sit here. The
+// 'coming soon' message gives a brief moment for them to understand
+// why /settings (referenced in email footers) isn't a real page yet.
+setTimeout(() => { location.href = 'roofrank-dashboard.html'; }, 4000);
+</script>
+</body>
+</html>
