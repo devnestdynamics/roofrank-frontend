@@ -567,7 +567,7 @@ async function saveReport(){
     };
     await ReportsAPI.create(addr, propertyData);
     btn.textContent='✓ Saved';
-    showToast('✓ Report saved &nbsp;<a href="roofrank-reports.html" style="color:rgba(255,255,255,.8);text-decoration:underline;font-size:.74rem">View in My Reports →</a>',undefined,4000);
+    showToast('✓ Saved to My Deals',undefined,4000);
     setTimeout(()=>{btn.textContent='Save Report';btn.disabled=false;},3000);
   }catch(e){
     btn.textContent='Save Report';btn.disabled=false;
