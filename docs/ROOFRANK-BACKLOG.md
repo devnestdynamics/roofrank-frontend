@@ -573,10 +573,15 @@ Stripe keys are test/placeholder. Activate live keys, update Secrets Manager. Re
 
 ---
 
-### 52. Plan Limits Enforcement
+### ~~52. Plan Limits Enforcement~~ ✅ DONE 2026-05-23
 **Priority:** 🟡 · **Effort:** M
 
-Verify Starter plan limits enforced: 10 reports max, no Strong Buy alerts. Test with a non-Pro account.
+Backend audit (2026-05-23) found 4 leaky endpoints. Each closed + 11-test regression suite added:
+- `POST /api/feed/refresh` — was openly callable as any authed user (cost/DoS vector). Now 403 ADMIN_REQUIRED via new `requirePlatformAdmin()` helper + `ADMIN_EMAILS` env allowlist.
+- `POST + DELETE /api/feed/:id/rent-override` — Pro-advertised feature was open to Free. Now 402 PRO_FEATURE_REQUIRED.
+- `POST /api/notifications/subscribe + /test` — push alerts (PLAN_LIMITS.starter.alerts=false) were ungated. Now 402.
+
+All 11 plan-limits tests passing against prod. See `src/lib/planChecks.ts` and `tests/tests/plan-limits.spec.ts`.
 
 ---
 
