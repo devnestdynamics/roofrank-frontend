@@ -1244,13 +1244,24 @@ function renderCityChips(){
   // not just the loaded page's score cut.
   const presentCities = new Set();
   for(const d of allDeals){ if(d.city) presentCities.add(d.city); }
+  // When a city filter IS active, the loaded deals only include that one
+  // city — but the user's other markets are still THEIR markets. Including
+  // activeCity in presentCities keeps the chip stable while filtered, and
+  // un-gating the starter list when a filter is active means the other
+  // markets stay visible so the user can switch back without first having
+  // to hit "All".
+  if(activeCity) presentCities.add(activeCity);
+  const filterIsActive = !!activeCity;
   let counts = {};
   let totalAll = 0;
   if(marketStats && marketStats.length){
     for(const r of marketStats){
       if(!r.city) continue;
-      // Only gate by allDeals presence for starter — Pro/Team see all.
-      if(!isPro && !presentCities.has(r.city)) continue;
+      // Gate by presentCities for starter — but ONLY when no filter is
+      // active. With a filter on, allDeals collapses to one city, which
+      // would otherwise strip every other market from the chip row and
+      // strand the user (reported 2026-05-25).
+      if(!isPro && !filterIsActive && !presentCities.has(r.city)) continue;
       const n = Number(r.total_listings || 0);
       counts[r.city] = n;
       totalAll += n;
@@ -1265,8 +1276,10 @@ function renderCityChips(){
 
   if(!Object.keys(counts).length){ row.style.display = 'none'; return; }
   const cities = Object.entries(counts).sort((a,b) => b[1] - a[1]);
-  // Only show the chip row if there's more than one city; otherwise it's noise.
-  if(cities.length < 2){ row.style.display = 'none'; return; }
+  // Used to hide the chip row when only one city was present, on the theory
+  // that one chip is noise. Removed 2026-05-25 — when a filter is active
+  // and the chip row hides, the user has no affordance to clear it. Always
+  // show the row so the "× All" reset is always reachable.
 
   // "All" chip gets distinct styling when a filter is active so it reads
   // as a "clear filter" affordance, not as a third city option. Tapping
