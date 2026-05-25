@@ -2619,6 +2619,22 @@ async function boot(){
       });
     }
   } catch(e){
+    // 402 + DAILY_DEAL_VIEW_LIMIT — Free user hit their daily cap on a
+    // NEW deal they haven't opened today. Don't render the deal (server
+    // hard-blocked), show the paywall card instead. Deals they opened
+    // earlier today still load fine (server check filters by uniqueness).
+    if (e && e.status === 402 && e.code === 'DAILY_DEAL_VIEW_LIMIT') {
+      renderDealState({
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        title: "You've hit today's free deal-view limit",
+        sub: "Free accounts can open 3 new deal pages per day. Upgrade to Pro for unlimited views — plus AI deal narratives, the full 8-metric breakdown, watchlist alerts, and the analyst chat.",
+        actions: [
+          { label: 'Upgrade to Pro', primary: true, href: 'roofrank-pricing.html' },
+          { label: 'Back to feed',   href: 'roofrank-dashboard.html' },
+        ],
+      });
+      return;
+    }
     // Network / API failure — friendly card with retry. Was dumping raw
     // e.message (e.g. 'fetch failed', '500 Internal Server Error') which
     // is meaningless to the user and looks broken.
