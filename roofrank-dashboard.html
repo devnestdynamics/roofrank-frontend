@@ -401,6 +401,19 @@ body{
 .city-chip.active{background:var(--forest); color:#fff; border-color:var(--forest)}
 .city-chip-count{font-family:var(--mono); font-size:.62rem; background:var(--cream-2); color:var(--muted); padding:1px 6px; border-radius:8px; font-weight:500}
 .city-chip.active .city-chip-count{background:rgba(255,255,255,.18); color:#fff}
+/* "All" chip when a filter IS active — reads as "clear filter" via dashed
+   outline + sage tint, distinguishing it from the inactive city chips so
+   the user can find their way back to the all-markets view without having
+   to know that tapping the active chip also deselects it. */
+.city-chip.city-chip-all.is-reset{
+  background:rgba(122,170,143,.08);
+  border-color:var(--sage-border);
+  border-style:dashed;
+  color:var(--forest);
+  font-weight:600;
+}
+.city-chip.city-chip-all.is-reset:hover{background:rgba(122,170,143,.16); border-style:solid}
+.city-chip.city-chip-all.is-reset .city-chip-count{background:rgba(28,74,53,.08); color:var(--forest)}
 
 /* ── TODAY'S PICKS (above the brief) ─────────────────────────────── */
 .todays-picks-section{padding:.5rem 0 .25rem}
@@ -1255,8 +1268,14 @@ function renderCityChips(){
   // Only show the chip row if there's more than one city; otherwise it's noise.
   if(cities.length < 2){ row.style.display = 'none'; return; }
 
+  // "All" chip gets distinct styling when a filter is active so it reads
+  // as a "clear filter" affordance, not as a third city option. Tapping
+  // any chip that's already active deselects it (see setActiveCity), so
+  // there are two paths back to the all-markets view.
+  const allLabel = activeCity ? '× All' : 'All';
+  const allCls   = `city-chip city-chip-all${activeCity ? ' is-reset' : ' active'}`;
   const chips = [
-    `<button class="city-chip${activeCity ? '' : ' active'}" type="button" onclick="setActiveCity(null)">All <span class="city-chip-count">${totalAll}</span></button>`,
+    `<button class="${allCls}" type="button" onclick="setActiveCity(null)">${allLabel} <span class="city-chip-count">${totalAll}</span></button>`,
     ...cities.map(([city, count]) =>
       `<button class="city-chip${activeCity === city ? ' active' : ''}" type="button" onclick="setActiveCity('${city.replace(/'/g, "\\'")}')">${city} <span class="city-chip-count">${count}</span></button>`
     ),
@@ -1266,8 +1285,19 @@ function renderCityChips(){
 }
 
 function setActiveCity(city){
-  if(activeCity === city) return;
-  activeCity = city || null;
+  // Tapping the currently-active chip toggles back to "all" view. Prior
+  // behavior was an early return that left the user stranded with no
+  // visible way back to the all-markets view if they missed the small
+  // "All" chip on the left. (Reported 2026-05-25.)
+  if(activeCity === city || (city === null && activeCity === null)) {
+    if(activeCity === city && city !== null) {
+      activeCity = null;
+    } else {
+      return; // already at "all" — nothing to do
+    }
+  } else {
+    activeCity = city || null;
+  }
   // Persist preference for next visit
   try {
     if(activeCity) localStorage.setItem(CITY_STORAGE_KEY, activeCity);
