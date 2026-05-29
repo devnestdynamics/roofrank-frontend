@@ -1689,13 +1689,15 @@ function renderRentEstimate(d){
   toggleBtn.childNodes[0].nodeValue = usingOverride ? 'Edit your numbers ' : 'Use your own numbers ';
 
   // Build the form inputs from either the override (if set) or HUD defaults.
-  // Skip the full rebuild if the form is OPEN and the user might be
-  // mid-typing — we don't want a lens-toggle re-render to nuke their
-  // half-entered values. Headline (above) still updates either way.
+  // Always rebuild — previously this skipped rebuild when the form was open
+  // to protect user typing, but that left per-unit inputs stuck at the
+  // baseline rents even when the user toggled As-is/Updated/Renovated.
+  // Trade-off: condition-toggling DOES wipe any in-progress custom numbers,
+  // but the two flows are semantically different (lens = scale baseline,
+  // override = type your own actual rents). If a user toggles a lens after
+  // typing, that's an explicit "show me the new baseline" intent.
   const inputs = document.getElementById('rentUnitInputs');
-  const form   = document.getElementById('rentForm');
-  const formOpen = form && form.style.display !== 'none';
-  if (inputs && !formOpen) {
+  if (inputs) {
     inputs.innerHTML = '';
     const defaultBdBase = mix.baseBd || 2;
     const defaultBdNext = Math.min(4, defaultBdBase + 1);
