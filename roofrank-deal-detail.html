@@ -1837,7 +1837,11 @@ function computeScenarioFin(d, fin, state){
   const price = d.askingPrice;
   const dp = price * state.dpPct;
   const loan = price * (1 - state.dpPct);
-  const closing = price * 0.014;
+  // Closing cost — must match the backend's scoringEngine.ts (2%). Was 1.4%
+  // here which produced a ~$7K cash-invested gap on a $1.2M deal and made
+  // the dashboard CoC (read from backend-stored value) differ from the
+  // detail-page CoC (recomputed here). Aligned 2026-05-29.
+  const closing = price * 0.02;
   const totalCash = dp + closing;
   const monthlyPI = pmt(state.rate/12, 360, loan);
   // Apply the condition-lens rent multiplier (defaults to 1.0). Use
@@ -1845,8 +1849,24 @@ function computeScenarioFin(d, fin, state){
   // local PITI recompute matches the backend's scoringEngine.ts.
   const condMult = state.condMult || 1.0;
   const monthlyRent = ((fin.effectiveGrossIncome ?? fin.grossRentalIncome) / 12) * condMult;
-  const monthlyTax = fin.annualTaxes ? fin.annualTaxes/12 : price*0.012/12;
-  const monthlyIns = fin.annualInsurance ? fin.annualInsurance/12 : price*0.004/12;
+  // Tax + insurance lookup with multi-source fallback. scoringEngine.ts
+  // doesn't put annualTaxes/annualInsurance into `fin` directly — they
+  // live in propertyData (the raw input) and reportData.assumptions
+  // (with provenance). Read in that order before falling back to
+  // hard-coded percentages, so the detail page uses the SAME real values
+  // the backend used to score the deal.
+  const rd = d.reportData || {};
+  const pd = d.propertyData || {};
+  const annualTaxes = fin.annualTaxes
+                   ?? rd.assumptions?.taxes?.value
+                   ?? pd.annualTaxes
+                   ?? (price * 0.012);
+  const annualInsurance = fin.annualInsurance
+                       ?? rd.assumptions?.insurance?.value
+                       ?? pd.annualInsurance
+                       ?? (price * 0.004);
+  const monthlyTax = annualTaxes / 12;
+  const monthlyIns = annualInsurance / 12;
   const monthlyCf = monthlyRent - monthlyPI - monthlyTax - monthlyIns;
   const annualCf = monthlyCf * 12;
   const coc = totalCash>0 ? (annualCf/totalCash)*100 : null;
