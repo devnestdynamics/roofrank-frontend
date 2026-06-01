@@ -204,6 +204,9 @@ const ReportsAPI = {
 const ManualFeedAPI = {
   list()         { return apiFetch('/feed/manual'); },
   create(input)  { return apiFetch('/feed/manual', { method: 'POST', body: JSON.stringify(input) }); },
+  // Removes a manual deal from the user's My Deals. Does NOT refund the
+  // monthly quota — see backend handler for the abuse-prevention rationale.
+  delete(id)     { return apiFetch(`/feed/manual/${id}`, { method: 'DELETE' }); },
 };
 
 const WatchlistAPI = {

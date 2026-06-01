@@ -125,6 +125,8 @@ main{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
 .ap-result-num-label{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
 .ap-result-meta{font-family:var(--mono);font-size:.7rem;color:var(--muted);padding-top:.7rem;border-top:1px solid var(--cream-3)}
 .ap-result-meta b{color:var(--ink);font-weight:500}
+.ap-result-saved{display:inline-flex;align-items:center;gap:.4rem;margin-top:.85rem;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--forest);padding:5px 10px;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:5px;line-height:1}
+.ap-result-saved svg{width:11px;height:11px;stroke:var(--forest);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
 .ap-actions{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center}
 .ap-action{padding:.6rem 1rem;border-radius:8px;font-size:.82rem;font-weight:500;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;border:none;text-decoration:none}
@@ -257,6 +259,7 @@ main{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
     <div class="ap-actions">
       <a class="ap-action primary" id="openBtn">Open full breakdown</a>
       <button class="ap-action secondary" onclick="resetToStep1()">+ Analyze another</button>
+      <button class="ap-action tertiary" id="deleteBtn" onclick="handleDelete()">Delete this analysis</button>
     </div>
   </section>
 
@@ -272,6 +275,7 @@ let state = {
   attomUnits: null,
   attomGrade: null,
   attomTaxes: null,
+  lastDealId: null,    // id of the deal returned by the most recent Score — used by Delete
 };
 let planLimits = null;
 let quotaUsed = 0;
@@ -316,7 +320,7 @@ function showStep(n){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function resetToStep1(){
-  state = { loadedAddr:null, attomEnriched:false, attomUnits:null, attomGrade:null, attomTaxes:null };
+  state = { loadedAddr:null, attomEnriched:false, attomUnits:null, attomGrade:null, attomTaxes:null, lastDealId:null };
   document.getElementById('addrInput').value = '';
   clearStep1Error();
   showStep(1);
@@ -462,6 +466,7 @@ async function handleScore(){
       manualSquareFeet:  parseInt(document.getElementById('fieldSqft').value, 10) || undefined,
     };
     const res = await ManualFeedAPI.create(payload);
+    state.lastDealId = res.deal?.id || null;
     renderResult(res.deal);
     if (res.quota) {
       const chip = document.getElementById('quotaChip');
@@ -522,8 +527,57 @@ function renderResult(deal){
       ${cap != null ? `<div><span class="ap-result-num-val">${cap}%</span><span class="ap-result-num-label">cap rate</span></div>` : ''}
     </div>
     <div class="ap-result-meta">${deal.units} Unit${deal.units===1?'':'s'} · ${deal.propertyType || 'Multi-Family'} · ${fmt(deal.askingPrice)} asking${ppu?` · ${fmt(ppu)}/unit`:''} · Built ${deal.yearBuilt || '—'} · today's Freddie rate (${(fin.interestRate||6.5).toFixed?(fin.interestRate||6.5).toFixed(2):'6.50'}%)</div>
+    <div class="ap-result-saved">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Saved to My Deals
+    </div>
   `;
   document.getElementById('openBtn').href = `roofrank-deal-detail.html?fid=${deal.id}`;
+}
+
+// ───── Delete — removes the just-scored deal from My Deals. ─────
+// Quota is NOT refunded — backend deliberately keeps the slot consumed (see
+// route handler for rationale). Two-click confirm pattern: first click flips
+// the button into a "Confirm" state (red) for 4 seconds; second click within
+// the window actually deletes. Avoids the browser confirm() popup which is
+// jarring next to the otherwise-polished surface.
+let deleteConfirmTimer = null;
+async function handleDelete(){
+  if (!state.lastDealId) return;
+  const btn = document.getElementById('deleteBtn');
+
+  // First click → flip into "confirm" state, arm the timeout
+  if (!btn.dataset.confirming) {
+    btn.dataset.confirming = '1';
+    btn.style.color = 'var(--rose)';
+    btn.textContent = 'Click again to confirm (quota not refunded)';
+    clearTimeout(deleteConfirmTimer);
+    deleteConfirmTimer = setTimeout(() => {
+      delete btn.dataset.confirming;
+      btn.style.color = '';
+      btn.textContent = 'Delete this analysis';
+    }, 4000);
+    return;
+  }
+
+  // Second click within the window → actually delete
+  clearTimeout(deleteConfirmTimer);
+  delete btn.dataset.confirming;
+  btn.disabled = true;
+  btn.style.color = '';
+  btn.textContent = 'Deleting…';
+  try {
+    await ManualFeedAPI.delete(state.lastDealId);
+    resetToStep1();
+  } catch (err) {
+    btn.textContent = 'Delete failed — ' + (err?.message || 'unknown');
+    btn.style.color = 'var(--rose)';
+    setTimeout(() => {
+      btn.textContent = 'Delete this analysis';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 3500);
+  }
 }
 </script>
 
