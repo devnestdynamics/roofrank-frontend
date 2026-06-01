@@ -4,8 +4,8 @@
   <!-- Open Graph / Social Preview -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://roofrank.io">
-  <meta property="og:title" content="RoofRank — Know if a multifamily cashflows in 30 seconds">
-  <meta property="og:description" content="Live mortgage rates, real rents, actual property tax. Every active 2–4 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.">
+  <meta property="og:title" content="RoofRank — Know if a multifamily cashflows the moment it lists">
+  <meta property="og:description" content="Live mortgage rates, real rents, actual property tax. Every active 2–4 unit listing in your markets, scored the moment it lists. Push alert when one's worth a closer look.">
   <meta property="og:image" content="https://roofrank.io/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -14,12 +14,12 @@
   <!-- Twitter / iMessage -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://roofrank.io">
-  <meta name="twitter:title" content="RoofRank — Know if a multifamily cashflows in 30 seconds">
-  <meta name="twitter:description" content="Live rates, real rents, actual property tax. Every 2–4 unit listing scored nightly. Push alert when one's worth a closer look.">
+  <meta name="twitter:title" content="RoofRank — Know if a multifamily cashflows the moment it lists">
+  <meta name="twitter:description" content="Live rates, real rents, actual property tax. Every 2–4 unit listing scored the moment it lists. Push alert when one's worth a closer look.">
   <meta name="twitter:image" content="https://roofrank.io/og-image.png">
 
   <!-- SEO -->
-  <meta name="description" content="Know if a multifamily cashflows in 30 seconds. RoofRank scores every active 2–4 unit listing in your markets using live mortgage rates, real rents, and actual property tax data — and pushes an alert when one's worth a closer look.">
+  <meta name="description" content="Know if a multifamily cashflows the moment it lists. RoofRank scores every active 2–4 unit listing in your markets using live mortgage rates, real rents, and actual property tax data — and pushes an alert when one's worth a closer look.">
   <meta name="keywords" content="multifamily real estate, cash flow analysis, cap rate, cash on cash return, dscr, multifamily investing, deal analyzer, real estate calculator, push alerts, lynn worcester salem multifamily">
   <meta name="author" content="RoofRank">
 <meta charset="UTF-8">
@@ -38,8 +38,8 @@
   } catch (e) { /* ignore — fall through to marketing page */ }
 })();
 </script>
-<title>RoofRank — Know if a multifamily cashflows in 30 seconds</title>
-<meta name="description" content="Know if a multifamily cashflows in 30 seconds. Live mortgage rates, real rents, actual property tax — every 2–4 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.">
+<title>RoofRank — Know if a multifamily cashflows the moment it lists</title>
+<meta name="description" content="Know if a multifamily cashflows the moment it lists. Live mortgage rates, real rents, actual property tax — every 2–4 unit listing in your markets, scored the moment it lists. Push alert when one's worth a closer look.">
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -799,17 +799,16 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavDraw
   <div class="hero-left">
     <div class="hero-tag"><span class="hero-tag-dot"></span>Multifamily · 2–4 units · Numbers first · AI analyst</div>
     <h1 class="hero-h1">
-      Know if a multifamily cashflows —<br>in 30 seconds.
+      Know if a multifamily cashflows —<br>the moment it lists.
     </h1>
     <p class="hero-sub">Live mortgage rates, real rents, actual property tax. Every 2–4 unit listing in your markets, scored nightly. Push alert when one's worth a closer look.</p>
 
-    <!-- 30-second proof receipt — what RoofRank returns when you open it.
-         Initial HTML is a static fallback using the current real top deal so
-         the page paints with accurate values even before JS runs (and stays
-         accurate if the fetch fails). hero-receipt-init() below swaps in a
-         live pick on load. -->
-    <div class="hero-receipt" id="heroReceipt" role="img" aria-label="Live 30-second analysis: 139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
-      <span class="hero-receipt-30s">in 30 sec</span>
+    <!-- Proof receipt — what RoofRank shows when you open the app. Deals
+         are pre-scored in the nightly ingestion run (and the hero pulls a
+         live pick on page load via JS — initial HTML is a static fallback
+         so the card paints with real values even if the fetch fails). -->
+    <div class="hero-receipt" id="heroReceipt" role="img" aria-label="Pre-scored: 139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
+      <span class="hero-receipt-30s">Pre-scored</span>
       <div class="hero-receipt-head">
         <!-- RankMark: canonical Deckers icon + score, tier-colored. Same
              system the dashboard + onboarding hero use. -->
@@ -1153,7 +1152,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavDraw
           <svg width="24" height="24" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="#2d6448"/><path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/></svg>
           <span class="footer-logo-name">RoofRank</span>
         </a>
-        <p class="footer-desc">Know if a multifamily cashflows — in 30 seconds. Built for the independent investor — not the institutional fund.</p>
+        <p class="footer-desc">Know if a multifamily cashflows — the moment it lists. Built for the independent investor — not the institutional fund.</p>
         <p style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:.25rem;margin-bottom:.9rem">Also: subscribe for our free weekly Deal of the Week email.</p>
         <div class="footer-email-row">
           <input class="footer-email-input" type="email" placeholder="your@email.com" id="femail">
