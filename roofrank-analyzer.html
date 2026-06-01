@@ -195,10 +195,10 @@ main{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
     <div class="ap-what-happens">
       <div class="ap-what-title">What happens when you click Look up</div>
       <div class="ap-what-list">
-        <div class="ap-what-item"><span class="ap-what-num">1</span><span>I check <b>RentCast property records</b> for year built, square footage, beds — usually populated.</span></div>
-        <div class="ap-what-item"><span class="ap-what-num">2</span><span><b>ATTOM enrichment</b> for unit count + neighborhood grade + tax. This is the only field that sometimes fails — I'll flag it.</span></div>
-        <div class="ap-what-item"><span class="ap-what-num">3</span><span>You add the <b>asking price</b> (FSBO + off-market listings don't have it in public records).</span></div>
-        <div class="ap-what-item"><span class="ap-what-num">4</span><span>I score it using the same model your feed uses, at today's Freddie rate. Saves to <b>My Deals</b>.</span></div>
+        <div class="ap-what-item"><span class="ap-what-num">1</span><span>I pull <b>public assessor records</b> for units, beds, square footage, year built, and the actual annual tax.</span></div>
+        <div class="ap-what-item"><span class="ap-what-num">2</span><span>You add the <b>asking price</b> — that's the only field FSBO and off-market listings won't have in public records.</span></div>
+        <div class="ap-what-item"><span class="ap-what-num">3</span><span>I run it through the same scoring model as every deal in your feed, at <b>today's Freddie rate</b>.</span></div>
+        <div class="ap-what-item"><span class="ap-what-num">4</span><span>Saves to <b>My Deals</b> as a private, scored property — never appears in anyone else's feed.</span></div>
       </div>
     </div>
   </section>
@@ -220,23 +220,23 @@ main{max-width:680px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
         <input type="text" class="ap-field-input" id="fieldPrice" placeholder="$650,000" inputmode="numeric" oninput="formatPrice(this);validateForm()">
       </div>
       <div class="ap-field" id="unitsField">
-        <div class="ap-field-label">Units <span class="src" id="unitsSrc">· ATTOM</span></div>
+        <div class="ap-field-label">Units <span class="src" id="unitsSrc">· public records</span></div>
         <input type="number" class="ap-field-input" id="fieldUnits" min="1" max="6" placeholder="2" oninput="validateForm()">
       </div>
       <div class="ap-field">
-        <div class="ap-field-label">Year built <span class="src" id="yearSrc">· RentCast</span></div>
+        <div class="ap-field-label">Year built <span class="src" id="yearSrc">· public records</span></div>
         <input type="number" class="ap-field-input" id="fieldYear" min="1700" max="2100" placeholder="1900" oninput="validateForm()">
       </div>
       <div class="ap-field">
-        <div class="ap-field-label">Square footage <span class="src" id="sqftSrc">· RentCast</span></div>
+        <div class="ap-field-label">Square footage <span class="src" id="sqftSrc">· public records</span></div>
         <input type="number" class="ap-field-input" id="fieldSqft" min="100" max="100000" step="50" placeholder="3,041">
       </div>
       <div class="ap-field">
-        <div class="ap-field-label">Bedrooms <span class="src" id="bedsSrc">· RentCast</span></div>
+        <div class="ap-field-label">Bedrooms <span class="src" id="bedsSrc">· public records</span></div>
         <input type="number" class="ap-field-input" id="fieldBeds" min="1" max="40" placeholder="7">
       </div>
       <div class="ap-field">
-        <div class="ap-field-label">Neighborhood grade <span class="src" id="gradeSrc">· ATTOM</span></div>
+        <div class="ap-field-label">Neighborhood grade <span class="src" id="gradeSrc">· public records</span></div>
         <input type="text" class="ap-field-input sans" id="fieldGrade" placeholder="B" readonly>
       </div>
     </div>
@@ -267,8 +267,7 @@ requireAuth();
 
 // ───── State ─────
 let state = {
-  rcProperty: null,    // RentCast property record (best-effort)
-  loadedAddr: null,    // structured address from RentCast OR user input
+  loadedAddr: null,    // structured address from user input
   attomEnriched: false,
   attomUnits: null,
   attomGrade: null,
@@ -317,7 +316,7 @@ function showStep(n){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function resetToStep1(){
-  state = { rcProperty:null, loadedAddr:null, attomEnriched:false, attomUnits:null, attomGrade:null, attomTaxes:null };
+  state = { loadedAddr:null, attomEnriched:false, attomUnits:null, attomGrade:null, attomTaxes:null };
   document.getElementById('addrInput').value = '';
   clearStep1Error();
   showStep(1);
@@ -334,10 +333,9 @@ function validateForm(){
 }
 
 // ───── Step 1 → Step 2 (lookup) ─────
-// We do RentCast lookup CLIENT-SIDE-FREE — actually we do it server-side
-// during the score request. This step just parses the address and shows
-// the form. RentCast/ATTOM auto-fill happens on the Score request because
-// our API key shouldn't be exposed to the browser.
+// This step just parses the address and shows the form. The actual
+// public-record auto-fill happens server-side on the Score request —
+// API keys never get exposed to the browser.
 function showStep1Error(html){
   const el = document.getElementById('step1Error');
   el.innerHTML = html;
@@ -420,7 +418,7 @@ async function handleLookup(e){
 
   state.loadedAddr = { ...parsed, full: raw };
   document.getElementById('loadedAddr').textContent = raw;
-  document.getElementById('loadedProv').innerHTML = `Submit to <b>look up + score</b> · we'll prefill from RentCast + ATTOM`;
+  document.getElementById('loadedProv').innerHTML = `Submit to <b>look up + score</b> · we'll prefill from public records`;
   // Reset field values to empty so the form clearly asks the user for input.
   document.getElementById('fieldPrice').value = '';
   document.getElementById('fieldUnits').value = '';
@@ -435,7 +433,7 @@ async function handleLookup(e){
     el.className = 'src-need';
   });
   document.getElementById('attomStrip').classList.remove('warn');
-  document.getElementById('attomText').innerHTML = `<b>Enter the asking price below.</b> Other fields are optional — leave blank to use RentCast + ATTOM defaults on score.`;
+  document.getElementById('attomText').innerHTML = `<b>Enter the asking price below.</b> Other fields are optional — leave blank to use public-record defaults on score.`;
   validateForm();
   showStep(2);
   document.getElementById('fieldPrice').focus();
@@ -457,7 +455,7 @@ async function handleScore(){
       zipCode: state.loadedAddr.zipCode || undefined,
       askingPrice: parsePrice(document.getElementById('fieldPrice').value),
       // Optional manual fallbacks — only sent when user typed something.
-      // Backend uses these as fallback when RentCast/ATTOM don't return.
+      // Backend uses these as fallback when public-record lookup misses.
       manualUnits:       parseInt(document.getElementById('fieldUnits').value, 10) || undefined,
       manualBedrooms:    parseInt(document.getElementById('fieldBeds').value, 10) || undefined,
       manualYearBuilt:   parseInt(document.getElementById('fieldYear').value, 10) || undefined,
