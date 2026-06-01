@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FB + IG ad visuals — RoofRank</title>
+<style>
+  :root{
+    --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e0d9cf;
+    --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+    --forest:#1c4a35; --forest-3:#3e8160;
+    --amber:#a06a00; --rose:#a03030; --gold:#c08a3e;
+    --fb-bg:#f0f2f5; --fb-text:#050505; --fb-meta:#65676b; --fb-blue:#1877f2;
+    --ig-bg:#fafafa; --ig-text:#262626; --ig-meta:#8e8e8e; --ig-border:#dbdbdb;
+    --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+    --serif:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#1a1d1c;font-family:var(--sans);color:#e4e2dc;padding:2rem 1rem;line-height:1.5}
+  .page{max-width:1100px;margin:0 auto}
+  h1{font-family:var(--serif);font-weight:400;font-size:1.6rem;margin:0 0 .5rem;color:#fff}
+  .lede{color:#b8b5af;font-size:.95rem;margin:0 0 2rem;max-width:680px}
+
+  .section{margin:2rem 0 2.5rem}
+  .section-title{font-family:var(--serif);font-weight:400;font-size:1.3rem;margin:0 0 .35rem;color:#fff;border-bottom:1px solid #2a2e2c;padding-bottom:.55rem}
+  .section-meta{color:#8e9087;font-size:.85rem;margin:0 0 1.4rem}
+
+  .ad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:1.5rem}
+
+  /* ── Facebook ad card ─────────────────────────────────────────────────── */
+  .fb-ad{background:var(--white);border-radius:8px;overflow:hidden;color:var(--fb-text);font-size:.95rem;line-height:1.4;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+  .fb-ad-header{display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem .5rem}
+  .fb-ad-avatar{width:40px;height:40px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.95rem;flex-shrink:0}
+  .fb-ad-meta{flex:1;min-width:0}
+  .fb-ad-name{font-weight:600;font-size:.9rem;color:var(--fb-text);display:flex;align-items:center;gap:.3rem}
+  .fb-ad-sponsored{color:var(--fb-meta);font-size:.78rem;display:flex;align-items:center;gap:.2rem}
+  .fb-ad-sponsored::after{content:" · 🌐";font-size:.65rem}
+  .fb-ad-dots{color:var(--fb-meta);font-size:1.1rem;padding:0 .3rem}
+  .fb-ad-body{padding:0 1rem .65rem;font-size:.92rem;color:var(--fb-text)}
+  .fb-ad-image{position:relative;width:100%;aspect-ratio:1.91/1;background:var(--cream-2);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .fb-ad-link{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:#f0f2f5;border-top:1px solid #e4e6eb}
+  .fb-ad-link-text{min-width:0}
+  .fb-ad-link-domain{color:var(--fb-meta);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
+  .fb-ad-link-title{font-weight:600;font-size:.95rem;color:var(--fb-text);margin-top:1px}
+  .fb-ad-link-desc{color:var(--fb-meta);font-size:.78rem;margin-top:2px}
+  .fb-ad-cta{background:#e4e6eb;color:var(--fb-text);padding:.5rem 1.05rem;border-radius:6px;font-weight:600;font-size:.85rem;flex-shrink:0}
+  .fb-ad-engagement{display:flex;justify-content:space-between;padding:.55rem 1rem .65rem;color:var(--fb-meta);font-size:.8rem;border-top:1px solid #e4e6eb}
+
+  /* ── Instagram ad card ────────────────────────────────────────────────── */
+  .ig-ad{background:var(--white);border:1px solid var(--ig-border);border-radius:8px;overflow:hidden;color:var(--ig-text);font-size:.95rem;line-height:1.4;max-width:430px;margin:0 auto}
+  .ig-ad-header{display:flex;align-items:center;gap:.6rem;padding:.7rem 1rem}
+  .ig-ad-avatar{width:32px;height:32px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.85rem;flex-shrink:0;border:1.5px solid var(--white);outline:1.5px solid var(--forest)}
+  .ig-ad-handle{font-weight:600;font-size:.88rem}
+  .ig-ad-sponsored{color:var(--ig-meta);font-size:.78rem}
+  .ig-ad-image{position:relative;width:100%;aspect-ratio:1/1;background:var(--cream-2);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .ig-ad-cta-bar{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;border-top:1px solid var(--ig-border);font-size:.85rem;color:var(--ig-text)}
+  .ig-ad-cta-label{font-weight:500}
+  .ig-ad-cta-arrow{color:var(--ig-meta);font-size:1rem}
+  .ig-ad-actions{display:flex;gap:1rem;padding:.5rem 1rem .35rem;font-size:1.4rem;color:var(--ig-text)}
+  .ig-ad-caption{padding:.1rem 1rem .85rem;font-size:.88rem;color:var(--ig-text);line-height:1.45}
+  .ig-ad-caption b{font-weight:600}
+  .ig-ad-caption-more{color:var(--ig-meta)}
+
+  /* ── Ad creative — variant A: "The standout deal" ─────────────────────── */
+  .creative-standout{background:linear-gradient(135deg,#1c4a35 0%,#0f2e22 100%);color:#fff;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:1.5rem;text-align:center;font-family:var(--serif)}
+  .creative-standout .creative-eyebrow{font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.8rem}
+  .creative-standout .creative-address{font-size:1.3rem;line-height:1.2;margin:0 0 .25rem;color:#fff}
+  .creative-standout .creative-locale{font-family:var(--sans);font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:1.2rem;letter-spacing:.03em}
+  .creative-standout .creative-stat{font-family:var(--mono);font-size:2.2rem;line-height:1;color:#fff;margin-bottom:.2rem;font-weight:500}
+  .creative-standout .creative-stat-lbl{font-family:var(--sans);font-size:.7rem;color:rgba(255,255,255,.65);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem}
+  .creative-standout .creative-score{font-family:var(--mono);font-size:.95rem;color:#9ac6a8;letter-spacing:.04em}
+  .creative-standout .creative-score b{color:#fff;font-weight:600}
+
+  /* ── Ad creative — variant B: "Founder pain" ──────────────────────────── */
+  .creative-founder{background:var(--cream);color:var(--ink);width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:1.5rem 1.6rem;font-family:var(--sans)}
+  .creative-founder .creative-quote{font-family:var(--serif);font-size:1.25rem;line-height:1.35;margin:0;color:var(--ink)}
+  .creative-founder .creative-quote-mark{color:var(--forest);font-size:2.5rem;line-height:0;display:inline-block;margin-right:.2rem;vertical-align:-.65rem;font-weight:600}
+  .creative-founder .creative-attrib{display:flex;align-items:center;gap:.6rem;margin-top:1.4rem}
+  .creative-founder .creative-attrib-dot{width:28px;height:28px;border-radius:50%;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.78rem}
+  .creative-founder .creative-attrib-name{font-size:.85rem;color:var(--ink);font-weight:600}
+  .creative-founder .creative-attrib-role{font-size:.72rem;color:var(--muted);margin-top:1px}
+
+  /* ── Ad creative — variant C: "30-second test" split-screen ────────────── */
+  .creative-split{display:flex;width:100%;height:100%;font-family:var(--sans)}
+  .creative-split-left{flex:1;background:#1c1f1c;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:1.2rem;text-align:center;position:relative}
+  .creative-split-left::before{content:"";position:absolute;inset:1rem;border:1px dashed rgba(255,255,255,.18);border-radius:6px}
+  .creative-split-left .split-eyebrow{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.6rem;position:relative;z-index:1}
+  .creative-split-left .split-title{font-family:var(--serif);font-size:1.15rem;line-height:1.3;color:#fff;margin:0;position:relative;z-index:1}
+  .creative-split-left .split-emoji{font-size:1.8rem;margin-top:.6rem;opacity:.7;position:relative;z-index:1}
+  .creative-split-divider{width:2px;background:#fff;flex-shrink:0;position:relative}
+  .creative-split-divider::after{content:"VS";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--forest);color:#fff;font-size:.6rem;font-weight:700;padding:.2rem .35rem;border-radius:50%;letter-spacing:.05em;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+  .creative-split-right{flex:1;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:1.2rem;text-align:center;position:relative}
+  .creative-split-right .split-eyebrow{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin-bottom:.6rem;font-weight:600}
+  .creative-split-right .split-score{font-family:var(--mono);font-size:2.6rem;line-height:1;color:var(--forest);margin:0;font-weight:500}
+  .creative-split-right .split-score-denom{color:var(--muted);font-size:1rem}
+  .creative-split-right .split-tier{font-family:var(--serif);font-size:1rem;color:var(--forest);margin-top:.3rem}
+  .creative-split-right .split-time{font-size:.7rem;color:var(--muted);margin-top:.5rem;letter-spacing:.04em}
+
+  /* ── Notes / panels ───────────────────────────────────────────────────── */
+  .note{background:#23272a;border-left:3px solid var(--forest);padding:.9rem 1.1rem;border-radius:0 6px 6px 0;color:#cfcbc3;font-size:.85rem;margin:1.5rem 0 0;line-height:1.55}
+  .note b{color:#fff}
+  .note code{background:#1a1d1c;padding:.1rem .3rem;border-radius:3px;font-size:.78rem;color:#9ac6a8}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>FB + IG ad visuals — 3 variants × 2 placements</h1>
+  <p class="lede">These are pixel-faithful mockups of how each ad would render in a real Facebook News Feed and a real Instagram Feed. Same copy, same creative — just shown in both placement contexts. Scroll, decide which creative you want to test first, then I'll spec the actual image dimensions for your designer (or for Canva).</p>
+
+  <div class="note">
+    <b>How to read this:</b> the cream creative on the left of each ad pair = the image asset you'd upload to Meta Ads Manager. The copy below it = the primary text + headline + description fields. The grey button = your CTA. The image is the part you'd actually <i>make</i> in Canva (or screenshot from your dashboard, or have a designer build) — everything else is filled in inside Meta Ads Manager.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Variant A — "The standout deal"</div>
+    <div class="section-meta">Anchor on the highest-CoC current Worcester listing. Bold number, clean type, dark-forest hero. Built for stop-the-scroll.</div>
+
+    <div class="ad-grid">
+      <!-- FACEBOOK -->
+      <div class="fb-ad">
+        <div class="fb-ad-header">
+          <div class="fb-ad-avatar">R</div>
+          <div class="fb-ad-meta">
+            <div class="fb-ad-name">RoofRank</div>
+            <div class="fb-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="fb-ad-dots">···</div>
+        </div>
+        <div class="fb-ad-body">2 Stevens Rd, Worcester — 17.2% cash-on-cash, $2,317/mo cashflow. The kind of deal you miss if you're not looking nightly.</div>
+        <div class="fb-ad-image">
+          <div class="creative-standout">
+            <div class="creative-eyebrow">Active listing</div>
+            <div class="creative-address">2 Stevens Rd</div>
+            <div class="creative-locale">Worcester, MA · 3 units · $599K</div>
+            <div class="creative-stat">17.2%</div>
+            <div class="creative-stat-lbl">Cash-on-cash</div>
+            <div class="creative-score">Score: <b>90/100</b> · Strong Buy</div>
+          </div>
+        </div>
+        <div class="fb-ad-link">
+          <div class="fb-ad-link-text">
+            <div class="fb-ad-link-domain">roofrank.io</div>
+            <div class="fb-ad-link-title">Score every MA multifamily nightly</div>
+            <div class="fb-ad-link-desc">Lynn + Worcester · Live Freddie Mac rates · Free to try</div>
+          </div>
+          <div class="fb-ad-cta">Sign Up</div>
+        </div>
+        <div class="fb-ad-engagement"><span>👍❤️ 47</span><span>8 comments · 3 shares</span></div>
+      </div>
+
+      <!-- INSTAGRAM -->
+      <div class="ig-ad">
+        <div class="ig-ad-header">
+          <div class="ig-ad-avatar">R</div>
+          <div style="flex:1">
+            <div class="ig-ad-handle">roofrank</div>
+            <div class="ig-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="ig-ad-sponsored" style="font-size:1.2rem">···</div>
+        </div>
+        <div class="ig-ad-image">
+          <div class="creative-standout">
+            <div class="creative-eyebrow">Active listing</div>
+            <div class="creative-address">2 Stevens Rd</div>
+            <div class="creative-locale">Worcester, MA · 3 units · $599K</div>
+            <div class="creative-stat">17.2%</div>
+            <div class="creative-stat-lbl">Cash-on-cash</div>
+            <div class="creative-score">Score: <b>90/100</b> · Strong Buy</div>
+          </div>
+        </div>
+        <div class="ig-ad-cta-bar"><span class="ig-ad-cta-label">Sign Up</span><span class="ig-ad-cta-arrow">›</span></div>
+        <div class="ig-ad-actions"><span>♡</span><span>💬</span><span>↗</span></div>
+        <div class="ig-ad-caption"><b>roofrank</b> 2 Stevens Rd, Worcester — 17.2% cash-on-cash, $2,317/mo cashflow. <span class="ig-ad-caption-more">... more</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Variant B — "Founder pain"</div>
+    <div class="section-meta">Quote-card creative on cream. Personal story, vulnerable, trustworthy. This is the variant that converts for an MA investor audience who's been burned.</div>
+
+    <div class="ad-grid">
+      <!-- FACEBOOK -->
+      <div class="fb-ad">
+        <div class="fb-ad-header">
+          <div class="fb-ad-avatar">R</div>
+          <div class="fb-ad-meta">
+            <div class="fb-ad-name">RoofRank</div>
+            <div class="fb-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="fb-ad-dots">···</div>
+        </div>
+        <div class="fb-ad-body">I almost overpaid $80K on my first 4-unit because I couldn't read the math fast enough. Built RoofRank so you don't have to.</div>
+        <div class="fb-ad-image">
+          <div class="creative-founder">
+            <div>
+              <p class="creative-quote"><span class="creative-quote-mark">"</span>I almost overpaid $80,000 on my first 4-unit because I didn't know how to read the math fast enough.</p>
+            </div>
+            <div class="creative-attrib">
+              <div class="creative-attrib-dot">A</div>
+              <div>
+                <div class="creative-attrib-name">Ali Sheikh</div>
+                <div class="creative-attrib-role">Built RoofRank · 4 buildings in MA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fb-ad-link">
+          <div class="fb-ad-link-text">
+            <div class="fb-ad-link-domain">roofrank.io</div>
+            <div class="fb-ad-link-title">Multifamily deals scored nightly</div>
+            <div class="fb-ad-link-desc">For MA 2-6 unit investors · Free Pro for 60 days</div>
+          </div>
+          <div class="fb-ad-cta">Try For Free</div>
+        </div>
+        <div class="fb-ad-engagement"><span>👍❤️ 124</span><span>22 comments · 18 shares</span></div>
+      </div>
+
+      <!-- INSTAGRAM -->
+      <div class="ig-ad">
+        <div class="ig-ad-header">
+          <div class="ig-ad-avatar">R</div>
+          <div style="flex:1">
+            <div class="ig-ad-handle">roofrank</div>
+            <div class="ig-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="ig-ad-sponsored" style="font-size:1.2rem">···</div>
+        </div>
+        <div class="ig-ad-image">
+          <div class="creative-founder">
+            <div>
+              <p class="creative-quote"><span class="creative-quote-mark">"</span>I almost overpaid $80,000 on my first 4-unit because I didn't know how to read the math fast enough.</p>
+            </div>
+            <div class="creative-attrib">
+              <div class="creative-attrib-dot">A</div>
+              <div>
+                <div class="creative-attrib-name">Ali Sheikh</div>
+                <div class="creative-attrib-role">Built RoofRank · 4 buildings in MA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ig-ad-cta-bar"><span class="ig-ad-cta-label">Try For Free</span><span class="ig-ad-cta-arrow">›</span></div>
+        <div class="ig-ad-actions"><span>♡</span><span>💬</span><span>↗</span></div>
+        <div class="ig-ad-caption"><b>roofrank</b> I almost overpaid $80K on my first 4-unit. Built RoofRank so you don't have to. <span class="ig-ad-caption-more">... more</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Variant C — "The 30-second test"</div>
+    <div class="section-meta">Split-screen comparison. Left: visual chaos. Right: clean answer. Highest-friction creative to design but the most testable hypothesis.</div>
+
+    <div class="ad-grid">
+      <!-- FACEBOOK -->
+      <div class="fb-ad">
+        <div class="fb-ad-header">
+          <div class="fb-ad-avatar">R</div>
+          <div class="fb-ad-meta">
+            <div class="fb-ad-name">RoofRank</div>
+            <div class="fb-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="fb-ad-dots">···</div>
+        </div>
+        <div class="fb-ad-body">Open Zillow on a 4-unit. Cashflow? Cap rate? DSCR? Realistic rents? You don't have to figure any of it out — we already did the math before you opened the listing.</div>
+        <div class="fb-ad-image">
+          <div class="creative-split">
+            <div class="creative-split-left">
+              <div class="split-eyebrow">Status quo</div>
+              <div class="split-title">12 Zillow tabs<br>0 answers</div>
+              <div class="split-emoji">😩</div>
+            </div>
+            <div class="creative-split-divider"></div>
+            <div class="creative-split-right">
+              <div class="split-eyebrow">RoofRank</div>
+              <div class="split-score">89<span class="split-score-denom">/100</span></div>
+              <div class="split-tier">Buy</div>
+              <div class="split-time">Already scored</div>
+            </div>
+          </div>
+        </div>
+        <div class="fb-ad-link">
+          <div class="fb-ad-link-text">
+            <div class="fb-ad-link-domain">roofrank.io</div>
+            <div class="fb-ad-link-title">We do the math. You make the call.</div>
+            <div class="fb-ad-link-desc">Lynn + Worcester · Built for active investors</div>
+          </div>
+          <div class="fb-ad-cta">Learn More</div>
+        </div>
+        <div class="fb-ad-engagement"><span>👍❤️ 81</span><span>14 comments · 9 shares</span></div>
+      </div>
+
+      <!-- INSTAGRAM -->
+      <div class="ig-ad">
+        <div class="ig-ad-header">
+          <div class="ig-ad-avatar">R</div>
+          <div style="flex:1">
+            <div class="ig-ad-handle">roofrank</div>
+            <div class="ig-ad-sponsored">Sponsored</div>
+          </div>
+          <div class="ig-ad-sponsored" style="font-size:1.2rem">···</div>
+        </div>
+        <div class="ig-ad-image">
+          <div class="creative-split">
+            <div class="creative-split-left">
+              <div class="split-eyebrow">Status quo</div>
+              <div class="split-title">12 Zillow tabs<br>0 answers</div>
+              <div class="split-emoji">😩</div>
+            </div>
+            <div class="creative-split-divider"></div>
+            <div class="creative-split-right">
+              <div class="split-eyebrow">RoofRank</div>
+              <div class="split-score">89<span class="split-score-denom">/100</span></div>
+              <div class="split-tier">Buy</div>
+              <div class="split-time">Already scored</div>
+            </div>
+          </div>
+        </div>
+        <div class="ig-ad-cta-bar"><span class="ig-ad-cta-label">Learn More</span><span class="ig-ad-cta-arrow">›</span></div>
+        <div class="ig-ad-actions"><span>♡</span><span>💬</span><span>↗</span></div>
+        <div class="ig-ad-caption"><b>roofrank</b> Open Zillow on a 4-unit. Try to figure out the math in under a minute. We already did it — before you opened the listing. <span class="ig-ad-caption-more">... more</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <div class="note">
+    <b>What to do with this:</b> these are all rendered in HTML so they're <i>responsive mockups</i>, not the final images you'd upload to Meta. To turn one into an actual ad creative:
+    <br><br>
+    1. Pick a variant (my recommendation: <b>B for first paid test</b> — quote-card creatives outperform pure data-density ones for cold audiences)<br>
+    2. Recreate the creative panel in Canva at <code>1080 × 1080</code> (square, works for FB + IG feed + IG carousel)<br>
+    3. Also export at <code>1080 × 1920</code> (vertical) for IG Stories + Reels placements<br>
+    4. Upload to Meta Ads Manager · paste the primary text + headline + description from the previous Claude message
+    <br><br>
+    <b>One-shot Canva trick:</b> screenshot the creative panel from this mockup in your browser at 2x zoom → import directly to Canva → tweak. Total time: 10 min per variant.
+  </div>
+</div>
+</body>
+</html>
