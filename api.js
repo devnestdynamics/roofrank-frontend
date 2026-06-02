@@ -134,8 +134,27 @@ const AuthAPI = {
     return data;
   },
   me()                        { return apiFetch('/auth/me'); },
-  setPhone(phone, smsOptIn=true) {
-    return apiFetch('/auth/me/phone', { method:'POST', body: JSON.stringify({ phone, smsOptIn }) });
+  // setPhone stores the phone but does NOT opt in — A2P 10DLC requires
+  // double opt-in via verify flow. Always clears sms_opt_in on phone
+  // change (re-verification required for new number).
+  setPhone(phone) {
+    return apiFetch('/auth/me/phone', { method:'POST', body: JSON.stringify({ phone }) });
+  },
+  // Send a fresh 6-digit verification code to the user's stored phone via
+  // SMS. Rate-limited to once per 30s server-side. Returns ttl in seconds.
+  startPhoneVerify() {
+    return apiFetch('/auth/me/phone/verify-start', { method:'POST' });
+  },
+  // Complete double opt-in: submit the 6-digit code the user received.
+  // On success, sms_opt_in flips to true and the user starts receiving
+  // SMS Strong Buy alerts.
+  completePhoneVerify(code) {
+    return apiFetch('/auth/me/phone/verify-complete', { method:'POST', body: JSON.stringify({ code }) });
+  },
+  // Toggle off SMS alerts without removing the phone number. Mirrors
+  // the STOP keyword path (handled by inbound webhook) for in-app use.
+  optOutPhone() {
+    return apiFetch('/auth/me/phone/opt-out', { method:'POST' });
   },
   forgotPassword(email)       { return apiFetch('/auth/forgot-password', { method:'POST', body: JSON.stringify({ email }) }); },
   resetPassword(token, pw)    { return apiFetch('/auth/reset-password',  { method:'POST', body: JSON.stringify({ token, password: pw }) }); },

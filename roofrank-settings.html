@@ -1,38 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+window.ROOFRANK_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://api.roofrank.io/api';
+</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoofRank — Settings</title>
-<link href="https://fonts.bunny.net/css2?family=Playfair+Display:wght@500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:wght@500&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:#f7f4ef;color:#1c1f1c;font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;font-size:15px;-webkit-font-smoothing:antialiased}
-.card{max-width:440px;width:100%;padding:2.5rem 2rem;background:#fff;border:1px solid #e6e0d5;border-radius:14px;box-shadow:0 4px 22px rgba(28,31,28,.06);text-align:center}
-.brand{margin-bottom:1.5rem}
-.brand svg{width:32px;height:32px}
-.brand-name{font-family:'Playfair Display',Georgia,serif;font-size:1rem;font-weight:500;margin-top:.35rem}
-.title{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;font-weight:500;letter-spacing:-.01em;margin-bottom:.55rem;line-height:1.2}
-.sub{font-size:.85rem;color:#6b7168;line-height:1.65;margin-bottom:1.6rem;max-width:340px;margin-left:auto;margin-right:auto}
-.sub b{color:#1c1f1c;font-weight:500}
-.btn{background:#1c4a35;color:#fff;border:none;padding:.7rem 1.4rem;border-radius:8px;font-weight:500;font-size:.88rem;font-family:'DM Sans',system-ui,sans-serif;cursor:pointer;text-decoration:none;display:inline-block}
-.btn:hover{background:#2d6448}
+:root{
+  --cream:#f7f4ef; --cream-2:#f0ece4; --cream-3:#e6e0d5;
+  --white:#fff; --ink:#1c1f1c; --muted:#6b7168; --faint:#a8ad9f;
+  --forest:#1c4a35; --forest-2:#2d6448;
+  --sage:#7aaa8f; --sage-dim:rgba(122,170,143,.12); --sage-border:rgba(122,170,143,.28);
+  --rose:#a03030; --amber:#a06a00;
+  --border:#e5dfd4;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px;-webkit-font-smoothing:antialiased;min-height:100vh}
+nav.top{background:var(--white);border-bottom:1px solid var(--border);padding:0 1rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{display:flex;align-items:center;gap:.4rem;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.85rem;font-family:var(--sans)}
+.back-btn:hover{color:var(--forest)}
+.back-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-title{font-family:var(--serif);font-size:1rem;font-weight:500}
+
+main{max-width:580px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
+
+.eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--forest);margin-bottom:.5rem}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--forest)}
+.h1{font-family:var(--serif);font-size:1.6rem;font-weight:500;line-height:1.2;letter-spacing:-.01em;margin-bottom:.45rem}
+.h1-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem;max-width:480px;line-height:1.6}
+
+.section{background:var(--white);border:1px solid var(--cream-3);border-radius:12px;padding:1.4rem 1.3rem;margin-bottom:1rem}
+.section-h{font-family:var(--serif);font-size:1.05rem;font-weight:500;margin-bottom:.3rem;color:var(--ink)}
+.section-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.1rem;line-height:1.55}
+.section-sub b{color:var(--ink);font-weight:500}
+
+.row{display:flex;justify-content:space-between;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--cream-3);font-size:.85rem}
+.row:last-of-type{border-bottom:none}
+.row-label{color:var(--muted);font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase}
+.row-value{color:var(--ink);font-family:var(--mono);font-size:.85rem;font-weight:500}
+.row-value.empty{color:var(--faint);font-style:italic;font-family:var(--sans);font-weight:400}
+
+.field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.85rem}
+.field-label{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.input{background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:.7rem .9rem;font-family:var(--mono);font-size:.95rem;color:var(--ink);outline:none;transition:border-color .15s;width:100%}
+.input:focus{border-color:var(--forest);background:var(--white)}
+.input::placeholder{color:var(--faint);font-family:var(--sans)}
+
+.btn-row{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.7rem}
+.btn{padding:.6rem 1.05rem;border-radius:8px;font-size:.82rem;font-weight:500;font-family:var(--sans);cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.35rem;text-decoration:none}
+.btn.primary{background:var(--forest);color:#fff}
+.btn.primary:hover:not(:disabled){background:var(--forest-2)}
+.btn.primary:disabled{background:var(--cream-3);color:var(--muted);cursor:not-allowed}
+.btn.secondary{background:var(--white);color:var(--muted);border:1px solid var(--border)}
+.btn.secondary:hover:not(:disabled){border-color:var(--sage-border);color:var(--forest);background:var(--sage-dim)}
+.btn.danger{background:none;color:var(--rose);border:1px solid rgba(160,48,48,.2);padding:.5rem .9rem;font-size:.78rem}
+.btn.danger:hover:not(:disabled){background:rgba(160,48,48,.05)}
+.btn.ghost{background:none;color:var(--forest);border:none;padding:.5rem .2rem;font-size:.78rem;text-decoration:underline;text-underline-offset:2px}
+
+.badge{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;line-height:1}
+.badge.opted-in{background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest)}
+.badge.opted-out{background:var(--cream-2);border:1px solid var(--border);color:var(--muted)}
+.badge.pending{background:rgba(160,106,0,.08);border:1px solid rgba(160,106,0,.22);color:var(--amber)}
+
+.note{font-size:.72rem;color:var(--muted);line-height:1.55;margin-top:.7rem}
+.note b{color:var(--ink);font-weight:500}
+
+.err{padding:.65rem .85rem;background:rgba(160,48,48,.05);border:1px solid rgba(160,48,48,.2);border-radius:7px;font-size:.78rem;color:var(--rose);line-height:1.5;margin-top:.6rem}
+.ok{padding:.65rem .85rem;background:var(--sage-dim);border:1px solid var(--sage-border);border-radius:7px;font-size:.78rem;color:var(--forest);line-height:1.5;margin-top:.6rem}
+.ok b,.err b{font-weight:500}
+
+.danger-zone{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--cream-3)}
+.danger-zone-h{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin-bottom:.7rem}
+
+.skeleton{height:1rem;background:var(--cream-2);border-radius:4px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.6}}
 </style>
+<script src="api.js"></script>
 </head>
 <body>
-<div class="card">
-  <div class="brand">
-    <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="9" fill="#1c4a35"/><path d="M8 17 L20 9 L32 17" stroke="#7aaa8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="2.5" rx=".5" fill="#7aaa8f"/><rect x="8" y="24.5" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".7"/><rect x="8" y="29" width="24" height="2.5" rx=".5" fill="#7aaa8f" opacity=".4"/></svg>
-    <div class="brand-name">RoofRank</div>
-  </div>
-  <div class="title">Settings · coming soon</div>
-  <div class="sub">A dedicated settings page (phone, SMS opt-in, alert preferences) is on the way. For now, <b>manage your subscription</b> from the dashboard's "More" menu &mdash; or sign out from there.</div>
-  <a class="btn" href="roofrank-dashboard.html">Open dashboard →</a>
-</div>
+
+<nav class="top">
+  <button class="back-btn" onclick="location.href='roofrank-dashboard.html'">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Dashboard
+  </button>
+  <span class="nav-title">Settings</span>
+  <span style="width:80px"></span>
+</nav>
+
+<main>
+  <div class="eyebrow"><span class="eyebrow-dot"></span>Account</div>
+  <h1 class="h1">Settings</h1>
+  <p class="h1-sub">Manage your account, phone number, and SMS notifications.</p>
+
+  <!-- ─── Account info ─── -->
+  <section class="section">
+    <div class="section-h">Account</div>
+    <p class="section-sub">Your sign-in identity. Email is read-only — contact <a href="mailto:support@roofrank.io" style="color:var(--forest)">support@roofrank.io</a> to change it.</p>
+    <div class="row">
+      <span class="row-label">Email</span>
+      <span class="row-value" id="meEmail"><span class="skeleton" style="width:160px;display:inline-block"></span></span>
+    </div>
+    <div class="row">
+      <span class="row-label">Name</span>
+      <span class="row-value" id="meName"><span class="skeleton" style="width:120px;display:inline-block"></span></span>
+    </div>
+  </section>
+
+  <!-- ─── Phone & SMS ─── -->
+  <section class="section">
+    <div class="section-h">Phone & SMS alerts</div>
+    <p class="section-sub">Get a text the moment a <b>Strong Buy</b> hits your markets. US numbers only. Double opt-in required — we'll send a 6-digit code to verify your phone before any alerts are sent. Msg & data rates may apply.</p>
+
+    <!-- View when no phone is on file: enter + save -->
+    <div id="phoneEntryView" style="display:none">
+      <div class="field">
+        <label class="field-label" for="phoneInput">US phone number</label>
+        <input type="tel" id="phoneInput" class="input" placeholder="(617) 555-1234" autocomplete="tel-national">
+      </div>
+      <div id="phoneSaveErr"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="phoneSaveBtn" onclick="handleSavePhone()">Save phone →</button>
+      </div>
+    </div>
+
+    <!-- View when phone is saved but NOT yet verified: send code + enter code -->
+    <div id="phoneVerifyView" style="display:none">
+      <div class="row">
+        <span class="row-label">Phone</span>
+        <span class="row-value" id="phoneOnFile"></span>
+      </div>
+      <div class="row">
+        <span class="row-label">Status</span>
+        <span class="row-value"><span class="badge pending">Verification pending</span></span>
+      </div>
+
+      <div id="verifyCodeWrap" style="display:none;margin-top:1rem">
+        <div class="field">
+          <label class="field-label" for="verifyCodeInput">6-digit code from your SMS</label>
+          <input type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" id="verifyCodeInput" class="input" placeholder="123456" autocomplete="one-time-code">
+        </div>
+        <div id="verifyCodeErr"></div>
+        <div class="btn-row">
+          <button class="btn primary" id="verifyCompleteBtn" onclick="handleVerifyComplete()">Verify →</button>
+          <button class="btn ghost" onclick="handleSendCode()">Resend code</button>
+        </div>
+      </div>
+      <div id="verifyStartErr"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="verifyStartBtn" onclick="handleSendCode()">Send verification code →</button>
+        <button class="btn secondary" onclick="resetPhoneEntry()">Change number</button>
+      </div>
+      <p class="note">We'll text you a 6-digit code. Code expires in 10 minutes. Wait 30 seconds between resend attempts.</p>
+    </div>
+
+    <!-- View when phone is verified + opted in: show status + opt-out -->
+    <div id="phoneActiveView" style="display:none">
+      <div class="row">
+        <span class="row-label">Phone</span>
+        <span class="row-value" id="phoneOnFileActive"></span>
+      </div>
+      <div class="row">
+        <span class="row-label">Status</span>
+        <span class="row-value"><span class="badge opted-in">✓ SMS alerts on</span></span>
+      </div>
+      <div id="phoneActionsErr"></div>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="resetPhoneEntry()">Change number</button>
+        <button class="btn danger" onclick="handleOptOut()">Turn off SMS alerts</button>
+      </div>
+      <p class="note">You can also reply <b>STOP</b> to any RoofRank text to unsubscribe immediately. <b>HELP</b> for support contact.</p>
+    </div>
+  </section>
+
+  <!-- ─── Account actions ─── -->
+  <section class="section">
+    <div class="section-h">Account actions</div>
+    <p class="section-sub">Manage your subscription from the dashboard's billing menu. Delete account permanently removes your saved deals, watchlist, and account record.</p>
+    <div class="btn-row">
+      <button class="btn secondary" onclick="handleSignOut()">Sign out</button>
+    </div>
+    <div class="danger-zone">
+      <div class="danger-zone-h">Danger zone</div>
+      <button class="btn danger" onclick="alert('Account deletion via support — email support@roofrank.io')">Delete account</button>
+    </div>
+  </section>
+</main>
+
 <script>
-// Auto-redirect to dashboard after 4s so users don't sit here. The
-// 'coming soon' message gives a brief moment for them to understand
-// why /settings (referenced in email footers) isn't a real page yet.
-setTimeout(() => { location.href = 'roofrank-dashboard.html'; }, 4000);
+requireAuth();
+
+// ─── State ─────
+let me = null;
+
+// ─── Helpers ───
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.innerHTML = `<div class="err"><b>Error.</b> ${msg}</div>`;
+}
+function clearErr(id) { document.getElementById(id).innerHTML = ''; }
+function showOk(id, msg) {
+  document.getElementById(id).innerHTML = `<div class="ok">${msg}</div>`;
+}
+function fmtPhone(e164) {
+  // +16175551234 → (617) 555-1234
+  if (!e164) return '';
+  const m = e164.match(/^\+1(\d{3})(\d{3})(\d{4})$/);
+  return m ? `(${m[1]}) ${m[2]}-${m[3]}` : e164;
+}
+
+// ─── View routing ───
+function showView(state) {
+  // states: 'entry' (no phone), 'verify' (phone but not opted in), 'active' (opted in)
+  document.getElementById('phoneEntryView').style.display   = state === 'entry'  ? '' : 'none';
+  document.getElementById('phoneVerifyView').style.display  = state === 'verify' ? '' : 'none';
+  document.getElementById('phoneActiveView').style.display  = state === 'active' ? '' : 'none';
+}
+function renderPhoneSection() {
+  if (!me) return;
+  if (me.smsOptIn && me.phone) {
+    document.getElementById('phoneOnFileActive').textContent = fmtPhone(me.phone);
+    showView('active');
+  } else if (me.phone) {
+    document.getElementById('phoneOnFile').textContent = fmtPhone(me.phone);
+    document.getElementById('verifyCodeWrap').style.display = 'none';
+    showView('verify');
+  } else {
+    showView('entry');
+  }
+}
+
+// ─── Boot ───
+(async function() {
+  try {
+    const res = await AuthAPI.me();
+    me = res.user || res;
+    document.getElementById('meEmail').textContent = me.email || '—';
+    document.getElementById('meName').textContent  = me.name || '—';
+    renderPhoneSection();
+  } catch (err) {
+    document.getElementById('meEmail').textContent = 'Could not load';
+    console.error('settings: me() failed', err);
+  }
+})();
+
+// ─── Save phone (no opt-in yet — verify required) ───
+async function handleSavePhone() {
+  clearErr('phoneSaveErr');
+  const raw = document.getElementById('phoneInput').value.trim();
+  if (!raw || raw.replace(/\D/g, '').length < 10) {
+    showErr('phoneSaveErr', 'Enter a valid 10-digit US phone number.');
+    return;
+  }
+  const btn = document.getElementById('phoneSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const res = await AuthAPI.setPhone(raw);
+    me = { ...me, phone: res.phone, smsOptIn: false };
+    renderPhoneSection();
+  } catch (err) {
+    showErr('phoneSaveErr', err?.message || 'Could not save phone.');
+    btn.disabled = false; btn.textContent = 'Save phone →';
+  }
+}
+
+// ─── Send verification code via SMS ───
+async function handleSendCode() {
+  clearErr('verifyStartErr');
+  clearErr('verifyCodeErr');
+  const btn = document.getElementById('verifyStartBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await AuthAPI.startPhoneVerify();
+    document.getElementById('verifyCodeWrap').style.display = '';
+    document.getElementById('verifyCodeInput').focus();
+    btn.style.display = 'none';
+    showOk('verifyStartErr', '<b>Code sent.</b> Check your phone — it expires in 10 minutes.');
+  } catch (err) {
+    btn.disabled = false; btn.textContent = 'Send verification code →';
+    if (err?.code === 'RATE_LIMITED') {
+      showErr('verifyStartErr', 'Wait a moment — we can only send one code per 30 seconds.');
+    } else if (err?.code === 'SMS_SEND_FAILED') {
+      showErr('verifyStartErr', 'Could not send the code right now. Try again in a few minutes.');
+    } else if (err?.code === 'ALREADY_VERIFIED') {
+      // Race condition — re-render from server truth
+      const res = await AuthAPI.me(); me = res.user || res; renderPhoneSection();
+    } else {
+      showErr('verifyStartErr', err?.message || 'Could not send verification code.');
+    }
+  }
+}
+
+// ─── Complete verification with the code ───
+async function handleVerifyComplete() {
+  clearErr('verifyCodeErr');
+  const code = document.getElementById('verifyCodeInput').value.trim();
+  if (!/^\d{6}$/.test(code)) {
+    showErr('verifyCodeErr', 'Code must be exactly 6 digits.');
+    return;
+  }
+  const btn = document.getElementById('verifyCompleteBtn');
+  btn.disabled = true; btn.textContent = 'Verifying…';
+  try {
+    await AuthAPI.completePhoneVerify(code);
+    me = { ...me, smsOptIn: true };
+    renderPhoneSection();
+  } catch (err) {
+    if (err?.code === 'VERIFY_CODE_EXPIRED') {
+      showErr('verifyCodeErr', 'Code expired. Tap "Resend code" to get a new one.');
+    } else if (err?.code === 'VERIFY_CODE_MISMATCH') {
+      showErr('verifyCodeErr', 'That code doesn\'t match. Check your SMS and try again.');
+    } else {
+      showErr('verifyCodeErr', err?.message || 'Could not verify code.');
+    }
+    btn.disabled = false; btn.textContent = 'Verify →';
+  }
+}
+
+// ─── Opt-out (settings-side, mirrors STOP keyword) ───
+async function handleOptOut() {
+  clearErr('phoneActionsErr');
+  try {
+    await AuthAPI.optOutPhone();
+    me = { ...me, smsOptIn: false };
+    renderPhoneSection();
+  } catch (err) {
+    showErr('phoneActionsErr', err?.message || 'Could not turn off SMS alerts.');
+  }
+}
+
+// ─── Reset to entry view (change number flow) ───
+function resetPhoneEntry() {
+  document.getElementById('phoneInput').value = me?.phone ? fmtPhone(me.phone) : '';
+  showView('entry');
+  clearErr('phoneSaveErr');
+  document.getElementById('phoneInput').focus();
+}
+
+// ─── Sign out ───
+function handleSignOut() {
+  try { localStorage.removeItem('rr_token'); localStorage.removeItem('rr_refresh'); } catch {}
+  location.href = 'roofrank-landing.html';
+}
 </script>
 </body>
 </html>
