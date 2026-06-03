@@ -73,7 +73,11 @@ body{
 .rh-add{display:inline-flex;align-items:center;justify-content:center;gap:.32rem;height:32px;padding:0 .75rem;border-radius:8px;background:var(--forest);color:#fff;text-decoration:none;transition:background .15s;flex-shrink:0;font-size:.78rem;font-weight:500;font-family:var(--sans);letter-spacing:.005em}
 .rh-add:hover{background:var(--forest-2)}
 .rh-add svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
-@media(max-width:380px){.rh-add .rh-add-label{display:none}.rh-add{padding:0;width:32px}}
+/* Pro badge shown to free-tier users — sets expectation BEFORE the click
+   instead of landing them on a paywall. Hidden by default; JS reveals
+   when isPro===false (see subscription handler). */
+.rh-add-pro{font-family:var(--mono);font-size:.55rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.18);color:#fff;padding:2px 5px;border-radius:3px;line-height:1;margin-left:.1rem}
+@media(max-width:380px){.rh-add .rh-add-label,.rh-add .rh-add-pro{display:none}.rh-add{padding:0;width:32px}}
 /* Quiet "Upgrade" text link replaces the loud green "+ Pro" pill.
    Daily users have either converted or they haven't — no need to
    shout on every screen. Pill markup retained for the hover popup
@@ -187,8 +191,13 @@ body{
 .runner-nums{font-family:var(--mono);font-size:.74rem;color:var(--muted);flex-shrink:0;display:flex;gap:.45rem;align-items:baseline}
 .runner-cf{color:var(--forest);font-weight:500}
 @media(max-width:480px){
-  .runner-nums{display:none}
-  .runner-row::after{content:'›';color:var(--faint);font-size:1.2rem;line-height:1;margin-left:.2rem}
+  /* Keep cashflow visible on mobile — it's the single most informative
+     number in the row. CoC needs context ("is 12% good?") that cashflow
+     ($/mo) doesn't. Hiding both (the old behavior) contradicted the V1
+     polish intent for runner rows to carry "RankMark + address +
+     financial nums" consistently. Ali called this out 2026-06-03. */
+  .runner-nums{font-size:.7rem;gap:.3rem}
+  .runner-nums > span:nth-child(n+2){display:none}  /* drop the · separator + CoC */
 }
 
 /* View ▾ chip — replaces the horizontal lens-pill row. Tap to open
@@ -934,6 +943,7 @@ body{
     <a href="roofrank-analyzer.html" class="rh-add" title="Add a property — score any address" aria-label="Add a property — score any address">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span class="rh-add-label">Add a property</span>
+      <span class="rh-add-pro" id="rhAddPro" style="display:none">Pro</span>
     </a>
     <!-- Quiet upgrade text-link (was a loud green "+ Pro" pill that
          shouted on every screen — replaced 2026-05-19 V1 polish). -->
@@ -1406,6 +1416,11 @@ async function boot(){
       // Feed report usage into the upgrade prompt — "Upgrade · 1 of 3 left"
       // is louder once the user is close to the cap.
       syncProBadge({ used: sub?.reportsUsed, limit: sub?.reportLimit });
+      // "+ Add a property" CTA opens the Pro-only analyzer page. For Free
+      // users, show a "Pro" badge in the button so the upgrade expectation
+      // is set before the click, not after — Ali called this out 2026-06-03.
+      const addProBadge = document.getElementById('rhAddPro');
+      if (addProBadge) addProBadge.style.display = isPro ? 'none' : '';
       // Swap the Billing link target: Pro/Team get Stripe customer portal
       // (manage card, view invoices, cancel). Free stays on pricing page.
       const billingLink = document.getElementById('bnBillingLink');
