@@ -32,7 +32,11 @@ nav{background:rgba(247,244,239,.95);border-bottom:1px solid var(--border);paddi
 .toggle-wrap{display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.5rem}
 .toggle-label{font-size:.8rem;color:var(--muted)}
 .toggle-label.active{color:var(--ink);font-weight:500}
-.toggle{width:40px;height:22px;background:var(--forest);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+/* Track is grey OFF (monthly), green ON (annual). Was always-green which
+   gave users no visual cue what state the toggle was in — Ali flagged
+   2026-06-03. The .annual class is added by toggleBilling() in the JS. */
+.toggle{width:40px;height:22px;background:var(--border-2);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.toggle.annual{background:var(--forest)}
 .toggle-knob{width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .toggle.annual .toggle-knob{left:21px}
 .save-badge{font-size:.62rem;font-weight:600;background:rgba(28,74,53,.1);color:var(--forest);border:1px solid var(--sage-border);padding:2px 7px;border-radius:4px;margin-left:.25rem}

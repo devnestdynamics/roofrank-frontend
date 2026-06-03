@@ -1057,7 +1057,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavDraw
       <p style="font-size:.9rem;color:var(--muted);margin-top:.75rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7" class="fade-up">Use Starter to see if our math matches your gut. Upgrade when you can't afford to miss a deal.</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.25rem" class="fade-up">
         <span style="font-size:.8rem;color:var(--ink);font-weight:500" id="lp-mo-lbl">Monthly</span>
-        <div id="lpToggle" onclick="lpToggleBilling()" style="width:40px;height:22px;background:var(--forest);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0">
+        <div id="lpToggle" onclick="lpToggleBilling()" style="width:40px;height:22px;background:var(--border-2);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s">
           <div id="lpKnob" style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>
         </div>
         <span style="font-size:.8rem;color:var(--muted)" id="lp-yr-lbl">Annual <span style="font-size:.62rem;font-weight:600;background:var(--sage-dim);color:var(--forest);border:1px solid var(--sage-border);padding:1px 6px;border-radius:3px;margin-left:3px">Save 15%</span></span>
@@ -1096,33 +1096,33 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavDraw
         <button class="plan-cta plan-cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All NE markets · unlimited deals</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>All launch markets · unlimited deals</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Full 8-metric breakdown per deal</li>
           <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI deal narratives on each scored deal</li>
           <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ Ask the Analyst — AI chat on any deal</li>
           <li class="plan-feature" style="font-weight:500"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>✦ AI Market Brief · sent when there's news</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Strong Buy real-time alerts</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited analyzer reports</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Push + SMS alerts on every Strong Buy</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited manual property analyzer</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Unlimited watchlist</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Priority support</li>
         </ul>
       </div>
 
-      <!-- AGENT & TEAM -->
+      <!-- ENTERPRISE — contact-sales, no public price -->
       <div class="plan fade-up">
-        <div class="plan-name">Agent &amp; Team</div>
-        <div class="plan-desc">For investor-focused agents and partnerships sharing deal flow with clients.</div>
-        <div class="plan-price" id="lp-team-price">$249</div>
-        <div class="plan-period" id="lp-team-period">/month</div>
-        <button class="plan-cta plan-cta-solid" onclick="location.href='roofrank-login.html?mode=signup'">Start Team →</button>
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-desc">For investor partnerships, brokerages, and small teams operating across multiple markets.</div>
+        <div class="plan-price" style="font-size:1.5rem">Custom</div>
+        <div class="plan-period">Tailored to your team size + needs</div>
+        <a class="plan-cta plan-cta-solid" href="mailto:hello@roofrank.io?subject=RoofRank%20Enterprise%20%E2%80%94%20let%27s%20talk&amp;body=Hi%20RoofRank%20team%2C%0A%0AI%27d%20like%20to%20learn%20more%20about%20your%20Enterprise%20plan%20for%3A%0A%0A-%20Team%20size%3A%20%0A-%20Markets%20of%20interest%3A%20%0A-%20Use%20case%3A%20%0A%0AThanks." style="text-decoration:none">Contact us →</a>
         <div class="plan-divider"></div>
         <ul class="plan-features">
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Everything in Pro</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>3 seats — share with clients or partners</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Client-shareable deal reports (PDF)</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>White-label reports with your branding</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Multiple seats — shared watchlist across team</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>White-label deal reports with your branding</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>API access for custom integrations</li>
           <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Custom market requests</li>
-          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Dedicated onboarding call</li>
+          <li class="plan-feature"><div class="plan-feature-check"><svg viewBox="0 0 10 10"><polyline points="2 5 4 8 8 3"/></svg></div>Dedicated onboarding + support</li>
         </ul>
       </div>
     </div>
@@ -1394,21 +1394,26 @@ document.addEventListener('click', e => {
 });
 
 let lpAnnual=false;
+function _lpToggleVisualState(annual){
+  // Toggle track color reflects state — grey OFF (monthly), forest ON
+  // (annual). Was always-forest before 2026-06-03 fix.
+  document.getElementById('lpToggle').style.background = annual ? 'var(--forest)' : 'var(--border-2)';
+}
 function lpToggleBilling(){
   lpAnnual=!lpAnnual;
+  _lpToggleVisualState(lpAnnual);
   document.getElementById('lpKnob').style.left=lpAnnual?'21px':'3px';
   document.getElementById('lp-mo-lbl').style.fontWeight=lpAnnual?'400':'500';
   document.getElementById('lp-mo-lbl').style.color=lpAnnual?'var(--muted)':'var(--ink)';
   document.getElementById('lp-yr-lbl').style.color=lpAnnual?'var(--ink)':'var(--muted)';
   document.getElementById('lp-yr-lbl').style.fontWeight=lpAnnual?'500':'400';
-  // Pricing synced with roofrank-pricing.html (2026-05-21). Pro $470/yr,
-  // Team $2,388/yr per the price-note line on the pricing page.
-  // Removed dangling lp-ess-period reference (Essentials tier was dropped
-  // — would throw a null on toggle prior to this change).
+  // Pricing synced with roofrank-pricing.html. Pro $470/yr.
+  // Enterprise tier is "Contact us" — no monthly/annual price toggle needed.
+  // (Was previously updating lp-team-price/period; removed 2026-06-03 when
+  // Team pivoted to contact-sales enterprise model. Dangling lp-ess-period
+  // reference was already removed in earlier pass.)
   document.getElementById('lp-pro-price').textContent=lpAnnual?'$39':'$49';
   document.getElementById('lp-pro-period').innerHTML=lpAnnual?'/month · billed <strong>$470/year · save $118</strong>':'/month · cancel anytime';
-  document.getElementById('lp-team-price').textContent=lpAnnual?'$199':'$249';
-  document.getElementById('lp-team-period').innerHTML=lpAnnual?'/month · billed <strong>$2,388/year · save $600</strong>':'/month';
 }
 function handleEmail() {
   const el = document.getElementById('femail');
