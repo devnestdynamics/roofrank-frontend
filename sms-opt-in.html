@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RoofRank — SMS Opt-in Workflow</title>
+<meta name="description" content="How to opt in to RoofRank SMS alerts: double opt-in via account settings + verification code. Includes message frequency, rates disclosure, and STOP/HELP keyword instructions.">
+<meta name="robots" content="index,follow">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;--ink:#1c1f1c;--muted:#6a6e68;--forest:#1c4a35;--forest-2:#2d6448;--sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);--border:#e0d9cf}
+html,body{background:var(--cream);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 4rem}
+.nav-back{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);text-decoration:none;font-size:.85rem;margin-bottom:2rem}
+.nav-back:hover{color:var(--forest)}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:2.4rem;font-weight:500;letter-spacing:-.01em;margin-bottom:.4rem;line-height:1.15}
+.lede{color:var(--muted);font-size:1rem;margin-bottom:2rem;line-height:1.6;max-width:560px}
+h2{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;font-weight:500;margin:2.5rem 0 .85rem;color:var(--ink)}
+p{margin-bottom:1rem;color:var(--ink)}
+ol,ul{margin:0 0 1rem 1.2rem}
+li{margin-bottom:.5rem}
+a{color:var(--forest);text-decoration:underline;text-underline-offset:3px}
+.callout{background:var(--white);border:1px solid var(--cream-3);border-left:3px solid var(--forest);border-radius:6px;padding:1.1rem 1.3rem;margin:1rem 0;font-size:.95rem}
+.callout-h{font-family:'DM Sans',sans-serif;font-weight:600;color:var(--forest);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.45rem}
+.kbd{background:var(--cream-2);border:1px solid var(--cream-3);border-radius:4px;padding:1px 7px;font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--forest);letter-spacing:.05em}
+.step{display:flex;gap:1rem;margin-bottom:1.2rem;padding:1rem 1.1rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px}
+.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--sage-dim);border:1px solid var(--sage-border);color:var(--forest);font-family:'DM Mono',monospace;font-size:.8rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+.step-body{flex:1}
+.step-h{font-weight:600;margin-bottom:.3rem;color:var(--ink)}
+.step-body p{margin-bottom:0;font-size:.92rem;color:var(--muted);line-height:1.55}
+.sample-sms{background:var(--white);border:1px solid var(--cream-3);border-radius:14px;padding:.95rem 1.1rem;margin:.7rem 0 1.2rem;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--ink);max-width:440px;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sample-sms-from{font-size:.7rem;color:var(--muted);margin-bottom:.3rem;letter-spacing:.05em;font-family:'DM Mono',monospace;text-transform:uppercase}
+.legal-strip{border-top:1px solid var(--border);margin-top:4rem;padding-top:1.5rem;font-size:.78rem;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="nav-back" href="/roofrank-landing.html">← Back to RoofRank</a>
+
+  <h1>RoofRank SMS Opt-in Workflow</h1>
+  <p class="lede">This page describes the complete opt-in workflow for RoofRank SMS notifications, the messages you may receive, and how to stop or get help. RoofRank is operated by DevNest Dynamics LLC (dba RoofRank), based in Massachusetts.</p>
+
+  <div class="callout">
+    <div class="callout-h">A2P 10DLC Program Disclosure</div>
+    <p style="margin:0">Program name: <strong>RoofRank Alerts</strong> · Operator: DevNest Dynamics LLC (dba RoofRank) · Website: <a href="https://roofrank.io">roofrank.io</a> · Support: <a href="mailto:support@roofrank.io">support@roofrank.io</a> · Message frequency: recurring, up to approximately 20 messages per month · <strong>Message and data rates may apply</strong> · Reply <span class="kbd">STOP</span> to unsubscribe · Reply <span class="kbd">HELP</span> for help.</p>
+  </div>
+
+  <h2>How to opt in</h2>
+  <p>RoofRank uses a <strong>double opt-in</strong> process. You must explicitly enable SMS in your account AND verify your phone number with a one-time code before any alerts are sent.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-h">Create or sign in to your RoofRank account</div>
+      <p>Visit <a href="https://roofrank.io">roofrank.io</a> and create an account (or sign in).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-h">Open the Settings page</div>
+      <p>Navigate to <a href="/roofrank-settings.html">roofrank.io/roofrank-settings.html</a> (also reachable via the avatar menu in the top right of the dashboard).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-h">Add your US mobile phone number</div>
+      <p>In the "Phone &amp; SMS alerts" section, enter your US mobile number and click "Save phone." This stores the number but does <strong>not</strong> enable SMS alerts yet — verification is required.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-h">Request a verification code</div>
+      <p>Click "Send verification code." RoofRank sends a single SMS containing a 6-digit code to the phone number you entered.</p>
+      <div class="sample-sms">
+        <div class="sample-sms-from">From RoofRank</div>
+        RoofRank: Your sign-in code is 482591. Don't share this code. Reply STOP to unsubscribe.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <div class="step-h">Enter the code to confirm opt-in</div>
+      <p>Enter the 6-digit code back in the Settings page. On success, RoofRank flips your <code>sms_opt_in</code> status to <strong>true</strong>, records the consent timestamp, and you'll begin receiving alerts on the schedule below.</p>
+      <div class="sample-sms">
+        <div class="sample-sms-from">From RoofRank</div>
+        RoofRank: You're opted in to RoofRank Alerts. Receive up to 20 msgs/month. Message and data rates may apply. Reply HELP for help, STOP to cancel.
+      </div>
+    </div>
+  </div>
+
+  <h2>Messages you may receive</h2>
+  <p>Once opted in, RoofRank may send you the following message types — all from the same phone number, branded "RoofRank:":</p>
+  <ul>
+    <li><strong>Sign-in verification codes</strong> when you request passwordless authentication via SMS (transactional, on-demand).</li>
+    <li><strong>"Strong Buy" alerts</strong> when newly-listed 2-4 unit multifamily properties in your saved Massachusetts markets meet our cashflow threshold.</li>
+    <li><strong>Price-drop notifications</strong> on properties you've added to your watchlist.</li>
+  </ul>
+
+  <h2>Message frequency</h2>
+  <p><strong>Recurring</strong>. You may receive up to approximately <strong>20 messages per month</strong> from RoofRank, depending on activity in your saved markets and watchlist. Frequency varies — there are no guaranteed messages.</p>
+
+  <h2>Message and data rates</h2>
+  <p><strong>Message and data rates may apply.</strong> RoofRank does not charge a fee for SMS messages, but your wireless carrier's standard message and data rates apply per your mobile plan.</p>
+
+  <h2>How to stop messages — reply STOP</h2>
+  <p>Reply <span class="kbd">STOP</span> (or any of: <code>UNSUBSCRIBE</code>, <code>CANCEL</code>, <code>END</code>, <code>QUIT</code>) to any RoofRank message. You will be unsubscribed <strong>immediately and permanently</strong> from all RoofRank SMS notifications, and you'll receive one final confirmation message. You can also disable SMS alerts at any time in your account settings.</p>
+
+  <h2>How to get help — reply HELP</h2>
+  <p>Reply <span class="kbd">HELP</span> (or <code>INFO</code>) to any RoofRank message for support contact information. You can also email <a href="mailto:support@roofrank.io">support@roofrank.io</a> for help with your account or the SMS program.</p>
+
+  <h2>Privacy and data handling</h2>
+  <p>Phone numbers and SMS opt-in information you provide to RoofRank are used <strong>solely</strong> to deliver the messages you've opted into. We do <strong>not</strong> share, sell, rent, or otherwise disclose your mobile opt-in data, phone number, or SMS consent records to third parties, affiliates, or marketing partners for any purpose. Full details: <a href="/privacy.html">Privacy Policy</a>.</p>
+
+  <h2>Carrier disclosure</h2>
+  <p>Wireless carriers are not liable for delayed or undelivered messages. RoofRank uses AWS End User Messaging (Amazon SNS) to physically deliver SMS; messages are routed through major US wireless carriers (AT&amp;T, T-Mobile, Verizon).</p>
+
+  <h2>Contact</h2>
+  <p>DevNest Dynamics LLC (dba RoofRank)<br>
+  Massachusetts, United States<br>
+  <a href="mailto:support@roofrank.io">support@roofrank.io</a> · <a href="https://roofrank.io">roofrank.io</a></p>
+
+  <div class="legal-strip">
+    © 2026 DevNest Dynamics, LLC · <a href="/privacy.html" style="color:var(--muted)">Privacy</a> · <a href="/terms.html" style="color:var(--muted)">Terms</a>
+  </div>
+</div>
+</body>
+</html>
