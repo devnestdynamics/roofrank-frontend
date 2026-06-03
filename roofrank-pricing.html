@@ -147,38 +147,37 @@ nav{background:rgba(247,244,239,.95);border-bottom:1px solid var(--border);paddi
       <button class="plan-cta cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
       <div class="divider"></div>
       <ul class="features">
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All NE markets · unlimited deals</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All launch markets · unlimited deals</li>
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Full 8-metric breakdown per deal</li>
         <li class="feature ai"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ AI deal narratives on every listing</li>
         <li class="feature ai"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ Ask the Analyst — AI chat on any deal</li>
         <li class="feature ai"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>✦ AI Market Brief · sent when there's news</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Strong Buy real-time alerts</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Unlimited analyzer reports</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Push + SMS alerts on every Strong Buy</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Unlimited manual property analyzer</li>
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Unlimited watchlist</li>
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Priority support</li>
       </ul>
     </div>
 
-    <!-- AGENT & TEAM -->
+    <!-- ENTERPRISE / TEAM — contact-sales, no public price -->
     <div class="plan">
       <div class="plan-top">
-        <div class="plan-name">Agent &amp; Team</div>
-        <div class="plan-desc">For investor-focused agents and partnerships sharing deal flow with clients.</div>
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-desc">For investor partnerships, brokerages, and small teams operating across multiple markets.</div>
         <div class="price-row">
-          <span class="price-amt" id="teamPrice">$249</span>
-          <span class="price-period">/month</span>
+          <span class="price-amt" style="font-size:1.4rem">Custom</span>
         </div>
-        <div class="price-note" id="teamNote">$2,388/year · save $600</div>
+        <div style="font-size:.68rem;color:var(--muted);margin-top:.3rem">Tailored to your team size + needs</div>
       </div>
-      <button class="plan-cta cta-outline" onclick="location.href='roofrank-login.html?mode=signup'">Start Team →</button>
+      <a class="plan-cta cta-outline" href="mailto:hello@roofrank.io?subject=RoofRank%20Enterprise%20%E2%80%94%20let%27s%20talk&amp;body=Hi%20RoofRank%20team%2C%0A%0AI%27d%20like%20to%20learn%20more%20about%20your%20Enterprise%20plan%20for%3A%0A%0A-%20Team%20size%3A%20%0A-%20Markets%20of%20interest%3A%20%0A-%20Use%20case%3A%20%0A%0AThanks." style="text-decoration:none">Contact us →</a>
       <div class="divider"></div>
       <ul class="features">
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Everything in Pro</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>3 seats — share with clients or partners</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Client-shareable deal reports (PDF)</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>White-label reports with your branding</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Multiple seats — shared watchlist across team</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>White-label deal reports with your branding</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>API access for custom integrations</li>
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Custom market requests</li>
-        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Dedicated onboarding call</li>
+        <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>Dedicated onboarding + support</li>
       </ul>
     </div>
 
@@ -219,8 +218,10 @@ function toggleBilling(){
   document.getElementById('yrLabel').classList.toggle('active', annual);
   document.getElementById('proPrice').textContent = annual ? '$39' : '$49';
   document.getElementById('proNote').style.display = annual ? 'block' : 'none';
-  document.getElementById('teamPrice').textContent = annual ? '$199' : '$249';
-  document.getElementById('teamNote').style.display = annual ? 'block' : 'none';
+  // Enterprise tier is "Contact us" — no monthly/annual toggle needed.
+  // Previously this toggle also swapped a public Team price (was $249 / $199)
+  // but we moved Team to enterprise / contact-sales 2026-06-03 to remove
+  // sticker shock and qualify leads through conversation.
 }
 function toggleFaq(el){ el.classList.toggle('open'); }
 
