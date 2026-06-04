@@ -240,6 +240,31 @@ body{
 }
 .changed-dismiss:hover{color:var(--ink); background:var(--cream-2)}
 
+/* Welcome-to-Pro banner — shown once after Stripe redirects back from successful checkout (?welcome=pro). */
+.welcome-pro{
+  display:flex; align-items:flex-start; gap:.85rem;
+  background:linear-gradient(180deg,#fff,var(--cream)); border:1px solid var(--sage-border);
+  border-left:3px solid var(--forest); border-radius:10px;
+  padding:.95rem 1rem .95rem 1.1rem; margin:.5rem 0 .85rem;
+  box-shadow:0 4px 14px rgba(28,74,53,.07);
+  animation:changedFade .5s ease-out;
+}
+.welcome-pro-body{flex:1; min-width:0}
+.welcome-pro-eyebrow{
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--forest); margin-bottom:.3rem;
+}
+.welcome-pro-eyebrow::before{content:'✦'; font-size:.7rem; letter-spacing:0}
+.welcome-pro-h{font-family:var(--serif); font-size:1.05rem; font-weight:500; color:var(--ink); margin-bottom:.2rem; line-height:1.3}
+.welcome-pro-sub{font-size:.85rem; color:var(--muted); line-height:1.5}
+.welcome-pro-sub b{color:var(--forest); font-weight:600}
+.welcome-pro-dismiss{
+  background:none; border:none; color:var(--faint); cursor:pointer; padding:.2rem .35rem;
+  border-radius:6px; font-size:1.05rem; line-height:1; flex-shrink:0; transition:all .15s;
+}
+.welcome-pro-dismiss:hover{color:var(--ink); background:var(--cream-2)}
+
 .brief-card{
   background:linear-gradient(180deg, #1d2420 0%, #14201a 100%);
   color:#fff; border-radius:14px;
@@ -955,6 +980,18 @@ body{
 
 <main class="page">
 
+  <!-- ── Welcome-to-Pro banner — injected by boot() when ?welcome=pro present.
+       Stripe redirects here after successful checkout. Shown once, then the
+       query param is stripped so refresh doesn't re-show. -->
+  <section class="welcome-pro" id="welcomeProBanner" style="display:none">
+    <div class="welcome-pro-body">
+      <div class="welcome-pro-eyebrow">You're on Pro</div>
+      <div class="welcome-pro-h">Push + SMS alerts are live on every Strong Buy.</div>
+      <div class="welcome-pro-sub">Unlimited <b>manual property analysis</b>, full <b>watchlist tracking</b>, and <b>price-drop notifications</b> are now unlocked. Tweak alert preferences in <a href="/roofrank-settings" style="color:var(--forest);font-weight:500">Settings</a>.</div>
+    </div>
+    <button class="welcome-pro-dismiss" type="button" onclick="document.getElementById('welcomeProBanner').style.display='none'" aria-label="Dismiss">×</button>
+  </section>
+
   <!-- ── "Since you were last here" strip ─────────────────────────────── -->
   <section class="changed-strip" id="changedStrip" style="display:none">
     <span class="changed-eyebrow">Since last visit</span>
@@ -1421,6 +1458,26 @@ async function boot(){
     }
   } catch (err) {
     console.warn('[dashboard] auto-resume checkout error:', err);
+  }
+
+  // Welcome-to-Pro banner — Stripe redirects to /roofrank-dashboard?welcome=pro
+  // after a successful checkout. Show the banner once, then strip the query
+  // params so a refresh doesn't re-show it (also keeps session_id out of any
+  // bookmark / share-URL). Real plan flip happens server-side via the Stripe
+  // webhook — this is purely the "you just paid, here's what unlocked" UX.
+  try {
+    const qs = new URLSearchParams(window.location.search);
+    if (qs.get('welcome') === 'pro') {
+      const banner = document.getElementById('welcomeProBanner');
+      if (banner) banner.style.display = 'flex';
+      qs.delete('welcome');
+      qs.delete('session_id');
+      const newSearch = qs.toString();
+      const newUrl = location.pathname + (newSearch ? `?${newSearch}` : '') + location.hash;
+      window.history.replaceState({}, '', newUrl);
+    }
+  } catch (err) {
+    console.warn('[dashboard] welcome-pro banner error:', err);
   }
 
   // Read initial city filter: URL param wins over localStorage so shared links work.
