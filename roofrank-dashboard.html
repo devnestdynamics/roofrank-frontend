@@ -1391,6 +1391,37 @@ async function boot(){
     location.href = `roofrank-login.html?next=${next}`;
     return;
   }
+
+  // Auto-resume Pro checkout if user came in via the pricing-page CTA
+  // (set rr_pending_checkout=<planKey> in localStorage before signup).
+  // Fires before any other dashboard work — redirects to Stripe Checkout
+  // and never returns to the rest of boot(). Clears the hint regardless
+  // of success/failure so we don't loop on this branch on next visit.
+  try {
+    const pending = localStorage.getItem('rr_pending_checkout');
+    if (pending === 'pro_monthly' || pending === 'pro_annual') {
+      localStorage.removeItem('rr_pending_checkout');
+      const token = localStorage.getItem('rr_token');
+      const apiBase = window.ROOFRANK_API_URL || 'https://api.roofrank.io/api';
+      console.log(`[dashboard] resuming pending checkout: ${pending}`);
+      const res = await fetch(`${apiBase}/billing/checkout`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    JSON.stringify({ plan: pending }),
+      });
+      if (res.ok) {
+        const { url } = await res.json();
+        if (url) { location.href = url; return; }
+      }
+      // Fall through to normal dashboard load if checkout creation failed
+      // — don't block the user from using the product. They'll see Pricing
+      // in the menu and can retry from there.
+      console.warn(`[dashboard] auto-resume checkout failed (HTTP ${res.status}) — falling through to dashboard`);
+    }
+  } catch (err) {
+    console.warn('[dashboard] auto-resume checkout error:', err);
+  }
+
   // Read initial city filter: URL param wins over localStorage so shared links work.
   try {
     const urlCity = new URLSearchParams(window.location.search).get('city');
