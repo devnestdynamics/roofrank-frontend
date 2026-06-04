@@ -332,7 +332,7 @@ function formatPrice(input){
 function validateForm(){
   const price = parsePrice(document.getElementById('fieldPrice').value);
   const units = parseInt(document.getElementById('fieldUnits').value, 10) || 0;
-  const ok = price >= 10000 && units >= 1 && units <= 6;
+  const ok = price >= 10000 && units >= 2 && units <= 4;
   document.getElementById('scoreBtn').disabled = !ok;
 }
 

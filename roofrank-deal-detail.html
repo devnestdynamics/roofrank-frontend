@@ -1239,8 +1239,10 @@ nav.top{
        and the 8-metric grid moved up into "The math". This stays as
        a standalone take-action surface so users can scroll back from
        the narrative's "Ask the analyst →" CTA.
-       Chat backend not wired yet (#193) — input stays disabled with
-       a "Coming soon · Pro" badge so users don't tap into a dead end. -->
+       Chat is fully wired via /ai/chat (#193 closed 2026-05-21). Input
+       defaults to disabled; setChatEnabled(isPro) in applyProUnlocks()
+       flips it on for Pro callers. Free callers see the locked preview
+       with the "Pro feature" badge. -->
   <section id="analystSection">
     <div class="analyst-card">
       <div class="analyst-head">
