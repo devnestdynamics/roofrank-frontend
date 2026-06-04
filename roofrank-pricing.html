@@ -148,7 +148,7 @@ nav{background:rgba(247,244,239,.95);border-bottom:1px solid var(--border);paddi
         <div class="price-note" id="proNote">$470/year · save $118</div>
         <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.3rem">Cancel anytime · No contracts</div>
       </div>
-      <button class="plan-cta cta-white" onclick="location.href='roofrank-login.html?mode=signup'">Start Pro →</button>
+      <button class="plan-cta cta-white" id="proStartBtn" onclick="startProCheckout()">Start Pro →</button>
       <div class="divider"></div>
       <ul class="features">
         <li class="feature"><div class="check"><svg viewBox="0 0 8 8"><polyline points="1 4 3 6 7 2"/></svg></div>All launch markets · unlimited deals</li>
@@ -214,6 +214,49 @@ nav{background:rgba(247,244,239,.95);border-bottom:1px solid var(--border);paddi
 </div>
 
 <script>
+// ─── Pro checkout handler ──────────────────────────────────────────────────
+// Triggers Stripe Checkout for the currently-toggled plan. Three flows:
+//   - Logged-in Starter: POST to /api/billing/checkout, redirect to Stripe URL
+//   - Anonymous: store the intent, send to signup, dashboard then auto-resumes
+//     checkout (see roofrank-dashboard.html — picks up rr_pending_checkout)
+//   - Logged-in Pro/Team: adjustCtasByPlan() below already rewrites the
+//     button to "Open Dashboard" so this fn won't fire for them
+async function startProCheckout(){
+  const planKey = annual ? 'pro_annual' : 'pro_monthly';   // matches the toggle state
+  const token = localStorage.getItem('rr_token');
+  const btn = document.getElementById('proStartBtn');
+  const originalText = btn?.textContent;
+
+  // Anonymous → signup, then resume checkout from dashboard
+  if (!token) {
+    try { localStorage.setItem('rr_pending_checkout', planKey); } catch {}
+    location.href = 'roofrank-login.html?mode=signup';
+    return;
+  }
+
+  // Logged in → real checkout. Disable button + show progress.
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+  try {
+    const apiBase = window.ROOFRANK_API_URL || 'https://api.roofrank.io/api';
+    const res = await fetch(`${apiBase}/billing/checkout`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body:    JSON.stringify({ plan: planKey }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.message || `Checkout failed (HTTP ${res.status})`);
+    }
+    const { url } = await res.json();
+    if (!url) throw new Error('Checkout session created but no URL returned');
+    location.href = url;   // → Stripe-hosted checkout page
+  } catch (err) {
+    console.error('[pricing] startProCheckout failed:', err);
+    alert(`Couldn't start checkout: ${err?.message || err}\n\nIf this keeps happening, email hello@roofrank.io.`);
+    if (btn) { btn.disabled = false; btn.textContent = originalText || 'Start Pro →'; }
+  }
+}
+
 let annual = false;
 function toggleBilling(){
   annual = !annual;
