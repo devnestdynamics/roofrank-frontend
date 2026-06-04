@@ -933,10 +933,11 @@ body{
   </a>
   <div class="rh-right">
     <nav class="rh-nav">
-      <a href="roofrank-dashboard.html" class="active">
-        <span class="rh-nav-mark"><svg viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="7" fill="currentColor"/><path d="M5 12 L15 6 L25 12" stroke="#7aaa8f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="15" width="20" height="2.2" rx=".4" fill="#7aaa8f"/><rect x="5" y="19" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".7"/><rect x="5" y="23" width="20" height="2.2" rx=".4" fill="#7aaa8f" opacity=".4"/></svg></span>
-        Today
-      </a>
+      <!-- Today tab is text-only to match Watching + My Deals — was carrying
+           a Deckers icon that doubled visually with the brand logo to its
+           left (Ali flagged 2026-06-04). Active state is conveyed by the
+           .active class styling on the link itself. -->
+      <a href="roofrank-dashboard.html" class="active">Today</a>
       <a href="roofrank-watchlist.html">Watching <span id="navWatchBadge" style="display:none;font-size:.65rem;font-weight:600;color:var(--forest);margin-left:.15rem"></span></a>
       <a href="roofrank-mydeals.html">My Deals</a>
     </nav>
