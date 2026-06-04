@@ -229,21 +229,52 @@ function toggleBilling(){
 }
 function toggleFaq(el){ el.classList.toggle('open'); }
 
-// Logged-in detection — if rr_token is present in localStorage, swap the
-// signup CTAs to point at the dashboard so existing users don't get sent
-// back through the signup flow when they revisit this page. Subscription
-// management itself happens via the dashboard's "Manage subscription"
-// link (which opens the Stripe customer portal). We DON'T load api.js
-// here — pricing is a public marketing surface, no auth refresh needed.
-(function swapCtasForLoggedInUsers(){
+// Logged-in CTA branching by plan. Previous behavior swapped ALL CTAs to
+// "Open Dashboard" for any logged-in user — which broke the upgrade path
+// for Starter users (they could see Pro pricing but couldn't actually
+// subscribe from here, just bounced to dashboard). Now:
+//   - Starter / no plan → keep "Start Pro" wired to real checkout
+//   - Pro / Team → swap CTAs to dashboard-bound ("Open Dashboard", "Current plan")
+// Loads /api/billing/subscription to know the user's plan. Fails open
+// (treats fetch errors as "starter") so the upgrade path stays available
+// even if the API is sluggish.
+(async function adjustCtasByPlan(){
   try {
-    if (!localStorage.getItem('rr_token')) return;
-    const ctas = document.querySelectorAll('.plan-cta');
-    ctas.forEach(btn => {
-      btn.textContent = 'Open Dashboard →';
-      btn.setAttribute('onclick', "location.href='roofrank-dashboard.html'");
+    const token = localStorage.getItem('rr_token');
+    if (!token) return;   // Anonymous — leave CTAs alone (default signup flow).
+
+    const apiBase = window.ROOFRANK_API_URL || 'https://api.roofrank.io/api';
+    const res = await fetch(`${apiBase}/billing/subscription`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-  } catch {}
+    if (!res.ok) return;   // Fail open — leave default CTAs (which will checkout fresh).
+    const sub = await res.json();
+    const plan = (sub?.plan || 'starter').toLowerCase();
+    const isPaid = plan === 'pro' || plan === 'team';
+
+    // Starter section card has a Get Started Free CTA. Both states (logged-
+    // in starter, logged-in paid) make this label inaccurate — they already
+    // have a Starter account. Swap to "Open Dashboard" for either case.
+    const starterBtn = document.querySelector('.plan:not(.featured) .plan-cta.cta-outline');
+    if (starterBtn && starterBtn.textContent.trim() === 'Get Started Free') {
+      starterBtn.textContent = 'Open Dashboard →';
+      starterBtn.setAttribute('onclick', "location.href='roofrank-dashboard.html'");
+    }
+
+    // Pro card CTA: if user is already paid, show dashboard link. Otherwise
+    // leave the "Start Pro →" so they can actually upgrade via Stripe.
+    const proBtn = document.querySelector('.plan.featured .plan-cta');
+    if (proBtn && isPaid) {
+      proBtn.textContent = 'Open Dashboard →';
+      proBtn.setAttribute('onclick', "location.href='roofrank-dashboard.html'");
+    }
+
+    // Enterprise card: contact-us mailto stays the same for everyone
+    // (existing customers might want to upgrade to Enterprise too).
+  } catch {
+    // Network error, parse error, etc. — leave CTAs as default (signup/
+    // checkout flow). Safer than guessing and locking the user out.
+  }
 })();
 </script>
 
