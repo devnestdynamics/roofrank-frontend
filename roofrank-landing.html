@@ -807,8 +807,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNavDraw
          are pre-scored in the nightly ingestion run (and the hero pulls a
          live pick on page load via JS — initial HTML is a static fallback
          so the card paints with real values even if the fetch fails). -->
-    <div class="hero-receipt" id="heroReceipt" role="img" aria-label="Pre-scored: 139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
-      <span class="hero-receipt-30s">Pre-scored</span>
+    <div class="hero-receipt" id="heroReceipt" role="img" aria-label="139 Vernon St in Worcester, Strong Buy, 92 out of 100, $2,165 monthly cashflow, 19.2% cash-on-cash at today's Freddie Mac rate.">
+      <!-- "Pre-scored" badge removed 2026-06-04. Card itself proves the
+           deal exists (verdict + score + address + cashflow numbers);
+           the badge was extra noise. Ali flagged the residual badge
+           after the H1 swap from "in 30 seconds" → "the moment it lists". -->
+
       <div class="hero-receipt-head">
         <!-- RankMark: canonical Deckers icon + score, tier-colored. Same
              system the dashboard + onboarding hero use. -->
