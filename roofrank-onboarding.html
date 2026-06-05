@@ -118,6 +118,7 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2
 
 .legal-footer{border-top:1px solid var(--border);background:var(--cream);padding:1.5rem;text-align:center;font-size:.72rem;color:#6a6e68;line-height:1.7;font-family:var(--sans)}
 .legal-footer a{color:#6a6e68;text-decoration:underline;text-underline-offset:2px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 <script src="api.js"></script>
 </head>
@@ -133,12 +134,11 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2
     <div class="dots">
       <span class="dot active" id="dot1"></span>
       <span class="dot" id="dot2"></span>
-      <span class="dot" id="dot3"></span>
     </div>
 
     <!-- ───── STEP 1: Markets ───── -->
     <section class="step active" id="step1">
-      <div class="step-label">Step 1 of 3</div>
+      <div class="step-label">Step 1 of 2</div>
       <div class="step-h">Where are you <em>hunting</em>?</div>
       <div class="step-sub">Pick the markets you actually look at. Your analyst scores every 2-4 unit listing in these cities every night — you'll see them on the dashboard tomorrow morning.</div>
 
@@ -150,7 +150,7 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2
 
     <!-- ───── STEP 2: Live preview ───── -->
     <section class="step" id="step2">
-      <div class="step-label">Step 2 of 3</div>
+      <div class="step-label">Step 2 of 2</div>
       <div class="step-h">Here's what your<br>analyst's <em>watching</em> today.</div>
       <div class="step-sub" id="step2Sub">A 5-second preview of your feed. The full breakdown opens once you finish onboarding.</div>
 
@@ -163,7 +163,8 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2
         <span id="previewFootText"></span>
       </div>
 
-      <button class="btn" onclick="handleStep2()">One more step →</button>
+      <button class="btn" onclick="handleStep2()">Open my dashboard →</button>
+      <div class="skip-row" style="margin-top:.6rem"><span style="font-size:.78rem;color:var(--muted)">Want a text when a Strong Buy hits? Enable SMS alerts later in Settings.</span></div>
     </section>
 
     <!-- ───── STEP 3: SMS (optional) ───── -->
@@ -384,8 +385,15 @@ function renderPreviewMini(d){
   </div>`;
 }
 
-// ───── STEP 2 → 3 ─────
-function handleStep2(){ advanceTo(3); }
+// ───── STEP 2 → dashboard ─────
+// SMS opt-in step removed from the onboarding flow 2026-06-05 — was
+// asking for SMS before the user had seen any deals, which is the wrong
+// moment to commit. SMS pitch now lives as a dismissible dashboard banner
+// (shown to users without smsOptIn) and the proper double-opt-in flow
+// lives in Settings (matches the verify-code pattern carriers require).
+function handleStep2(){
+  location.href = 'roofrank-dashboard.html';
+}
 
 // ───── STEP 3 → done ─────
 async function handleStep3(skip){
@@ -415,9 +423,15 @@ async function handleStep3(skip){
 }
 
 function advanceTo(n){
+  // Step 3 was removed from the linear flow 2026-06-05 (SMS deferred to
+  // a dashboard banner) but the step3 + dot3 elements may still be in
+  // the DOM during the deprecation window — guard accesses so we don't
+  // throw if they're missing.
   ['step1','step2','step3'].forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i === n - 1);
+    const sec = document.getElementById(id);
+    if (sec) sec.classList.toggle('active', i === n - 1);
     const dot = document.getElementById('dot' + (i + 1));
+    if (!dot) return;
     dot.classList.remove('active', 'done');
     if (i < n - 1) dot.classList.add('done');
     else if (i === n - 1) dot.classList.add('active');

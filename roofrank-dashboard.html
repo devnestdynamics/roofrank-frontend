@@ -265,6 +265,48 @@ body{
 }
 .welcome-pro-dismiss:hover{color:var(--ink); background:var(--cream-2)}
 
+/* Dashboard SMS prompt — one-time banner shown to logged-in users who
+   haven't set up SMS alerts yet. Replaces the onboarding step 3 ask
+   (deferred 2026-06-05 — moving SMS pitch out of the linear flow so
+   users hit the dashboard faster). Dismissed via localStorage so a
+   refresh doesn't re-show. The actual opt-in (with verification code)
+   lives in Settings — this banner only routes there. */
+.sms-prompt{
+  display:flex; align-items:flex-start; gap:.75rem;
+  background:var(--white); border:1px solid var(--cream-3);
+  border-left:3px solid var(--sage); border-radius:10px;
+  padding:.8rem .95rem; margin:.5rem 0 .85rem;
+  font-size:.85rem; line-height:1.5; color:var(--ink);
+  animation:changedFade .5s ease-out;
+}
+.sms-prompt-body{flex:1; min-width:0}
+.sms-prompt-body strong{font-weight:600; color:var(--forest)}
+.sms-prompt-cta{
+  flex-shrink:0; background:var(--forest); color:#fff; border:none;
+  padding:.42rem .85rem; border-radius:6px; font-size:.78rem; font-weight:500;
+  font-family:var(--sans); cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; transition:background .15s;
+}
+.sms-prompt-cta:hover{background:var(--forest-2)}
+.sms-prompt-dismiss{
+  background:none; border:none; color:var(--faint); cursor:pointer; padding:.2rem .35rem;
+  border-radius:6px; font-size:1rem; line-height:1; flex-shrink:0; transition:all .15s;
+}
+.sms-prompt-dismiss:hover{color:var(--ink); background:var(--cream-2)}
+
+/* Reduced-motion: honor user/system preference. Kills the long
+   transitions + hero animations for users who've asked for less motion
+   at the OS or browser level. Catch-all override at the bottom of the
+   stylesheet so per-element rules elsewhere don't outweigh it. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .brief-card{
   background:linear-gradient(180deg, #1d2420 0%, #14201a 100%);
   color:#fff; border-radius:14px;
@@ -980,6 +1022,19 @@ body{
 
 <main class="page">
 
+  <!-- ── SMS prompt banner — shown to users who haven't set up SMS yet.
+       Replaces onboarding step 3 (deferred 2026-06-05). Dismissible via
+       localStorage rr_sms_prompt_dismissed=1; also auto-hides once the
+       user has phone set (boot reads /me/profile). The actual double
+       opt-in (verify code) flow lives in Settings. -->
+  <section class="sms-prompt" id="smsPromptBanner" style="display:none">
+    <div class="sms-prompt-body">
+      <strong>Get a text when a Strong Buy hits.</strong> Add your mobile number in Settings — we'll text the score, cashflow, and a link the moment a deal in your markets cashflows. Verify code, US numbers only.
+    </div>
+    <a class="sms-prompt-cta" href="/roofrank-settings.html">Enable in Settings →</a>
+    <button class="sms-prompt-dismiss" type="button" onclick="dismissSmsPrompt()" aria-label="Dismiss">×</button>
+  </section>
+
   <!-- ── Welcome-to-Pro banner — injected by boot() when ?welcome=pro present.
        Stripe redirects here after successful checkout. Shown once, then the
        query param is stripped so refresh doesn't re-show. -->
@@ -1458,6 +1513,27 @@ async function boot(){
     }
   } catch (err) {
     console.warn('[dashboard] auto-resume checkout error:', err);
+  }
+
+  // SMS prompt banner — replaces onboarding step 3 (SMS deferred 2026-06-05).
+  // Show to users who haven't set a phone and haven't already dismissed
+  // this prompt. Fail-open: if /me fails or returns no flags, just don't
+  // show the banner — we'd rather miss the pitch than spam someone who
+  // already opted in. The real opt-in flow lives in Settings (double opt-in
+  // with verify code) — this banner only routes there.
+  try {
+    const dismissed = localStorage.getItem('rr_sms_prompt_dismissed') === '1';
+    if (!dismissed && typeof AuthAPI !== 'undefined' && AuthAPI.me) {
+      const resp = await AuthAPI.me().catch(() => null);
+      const u = resp?.user || null;
+      const hasPhone = u && (u.phone || u.smsOptIn);
+      if (u && !hasPhone) {
+        const el = document.getElementById('smsPromptBanner');
+        if (el) el.style.display = 'flex';
+      }
+    }
+  } catch (err) {
+    console.warn('[dashboard] sms-prompt banner error:', err);
   }
 
   // Welcome-to-Pro banner — Stripe redirects to /roofrank-dashboard?welcome=pro
@@ -2256,29 +2332,51 @@ function openDeal(id, e){
   location.href = `roofrank-deal-detail.html?fid=${id}`;
 }
 
+// Dismiss the SMS-prompt banner — sets localStorage flag so a refresh
+// doesn't re-show it. Users who later opt-in via Settings won't see the
+// banner anyway (hasPhone check above), so the flag is mostly for users
+// who explicitly say "not now."
+function dismissSmsPrompt(){
+  try { localStorage.setItem('rr_sms_prompt_dismissed', '1'); } catch {}
+  const el = document.getElementById('smsPromptBanner');
+  if (el) el.style.display = 'none';
+}
+
 async function toggleW(id, e){
   e.stopPropagation();
   const btn = e.currentTarget;
-  try {
-    const on = await WatchlistAPI.toggle(id);
-    if(btn){
-      // Toggle the 'on' class without stomping the base class. Was
-      // hard-replacing className to 'wbtn' which broke hero/runner/
-      // compact hearts (each uses a different base class).
-      btn.classList.toggle('on', on);
-      const svg = btn.querySelector('svg');
-      if (svg) {
-        // hd-/runner-/c-watch use currentColor for fill; wbtn uses a
-        // computed color attribute. Toggle the right one based on class.
-        if (btn.classList.contains('wbtn')) {
-          svg.setAttribute('fill', on ? scoreColor(75) : 'none');
-        } else {
-          svg.setAttribute('fill', on ? 'currentColor' : 'none');
-        }
-      }
+
+  // Helper: paint the heart for a given on/off state. Pulled out so the
+  // optimistic flip + revert-on-failure can both use the same logic.
+  // hd-/runner-/c-watch use currentColor; wbtn uses a computed color attr.
+  const paint = (on) => {
+    if (!btn) return;
+    btn.classList.toggle('on', on);
+    const svg = btn.querySelector('svg');
+    if (!svg) return;
+    if (btn.classList.contains('wbtn')) {
+      svg.setAttribute('fill', on ? scoreColor(75) : 'none');
+    } else {
+      svg.setAttribute('fill', on ? 'currentColor' : 'none');
     }
+  };
+
+  // Optimistic UI: flip the heart BEFORE the API responds so the click
+  // feels instant. Read the current state from the button (not from
+  // WatchlistAPI) so we toggle relative to what the user sees. Server
+  // response is authoritative — we re-paint to match it on success and
+  // revert on failure. Pattern added 2026-06-05 in the polish pass.
+  const wasOn = btn?.classList.contains('on') || false;
+  const optimisticOn = !wasOn;
+  paint(optimisticOn);
+
+  try {
+    const serverOn = await WatchlistAPI.toggle(id);
+    if (serverOn !== optimisticOn) paint(serverOn);  // server disagreed — trust it
     syncWatchBadge();
   } catch (err) {
+    // Revert the optimistic flip so the UI matches reality.
+    paint(wasOn);
     if (err?.code === 'WATCHLIST_LIMIT_EXCEEDED' || err?.status === 402) {
       openProModal({ title: 'Watchlist full', sub: err?.message || 'Free plan caps your watchlist at 5 deals. Upgrade to Pro for unlimited.' });
     } else {

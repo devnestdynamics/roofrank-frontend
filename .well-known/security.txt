@@ -1,0 +1,14 @@
+Contact: mailto:security@roofrank.io
+Contact: mailto:support@roofrank.io
+Expires: 2027-06-05T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://roofrank.io/.well-known/security.txt
+Policy: https://roofrank.io/privacy
+
+# Reporting guidelines
+# - Please give us reasonable time to respond before public disclosure.
+# - We do not currently run a paid bug bounty, but we are happy to credit
+#   responsible reporters in our changelog at https://roofrank.io/changelog.
+# - In scope: anything at *.roofrank.io and api.roofrank.io.
+# - Out of scope: social engineering, physical security, denial of service
+#   against shared infrastructure (AWS, Cloudflare, Stripe, etc.).

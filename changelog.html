@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RoofRank — Changelog</title>
+<meta name="description" content="What's shipped on RoofRank. Updated as we go.">
+<meta name="robots" content="index,follow">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#f7f4ef;--cream-2:#f0ece4;--cream-3:#e6e0d5;--white:#fff;--ink:#1c1f1c;--muted:#6a6e68;--forest:#1c4a35;--forest-2:#2d6448;--sage:#7aaa8f;--sage-dim:rgba(122,170,143,.12);--sage-border:rgba(122,170,143,.28);--border:#e0d9cf;--rose:#a03030}
+html,body{background:var(--cream);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
+.nav-back{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);text-decoration:none;font-size:.85rem;margin-bottom:2rem}
+.nav-back:hover{color:var(--forest)}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:2.4rem;font-weight:500;letter-spacing:-.01em;margin-bottom:.4rem;line-height:1.15}
+.lede{color:var(--muted);font-size:1rem;margin-bottom:3rem;line-height:1.6;max-width:560px}
+.release{margin-bottom:2.6rem}
+.release-date{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);background:var(--sage-dim);border:1px solid var(--sage-border);padding:.35rem .75rem;border-radius:14px;margin-bottom:.9rem}
+.release-h{font-family:'Playfair Display',Georgia,serif;font-size:1.35rem;font-weight:500;color:var(--ink);margin-bottom:1rem;line-height:1.3}
+.entries{list-style:none;margin:0;padding:0}
+.entry{display:flex;gap:.7rem;padding:.65rem .9rem;background:var(--white);border:1px solid var(--cream-3);border-radius:8px;margin-bottom:.45rem;font-size:.9rem;line-height:1.55}
+.entry-tag{flex-shrink:0;font-family:'DM Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:4px;align-self:flex-start;margin-top:.18rem;min-width:54px;text-align:center}
+.tag-shipped{background:var(--sage-dim);color:var(--forest);border:1px solid var(--sage-border)}
+.tag-fixed{background:rgba(160,48,48,.08);color:var(--rose);border:1px solid rgba(160,48,48,.18)}
+.tag-changed{background:var(--cream-2);color:var(--muted);border:1px solid var(--cream-3)}
+.entry-body{flex:1;min-width:0;color:var(--ink)}
+.entry-body b{color:var(--forest);font-weight:600}
+.empty-prior{font-size:.85rem;color:var(--muted);margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);text-align:center;line-height:1.6}
+.legal-strip{border-top:1px solid var(--border);margin-top:4rem;padding-top:1.5rem;font-size:.78rem;color:var(--muted);text-align:center}
+.legal-strip a{color:var(--muted);text-decoration:none}
+.legal-strip a:hover{color:var(--forest)}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="nav-back" href="/roofrank-landing.html">← Back to RoofRank</a>
+
+  <h1>Changelog</h1>
+  <p class="lede">What's shipped on RoofRank. We update this page as features roll out. Grouped by week, most recent first.</p>
+
+  <!-- ── Week of 2026-06-02 → 2026-06-05 ────────────────────────── -->
+  <div class="release">
+    <div class="release-date">Week of June 2 · 2026</div>
+    <div class="release-h">Self-serve Pro checkout · welcome-to-Pro experience · launch-readiness sweep</div>
+    <ul class="entries">
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Welcome-to-Pro experience.</b> A green banner now greets new Pro subscribers on the dashboard with a recap of what's unlocked. A confirmation email arrives in parallel.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Re-written verification email.</b> Subject changed from "Verify your RoofRank email" to "Welcome to RoofRank — one click to start." Body leads with what RoofRank is, not the verify mechanics.</div></li>
+      <li class="entry"><span class="entry-tag tag-fixed">Fixed</span><div class="entry-body"><b>Self-serve Pro upgrade was completely broken.</b> The pricing-page Start Pro CTA didn't fire Stripe Checkout, the backend success URL pointed at a non-existent page, and the checkout endpoint required a raw Stripe price ID the frontend couldn't know. Full end-to-end flow now works.</div></li>
+      <li class="entry"><span class="entry-tag tag-fixed">Fixed</span><div class="entry-body"><b>Anonymous → Pro signup flow.</b> If you click <em>Start Pro</em> while logged out, sign up, then land on the dashboard, you're now auto-routed to Stripe Checkout instead of dropped into the free dashboard.</div></li>
+      <li class="entry"><span class="entry-tag tag-fixed">Fixed</span><div class="entry-body"><b>Manual analyzer accepted 5-6 unit properties</b> the rest of the product couldn't score correctly. Tightened to 2-4 unit as scoped.</div></li>
+      <li class="entry"><span class="entry-tag tag-fixed">Fixed</span><div class="entry-body"><b>Hardened the SMS inbound webhook.</b> The endpoint now verifies AWS SNS signatures before processing STOP/HELP keywords. Without this, anyone could have spoofed an opt-out for someone else's number.</div></li>
+      <li class="entry"><span class="entry-tag tag-changed">Changed</span><div class="entry-body"><b>Tightened CORS in production.</b> Only the canonical RoofRank origin is allowed now; localhost and missing-origin requests are rejected.</div></li>
+      <li class="entry"><span class="entry-tag tag-changed">Changed</span><div class="entry-body"><b>Added timeouts on external API calls</b> (ATTOM, Anthropic). Slow upstreams can no longer cascade into a slow RoofRank.</div></li>
+      <li class="entry"><span class="entry-tag tag-changed">Changed</span><div class="entry-body"><b>Wired Sentry error capture</b> into all background jobs and fire-and-forget paths. Means we see real signal on the things that used to fail silently.</div></li>
+    </ul>
+  </div>
+
+  <!-- ── Week of 2026-05-26 → 2026-06-01 ────────────────────────── -->
+  <div class="release">
+    <div class="release-date">Week of May 26 · 2026</div>
+    <div class="release-h">Manual analyzer rebuild · pricing pivot · SMS plumbing</div>
+    <ul class="entries">
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Manual analyzer rebuild.</b> ATTOM-only now — drop a US address and we'll pull units, year built, taxes, and score the deal. Save it to My Deals with one tap, delete with a two-tap confirm.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>SMS opt-in flow with double opt-in.</b> Settings page now collects your phone, sends a 6-digit verify code, and only enables alerts after you confirm. STOP/HELP keywords honored carrier-side and ours.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Enterprise tier replaces Team self-serve.</b> Pro stays at $49/mo with unlimited manual analysis. Larger teams and brokerages contact us directly.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Dashboard mobile polish.</b> Cashflow now stays visible on small screens (was disappearing under 480px). Manual <em>+ Add a Property</em> CTA shows a Pro badge for free users.</div></li>
+      <li class="entry"><span class="entry-tag tag-changed">Changed</span><div class="entry-body"><b>Landing positioning refresh.</b> Lead with the math — live mortgage rates, real rents, actual property tax — and push alerts the moment a deal cashflows. We no longer claim to score "every" listing.</div></li>
+    </ul>
+  </div>
+
+  <!-- ── Earlier ────────────────────────────────────────────────── -->
+  <div class="release">
+    <div class="release-date">Earlier this spring</div>
+    <div class="release-h">Migrated to Cloudflare Pages · onboarding redesign · AI deal narrative</div>
+    <ul class="entries">
+      <li class="entry"><span class="entry-tag tag-changed">Changed</span><div class="entry-body"><b>Frontend moved from Netlify to Cloudflare Pages.</b> Faster, fewer cold starts, and no surprise bandwidth bills.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Onboarding redesign.</b> Pick your markets, see live deal counts, get a real preview before you commit to anything.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>AI deal narrative on every deal.</b> Bull case, bear case, what the math actually says — generated per-deal, cached, signed by the Analyst.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Ask the Analyst chat.</b> On every deal detail page, ask follow-ups about the numbers, the neighborhood, or the offer strategy.</div></li>
+      <li class="entry"><span class="entry-tag tag-shipped">Shipped</span><div class="entry-body"><b>Condition lens.</b> Toggle <em>as-is</em>, <em>updated</em>, or <em>renovated</em> on any deal — rents and cashflow recompute live (Pro).</div></li>
+    </ul>
+  </div>
+
+  <p class="empty-prior">
+    Looking for what's next? <a href="https://roofrank.io" style="color:var(--forest)">See the live product</a>, or write us at <a href="mailto:hello@roofrank.io" style="color:var(--forest)">hello@roofrank.io</a> if you want to be on the early-access list for upcoming markets.
+  </p>
+
+  <div class="legal-strip">
+    © 2026 DevNest Dynamics, LLC · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/sms-opt-in">SMS Opt-in</a>
+  </div>
+</div>
+</body>
+</html>

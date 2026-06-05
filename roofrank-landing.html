@@ -728,6 +728,18 @@ footer{background:var(--ink);padding:4rem 0 2rem}
   /* keep brief-mockup picks single-column on mobile (already in 327, but reinforce) */
   .bm-picks{grid-template-columns:1fr!important}
 }
+
+/* Honor prefers-reduced-motion at the OS/browser level — kills the long
+   hero animations + transitions for users who've asked for less motion.
+   Catch-all override placed last so per-element rules don't outweigh it. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#1c4a35">
