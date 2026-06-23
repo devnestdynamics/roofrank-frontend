@@ -336,19 +336,15 @@ python3 -m http.server 8080
 
 ## Costs (Estimated Monthly)
 
-| Service | Cost |
-|---|---|
-| ECS Fargate (1 task, 512CPU/1GB) | ~$15/mo |
-| RDS db.t4g.micro | ~$15/mo |
-| ElastiCache cache.t4g.micro | ~$12/mo |
-| ALB | ~$20/mo |
-| NAT Gateway | ~$5/mo |
-| S3 + CloudWatch | ~$2/mo |
-| **AWS Total** | **~$69/mo** |
-| Netlify | Free |
-| Namecheap domain | $2.92/mo ($34.98/yr) |
-| RentCast Foundation | $74/mo (not yet activated) |
-| **Grand Total (with RentCast)** | **~$146/mo** |
+**Full breakdown moved to [ROOFRANK-COST-TRACKING.md](./ROOFRANK-COST-TRACKING.md).** That doc supersedes this table — it covers AWS line items, external APIs (ATTOM, Anthropic), Stripe, Cloudflare, idle-mode cost-reduction toggles, and a monthly actuals tracker.
 
-Break-even: 2 Essentials subscribers ($29/mo each) or 2 Pro subscribers ($79/mo each).
+Quick reference:
+
+| State | Estimated total |
+|---|---|
+| **Active (dev + light traffic)** | ~$120-160/mo |
+| **Idle (recommended toggles applied)** | ~$15-30/mo |
+| **Break-even at active cost** | ~3-4 Pro subscribers ($49/mo each) |
+
+If you're going idle for >1 week, see [section 2 of the cost-tracking doc](./ROOFRANK-COST-TRACKING.md#cost-reduction-toggles-in-priority-order) — scale ECS to 0, stop RDS, drop log retention → saves ~$30/mo with ~10-min restore. Bigger savings if going dark for >1 month.
 
